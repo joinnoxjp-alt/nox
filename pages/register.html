@@ -51,7 +51,7 @@
         <p>最低限の情報だけで登録できます。</p>
       </div>
 
-      <form class="nox-form">
+      <form id="registerForm" class="nox-form">
 
         <label>
           ニックネーム
@@ -202,17 +202,7 @@
 </section>
 </main>
 
-<script>
-const form = document.querySelector(".nox-form");
 
-form.addEventListener("submit", function(e){
-    e.preventDefault();
-
-    alert("登録ありがとうございます！\n内容を受け付けました。");
-
-    form.reset();
-});
-</script>
 
 </body>
 </html>
