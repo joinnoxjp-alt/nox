@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NOX | Night Opens X</title>
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#000;
+color:white;
+overflow:hidden;
+}
+
+.hero{
+height:100vh;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+text-align:center;
+background:linear-gradient(180deg,#000,#111);
+}
+
+h1{
+font-size:80px;
+color:#D4AF37;
+letter-spacing:8px;
+}
+
+h2{
+margin-top:15px;
+font-size:22px;
+font-weight:300;
+}
+
+p{
+margin-top:30px;
+font-size:20px;
+opacity:.8;
+}
+
+button{
+margin-top:40px;
+padding:16px 42px;
+font-size:18px;
+border:none;
+border-radius:40px;
+background:#D4AF37;
+color:#000;
+cursor:pointer;
+transition:.3s;
+}
+
+button:hover{
+transform:scale(1.05);
+}
+
+.fade{
+animation:fade 2s ease;
+}
+
+@keyframes fade{
+from{
+opacity:0;
+transform:translateY(30px);
+}
+to{
+opacity:1;
+transform:translateY(0);
+}
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="hero fade">
+
+<h1>NOX</h1>
+
+<h2>Night Opens X</h2>
+
+<p>夜が、新しい可能性を開く。</p>
+
+<button>Coming Soon</button>
+
+</div>
+
+</body>
+</html>
