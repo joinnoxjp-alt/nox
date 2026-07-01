@@ -1,2 +1,0 @@
-# nox
-NOX Official Website

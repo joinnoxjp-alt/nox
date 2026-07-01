@@ -1,168 +1,297 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NOX | Night Opens X</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{background:#020202;color:#fff;font-family:"Hiragino Mincho ProN","Yu Mincho",serif}
-a{text-decoration:none;color:inherit}
-:root{--gold:#d4af37;--gold2:#ffe08a;--line:rgba(212,175,55,.45)}
-header{position:fixed;top:0;left:0;width:100%;z-index:99;display:flex;justify-content:space-between;align-items:center;padding:18px 32px;background:rgba(0,0,0,.62);backdrop-filter:blur(12px);border-bottom:1px solid rgba(212,175,55,.25)}
-.brand{font-size:38px;color:var(--gold2);letter-spacing:4px;line-height:1}
-.brand span{display:block;font-size:12px;color:#fff;letter-spacing:2px}
-nav{display:flex;gap:26px;font-size:14px}
-.btn{display:inline-block;padding:14px 34px;border:1px solid var(--gold);background:linear-gradient(90deg,#b88622,#ffe08a,#b88622);color:#111;font-weight:bold;border-radius:4px}
-.btn.dark{background:rgba(0,0,0,.35);color:var(--gold2)}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-.hero{min-height:100vh;padding:140px 20px 70px;display:flex;align-items:center;justify-content:center;text-align:center;background:linear-gradient(rgba(0,0,0,.2),#020202 92%),radial-gradient(circle at center,rgba(212,175,55,.26),transparent 42%),linear-gradient(120deg,#000,#170d00,#000);position:relative;overflow:hidden}
-.hero:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 20% 25%,rgba(255,220,120,.8) 0 1px,transparent 2px),radial-gradient(circle at 80% 35%,rgba(255,220,120,.5) 0 1px,transparent 2px);background-size:110px 110px;opacity:.35}
-.hero-inner{position:relative;z-index:1}
-.logo{font-size:128px;letter-spacing:18px;color:var(--gold2);text-shadow:0 0 45px rgba(212,175,55,.9)}
-.sub{font-size:34px;letter-spacing:8px;color:#f6d77a}
-.catch{font-size:32px;margin-top:26px}
-.desc{margin-top:14px;color:#ddd;letter-spacing:2px}
-.hero-buttons{margin-top:34px;display:flex;gap:24px;justify-content:center;flex-wrap:wrap}
+  <title>NOX | Night Opens X</title>
+  <meta name="description" content="NOXは全国対応のナイトワーク求人プラットフォーム。AI診断であなたに合うお店をスマートに提案します。" />
 
-section{max-width:1240px;margin:auto;padding:34px 18px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
-.panel{border:1px solid var(--line);border-radius:8px;min-height:270px;padding:34px;overflow:hidden;background:#070707;position:relative}
-.panel:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.9),rgba(0,0,0,.3)),radial-gradient(circle at 80% 50%,rgba(212,175,55,.3),transparent 45%);z-index:0}
-.panel.woman:before,.panel.shop:before{content:"";position:absolute;right:0;top:0;width:55%;height:100%;background:linear-gradient(135deg,#1b0d02,#0a0a0a 55%,#6b4300);opacity:.8}
-.panel>*{position:relative;z-index:2}
-.panel h2{font-size:40px;color:var(--gold2);margin:12px 0}
-.panel p{color:#ddd;line-height:1.8}
+  <link rel="stylesheet" href="style.css" />
 
-.title-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
-.title-row h2{color:var(--gold2);font-size:28px}
-.more{color:var(--gold2);font-size:13px}
-
-.jobs{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
-.job{border:1px solid var(--line);border-radius:8px;padding:14px;background:#070707}
-.photo{height:135px;border-radius:5px;margin-bottom:14px;background-size:cover;background-position:center;box-shadow:inset 0 0 35px rgba(0,0,0,.45)}
-.p1{background:linear-gradient(135deg,#6b3f00,#17100a 45%,#d4af37)}
-.p2{background:linear-gradient(135deg,#2b001f,#11050d 55%,#8a3cff)}
-.p3{background:linear-gradient(135deg,#5a3400,#080808 50%,#f3c96b)}
-.p4{background:linear-gradient(135deg,#001b3a,#070707 55%,#355cff)}
-.job h3{font-size:19px;margin-bottom:8px}
-.job p{color:#ccc}
-.price{color:var(--gold2);font-size:20px;margin:10px 0}
-.tag{display:inline-block;border:1px solid #777;padding:5px 9px;margin:4px 4px 0 0;font-size:12px}
-
-.lower{display:grid;grid-template-columns:1.1fr .9fr;gap:18px}
-.box{border:1px solid var(--line);border-radius:8px;padding:24px;background:#060606}
-.rank{display:flex;gap:12px;align-items:center;margin:14px 0}
-.num{background:var(--gold2);color:#111;padding:6px 10px;font-weight:bold}
-.thumb{width:72px;height:48px;border-radius:4px;background:linear-gradient(135deg,#704100,#090909,#d4af37)}
-.features{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:18px}
-.feature{text-align:center;border:1px solid var(--line);border-radius:8px;padding:28px;background:#060606;min-height:210px}
-.feature h3{color:var(--gold2);font-size:24px;margin-bottom:14px}
-.feature p{color:#ddd;line-height:1.8}
-
-.icons{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:20px;display:flex;justify-content:center;gap:34px;flex-wrap:wrap;color:var(--gold2)}
-footer{max-width:1240px;margin:auto;padding:45px 20px 65px;display:grid;grid-template-columns:1.2fr repeat(4,1fr);gap:24px;color:#bbb}
-footer h4{color:var(--gold2);margin-bottom:12px}
-footer p,footer li{list-style:none;font-size:13px;line-height:2}
-.footer-logo{font-size:50px;color:var(--gold2);letter-spacing:6px}
-
-@media(max-width:800px){
-header{position:relative;display:block;text-align:center;padding:18px}
-nav{display:none}
-.logo{font-size:72px;letter-spacing:8px}
-.sub{font-size:22px;letter-spacing:4px}
-.catch{font-size:24px}
-.hero{padding-top:70px}
-.grid2,.lower,.features{grid-template-columns:1fr}
-.jobs{grid-template-columns:1fr}
-footer{grid-template-columns:1fr}
-}
-</style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Noto+Serif+JP:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
 
-<header>
-  <div class="brand">NOX<span>Night Opens X</span></div>
-  <nav>
-    <a href="#top">TOP</a><a href="#jobs">求人を探す</a><a href="#scout">スカウトを受ける</a><a href="#shop">店舗掲載</a><a href="#faq">よくある質問</a>
-  </nav>
-  <div><a class="btn dark">ログイン</a> <a class="btn">無料登録</a></div>
-</header>
-
-<main class="hero" id="top">
-  <div class="hero-inner">
-    <div class="logo">NOX</div>
-    <div class="sub">Night Opens X</div>
-    <div class="catch">夜が、新しい可能性を開く。</div>
-    <p class="desc">全国のナイトワークを、もっと安心に、もっとスマートに。</p>
-    <div class="hero-buttons">
-      <a class="btn" href="#jobs">求人を探す　〉</a>
-      <a class="btn dark" href="#shop">店舗掲載はこちら　〉</a>
-    </div>
-  </div>
-</main>
-
-<section>
-  <div class="grid2">
-    <div class="panel woman">
-      <p>あなたはどちらでご利用ですか？</p>
-      <h2>女性の方</h2>
-      <p>理想のお店がきっと見つかる。安心して働ける環境を。</p><br>
-      <a class="btn" href="#jobs">求人を探す　〉</a>
-    </div>
-    <div class="panel shop" id="shop">
-      <p>採用をもっと効率的に。</p>
-      <h2>店舗の方</h2>
-      <p>全国の求職者へスマートにアプローチ。</p><br>
-      <a class="btn dark">店舗掲載はこちら　〉</a>
-    </div>
-  </div>
-</section>
-
-<section id="jobs">
-  <div class="title-row"><h2>新着求人</h2><a class="more">すべて見る 〉</a></div>
-  <div class="jobs">
-    <div class="job"><div class="photo p1"></div><h3>Club NOX</h3><p>新宿・歌舞伎町</p><div class="price">時給 8,000円〜</div><span class="tag">寮あり</span><span class="tag">日払いOK</span></div>
-    <div class="job"><div class="photo p2"></div><h3>Lounge Aurora</h3><p>六本木</p><div class="price">時給 7,000円〜</div><span class="tag">送りあり</span><span class="tag">体入OK</span></div>
-    <div class="job"><div class="photo p3"></div><h3>美人茶屋 新橋店</h3><p>新橋</p><div class="price">時給 6,500円〜</div><span class="tag">送りあり</span><span class="tag">日払いOK</span></div>
-    <div class="job"><div class="photo p4"></div><h3>Girls Bar 美月</h3><p>池袋</p><div class="price">時給 5,000円〜</div><span class="tag">未経験歓迎</span><span class="tag">日払いOK</span></div>
-  </div>
-</section>
-
-<section>
-  <div class="lower">
-    <div class="box">
-      <div class="title-row"><h2>今週の人気ランキング</h2><a class="more">もっと見る 〉</a></div>
-      <div class="rank"><div class="num">1</div><div class="thumb"></div><div><h3>Club NOX</h3><p>新宿・歌舞伎町　時給8,000円〜</p></div></div>
-      <div class="rank"><div class="num">2</div><div class="thumb"></div><div><h3>Lounge Aurora</h3><p>六本木　時給7,000円〜</p></div></div>
-      <div class="rank"><div class="num">3</div><div class="thumb"></div><div><h3>美人茶屋 新橋店</h3><p>新橋　時給6,500円〜</p></div></div>
-    </div>
-    <div class="box">
-      <h2 style="color:var(--gold2)">安心・安全のサポート</h2><br>
-      <p>ノルマなし、即日応募OK。安心して働ける環境をサポートします。</p><br>
-      <a class="btn dark">詳しく見る</a>
-    </div>
+  <div class="loading" id="loading">
+    <div class="loading-logo">NOX</div>
+    <p>Night Opens X</p>
   </div>
 
-  <div class="features">
-    <div class="feature"><h3>AIおすすめ診断</h3><p>質問に答えるだけで、あなたに合うお店を提案。</p><br><a class="btn dark">診断をはじめる</a></div>
-    <div class="feature" id="scout"><h3>スカウトを受ける</h3><p>あなたに興味を持った店舗からオファーを受け取れます。</p><br><a class="btn dark">詳細設定をする</a></div>
-    <div class="feature"><h3>全国対応</h3><p>エリア・条件・働き方に合わせて検索できます。</p><br><a class="btn dark" href="#jobs">求人を見る</a></div>
-  </div>
-</section>
+  <header class="site-header">
+    <a href="#top" class="header-logo">
+      <span>NOX</span>
+      <small>Night Opens X</small>
+    </a>
 
-<div class="icons">
-  <span>全国対応</span><span>体入・日払いOK</span><span>寮・送りあり</span><span>未経験歓迎</span><span>即日応募OK</span><span>安心サポート</span>
-</div>
+    <nav class="header-nav">
+      <a href="#top">TOP</a>
+      <a href="#jobs">求人を探す</a>
+      <a href="#ai">AI診断</a>
+      <a href="#ranking">ランキング</a>
+      <a href="#shop">店舗掲載</a>
+      <a href="#sns">SNS</a>
+    </nav>
 
-<footer>
-  <div><div class="footer-logo">NOX</div><p>Night Opens X</p><p>夜が、新しい可能性を開く。</p><p>© 2026 NOX All Rights Reserved.</p></div>
-  <div><h4>サービス</h4><ul><li>求人を探す</li><li>体験入店を探す</li><li>スカウトを受ける</li></ul></div>
-  <div><h4>サポート</h4><ul><li>よくある質問</li><li>お問い合わせ</li><li>ご利用ガイド</li></ul></div>
-  <div><h4>運営情報</h4><ul><li>運営会社</li><li>利用規約</li><li>プライバシーポリシー</li></ul></div>
-  <div><h4>公式SNS</h4><p>X / Instagram / TikTok / LINE</p><br><a class="btn dark">公式LINEはこちら</a></div>
-</footer>
+    <div class="header-actions">
+      <a class="sns-dot" href="https://lin.ee/SbQWdjo" target="_blank">L</a>
+      <a class="sns-dot" href="https://x.com/joinnoxjp?s=11&t=2j42m-0hw5bxhghxn9nklQ" target="_blank">X</a>
+      <a class="sns-dot" href="https://www.tiktok.com/@joinnoxjp?_r=1&_t=ZS-97fp9iuUsQX" target="_blank">♪</a>
+      <button class="btn ghost" onclick="showNotice('ログイン機能は準備中です')">ログイン</button>
+      <button class="btn gold" onclick="showNotice('無料登録は近日公開予定です')">無料登録</button>
+    </div>
+  </header>
 
+  <main>
+
+    <section class="hero" id="top">
+      <div class="hero-bg"></div>
+      <div class="hero-overlay"></div>
+
+      <div class="hero-content reveal">
+        <p class="eyebrow">Luxury Nightwork Platform</p>
+        <h1>NOX</h1>
+        <h2>Night Opens X</h2>
+        <p class="hero-copy">夜が、新しい可能性を開く。</p>
+        <p class="hero-lead">
+          全国のナイトワークを、もっと安心に。もっとスマートに。<br>
+          AI診断で、あなたに合うお店をNOXが提案します。
+        </p>
+
+        <div class="hero-buttons">
+          <a href="#jobs" class="btn gold big">求人を探す</a>
+          <a href="#shop" class="btn ghost big">店舗掲載はこちら</a>
+        </div>
+
+        <div class="hero-stats">
+          <div><strong>全国対応</strong><span>AREA</span></div>
+          <div><strong>AI診断</strong><span>MATCH</span></div>
+          <div><strong>SNS連携</strong><span>LINE / X / TikTok</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section reason-section">
+      <div class="section-head reveal">
+        <p>WHY NOX</p>
+        <h2>NOXが選ばれる理由</h2>
+      </div>
+
+      <div class="reason-grid">
+        <article class="reason-card reveal">
+          <div class="icon">🛡</div>
+          <h3>安心して探せる</h3>
+          <p>条件や希望に合わせて、自分に合うお店をスマートに探せます。</p>
+        </article>
+
+        <article class="reason-card reveal">
+          <div class="icon">🧠</div>
+          <h3>AIおすすめ診断</h3>
+          <p>10項目の質問から、マッチ度の高い求人をランキング表示。</p>
+        </article>
+
+        <article class="reason-card reveal">
+          <div class="icon">👑</div>
+          <h3>人気店を比較</h3>
+          <p>エリア・時給・待遇・雰囲気を見比べて選べます。</p>
+        </article>
+
+        <article class="reason-card reveal">
+          <div class="icon">⚡</div>
+          <h3>スマホで完結</h3>
+          <p>求人探しから相談まで、スマホだけでスムーズに進められます。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section select-section">
+      <div class="select-grid">
+
+        <article class="select-card woman reveal">
+          <div class="select-text">
+            <p>For Cast</p>
+            <h2>女性の方</h2>
+            <span>理想のお店がきっと見つかる。</span>
+            <p>体入・日払い・送りあり・寮ありなど、希望条件から探せます。</p>
+            <a href="#jobs" class="btn gold">求人を探す</a>
+          </div>
+        </article>
+
+        <article class="select-card shop reveal" id="shop">
+          <div class="select-text">
+            <p>For Owner</p>
+            <h2>店舗の方</h2>
+            <span>採用をもっと効率的に。</span>
+            <p>全国の求職者へ、NOXの世界観で店舗の魅力を届けます。</p>
+            <button class="btn ghost" onclick="showNotice('店舗掲載のお問い合わせは公式LINEからお願いします')">掲載相談する</button>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <section class="section jobs-section" id="jobs">
+      <div class="section-head reveal">
+        <p>NEW JOBS</p>
+        <h2>新着求人</h2>
+      </div>
+
+      <div class="job-grid">
+
+        <article class="job-card reveal">
+          <div class="job-image job1"></div>
+          <div class="job-body">
+            <h3>Club NOX</h3>
+            <p>新宿・歌舞伎町</p>
+            <strong>時給 8,000円〜</strong>
+            <div class="tags">
+              <span>寮あり</span><span>日払いOK</span><span>送りあり</span>
+            </div>
+            <button onclick="showNotice('求人詳細ページは準備中です')">詳細を見る</button>
+          </div>
+        </article>
+
+        <article class="job-card reveal">
+          <div class="job-image job2"></div>
+          <div class="job-body">
+            <h3>Lounge Aurora</h3>
+            <p>六本木</p>
+            <strong>時給 7,000円〜</strong>
+            <div class="tags">
+              <span>体入OK</span><span>ノルマなし</span><span>経験者優遇</span>
+            </div>
+            <button onclick="showNotice('求人詳細ページは準備中です')">詳細を見る</button>
+          </div>
+        </article>
+
+        <article class="job-card reveal">
+          <div class="job-image job3"></div>
+          <div class="job-body">
+            <h3>美人茶屋 新橋店</h3>
+            <p>新橋</p>
+            <strong>時給 6,500円〜</strong>
+            <div class="tags">
+              <span>未経験歓迎</span><span>日払いOK</span><span>駅近</span>
+            </div>
+            <button onclick="showNotice('求人詳細ページは準備中です')">詳細を見る</button>
+          </div>
+        </article>
+
+        <article class="job-card reveal">
+          <div class="job-image job4"></div>
+          <div class="job-body">
+            <h3>Girls Bar 美月</h3>
+            <p>池袋</p>
+            <strong>時給 5,000円〜</strong>
+            <div class="tags">
+              <span>WワークOK</span><span>送りあり</span><span>自由シフト</span>
+            </div>
+            <button onclick="showNotice('求人詳細ページは準備中です')">詳細を見る</button>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <section class="section ai-section" id="ai">
+      <div class="ai-box reveal">
+        <div class="ai-icon">🧠</div>
+        <div>
+          <p class="eyebrow">AI MATCHING</p>
+          <h2>AIおすすめ診断</h2>
+          <p>
+            年齢・エリア・希望時給・業種・寮・日払い・経験・お酒・ノルマ・送り希望から、あなたに合うお店を診断します。
+          </p>
+          <button class="btn gold" onclick="showNotice('AI診断ページは近日公開予定です')">診断をはじめる</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section ranking-section" id="ranking">
+      <div class="section-head reveal">
+        <p>RANKING</p>
+        <h2>今週の人気ランキング</h2>
+      </div>
+
+      <div class="ranking-list reveal">
+        <div class="rank-item">
+          <span>1</span>
+          <div class="rank-thumb r1"></div>
+          <div><h3>Club NOX</h3><p>新宿・歌舞伎町 / 時給8,000円〜</p></div>
+        </div>
+
+        <div class="rank-item">
+          <span>2</span>
+          <div class="rank-thumb r2"></div>
+          <div><h3>Lounge Aurora</h3><p>六本木 / 時給7,000円〜</p></div>
+        </div>
+
+        <div class="rank-item">
+          <span>3</span>
+          <div class="rank-thumb r3"></div>
+          <div><h3>美人茶屋 新橋店</h3><p>新橋 / 時給6,500円〜</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section support-section">
+      <div class="support-grid">
+        <div class="support-card reveal"><strong>全国対応</strong><p>主要エリアから地方まで対応予定。</p></div>
+        <div class="support-card reveal"><strong>日払いOK</strong><p>すぐに稼ぎたい方にも対応。</p></div>
+        <div class="support-card reveal"><strong>寮あり</strong><p>住まいの相談も可能。</p></div>
+        <div class="support-card reveal"><strong>送りあり</strong><p>終電後も安心。</p></div>
+      </div>
+    </section>
+
+    <section class="section sns-section" id="sns">
+      <div class="section-head reveal">
+        <p>OFFICIAL SNS</p>
+        <h2>NOX公式SNS</h2>
+      </div>
+
+      <div class="sns-grid reveal">
+        <a href="https://lin.ee/SbQWdjo" target="_blank">公式LINE</a>
+        <a href="https://x.com/joinnoxjp?s=11&t=2j42m-0hw5bxhghxn9nklQ" target="_blank">Xを見る</a>
+        <a href="https://www.tiktok.com/@joinnoxjp?_r=1&_t=ZS-97fp9iuUsQX" target="_blank">TikTokを見る</a>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="footer-brand">
+      <h2>NOX</h2>
+      <p>Night Opens X</p>
+      <p>夜が、新しい可能性を開く。</p>
+    </div>
+
+    <div>
+      <h4>Service</h4>
+      <a href="#jobs">求人を探す</a>
+      <a href="#ai">AI診断</a>
+      <a href="#shop">店舗掲載</a>
+    </div>
+
+    <div>
+      <h4>Support</h4>
+      <a onclick="showNotice('準備中です')">よくある質問</a>
+      <a href="https://lin.ee/SbQWdjo" target="_blank">お問い合わせ</a>
+      <a onclick="showNotice('準備中です')">利用規約</a>
+    </div>
+
+    <div>
+      <h4>SNS</h4>
+      <a href="https://lin.ee/SbQWdjo" target="_blank">LINE</a>
+      <a href="https://x.com/joinnoxjp?s=11&t=2j42m-0hw5bxhghxn9nklQ" target="_blank">X</a>
+      <a href="https://www.tiktok.com/@joinnoxjp?_r=1&_t=ZS-97fp9iuUsQX" target="_blank">TikTok</a>
+    </div>
+  </footer>
+
+  <div class="notice" id="notice"></div>
+
+  <script src="script.js"></script>
 </body>
 </html>
