@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>無料会員登録 | NOX</title>
+
+  <link rel="stylesheet" href="../style.css" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;700&family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet">
+</head>
+
+<body class="register-body">
+
+<header class="site-header">
+  <a href="../index.html" class="header-logo">
+    <span>NOX</span>
+    <small>Night Opens X</small>
+  </a>
+
+  <div class="header-actions">
+    <a href="../index.html" class="btn ghost">トップへ戻る</a>
+  </div>
+</header>
+
+<main class="register-page">
+
+  <section class="register-hero">
+    <div class="register-hero-bg"></div>
+
+    <div class="register-hero-content">
+      <p class="eyebrow">NOX MEMBER</p>
+      <h1>無料会員登録</h1>
+      <p>
+        まずは30秒で登録。<br>
+        あなたに合う夜職を、NOXがスマートに提案します。
+      </p>
+    </div>
+  </section>
+
+  <section class="register-section">
+
+    <div class="register-card">
+
+      <div class="register-step">
+        <span>STEP 01</span>
+        <h2>基本情報</h2>
+        <p>最低限の情報だけで登録できます。</p>
+      </div>
+
+      <form class="nox-form">
+
+        <label>
+          ニックネーム
+          <input type="text" placeholder="例：あい" />
+        </label>
+
+        <label>
+          生年月日
+          <input type="date" />
+        </label>
+
+        <label>
+          メールアドレス
+          <input type="email" placeholder="example@nox.jp" />
+        </label>
+
+        <label>
+          電話番号
+          <input type="tel" placeholder="09012345678" />
+        </label>
+
+        <label>
+          パスワード
+          <input type="password" placeholder="8文字以上" />
+        </label>
+                <div class="register-step profile-step">
+          <span>STEP 02</span>
+          <h2>プロフィール</h2>
+          <p>あとから変更できます。店舗に見せる情報です。</p>
+        </div>
+
+        <div class="form-grid">
+
+          <label>
+            希望エリア
+            <select>
+              <option>選択してください</option>
+              <option>新宿・歌舞伎町</option>
+              <option>六本木</option>
+              <option>銀座</option>
+              <option>池袋</option>
+              <option>上野</option>
+              <option>渋谷</option>
+              <option>全国対応</option>
+            </select>
+          </label>
+
+          <label>
+            希望業種
+            <select>
+              <option>選択してください</option>
+              <option>キャバクラ</option>
+              <option>ラウンジ</option>
+              <option>ガールズバー</option>
+              <option>コンカフェ</option>
+              <option>高級クラブ</option>
+            </select>
+          </label>
+
+          <label>
+            希望時給
+            <select>
+              <option>選択してください</option>
+              <option>3,000円〜</option>
+              <option>5,000円〜</option>
+              <option>7,000円〜</option>
+              <option>10,000円〜</option>
+              <option>相談したい</option>
+            </select>
+          </label>
+
+          <label>
+            経験
+            <select>
+              <option>選択してください</option>
+              <option>未経験</option>
+              <option>経験者</option>
+              <option>ブランクあり</option>
+            </select>
+          </label>
+
+          <label>
+            身長
+            <input type="number" placeholder="例：160" />
+          </label>
+
+          <label>
+            体型
+            <select>
+              <option>選択してください</option>
+              <option>スリム</option>
+              <option>普通</option>
+              <option>グラマー</option>
+              <option>小柄</option>
+              <option>高身長</option>
+            </select>
+          </label>
+
+          <label>
+            お酒
+            <select>
+              <option>選択してください</option>
+              <option>飲める</option>
+              <option>少しなら飲める</option>
+              <option>飲めない</option>
+            </select>
+          </label>
+
+          <label>
+            出勤希望
+            <select>
+              <option>選択してください</option>
+              <option>週1〜2日</option>
+              <option>週3〜4日</option>
+              <option>週5日以上</option>
+              <option>短期・単発</option>
+              <option>相談したい</option>
+            </select>
+          </label>
+
+        </div>
+        </label>
+
+<label class="full">
+    顔写真（任意）
+    <input type="file" accept="image/*">
+</label>
+
+<label class="full">
+    自己紹介
+    <textarea rows="5" placeholder="自己PR・接客経験・希望条件などを入力してください"></textarea>
+</label>
+
+<label class="full">
+    SNS（Instagram・Xなど）
+    <input type="text" placeholder="@username または URL">
+</label>
+
+<div class="full">
+    <button type="submit" class="gold-btn">
+        無料で登録する
+    </button>
+</div>
+
+</div>
+</form>
+</div>
+</section>
+</main>
+
+<script>
+const form = document.querySelector(".nox-form");
+
+form.addEventListener("submit", function(e){
+    e.preventDefault();
+
+    alert("登録ありがとうございます！\n内容を受け付けました。");
+
+    form.reset();
+});
+</script>
+
+</body>
+</html>

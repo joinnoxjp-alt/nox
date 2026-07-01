@@ -938,3 +938,145 @@ footer a:hover{
     font-size:26px;
   }
 }
+/* ==========================
+   NOX REGISTER PAGE
+========================== */
+
+.register-body{
+    background:#050505;
+    color:#fff;
+    font-family:"Noto Sans JP",sans-serif;
+}
+
+.register-page{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:80px 20px;
+}
+
+.register-section{
+    width:100%;
+    max-width:900px;
+}
+
+.register-card{
+    background:rgba(255,255,255,.03);
+    border:1px solid rgba(212,175,55,.25);
+    border-radius:28px;
+    backdrop-filter:blur(18px);
+    padding:50px;
+    box-shadow:0 25px 60px rgba(0,0,0,.55);
+}
+.register-title{
+    font-size:42px;
+    text-align:center;
+    color:#d4af37;
+    margin-bottom:12px;
+}
+
+.register-sub{
+    text-align:center;
+    color:#aaa;
+    margin-bottom:40px;
+}
+
+.nox-form{
+    display:flex;
+    flex-direction:column;
+    gap:24px;
+}
+
+.form-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+}
+
+.full{
+    grid-column:1/-1;
+}
+
+.nox-form label{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    color:#d4af37;
+    font-weight:600;
+}
+.nox-form input,
+.nox-form select,
+.nox-form textarea{
+    width:100%;
+    padding:15px;
+    border-radius:12px;
+    border:1px solid rgba(212,175,55,.3);
+    background:#111;
+    color:#fff;
+    font-size:16px;
+    transition:.3s;
+    outline:none;
+}
+
+.nox-form input:focus,
+.nox-form select:focus,
+.nox-form textarea:focus{
+    border-color:#d4af37;
+    box-shadow:0 0 20px rgba(212,175,55,.35);
+}
+
+.nox-form textarea{
+    resize:vertical;
+    min-height:140px;
+}
+
+.nox-form input[type=file]{
+    padding:12px;
+    background:#181818;
+}
+.register-btn{
+    width:100%;
+    padding:18px;
+    border:none;
+    border-radius:999px;
+    background:linear-gradient(90deg,#b8860b,#ffd86b,#b8860b);
+    color:#111;
+    font-size:18px;
+    font-weight:700;
+    cursor:pointer;
+    transition:.35s;
+    box-shadow:0 0 25px rgba(212,175,55,.35);
+}
+
+.register-btn:hover{
+    transform:translateY(-3px);
+    box-shadow:0 0 40px rgba(212,175,55,.6);
+}
+
+.back-link{
+    display:block;
+    text-align:center;
+    margin-top:25px;
+    color:#d4af37;
+    text-decoration:none;
+    transition:.3s;
+}
+
+.back-link:hover{
+    color:#fff;
+}
+
+@media(max-width:900px){
+    .form-grid{
+        grid-template-columns:1fr;
+    }
+
+    .register-card{
+        padding:30px 20px;
+    }
+
+    .register-title{
+        font-size:32px;
+    }
+}
