@@ -1,215 +1,167 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NOX | Night Opens X</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{
-  background:#030303;
-  color:#fff;
-  font-family:"Hiragino Mincho ProN","Yu Mincho",serif;
-}
+html{scroll-behavior:smooth}
+body{background:#020202;color:#fff;font-family:"Hiragino Mincho ProN","Yu Mincho",serif}
 a{text-decoration:none;color:inherit}
-.hero{
-  min-height:100vh;
-  background:
-    linear-gradient(rgba(0,0,0,.35),rgba(0,0,0,.92)),
-    radial-gradient(circle at center,#3b2600 0%,#050505 58%);
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  padding:32px 20px;
-}
-.logo{
-  font-size:96px;
-  letter-spacing:16px;
-  color:#d4af37;
-  text-shadow:0 0 35px #d4af37;
-}
-.sub{
-  font-size:30px;
-  letter-spacing:8px;
-  margin-top:10px;
-  color:#f5d77a;
-}
-.catch{
-  font-size:28px;
-  margin-top:28px;
-}
-.desc{
-  margin-top:14px;
-  color:#ddd;
-  line-height:1.8;
-}
-.buttons{
-  margin-top:34px;
-  display:flex;
-  gap:18px;
-  flex-wrap:wrap;
-  justify-content:center;
-}
-.btn{
-  padding:16px 42px;
-  border-radius:4px;
-  border:1px solid #d4af37;
-  background:linear-gradient(90deg,#b88a22,#ffe08a,#b88a22);
-  color:#111;
-  font-weight:bold;
-}
-.btn.dark{
-  background:transparent;
-  color:#f5d77a;
-}
-section{padding:60px 22px;max-width:1200px;margin:auto}
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-  gap:22px;
-}
-.card{
-  border:1px solid rgba(212,175,55,.45);
-  background:linear-gradient(145deg,#090909,#130d02);
-  padding:28px;
-  border-radius:8px;
-  box-shadow:0 0 25px rgba(212,175,55,.12);
-}
-.card h2,.card h3{color:#f5d77a;margin-bottom:14px}
-.card p{color:#ddd;line-height:1.8}
-.jobs{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-  gap:18px;
-}
-.job{
-  border:1px solid rgba(212,175,55,.35);
-  border-radius:8px;
-  padding:18px;
-  background:#070707;
-}
-.job img{
-  width:100%;
-  height:120px;
-  object-fit:cover;
-  border-radius:6px;
-  background:linear-gradient(135deg,#3a2100,#000);
-}
-.price{color:#f5d77a;font-size:20px;margin-top:10px}
-.tags span{
-  display:inline-block;
-  border:1px solid #555;
-  padding:4px 8px;
-  margin:8px 4px 0 0;
-  font-size:12px;
-}
-footer{
-  border-top:1px solid rgba(212,175,55,.4);
-  padding:45px 22px;
-  text-align:center;
-  color:#aaa;
-}
-.footer-logo{
-  color:#d4af37;
-  font-size:42px;
-  letter-spacing:8px;
-}
-@media(max-width:600px){
-  .logo{font-size:64px;letter-spacing:8px}
-  .sub{font-size:20px;letter-spacing:4px}
-  .catch{font-size:22px}
-  .buttons{flex-direction:column}
+:root{--gold:#d4af37;--gold2:#ffe08a;--line:rgba(212,175,55,.45)}
+header{position:fixed;top:0;left:0;width:100%;z-index:99;display:flex;justify-content:space-between;align-items:center;padding:18px 32px;background:rgba(0,0,0,.62);backdrop-filter:blur(12px);border-bottom:1px solid rgba(212,175,55,.25)}
+.brand{font-size:38px;color:var(--gold2);letter-spacing:4px;line-height:1}
+.brand span{display:block;font-size:12px;color:#fff;letter-spacing:2px}
+nav{display:flex;gap:26px;font-size:14px}
+.btn{display:inline-block;padding:14px 34px;border:1px solid var(--gold);background:linear-gradient(90deg,#b88622,#ffe08a,#b88622);color:#111;font-weight:bold;border-radius:4px}
+.btn.dark{background:rgba(0,0,0,.35);color:var(--gold2)}
+
+.hero{min-height:100vh;padding:140px 20px 70px;display:flex;align-items:center;justify-content:center;text-align:center;background:linear-gradient(rgba(0,0,0,.2),#020202 92%),radial-gradient(circle at center,rgba(212,175,55,.26),transparent 42%),linear-gradient(120deg,#000,#170d00,#000);position:relative;overflow:hidden}
+.hero:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 20% 25%,rgba(255,220,120,.8) 0 1px,transparent 2px),radial-gradient(circle at 80% 35%,rgba(255,220,120,.5) 0 1px,transparent 2px);background-size:110px 110px;opacity:.35}
+.hero-inner{position:relative;z-index:1}
+.logo{font-size:128px;letter-spacing:18px;color:var(--gold2);text-shadow:0 0 45px rgba(212,175,55,.9)}
+.sub{font-size:34px;letter-spacing:8px;color:#f6d77a}
+.catch{font-size:32px;margin-top:26px}
+.desc{margin-top:14px;color:#ddd;letter-spacing:2px}
+.hero-buttons{margin-top:34px;display:flex;gap:24px;justify-content:center;flex-wrap:wrap}
+
+section{max-width:1240px;margin:auto;padding:34px 18px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.panel{border:1px solid var(--line);border-radius:8px;min-height:270px;padding:34px;overflow:hidden;background:#070707;position:relative}
+.panel:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.9),rgba(0,0,0,.3)),radial-gradient(circle at 80% 50%,rgba(212,175,55,.3),transparent 45%);z-index:0}
+.panel.woman:before,.panel.shop:before{content:"";position:absolute;right:0;top:0;width:55%;height:100%;background:linear-gradient(135deg,#1b0d02,#0a0a0a 55%,#6b4300);opacity:.8}
+.panel>*{position:relative;z-index:2}
+.panel h2{font-size:40px;color:var(--gold2);margin:12px 0}
+.panel p{color:#ddd;line-height:1.8}
+
+.title-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.title-row h2{color:var(--gold2);font-size:28px}
+.more{color:var(--gold2);font-size:13px}
+
+.jobs{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.job{border:1px solid var(--line);border-radius:8px;padding:14px;background:#070707}
+.photo{height:135px;border-radius:5px;margin-bottom:14px;background-size:cover;background-position:center;box-shadow:inset 0 0 35px rgba(0,0,0,.45)}
+.p1{background:linear-gradient(135deg,#6b3f00,#17100a 45%,#d4af37)}
+.p2{background:linear-gradient(135deg,#2b001f,#11050d 55%,#8a3cff)}
+.p3{background:linear-gradient(135deg,#5a3400,#080808 50%,#f3c96b)}
+.p4{background:linear-gradient(135deg,#001b3a,#070707 55%,#355cff)}
+.job h3{font-size:19px;margin-bottom:8px}
+.job p{color:#ccc}
+.price{color:var(--gold2);font-size:20px;margin:10px 0}
+.tag{display:inline-block;border:1px solid #777;padding:5px 9px;margin:4px 4px 0 0;font-size:12px}
+
+.lower{display:grid;grid-template-columns:1.1fr .9fr;gap:18px}
+.box{border:1px solid var(--line);border-radius:8px;padding:24px;background:#060606}
+.rank{display:flex;gap:12px;align-items:center;margin:14px 0}
+.num{background:var(--gold2);color:#111;padding:6px 10px;font-weight:bold}
+.thumb{width:72px;height:48px;border-radius:4px;background:linear-gradient(135deg,#704100,#090909,#d4af37)}
+.features{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:18px}
+.feature{text-align:center;border:1px solid var(--line);border-radius:8px;padding:28px;background:#060606;min-height:210px}
+.feature h3{color:var(--gold2);font-size:24px;margin-bottom:14px}
+.feature p{color:#ddd;line-height:1.8}
+
+.icons{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:20px;display:flex;justify-content:center;gap:34px;flex-wrap:wrap;color:var(--gold2)}
+footer{max-width:1240px;margin:auto;padding:45px 20px 65px;display:grid;grid-template-columns:1.2fr repeat(4,1fr);gap:24px;color:#bbb}
+footer h4{color:var(--gold2);margin-bottom:12px}
+footer p,footer li{list-style:none;font-size:13px;line-height:2}
+.footer-logo{font-size:50px;color:var(--gold2);letter-spacing:6px}
+
+@media(max-width:800px){
+header{position:relative;display:block;text-align:center;padding:18px}
+nav{display:none}
+.logo{font-size:72px;letter-spacing:8px}
+.sub{font-size:22px;letter-spacing:4px}
+.catch{font-size:24px}
+.hero{padding-top:70px}
+.grid2,.lower,.features{grid-template-columns:1fr}
+.jobs{grid-template-columns:1fr}
+footer{grid-template-columns:1fr}
 }
 </style>
 </head>
 <body>
 
-<div class="hero" id="top">
-  <div class="logo">NOX</div>
-  <div class="sub">Night Opens X</div>
-  <div class="catch">夜が、新しい可能性を開く。</div>
-  <p class="desc">全国のナイトワークを、もっと安心に、もっとスマートに。</p>
-  <div class="buttons">
-    <a class="btn" href="#jobs">求人を探す</a>
-    <a class="btn dark" href="#shop">店舗掲載はこちら</a>
+<header>
+  <div class="brand">NOX<span>Night Opens X</span></div>
+  <nav>
+    <a href="#top">TOP</a><a href="#jobs">求人を探す</a><a href="#scout">スカウトを受ける</a><a href="#shop">店舗掲載</a><a href="#faq">よくある質問</a>
+  </nav>
+  <div><a class="btn dark">ログイン</a> <a class="btn">無料登録</a></div>
+</header>
+
+<main class="hero" id="top">
+  <div class="hero-inner">
+    <div class="logo">NOX</div>
+    <div class="sub">Night Opens X</div>
+    <div class="catch">夜が、新しい可能性を開く。</div>
+    <p class="desc">全国のナイトワークを、もっと安心に、もっとスマートに。</p>
+    <div class="hero-buttons">
+      <a class="btn" href="#jobs">求人を探す　〉</a>
+      <a class="btn dark" href="#shop">店舗掲載はこちら　〉</a>
+    </div>
   </div>
-</div>
+</main>
 
 <section>
-  <div class="grid">
-    <div class="card">
+  <div class="grid2">
+    <div class="panel woman">
+      <p>あなたはどちらでご利用ですか？</p>
       <h2>女性の方</h2>
-      <p>理想のお店がきっと見つかる。体入・日払い・送りありなど、自分に合った条件で探せます。</p>
-      <br>
-      <a class="btn" href="#jobs">求人を探す</a>
+      <p>理想のお店がきっと見つかる。安心して働ける環境を。</p><br>
+      <a class="btn" href="#jobs">求人を探す　〉</a>
     </div>
-    <div class="card" id="shop">
+    <div class="panel shop" id="shop">
+      <p>採用をもっと効率的に。</p>
       <h2>店舗の方</h2>
-      <p>採用をもっと効率的に。全国の求職者へスマートにアプローチできます。</p>
-      <br>
-      <a class="btn dark" onclick="alert('店舗掲載機能は現在準備中です')">掲載相談する</a>
+      <p>全国の求職者へスマートにアプローチ。</p><br>
+      <a class="btn dark">店舗掲載はこちら　〉</a>
     </div>
   </div>
 </section>
 
 <section id="jobs">
-  <h2 style="color:#f5d77a;margin-bottom:20px;">新着求人</h2>
+  <div class="title-row"><h2>新着求人</h2><a class="more">すべて見る 〉</a></div>
   <div class="jobs">
-    <div class="job">
-      <img>
-      <h3>Club NOX</h3>
-      <p>新宿・歌舞伎町</p>
-      <div class="price">時給 8,000円〜</div>
-      <div class="tags"><span>寮あり</span><span>日払いOK</span></div>
-    </div>
-    <div class="job">
-      <img>
-      <h3>Lounge Aurora</h3>
-      <p>六本木</p>
-      <div class="price">時給 7,000円〜</div>
-      <div class="tags"><span>送りあり</span><span>体入OK</span></div>
-    </div>
-    <div class="job">
-      <img>
-      <h3>美人茶屋 新橋店</h3>
-      <p>新橋</p>
-      <div class="price">時給 6,500円〜</div>
-      <div class="tags"><span>未経験歓迎</span><span>日払いOK</span></div>
-    </div>
+    <div class="job"><div class="photo p1"></div><h3>Club NOX</h3><p>新宿・歌舞伎町</p><div class="price">時給 8,000円〜</div><span class="tag">寮あり</span><span class="tag">日払いOK</span></div>
+    <div class="job"><div class="photo p2"></div><h3>Lounge Aurora</h3><p>六本木</p><div class="price">時給 7,000円〜</div><span class="tag">送りあり</span><span class="tag">体入OK</span></div>
+    <div class="job"><div class="photo p3"></div><h3>美人茶屋 新橋店</h3><p>新橋</p><div class="price">時給 6,500円〜</div><span class="tag">送りあり</span><span class="tag">日払いOK</span></div>
+    <div class="job"><div class="photo p4"></div><h3>Girls Bar 美月</h3><p>池袋</p><div class="price">時給 5,000円〜</div><span class="tag">未経験歓迎</span><span class="tag">日払いOK</span></div>
   </div>
 </section>
 
 <section>
-  <div class="grid">
-    <div class="card">
-      <h3>今週の人気ランキング</h3>
-      <p>1. Club NOX　時給8,000円〜</p>
-      <p>2. Lounge Aurora　時給7,000円〜</p>
-      <p>3. 美人茶屋 新橋店　時給6,500円〜</p>
+  <div class="lower">
+    <div class="box">
+      <div class="title-row"><h2>今週の人気ランキング</h2><a class="more">もっと見る 〉</a></div>
+      <div class="rank"><div class="num">1</div><div class="thumb"></div><div><h3>Club NOX</h3><p>新宿・歌舞伎町　時給8,000円〜</p></div></div>
+      <div class="rank"><div class="num">2</div><div class="thumb"></div><div><h3>Lounge Aurora</h3><p>六本木　時給7,000円〜</p></div></div>
+      <div class="rank"><div class="num">3</div><div class="thumb"></div><div><h3>美人茶屋 新橋店</h3><p>新橋　時給6,500円〜</p></div></div>
     </div>
-    <div class="card">
-      <h3>AIおすすめ診断</h3>
-      <p>いくつかの質問に答えるだけで、あなたに合うお店を提案します。</p>
-      <br>
-      <a class="btn dark" onclick="alert('AI診断は近日公開予定です🔥')">診断をはじめる</a>
+    <div class="box">
+      <h2 style="color:var(--gold2)">安心・安全のサポート</h2><br>
+      <p>ノルマなし、即日応募OK。安心して働ける環境をサポートします。</p><br>
+      <a class="btn dark">詳しく見る</a>
     </div>
-    <div class="card">
-      <h3>スカウトを受ける</h3>
-      <p>あなたに興味を持った店舗から、スカウトやオファーを受け取れます。</p>
-      <br>
-      <a class="btn dark" onclick="alert('スカウト機能は準備中です')">詳細設定する</a>
-    </div>
+  </div>
+
+  <div class="features">
+    <div class="feature"><h3>AIおすすめ診断</h3><p>質問に答えるだけで、あなたに合うお店を提案。</p><br><a class="btn dark">診断をはじめる</a></div>
+    <div class="feature" id="scout"><h3>スカウトを受ける</h3><p>あなたに興味を持った店舗からオファーを受け取れます。</p><br><a class="btn dark">詳細設定をする</a></div>
+    <div class="feature"><h3>全国対応</h3><p>エリア・条件・働き方に合わせて検索できます。</p><br><a class="btn dark" href="#jobs">求人を見る</a></div>
   </div>
 </section>
 
+<div class="icons">
+  <span>全国対応</span><span>体入・日払いOK</span><span>寮・送りあり</span><span>未経験歓迎</span><span>即日応募OK</span><span>安心サポート</span>
+</div>
+
 <footer>
-  <div class="footer-logo">NOX</div>
-  <p>Night Opens X</p>
-  <p>夜が、新しい可能性を開く。</p>
-  <br>
-  <p>© 2026 NOX All Rights Reserved.</p>
+  <div><div class="footer-logo">NOX</div><p>Night Opens X</p><p>夜が、新しい可能性を開く。</p><p>© 2026 NOX All Rights Reserved.</p></div>
+  <div><h4>サービス</h4><ul><li>求人を探す</li><li>体験入店を探す</li><li>スカウトを受ける</li></ul></div>
+  <div><h4>サポート</h4><ul><li>よくある質問</li><li>お問い合わせ</li><li>ご利用ガイド</li></ul></div>
+  <div><h4>運営情報</h4><ul><li>運営会社</li><li>利用規約</li><li>プライバシーポリシー</li></ul></div>
+  <div><h4>公式SNS</h4><p>X / Instagram / TikTok / LINE</p><br><a class="btn dark">公式LINEはこちら</a></div>
 </footer>
 
 </body>
