@@ -66,7 +66,7 @@ font-weight:bold;
 <p>メールアドレス</p>
 </div>
 
-<button id="logoutBtn" type="button" onclick="logout()">ログアウト</button>
+<button id="logoutBtn" type="button">ログアウト</button>
 
 </div>
 <script type="module">
@@ -87,12 +87,12 @@ const auth = getAuth(app);
 
 const logoutBtn = document.getElementById("logoutBtn");
 
-window.logout = async function () {
+logoutBtn.addEventListener("click", async () => {
   alert("ログアウト処理開始");
   await signOut(auth);
   alert("ログアウトしました");
   window.location.href = "./login.html";
-};
+});
 </script>
 </body>
 </html>
