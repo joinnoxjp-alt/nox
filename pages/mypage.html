@@ -85,15 +85,12 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-document.getElementById("logoutBtn").addEventListener("click", async () => {
-  try {
-    await signOut(auth);
-    alert("ログアウトしました");
-    window.location.href = "login.html";
-  } catch (e) {
-    console.error(e);
-    alert("ログアウトに失敗しました");
-  }
+const logoutBtn = document.getElementById("logoutBtn");
+
+logoutBtn.addEventListener("click", async function () {
+  await signOut(auth);
+  alert("ログアウトしました");
+  location.href = "./login.html";
 });
 </script>
 </body>
