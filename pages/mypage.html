@@ -1,98 +1,36 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NOX マイページ</title>
-
-<style>
-body{
-margin:0;
-background:#0b0b0b;
-color:white;
-font-family:Arial,sans-serif;
-}
-
-header{
-background:black;
-padding:20px;
-text-align:center;
-border-bottom:1px solid gold;
-}
-
-h1{
-color:gold;
-}
-
-.container{
-padding:20px;
-}
-
-.card{
-background:#181818;
-padding:20px;
-border-radius:15px;
-margin-bottom:20px;
-}
-
-button{
-width:100%;
-padding:15px;
-background:gold;
-border:none;
-border-radius:10px;
-font-size:18px;
-font-weight:bold;
-}
-</style>
+  <meta charset="UTF-8">
+  <title>マイページ</title>
 </head>
-
 <body>
+  <h1>マイページ</h1>
+  <p>ログイン中です</p>
 
-<header>
-<h1>NOX</h1>
-<p>マイページ</p>
-</header>
+  <button id="logoutBtn" type="button">ログアウト</button>
 
-<div class="container">
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-<div class="card">
-<h2>ようこそ！</h2>
-<p>ログインに成功しました。</p>
-</div>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBA8__C8pboCIjcPEwLWQL71juZeMMBti14",
+      authDomain: "noxa-b8f1a.firebaseapp.com",
+      projectId: "noxa-b8f1a",
+      storageBucket: "noxa-b8f1a.firebasestorage.app",
+      messagingSenderId: "679949162566",
+      appId: "1:679949162566:web:94a613ef0392798c57d247"
+    };
 
-<div class="card">
-<h3>プロフィール</h3>
-<p>メールアドレス</p>
-</div>
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
 
-<button id="logoutBtn" type="button" onclick="alert('押せた')">ログアウト</button>
-
-</div>
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyBA8__C8pboCIjcPEwLWQL71juZeMMBti14",
-  authDomain: "noxa-b8f1a.firebaseapp.com",
-  projectId: "noxa-b8f1a",
-  storageBucket: "noxa-b8f1a.firebasestorage.app",
-  messagingSenderId: "679949162566",
-  appId: "1:679949162566:web:94a613ef0392798c57d247"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-
-const logoutBtn = document.getElementById("logoutBtn");
-
-logoutBtn.addEventListener("click", async () => {
-  alert("ログアウト処理開始");
-  await signOut(auth);
-  alert("ログアウトしました");
-  window.location.href = "./login.html";
-});
-</script>
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      alert("押せた");
+      await signOut(auth);
+      window.location.href = "./login.html";
+    });
+  </script>
 </body>
 </html>
