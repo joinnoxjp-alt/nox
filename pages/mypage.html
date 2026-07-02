@@ -2,20 +2,35 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>マイページ</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>マイページ | NOX</title>
   <link rel="stylesheet" href="../style.css">
 </head>
-<body>
-  <div class="container">
-    <h1>NOX</h1>
-    <h2>マイページ</h2>
+<body class="register-body">
 
-    <div class="card">
-      <h2>ようこそ！</h2>
-      <p>ログイン中です</p>
-      <button id="logoutBtn" type="button">ログアウト</button>
+  <header class="site-header">
+    <a href="../index.html" class="header-logo">
+      <span>NOX</span>
+      <small>Night Opens X</small>
+    </a>
+    <div class="header-actions">
+      <a href="../index.html" class="btn ghost">トップへ戻る</a>
     </div>
-  </div>
+  </header>
+
+  <main class="register-page">
+    <section class="register-section">
+      <div class="register-card">
+        <div class="register-step">
+          <span>NOX MY PAGE</span>
+          <h2>マイページ</h2>
+          <p>ログイン中です。</p>
+        </div>
+
+        <button id="logoutBtn" type="button" class="gold-btn">ログアウト</button>
+      </div>
+    </section>
+  </main>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
