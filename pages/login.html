@@ -85,7 +85,9 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-document.getElementById("loginForm").addEventListener("submit", async (e) => {
+const form = document.getElementById("loginForm");
+
+form.addEventListener("submit", async function(e) {
   e.preventDefault();
 
   const email = document.getElementById("email").value;
@@ -93,10 +95,8 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
 
   try {
     await signInWithEmailAndPassword(auth, email, password);
-
     alert("ログイン成功！");
     window.location.href = "../index.html";
-
   } catch (error) {
     alert("ログイン失敗：" + error.message);
   }
