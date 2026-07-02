@@ -3,14 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <title>無料会員登録 | NOX</title>
-
   <link rel="stylesheet" href="../style.css" />
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;700&family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet">
 </head>
 
 <body class="register-body">
@@ -20,88 +14,65 @@
     <span>NOX</span>
     <small>Night Opens X</small>
   </a>
-
   <div class="header-actions">
     <a href="../index.html" class="btn ghost">トップへ戻る</a>
   </div>
 </header>
 
 <main class="register-page">
-
-  <section class="register-hero">
-    <div class="register-hero-bg"></div>
-
-    <div class="register-hero-content">
-      <p class="eyebrow">NOX MEMBER</p>
-      <h1>無料会員登録</h1>
-      <p>
-        まずは30秒で登録。<br>
-        あなたに合う夜職を、NOXがスマートに提案します。
-      </p>
-    </div>
-  </section>
-
   <section class="register-section">
-
     <div class="register-card">
 
       <div class="register-step">
         <span>STEP 01</span>
-        <h2>基本情報</h2>
-        <p>最低限の情報だけで登録できます。</p>
+        <h2>無料会員登録</h2>
+        <p>必要情報を入力してください。</p>
       </div>
 
       <form id="registerForm" class="nox-form">
 
-        <label>
-          ニックネーム
-          <input type="text" placeholder="例：あい" />
+        <label>ニックネーム
+          <input id="nickname" type="text" placeholder="例：あい" required>
         </label>
 
-        <label>
-          生年月日
-          <input type="date" />
+        <label>生年月日
+          <input id="birthDate" type="date" required>
         </label>
 
-        <label>
-          メールアドレス
-          <input type="email" placeholder="example@nox.jp" />
+        <label>メールアドレス
+          <input id="email" type="email" placeholder="example@nox.jp" required>
         </label>
 
-        <label>
-          電話番号
-          <input type="tel" placeholder="09012345678" />
+        <label>電話番号
+          <input id="phone" type="tel" placeholder="09012345678" required>
         </label>
 
-        <label>
-          パスワード
-          <input type="password" placeholder="8文字以上" />
+        <label>パスワード
+          <input id="password" type="password" placeholder="6文字以上" required>
         </label>
-                <div class="register-step profile-step">
+
+        <div class="register-step profile-step">
           <span>STEP 02</span>
           <h2>プロフィール</h2>
-          <p>あとから変更できます。店舗に見せる情報です。</p>
+          <p>店舗側が参考にできる情報です。</p>
         </div>
 
         <div class="form-grid">
 
-          <label>
-            希望エリア
-            <select>
+          <label>希望エリア
+            <select id="area">
               <option>選択してください</option>
               <option>新宿・歌舞伎町</option>
               <option>六本木</option>
               <option>銀座</option>
               <option>池袋</option>
-              <option>上野</option>
               <option>渋谷</option>
               <option>全国対応</option>
             </select>
           </label>
 
-          <label>
-            希望業種
-            <select>
+          <label>希望業種
+            <select id="jobType">
               <option>選択してください</option>
               <option>キャバクラ</option>
               <option>ラウンジ</option>
@@ -111,9 +82,8 @@
             </select>
           </label>
 
-          <label>
-            希望時給
-            <select>
+          <label>希望時給
+            <select id="salary">
               <option>選択してください</option>
               <option>3,000円〜</option>
               <option>5,000円〜</option>
@@ -123,9 +93,8 @@
             </select>
           </label>
 
-          <label>
-            経験
-            <select>
+          <label>経験
+            <select id="experience">
               <option>選択してください</option>
               <option>未経験</option>
               <option>経験者</option>
@@ -133,14 +102,12 @@
             </select>
           </label>
 
-          <label>
-            身長
-            <input type="number" placeholder="例：160" />
+          <label>身長
+            <input id="height" type="number" placeholder="例：160">
           </label>
 
-          <label>
-            体型
-            <select>
+          <label>体型
+            <select id="bodyType">
               <option>選択してください</option>
               <option>スリム</option>
               <option>普通</option>
@@ -150,9 +117,8 @@
             </select>
           </label>
 
-          <label>
-            お酒
-            <select>
+          <label>お酒
+            <select id="alcohol">
               <option>選択してください</option>
               <option>飲める</option>
               <option>少しなら飲める</option>
@@ -160,9 +126,8 @@
             </select>
           </label>
 
-          <label>
-            出勤希望
-            <select>
+          <label>出勤希望
+            <select id="workDays">
               <option>選択してください</option>
               <option>週1〜2日</option>
               <option>週3〜4日</option>
@@ -172,37 +137,87 @@
             </select>
           </label>
 
+          <label class="full">顔写真（任意）
+            <input id="facePhoto" type="file" accept="image/*">
+          </label>
+
+          <label class="full">自己紹介
+            <textarea id="selfPr" rows="5" placeholder="自己PR・接客経験・希望条件など"></textarea>
+          </label>
+
+          <label class="full">SNS（任意）
+            <input id="sns" type="text" placeholder="@username または URL">
+          </label>
+
+          <div class="full">
+            <button type="submit" class="gold-btn">無料で登録する</button>
+          </div>
+
         </div>
-        </label>
-
-<label class="full">
-    顔写真（任意）
-    <input type="file" accept="image/*">
-</label>
-
-<label class="full">
-    自己紹介
-    <textarea rows="5" placeholder="自己PR・接客経験・希望条件などを入力してください"></textarea>
-</label>
-
-<label class="full">
-    SNS（Instagram・Xなど）
-    <input type="text" placeholder="@username または URL">
-</label>
-
-<div class="full">
-    <button type="submit" class="gold-btn">
-        無料で登録する
-    </button>
-</div>
-
-</div>
-</form>
-</div>
-</section>
+      </form>
+    </div>
+  </section>
 </main>
 
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 
+const firebaseConfig = {
+  apiKey: "AIzaSyBA8__C8pboCIjcPEwLWQL71juZeMMBti4",
+  authDomain: "noxa-b8f1a.firebaseapp.com",
+  projectId: "noxa-b8f1a",
+  storageBucket: "noxa-b8f1a.firebasestorage.app",
+  messagingSenderId: "679949162566",
+  appId: "1:679949162566:web:94a613ef0392798c57d247"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const form = document.getElementById("registerForm");
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const uid = userCredential.user.uid;
+
+    await setDoc(doc(db, "users", uid), {
+      uid: uid,
+      nickname: document.getElementById("nickname").value,
+      birthDate: document.getElementById("birthDate").value,
+      email: email,
+      phone: document.getElementById("phone").value,
+      area: document.getElementById("area").value,
+      jobType: document.getElementById("jobType").value,
+      salary: document.getElementById("salary").value,
+      experience: document.getElementById("experience").value,
+      height: document.getElementById("height").value,
+      bodyType: document.getElementById("bodyType").value,
+      alcohol: document.getElementById("alcohol").value,
+      workDays: document.getElementById("workDays").value,
+      selfPr: document.getElementById("selfPr").value,
+      sns: document.getElementById("sns").value,
+      status: "pending",
+      role: "user",
+      createdAt: new Date().toISOString()
+    });
+
+    alert("登録完了！NOXへようこそ。");
+    window.location.href = "../index.html";
+
+  } catch (error) {
+    alert("エラー：" + error.message);
+  }
+});
+</script>
 
 </body>
 </html>
