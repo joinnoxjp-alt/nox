@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>マイページ | NOX</title>
+  <title>ログイン | NOX</title>
   <link rel="stylesheet" href="../style.css">
 </head>
 <body class="register-body">
@@ -12,19 +12,31 @@
     <section class="register-section">
       <div class="register-card">
         <div class="register-step">
-          <span>NOX MY PAGE</span>
-          <h2>マイページ</h2>
-          <p>ログイン中です。</p>
+          <span>NOX LOGIN</span>
+          <h2>ログイン</h2>
+          <p>登録済みのメールアドレスでログインしてください。</p>
         </div>
 
-        <button id="logoutBtn" type="button" class="gold-btn">ログアウト</button>
+        <form id="loginForm" class="nox-form">
+          <label>
+            メールアドレス
+            <input type="email" id="email" placeholder="example@nox.jp" required>
+          </label>
+
+          <label>
+            パスワード
+            <input type="password" id="password" placeholder="********" required>
+          </label>
+
+          <button type="submit" class="gold-btn">ログイン</button>
+        </form>
       </div>
     </section>
   </main>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBA8__C8pboCIjcPEwLWQL71juZeMMBti14",
@@ -38,9 +50,18 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    document.getElementById("logoutBtn").addEventListener("click", async () => {
-      await signOut(auth);
-      window.location.href = "./login.html";
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        window.location.href = "./mypage.html";
+      } catch (error) {
+        alert("ログイン失敗：" + error.message);
+      }
     });
   </script>
 </body>
