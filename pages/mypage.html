@@ -26,14 +26,10 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    document.getElementById("logoutBtn").addEventListener("click", async () => {
-      document.getElementById("logoutBtn").addEventListener("click", async () => {
+  document.getElementById("logoutBtn").addEventListener("click", async () => {
   await signOut(auth);
   window.location.href = "./login.html";
 });
-      await signOut(auth);
-      window.location.href = "./login.html";
-    });
   </script>
 </body>
 </html>
