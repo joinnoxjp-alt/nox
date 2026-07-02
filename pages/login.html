@@ -96,7 +96,7 @@ form.addEventListener("submit", async function(e) {
   try {
     await signInWithEmailAndPassword(auth, email, password);
     alert("ログイン成功！");
-    window.location.href = "../index.html";
+    window.location.href = "mypage.html";
   } catch (error) {
     alert("ログイン失敗：" + error.message);
   }
