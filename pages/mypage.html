@@ -74,7 +74,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBA8__C8pboCIjcPEwLWQL71juZeMMBti4",
+  apiKey: "AIzaSyBA8__C8pboCIjcPEwLWQL71juZeMMBti14",
   authDomain: "noxa-b8f1a.firebaseapp.com",
   projectId: "noxa-b8f1a",
   storageBucket: "noxa-b8f1a.firebasestorage.app",
@@ -87,11 +87,16 @@ const auth = getAuth(app);
 
 const logoutBtn = document.getElementById("logoutBtn");
 
-logoutBtn.addEventListener("click", async function () {
-  await signOut(auth);
-  alert("ログアウトしました");
-  location.href = "./login.html";
-});
+if (logoutBtn) {
+  logoutBtn.onclick = async () => {
+    alert("ログアウト処理開始");
+    await signOut(auth);
+    alert("ログアウトしました");
+    window.location.href = "./login.html";
+  };
+} else {
+  alert("ログアウトボタンが見つかりません");
+}
 </script>
 </body>
 </html>
