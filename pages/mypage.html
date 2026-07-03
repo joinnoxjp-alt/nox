@@ -108,18 +108,31 @@
       reader.readAsDataURL(file);
     });
 
-    document.getElementById("profileForm").addEventListener("submit", (e) => {
-      e.preventDefault();
-      localStorage.setItem("noxName", nameInput.value);
-      localStorage.setItem("noxEmail", emailInput.value);
-      localStorage.setItem("noxBio", bioInput.value);
-      alert("プロフィールを保存しました。");
-    });
+    document.getElementById("profileForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-    document.getElementById("logoutBtn").addEventListener("click", () => {
-      localStorage.removeItem("noxLogin");
-      location.href = "../index.html";
-    });
+  const user = auth.currentUser;
+  if (!user) {
+    alert("ログインしてください");
+    return;
+  }
+
+  await setDoc(doc(db, "users", user.uid), {
+    name: nameInput.value,
+    email: emailInput.value,
+    bio: bioInput.value,
+    profileImage: preview.src || "",
+    updatedAt: serverTimestamp()
+  }, { merge: true });
+
+  alert("プロフィールを保存しました。");
+});
+
+document.getElementById("logoutBtn").addEventListener("click", async () => {
+  await signOut(auth);
+  location.href = "../index.html";
+});
+
   </script>
 </body>
 </html>
