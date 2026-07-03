@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ログイン | NOX</title>
+  <title>ログイン｜NOX</title>
   <link rel="stylesheet" href="../style.css">
 </head>
 
@@ -38,11 +38,22 @@
     </section>
   </main>
 
-  <script>
-    document.getElementById("loginForm").addEventListener("submit", (e) => {
+  <script type="module">
+    import { auth } from "../firebase.js";
+    import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
       e.preventDefault();
-      localStorage.setItem("noxLogin", "true");
-      location.href = "./mypage.html";
+
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        location.href = "./mypage.html";
+      } catch (err) {
+        alert("ログインに失敗しました: " + err.message);
+      }
     });
   </script>
 </body>
