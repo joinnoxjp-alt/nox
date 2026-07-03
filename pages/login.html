@@ -4,109 +4,46 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ログイン | NOX</title>
-<link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="../style.css">
 </head>
+
 <body class="register-body">
   <main class="register-page">
     <section class="register-section">
       <div class="register-card">
         <div class="register-step">
-          <span>NOX</span>
-          <h2>マイページ</h2>
-          <p>ログイン中です</p>
+          <span>NOX LOGIN</span>
+          <h2>ログイン</h2>
+          <p>登録済みのメールアドレスでログインしてください。</p>
         </div>
 
-        <button id="logoutBtn" type="button" class="gold-btn">ログアウト</button>
+        <form id="loginForm" class="nox-form">
+          <label>
+            メールアドレス
+            <input type="email" id="email" placeholder="example@nox.jp" required>
+          </label>
+
+          <label>
+            パスワード
+            <input type="password" id="password" placeholder="********" required>
+          </label>
+
+          <button type="submit" class="gold-btn">ログイン</button>
+        </form>
+
+        <div class="header-actions">
+          <a href="../index.html" class="btn ghost">トップへ戻る</a>
+        </div>
       </div>
     </section>
   </main>
 
-  <div class="header-actions">
-    <a href="../index.html" class="btn ghost">トップへ戻る</a>
-  </div>
-</header>
-
-<main class="register-page">
-
-<section class="register-section">
-
-<div class="register-card">
-
-<div class="register-step">
-<span>NOX LOGIN</span>
-<h2>ログイン</h2>
-<p>登録済みのメールアドレスでログインしてください。</p>
-</div>
-
-<form id="loginForm" class="nox-form">
-
-<label>
-メールアドレス
-<input
-type="email"
-id="email"
-placeholder="example@nox.jp"
-required
->
-</label>
-
-<label>
-パスワード
-<input
-type="password"
-id="password"
-placeholder="********"
-required
->
-</label>
-
-<div class="full">
-<button type="submit" class="gold-btn">
-ログイン
-</button>
-</div>
-
-</form>
-
-</div>
-
-</section>
-
-</main>
-
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyBA8__C8pboCIjcPEwLWQL71juZeMMBti4",
-  authDomain: "noxa-b8f1a.firebaseapp.com",
-  projectId: "noxa-b8f1a",
-  storageBucket: "noxa-b8f1a.firebasestorage.app",
-  messagingSenderId: "679949162566",
-  appId: "1:679949162566:web:94a613ef0392798c57d247"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-
-const form = document.getElementById("loginForm");
-
-form.addEventListener("submit", async function(e) {
-  e.preventDefault();
-
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-
-  try {
-    await signInWithEmailAndPassword(auth, email, password);
-    alert("ログイン成功！");
-    window.location.href = "mypage.html";
-  } catch (error) {
-    alert("ログイン失敗：" + error.message);
-  }
-});
-</script>
-
+  <script>
+    document.getElementById("loginForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      localStorage.setItem("noxLogin", "true");
+      location.href = "./mypage.html";
+    });
+  </script>
 </body>
 </html>

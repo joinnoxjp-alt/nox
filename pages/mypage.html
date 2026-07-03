@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<<!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
@@ -26,12 +26,11 @@
     </section>
   </main>
 
-<script>
-document.getElementById("logoutBtn").addEventListener("click", () => {
-  localStorage.clear();
-  sessionStorage.clear();
-  location.href = "../index.html";
-});
-</script>
+  <script>
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      localStorage.removeItem("noxLogin");
+      location.href = "../index.html";
+    });
+  </script>
 </body>
 </html>
