@@ -26,26 +26,12 @@
     </section>
   </main>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyBA8__C8pboCIjcPEwLWQL71juZeMMBti14",
-      authDomain: "noxa-b8f1a.firebaseapp.com",
-      projectId: "noxa-b8f1a",
-      storageBucket: "noxa-b8f1a.firebasestorage.app",
-      messagingSenderId: "679949162566",
-      appId: "1:679949162566:web:94a613ef0392798c57d247"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-
-    document.getElementById("logoutBtn").addEventListener("click", async () => {
-      await signOut(auth);
-      location.href = "../index.html";
-    });
-  </script>
+<script>
+document.getElementById("logoutBtn").addEventListener("click", () => {
+  localStorage.clear();
+  sessionStorage.clear();
+  location.href = "../index.html";
+});
+</script>
 </body>
 </html>
