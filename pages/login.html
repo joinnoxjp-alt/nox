@@ -38,23 +38,35 @@
     </section>
   </main>
 
-  <script type="module">
-    import { auth } from "../firebase.js";
-    import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+<script type="module">
+  import { auth } from "../firebase.js";
+  import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    document.getElementById("loginForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
+  const db = getFirestore();
 
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
+  document.getElementById("loginForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-      try {
-        await signInWithEmailAndPassword(auth, email, password);
-        location.href = "./mypage.html";
-      } catch (err) {
-        alert("ログインに失敗しました: " + err.message);
-      }
-    });
-  </script>
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      await setDoc(doc(db, "users", user.uid), {
+        email: user.email,
+        role: user.email === "watabaseball00@gmail.com" ? "admin" : "user",
+        status: "active",
+        updatedAt: serverTimestamp()
+      }, { merge: true });
+
+      location.href = "./mypage.html";
+    } catch (err) {
+      alert("ログインに失敗しました：" + err.message);
+    }
+  });
+</script>
 </body>
 </html>
