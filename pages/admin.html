@@ -143,47 +143,45 @@
     const data = snap.data();
 
     alert(`
-名前：${data.name || data.nickname || "未設定"}
+名前: ${data.name || data.nickname || "未設定"}
 
-メール：
+メール:
 ${data.email || "-"}
 
-電話：
+電話:
 ${data.phone || "-"}
 
-エリア：
+エリア:
 ${data.area || "-"}
 
-職種：
+職種:
 ${data.jobType || "-"}
 
-希望給与：
+希望給与:
 ${data.salary || "-"}
 
-経験：
+経験:
 ${data.experience || "-"}
 
-身長：
+身長:
 ${data.height || "-"}
 
-体型：
+体型:
 ${data.bodyType || "-"}
 
-お酒：
+お酒:
 ${data.alcohol || "-"}
 
-勤務希望：
+勤務希望:
 ${data.workDays || "-"}
 
-自己紹介：
+自己紹介:
 ${data.selfPr || "-"}
 
-SNS：
+SNS:
 ${data.sns || "-"}
-    `);
-
+`);
   });
-});
   </script>
 </body>
 </html>
