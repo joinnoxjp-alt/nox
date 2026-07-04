@@ -17,29 +17,16 @@
           <p>ログイン中です。</p>
         </div>
 
-        <div style="text-align:center; margin:24px 0;">
-          <img id="profilePreview" src="" alt="プロフィール画像"
-            style="width:110px;height:110px;border-radius:50%;object-fit:cover;border:1px solid #c9a34a;background:#111;display:none;margin:0 auto 12px;">
-          
-          <input type="file" id="profileImage" accept="image/*" style="display:none;">
-          <button type="button" class="btn ghost" onclick="document.getElementById('profileImage').click()">
-            写真をアップロード
-          </button>
-        </div>
-
         <form id="profileForm" class="nox-form">
-          <label>
-            名前
+          <label>名前
             <input type="text" id="name" placeholder="名前を入力">
           </label>
 
-          <label>
-            メールアドレス
-            <input type="email" id="email" placeholder="example@nox.jp">
+          <label>メールアドレス
+            <input type="email" id="email" placeholder="example@nox.jp" readonly>
           </label>
 
-          <label>
-            自己紹介
+          <label>自己紹介
             <textarea id="bio" placeholder="自己紹介を入力" rows="4"
               style="width:100%;border-radius:14px;padding:14px;background:#111;color:white;border:1px solid #c9a34a;"></textarea>
           </label>
@@ -54,21 +41,6 @@
           <p>✅ ログイン済み</p>
         </div>
 
-        <div class="register-step">
-          <span>お気に入り</span>
-          <p>現在0件</p>
-        </div>
-
-        <div class="register-step">
-          <span>応募履歴</span>
-          <p>まだ応募はありません</p>
-        </div>
-
-        <div class="register-step">
-          <span>COMING SOON</span>
-          <p>店舗予約・チャット・ポイント機能を準備中</p>
-        </div>
-
         <button id="logoutBtn" type="button" class="gold-btn">ログアウト</button>
 
         <div class="header-actions">
@@ -78,61 +50,58 @@
     </section>
   </main>
 
-  <script>
+  <script type="module">
+    import { auth } from "./firebase.js";
+    import { signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const db = getFirestore();
+
     const nameInput = document.getElementById("name");
     const emailInput = document.getElementById("email");
     const bioInput = document.getElementById("bio");
-    const imageInput = document.getElementById("profileImage");
-    const preview = document.getElementById("profilePreview");
 
-    nameInput.value = localStorage.getItem("noxName") || "";
-    emailInput.value = localStorage.getItem("noxEmail") || "";
-    bioInput.value = localStorage.getItem("noxBio") || "";
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        location.href = "./login.html";
+        return;
+      }
 
-    const savedImage = localStorage.getItem("noxProfileImage");
-    if (savedImage) {
-      preview.src = savedImage;
-      preview.style.display = "block";
-    }
+      emailInput.value = user.email || "";
 
-    imageInput.addEventListener("change", () => {
-      const file = imageInput.files[0];
-      if (!file) return;
+      const ref = doc(db, "users", user.uid);
+      const snap = await getDoc(ref);
 
-      const reader = new FileReader();
-      reader.onload = () => {
-        localStorage.setItem("noxProfileImage", reader.result);
-        preview.src = reader.result;
-        preview.style.display = "block";
-      };
-      reader.readAsDataURL(file);
+      if (snap.exists()) {
+        const data = snap.data();
+        nameInput.value = data.name || data.nickname || "";
+        bioInput.value = data.bio || data.selfPr || "";
+      }
     });
 
     document.getElementById("profileForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
+      e.preventDefault();
 
-  const user = auth.currentUser;
-  if (!user) {
-    alert("ログインしてください");
-    return;
-  }
+      const user = auth.currentUser;
+      if (!user) {
+        alert("ログインしてください");
+        return;
+      }
 
-  await setDoc(doc(db, "users", user.uid), {
-    name: nameInput.value,
-    email: emailInput.value,
-    bio: bioInput.value,
-    profileImage: preview.src || "",
-    updatedAt: serverTimestamp()
-  }, { merge: true });
+      await setDoc(doc(db, "users", user.uid), {
+        name: nameInput.value,
+        email: emailInput.value,
+        bio: bioInput.value,
+        updatedAt: serverTimestamp()
+      }, { merge: true });
 
-  alert("プロフィールを保存しました。");
-});
+      alert("プロフィールを保存しました。");
+    });
 
-document.getElementById("logoutBtn").addEventListener("click", async () => {
-  await signOut(auth);
-  location.href = "../index.html";
-});
-
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      await signOut(auth);
+      location.href = "../index.html";
+    });
   </script>
 </body>
 </html>
