@@ -93,15 +93,24 @@
         `;
 
         card.innerHTML = `
-          <h3 style="color:#f5d36b;margin:0 0 8px;">${name}</h3>
-          <p style="margin:4px 0;">📧 ${email}</p>
-          <p style="margin:4px 0;">権限：${role}</p>
-          <p style="margin:4px 0;">状態：${status === "blocked" ? "🚫 ブロック中" : "✅ 利用中"}</p>
+<h3 style="color:#f5d36b;margin:0 0 8px;">${name}</h3>
 
-          <button class="gold-btn blockBtn" data-id="${uid}" data-status="${status}">
-            ${status === "blocked" ? "ブロック解除" : "ブロックする"}
-          </button>
-        `;
+<p>📧 ${email}</p>
+<p>🔑 権限：${role}</p>
+<p>📍 状態：${status === "blocked" ? "🚫 ブロック中" : "✅ 利用中"}</p>
+
+<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;">
+  <button class="gold-btn detailBtn" data-id="${uid}">
+    詳細を見る
+  </button>
+
+  <button class="gold-btn blockBtn"
+          data-id="${uid}"
+          data-status="${status}">
+    ${status === "blocked" ? "ブロック解除" : "ブロックする"}
+  </button>
+</div>
+`;
 
         userList.appendChild(card);
       });
@@ -119,8 +128,62 @@
           alert(newStatus === "blocked" ? "ブロックしました" : "ブロック解除しました");
           loadUsers();
         });
-      });
+        document.querySelectorAll(".detailBtn").forEach((btn) => {
+  btn.addEventListener("click", async () => {
+
+    const uid = btn.dataset.id;
+
+    const snap = await getDoc(doc(db, "users", uid));
+
+    if (!snap.exists()) {
+      alert("ユーザーが見つかりません");
+      return;
     }
+
+    const data = snap.data();
+
+    alert(`
+名前：${data.name || data.nickname || "未設定"}
+
+メール：
+${data.email || "-"}
+
+電話：
+${data.phone || "-"}
+
+エリア：
+${data.area || "-"}
+
+職種：
+${data.jobType || "-"}
+
+希望給与：
+${data.salary || "-"}
+
+経験：
+${data.experience || "-"}
+
+身長：
+${data.height || "-"}
+
+体型：
+${data.bodyType || "-"}
+
+お酒：
+${data.alcohol || "-"}
+
+勤務希望：
+${data.workDays || "-"}
+
+自己紹介：
+${data.selfPr || "-"}
+
+SNS：
+${data.sns || "-"}
+    `);
+
+  });
+});
   </script>
 </body>
 </html>
