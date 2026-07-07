@@ -2,6 +2,7 @@ const TYPES = [
 {
 id:"LUNA",
 emoji:"🌙",
+image:"images/types/luna.webp",
 name:"LUNA",
 title:"ルナタイプ",
 desc:"癒し系で常連を作る才能。聞き上手で自然と指名が増える。",
@@ -11,6 +12,7 @@ stats:{魅力:95,会話:90,SNS:65}
 {
 id:"DIAMOND",
 emoji:"💎",
+image:"images/types/diamond.webp",
 name:"DIAMOND",
 title:"ダイヤタイプ",
 desc:"信頼を積み重ねて長く愛される実力派。",
@@ -20,6 +22,7 @@ stats:{魅力:88,会話:86,SNS:70}
 {
 id:"PHOENIX",
 emoji:"🔥",
+image:"images/types/phoenix.webp",
 name:"PHOENIX",
 title:"フェニックスタイプ",
 desc:"圧倒的な存在感で売上を伸ばすカリスマ。",
@@ -29,6 +32,7 @@ stats:{魅力:98,会話:80,SNS:92}
 {
 id:"QUEEN",
 emoji:"👑",
+image:"images/types/queen.webp",
 name:"QUEEN",
 title:"クイーンタイプ",
 desc:"高級店との相性が高いリーダータイプ。",
@@ -38,6 +42,7 @@ stats:{魅力:94,会話:88,SNS:84}
 {
 id:"MIRAGE",
 emoji:"🍸",
+image:"images/types/mirage.webp",
 name:"MIRAGE",
 title:"ミラージュタイプ",
 desc:"追われる魅力を持つミステリアスな存在。",
@@ -47,6 +52,7 @@ stats:{魅力:96,会話:74,SNS:89}
 {
 id:"CHAMELEON",
 emoji:"🎭",
+image:"images/types/chameleon.webp",
 name:"CHAMELEON",
 title:"カメレオンタイプ",
 desc:"どんな相手にも合わせられる万能型。",
@@ -56,6 +62,7 @@ stats:{魅力:86,会話:97,SNS:76}
 {
 id:"STAR",
 emoji:"💫",
+image:"images/types/star.webp",
 name:"STAR",
 title:"スタータイプ",
 desc:"SNSでもリアルでも人気を集めやすい。",
@@ -65,13 +72,95 @@ stats:{魅力:92,会話:84,SNS:99}
 {
 id:"BLOSSOM",
 emoji:"🌸",
+image:"images/types/blossom.webp",
 name:"BLOSSOM",
 title:"ブロッサムタイプ",
 desc:"未経験から着実に成長できる努力家。",
 tags:["努力","成長","素直"],
 stats:{魅力:82,会話:83,SNS:72}
+},
+  {
+id:"WOLF",
+emoji:"🐺",
+image:"images/types/wolf.webp",
+name:"WOLF",
+title:"ウルフタイプ",
+desc:"自立心が強く、自分のスタイルを貫くタイプ。",
+tags:["独立","冷静","戦略"],
+stats:{魅力:90,会話:76,SNS:81}
+},
+{
+id:"ANGEL",
+emoji:"🪽",
+image:"images/types/angel.webp",
+name:"ANGEL",
+title:"エンジェルタイプ",
+desc:"優しさと安心感で自然と人が集まる。",
+tags:["優しさ","癒し","安心"],
+stats:{魅力:89,会話:94,SNS:74}
+},
+{
+id:"ROSE",
+emoji:"🌹",
+image:"images/types/rose.webp",
+name:"ROSE",
+title:"ローズタイプ",
+desc:"大人の色気で魅了するタイプ。",
+tags:["色気","上品","余裕"],
+stats:{魅力:97,会話:84,SNS:86}
+},
+{
+id:"THUNDER",
+emoji:"⚡",
+image:"images/types/thunder.webp",
+name:"THUNDER",
+title:"サンダータイプ",
+desc:"勢いで周囲を引っ張る行動派。",
+tags:["行動力","挑戦","突破力"],
+stats:{魅力:91,会話:78,SNS:88}
+},
+{
+id:"ORBIT",
+emoji:"🪐",
+image:"images/types/orbit.webp",
+name:"ORBIT",
+title:"オービットタイプ",
+desc:"落ち着いた雰囲気で人を惹きつける。",
+tags:["知性","安定","包容力"],
+stats:{魅力:87,会話:91,SNS:72}
+},
+{
+id:"MELODY",
+emoji:"🎵",
+image:"images/types/melody.webp",
+name:"MELODY",
+title:"メロディタイプ",
+desc:"会話で空気を変えるムードメーカー。",
+tags:["会話","笑顔","人気"],
+stats:{魅力:88,会話:98,SNS:83}
+},
+{
+id:"NOVA",
+emoji:"✨",
+image:"images/types/nova.webp",
+name:"NOVA",
+title:"ノヴァタイプ",
+desc:"一気に人気者になれるスター候補。",
+tags:["個性","人気","SNS"],
+stats:{魅力:95,会話:86,SNS:97}
+},
+{
+id:"FAIRY",
+emoji:"🦋",
+image:"images/types/fairy.webp",
+name:"FAIRY",
+title:"フェアリータイプ",
+desc:"可愛らしさと親しみやすさが武器。",
+tags:["可愛い","親近感","素直"],
+stats:{魅力:90,会話:89,SNS:85}
 }
 ];
+
 const SUB_TYPES = [
 "Royal",
 "Velvet",
@@ -81,31 +170,32 @@ const SUB_TYPES = [
 ];
 
 function getSubType(score){
-return SUB_TYPES[score % 5];
+  return SUB_TYPES[score % SUB_TYPES.length];
 }
+
 function buildResult(type, score){
+  const sub = getSubType(score);
 
-const sub = getSubType(score);
-
-return {
-emoji: type.emoji,
-name: `${type.name}・${sub}`,
-title: `${type.title} (${sub})`,
-desc: type.desc,
-stats: [
-"魅力 ★★★★★",
-"人気 ★★★★☆",
-"指名力 ★★★★★",
-"SNS ★★★★☆"
-],
-tags:[
-"#NOX診断",
-`#${type.name}`,
-`#${sub}`
-]
-};
-
+  return {
+    emoji:type.emoji,
+    image:type.image,
+    name:`${type.name}・${sub}`,
+    title:`${type.title} (${sub})`,
+    desc:type.desc,
+    stats:[
+      `魅力 ${type.stats.魅力}%`,
+      `会話 ${type.stats.会話}%`,
+      `SNS ${type.stats.SNS}%`,
+      `夜職適性 ${90 + (score % 10)}%`
+    ],
+    tags:[
+      "#NOX診断",
+      `#${type.name}`,
+      `#${sub}`
+    ]
+  };
 }
+
 const JOB_MATCH = {
   LUNA:["ガールズバー","ラウンジ","コンカフェ","メンズエステ","スナック"],
   DIAMOND:["ラウンジ","クラブ","キャバクラ","スナック","メンズエステ"],
@@ -114,5 +204,13 @@ const JOB_MATCH = {
   MIRAGE:["ラウンジ","クラブ","メンズエステ","キャバクラ","デリヘル"],
   CHAMELEON:["ガールズバー","キャバクラ","コンカフェ","ラウンジ","メンズエステ"],
   STAR:["コンカフェ","ガールズバー","キャバクラ","ライブチャット","ラウンジ"],
-  BLOSSOM:["コンカフェ","ガールズバー","スナック","ラウンジ","メンズエステ"]
+  BLOSSOM:["コンカフェ","ガールズバー","スナック","ラウンジ","メンズエステ"],
+  WOLF:["デリヘル","メンズエステ","ライブチャット","キャバクラ","ガールズバー"],
+  ANGEL:["スナック","ラウンジ","ガールズバー","コンカフェ","メンズエステ"],
+  ROSE:["クラブ","ラウンジ","ソープ","キャバクラ","メンズエステ"],
+  THUNDER:["キャバクラ","ガールズバー","デリヘル","コンカフェ","ライブチャット"],
+  ORBIT:["ラウンジ","スナック","クラブ","メンズエステ","ガールズバー"],
+  MELODY:["ガールズバー","コンカフェ","キャバクラ","スナック","ラウンジ"],
+  NOVA:["コンカフェ","キャバクラ","ライブチャット","ガールズバー","デリヘル"],
+  FAIRY:["コンカフェ","ガールズバー","メンズエステ","スナック","ラウンジ"]
 };
