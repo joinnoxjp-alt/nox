@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>NOX TYPE | 夜の性格診断</title>
+  <meta name="description" content="NOX TYPEは、あなたの夜の才能を診断するNOXオリジナル性格診断です。" />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <main class="app">
+
+    <section id="startScreen" class="screen active">
+      <div class="hero">
+        <p class="brand">NOX TYPE</p>
+        <h1>夜の性格診断</h1>
+        <p class="lead">
+          20問でわかる、あなたの<br>
+          <span>夜の才能タイプ。</span>
+        </p>
+
+        <div class="start-card">
+          <p>診断結果は</p>
+          <strong>16タイプ × 5サブタイプ</strong>
+          <small>全80通り</small>
+        </div>
+
+        <button class="main-btn" onclick="startQuiz()">
+          診断をはじめる
+        </button>
+      </div>
+    </section>
+
+    <section id="quizScreen" class="screen">
+      <div class="quiz-card">
+        <p id="questionCount" class="count"></p>
+        <h2 id="questionTitle"></h2>
+        <div id="optionsArea"></div>
+      </div>
+    </section>
+
+    <section id="resultScreen" class="screen">
+      <div class="result-card">
+        <p class="brand">NOX TYPE RESULT</p>
+
+        <div id="resultEmoji" class="emoji"></div>
+        <h2 id="resultName"></h2>
+        <h3 id="resultTitle"></h3>
+        <p id="resultDesc" class="desc"></p>
+
+        <div id="statsArea" class="stats"></div>
+        <div id="tagArea" class="tags"></div>
+
+        <button class="main-btn" onclick="shareResult()">Xでシェア</button>
+        <button class="sub-btn" onclick="copyResult()">結果をコピー</button>
+        <button class="sub-btn" onclick="restartQuiz()">もう一度診断</button>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="types.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
