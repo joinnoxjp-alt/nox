@@ -42,7 +42,6 @@
       <a href="#top">TOP</a>
       <a href="pages/girls.html" class="btn gold big">求人を探す</a>
       <a href="#ai">AI診断</a>
-      <a href="#ranking">ランキング</a>
       <a href="#price">料金</a>
       <a href="#shop">店舗掲載</a>
       <a href="#sns">SNS</a>
@@ -76,11 +75,11 @@
         </p>
 
         <div class="job-grid">
-  <div style="text-align:center;color:#ccc;padding:30px;">
-    <p>最新の求人情報はこちらからご確認ください。</p>
-    <a href="pages/girls.html" class="btn gold">求人一覧を見る</a>
-  </div>
-</div>
+          <div style="text-align:center;color:#ccc;padding:30px;">
+            <p>最新の求人情報はこちらからご確認ください。</p>
+            <a href="pages/girls.html" class="btn gold">求人一覧を見る</a>
+          </div>
+        </div>
 
         <div class="hero-stats">
           <div><strong>全国対応</strong><span>AREA</span></div>
@@ -122,8 +121,7 @@
         </article>
       </div>
     </section>
-
-    <section class="section select-section">
+        <section class="section select-section">
       <div class="select-grid">
         <article class="select-card woman reveal">
           <div class="select-text">
@@ -131,7 +129,7 @@
             <h2>求職者の方</h2>
             <span>自分に合う夜のお仕事が見つかる。</span>
             <p>体入・日払い・送りあり・寮ありなど、希望条件から探せます。</p>
-            <a href="#jobs" class="btn gold">求人を探す</a>
+            <a href="pages/girls.html" class="btn gold">求人を探す</a>
           </div>
         </article>
 
@@ -153,58 +151,16 @@
         <h2>新着求人</h2>
       </div>
 
-      <div class="job-grid">
-        <article class="job-card reveal">
-          <div class="job-image job1"></div>
-          <div class="job-body">
-            <h3>Club NOX</h3>
-            <p>新宿・歌舞伎町 / キャバクラ</p>
-            <strong>時給 8,000円〜</strong>
-            <div class="tags">
-              <span>寮あり</span><span>日払いOK</span><span>送りあり</span>
-            </div>
-            <button onclick="showNotice('求人詳細ページは準備中です')">詳細を見る</button>
-          </div>
-        </article>
+      <div class="job-grid" id="homeJobs">
+        <div style="text-align:center;padding:40px;color:#ccc;">
+          <p style="font-size:18px;margin-bottom:20px;">
+            最新の掲載求人は求人一覧ページからご覧いただけます。
+          </p>
 
-        <article class="job-card reveal">
-          <div class="job-image job2"></div>
-          <div class="job-body">
-            <h3>Lounge Aurora</h3>
-            <p>六本木 / ラウンジ</p>
-            <strong>時給 7,000円〜</strong>
-            <div class="tags">
-              <span>体入OK</span><span>ノルマなし</span><span>経験者優遇</span>
-            </div>
-            <button onclick="showNotice('求人詳細ページは準備中です')">詳細を見る</button>
-          </div>
-        </article>
-
-        <article class="job-card reveal">
-          <div class="job-image job3"></div>
-          <div class="job-body">
-            <h3>Men's Esthe Luxe</h3>
-            <p>新宿 / メンズエステ</p>
-            <strong>日給 35,000円〜</strong>
-            <div class="tags">
-              <span>未経験歓迎</span><span>日払いOK</span><span>自由出勤</span>
-            </div>
-            <button onclick="showNotice('求人詳細ページは準備中です')">詳細を見る</button>
-          </div>
-        </article>
-
-        <article class="job-card reveal">
-          <div class="job-image job4"></div>
-          <div class="job-body">
-            <h3>Night Work Select</h3>
-            <p>全国 / デリヘル・ソープ</p>
-            <strong>日給 50,000円〜</strong>
-            <div class="tags">
-              <span>高収入</span><span>寮相談</span><span>送迎あり</span>
-            </div>
-            <button onclick="showNotice('求人詳細ページは準備中です')">詳細を見る</button>
-          </div>
-        </article>
+          <a href="pages/girls.html" class="btn gold">
+            求人一覧を見る
+          </a>
+        </div>
       </div>
     </section>
 
@@ -226,50 +182,14 @@
           </p>
 
           <a href="ai-diagnosis.html" class="btn gold">
-  AI診断をはじめる
-</a>
+            AI診断をはじめる
+          </a>
         </div>
       </div>
     </section>
-
-    <section class="section ranking-section" id="ranking">
-      <div class="section-head reveal">
-        <p>RANKING</p>
-        <h2>今週の人気ランキング</h2>
-      </div>
-
-      <div class="ranking-list reveal">
-        <div class="rank-item">
-          <span>1</span>
-          <div class="rank-thumb r1"></div>
-          <div>
-            <h3>Club NOX</h3>
-            <p>新宿・歌舞伎町 / キャバクラ / 時給8,000円〜</p>
-          </div>
-        </div>
-
-        <div class="rank-item">
-          <span>2</span>
-          <div class="rank-thumb r2"></div>
-          <div>
-            <h3>Men's Esthe Luxe</h3>
-            <p>新宿 / メンズエステ / 日給35,000円〜</p>
-          </div>
-        </div>
-
-        <div class="rank-item">
-          <span>3</span>
-          <div class="rank-thumb r3"></div>
-          <div>
-            <h3>Lounge Aurora</h3>
-            <p>六本木 / ラウンジ / 時給7,000円〜</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section support-section">
+        <section class="section support-section">
       <div class="support-grid">
+
         <div class="support-card reveal">
           <strong>全国対応</strong>
           <p>東京・大阪・名古屋・福岡など全国対応予定。</p>
@@ -289,6 +209,7 @@
           <strong>送りあり</strong>
           <p>終電後も安心。</p>
         </div>
+
       </div>
     </section>
 
@@ -342,77 +263,67 @@
     <a href="https://gamma.app/docs/NOX-hx45zfeyqk121f4"
        target="_blank"
        style="text-decoration:none;background:#111;border:1px solid rgba(255,215,0,.3);border-radius:16px;padding:24px;display:block;">
-      <h3 style="color:#FFD700;margin-bottom:10px;">📄 事業資料</h3>
+
+      <h3 style="color:#FFD700;margin-bottom:10px;">
+        📄 NOX事業資料
+      </h3>
+
       <p style="color:#ccc;">
-        NOXのビジョン・サービス内容・今後の展望をご覧いただけます。
+        NOXのビジョン・事業内容・今後の展望をご覧いただけます。
       </p>
+
     </a>
 
     <a href="https://nox-investor-fundrai-19nu.bolt.host"
        target="_blank"
        style="text-decoration:none;background:#111;border:1px solid rgba(255,215,0,.3);border-radius:16px;padding:24px;display:block;">
-      <h3 style="color:#FFD700;margin-bottom:10px;">🚀 NOXを応援する</h3>
+
+      <h3 style="color:#FFD700;margin-bottom:10px;">
+        🚀 スポンサー・協業・投資
+      </h3>
+
       <p style="color:#ccc;">
-        スポンサー・サポーター・資金調達ページはこちら。
+        NOXと共に成長していただけるスポンサー・協業企業・創業パートナーを募集しております。
       </p>
+
     </a>
 
   </div>
 </section>
-  <footer>
-    <div class="footer-brand">
-      <h2>NOX</h2>
-      <p>Night Opens X</p>
-      <p>夜が、新しい可能性を開く。</p>
-    </div>
 
-    <div>
-      <h4>Service</h4>
-      <a href="#jobs">求人を探す</a>
-      <a href="#ai">AI診断</a>
-      <a href="#price">料金</a>
-      <a href="#shop">店舗掲載</a>
-    </div>
+<footer>
 
-    <div>
-      <h4>Support</h4>
-      <a onclick="showNotice('準備中です')">よくある質問</a>
-      <a href="https://lin.ee/SbQWdjo" target="_blank" rel="noopener">お問い合わせ</a>
-      <a onclick="showNotice('準備中です')">利用規約</a>
-    </div>
-
-    <div>
-      <h4>SNS</h4>
-      <a href="https://lin.ee/SbQWdjo" target="_blank" rel="noopener">LINE</a>
-      <a href="https://x.com/joinnoxjp?s=11&t=2j42m-0hw5bxhghxn9nklQ" target="_blank" rel="noopener">X</a>
-      <a href="https://www.tiktok.com/@joinnoxjp?_r=1&_t=ZS-97fp9iuUsQX" target="_blank" rel="noopener">TikTok</a>
-    </div>
-  </footer>
-
-  <hr style="border:1px solid rgba(255,215,0,.2);margin:40px 0;">
-
-  <section style="max-width:1000px;margin:auto;padding:20px 20px 60px;color:#ccc;line-height:2;">
-    <h2 style="color:#FFD700;">よくある質問（FAQ）</h2>
-
-    <h3>NOXは無料で利用できますか？</h3>
-    <p>はい。求職者の方は無料でご利用いただけます。</p>
-
-    <h3>未経験でも応募できますか？</h3>
-    <p>未経験歓迎求人も掲載予定です。AI診断であなたに合う求人をご提案します。</p>
-
-    <h3>店舗掲載はできますか？</h3>
-    <p>掲載をご希望の店舗様は公式LINEよりお問い合わせください。</p>
-  </section>
-
-  <div style="text-align:center;padding-bottom:40px;">
-    <p style="color:#888;font-size:13px;letter-spacing:3px;margin:0;">Founder</p>
-    <h3 style="color:#FFD700;font-size:34px;letter-spacing:6px;margin:12px 0;">NABE</h3>
-    <p style="color:#999;font-size:15px;letter-spacing:2px;">Building the Future of Nightlife.</p>
+  <div class="footer-brand">
+    <h2>NOX</h2>
+    <p>Night Opens X</p>
+    <p>夜が、新しい可能性を開く。</p>
   </div>
 
-  <div class="notice" id="notice"></div>
+  <div>
+    <h4>Service</h4>
+    <a href="pages/girls.html">求人を探す</a>
+    <a href="#ai">AI診断</a>
+    <a href="#shop">店舗掲載</a>
+  </div>
 
-  <script src="script.js" defer></script>
+  <div>
+    <h4>Support</h4>
+    <a href="https://lin.ee/SbQWdjo" target="_blank">お問い合わせ</a>
+    <a onclick="showNotice('準備中です')">利用規約</a>
+  </div>
+
+  <div>
+    <h4>SNS</h4>
+    <a href="https://lin.ee/SbQWdjo" target="_blank">LINE</a>
+    <a href="https://x.com/joinnoxjp?s=11&t=2j42m-0hw5bxhghxn9nklQ" target="_blank">X</a>
+    <a href="https://www.tiktok.com/@joinnoxjp?_r=1&_t=ZS-97fp9iuUsQX" target="_blank">TikTok</a>
+  </div>
+
+</footer>
+
+<div class="notice" id="notice"></div>
+
+<script src="script.js" defer></script>
 
 </body>
 </html>
