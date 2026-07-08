@@ -11,6 +11,7 @@
   <main class="register-page">
     <section class="register-section">
       <div class="register-card">
+
         <div class="register-step">
           <span>NOX ADMIN</span>
           <h2>管理者ページ</h2>
@@ -25,12 +26,17 @@
           <a href="../index.html" class="btn ghost">トップへ戻る</a>
           <a href="./mypage.html" class="btn ghost">マイページ</a>
         </div>
+
       </div>
     </section>
   </main>
 
-  <script type="module">
-    import {
+<script type="module">
+
+import { auth } from "../firebase.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
   getFirestore,
   collection,
   getDocs,
@@ -41,109 +47,109 @@
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    const db = getFirestore();
-    const userList = document.getElementById("userList");
+const db = getFirestore();
+const userList = document.getElementById("userList");
 
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        alert("ログインしてください");
-        location.href = "./login.html";
-        return;
-      }
+onAuthStateChanged(auth, async (user) => {
 
-      const adminRef = doc(db, "users", user.uid);
-      const adminSnap = await getDoc(adminRef);
+  if (!user) {
+    alert("ログインしてください");
+    location.href = "./login.html";
+    return;
+  }
 
-      if (!adminSnap.exists() || adminSnap.data().role !== "admin") {
-        alert("管理者のみアクセスできます");
-        location.href = "./mypage.html";
-        return;
-      }
+  const adminRef = doc(db,"users",user.uid);
+  const adminSnap = await getDoc(adminRef);
 
-      loadUsers();
-      loadJobApplications();
-    });
+  if(!adminSnap.exists() || adminSnap.data().role !== "admin"){
+    alert("管理者のみアクセスできます");
+    location.href="./mypage.html";
+    return;
+  }
 
-    async function loadUsers() {
-      const snap = await getDocs(collection(db, "users"));
+  loadUsers();
 
-      if (snap.empty) {
-        userList.innerHTML = "<p>ユーザーがいません。</p>";
-        return;
-      }
+});
+  async function loadUsers() {
+  const snap = await getDocs(collection(db, "users"));
 
-      userList.innerHTML = "";
+  userList.innerHTML = "";
 
-      snap.forEach((userDoc) => {
-        const data = userDoc.data();
-        const uid = userDoc.id;
+  if (snap.empty) {
+    userList.innerHTML = "<p>ユーザーがいません。</p>";
+    return;
+  }
 
-        const name = data.name || data.nickname || "名前未設定";
-        const email = data.email || "メールなし";
-        const status = data.status || "active";
-        const role = data.role || "user";
+  snap.forEach((userDoc) => {
+    const data = userDoc.data();
+    const uid = userDoc.id;
 
-        const card = document.createElement("div");
-        card.style.cssText = `
-          border:1px solid rgba(201,163,74,.5);
-          border-radius:18px;
-          padding:16px;
-          margin:16px 0;
-          background:#111;
-          color:white;
-        `;
+    const name = data.name || data.nickname || "名前未設定";
+    const email = data.email || "メールなし";
+    const status = data.status || "active";
+    const role = data.role || "user";
 
-        card.innerHTML = `
-<h3 style="color:#f5d36b;margin:0 0 8px;">${name}</h3>
+    const card = document.createElement("div");
+    card.style.cssText = `
+      border:1px solid rgba(201,163,74,.5);
+      border-radius:18px;
+      padding:16px;
+      margin:16px 0;
+      background:#111;
+      color:white;
+    `;
 
-<p>📧 ${email}</p>
-<p>🔑 権限：${role}</p>
-<p>📍 状態：${status === "blocked" ? "🚫 ブロック中" : "✅ 利用中"}</p>
+    card.innerHTML = `
+      <h3 style="color:#f5d36b;margin:0 0 8px;">${name}</h3>
+      <p>📧 ${email}</p>
+      <p>🔑 権限：${role}</p>
+      <p>📍 状態：${status === "blocked" ? "🚫 ブロック中" : "✅ 利用中"}</p>
 
-<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;">
-  <button class="gold-btn detailBtn" data-id="${uid}">
-    詳細を見る
-  </button>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;">
+        <button class="gold-btn detailBtn" data-id="${uid}">
+          詳細を見る
+        </button>
 
-  <button class="gold-btn blockBtn"
-          data-id="${uid}"
-          data-status="${status}">
-    ${status === "blocked" ? "ブロック解除" : "ブロックする"}
-  </button>
-</div>
-`;
+        <button class="gold-btn blockBtn" data-id="${uid}" data-status="${status}">
+          ${status === "blocked" ? "ブロック解除" : "ブロックする"}
+        </button>
+      </div>
+    `;
 
-        userList.appendChild(card);
+    userList.appendChild(card);
+  });
+
+  setUserButtons();
+}
+  function setUserButtons() {
+  document.querySelectorAll(".blockBtn").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const uid = btn.dataset.id;
+      const currentStatus = btn.dataset.status;
+      const newStatus = currentStatus === "blocked" ? "active" : "blocked";
+
+      await updateDoc(doc(db, "users", uid), {
+        status: newStatus
       });
 
-   document.querySelectorAll(".blockBtn").forEach((btn) => {
-  btn.addEventListener("click", async () => {
-    const uid = btn.dataset.id;
-    const currentStatus = btn.dataset.status;
-    const newStatus = currentStatus === "blocked" ? "active" : "blocked";
-
-    await updateDoc(doc(db, "users", uid), {
-      status: newStatus
+      alert(newStatus === "blocked" ? "ブロックしました" : "ブロック解除しました");
+      loadUsers();
     });
-
-    alert(newStatus === "blocked" ? "ブロックしました" : "ブロック解除しました");
-    loadUsers();
   });
-});
 
-document.querySelectorAll(".detailBtn").forEach((btn) => {
-  btn.addEventListener("click", async () => {
-    const uid = btn.dataset.id;
-    const snap = await getDoc(doc(db, "users", uid));
+  document.querySelectorAll(".detailBtn").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const uid = btn.dataset.id;
+      const snap = await getDoc(doc(db, "users", uid));
 
-    if (!snap.exists()) {
-      alert("ユーザーが見つかりません");
-      return;
-    }
+      if (!snap.exists()) {
+        alert("ユーザーが見つかりません");
+        return;
+      }
 
-    const data = snap.data();
+      const data = snap.data();
 
-    alert(`
+      alert(`
 名前: ${data.name || data.nickname || "未設定"}
 
 メール:
@@ -182,61 +188,10 @@ ${data.selfPr || "-"}
 SNS:
 ${data.sns || "-"}
 `);
-  });
-});
-async function loadJobApplications() {
-  try {
-    const snap = await getDocs(collection(db, "jobApplications"));
-
-    const title = document.createElement("h2");
-    title.textContent = "店舗掲載申請";
-    title.style.cssText = "color:#f5d36b;margin-top:30px;";
-    userList.appendChild(title);
-
-    if (snap.empty) {
-      const p = document.createElement("p");
-      p.textContent = "掲載申請はありません。";
-      userList.appendChild(p);
-      return;
-    }
-
-    snap.forEach((appDoc) => {
-      const data = appDoc.data();
-
-      const card = document.createElement("div");
-      card.style.cssText = `
-        border:1px solid rgba(201,163,74,.5);
-        border-radius:18px;
-        padding:16px;
-        margin:16px 0;
-        background:#111;
-        color:white;
-      `;
-
-      card.innerHTML = `
-        <h3 style="color:#f5d36b;">${data.storeName || "店舗名未設定"}</h3>
-        <p>業種：${data.businessType || "-"}</p>
-        <p>エリア：${data.area || "-"}</p>
-        <p>状態：${data.status || "pending"}</p>
-      `;
-
-      userList.appendChild(card);
     });
-  } catch (e) {
-    console.error(e);
-
-    const title = document.createElement("h2");
-    title.textContent = "店舗掲載申請";
-    title.style.cssText = "color:#f5d36b;margin-top:30px;";
-    userList.appendChild(title);
-
-    const p = document.createElement("p");
-    p.textContent = "掲載申請の読み込みに失敗しました。Firestoreルールを確認してください。";
-    p.style.color = "#ff7777";
-    userList.appendChild(p);
-  }
-}
+  });
 }
   </script>
+
 </body>
 </html>
