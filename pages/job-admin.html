@@ -45,8 +45,14 @@ import {
   updateDoc,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 const db = getFirestore();
+const storage = getStorage();
 const jobList = document.getElementById("jobList");
 
 onAuthStateChanged(auth, async (user) => {
@@ -104,7 +110,11 @@ onAuthStateChanged(auth, async (user) => {
       <p>エリア：${data.area || "-"}</p>
       <p>時給：${data.salary || "-"}</p>
       <p>状態：${data.status || "pending"}</p>
-
+      <input type="file"
+class="imageUpload"
+accept="image/*"
+data-id="${id}"
+style="width:100%;margin:12px 0;">
       <button class="gold-btn approveBtn" data-id="${id}" style="margin-top:12px;">
         承認して公開
       </button>
@@ -131,12 +141,23 @@ onAuthStateChanged(auth, async (user) => {
   }
 
   const data = jobSnap.data();
+ const file = document.querySelector(`.imageUpload[data-id="${id}"]`).files[0];
 
+let imageUrl = "";
+
+if (file) {
+  const imageRef = ref(storage, "job-images/" + Date.now() + "-" + file.name);
+
+  await uploadBytes(imageRef, file);
+
+  imageUrl = await getDownloadURL(imageRef);
+}
   await addDoc(collection(db, "jobs"), {
-    ...data,
-    status: "approved",
-    approvedAt: serverTimestamp()
-  });
+  ...data,
+  imageUrl: imageUrl,
+  status: "approved",
+  approvedAt: serverTimestamp()
+});
 
   await updateDoc(jobRef, {
     status: "approved"
