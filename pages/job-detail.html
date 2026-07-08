@@ -5,9 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>NOX | 求人詳細</title>
-
 <link rel="stylesheet" href="../style.css">
-
 </head>
 
 <body class="register-body">
@@ -34,35 +32,34 @@
 import "./firebase.js";
 
 import {
-getFirestore,
-doc,
-getDoc
+  getFirestore,
+  doc,
+  getDoc,
+  collection,
+  addDoc,
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const db = getFirestore();
-
 const params = new URLSearchParams(location.search);
-
 const id = params.get("id");
-
 const jobDetail = document.getElementById("jobDetail");
-  async function loadJobDetail(){
 
-  if(!id){
+async function loadJobDetail() {
+  if (!id) {
     jobDetail.innerHTML = "<p>求人IDが見つかりません。</p>";
     return;
   }
 
-  const snap = await getDoc(doc(db,"jobs",id));
+  const snap = await getDoc(doc(db, "jobs", id));
 
-  if(!snap.exists()){
+  if (!snap.exists()) {
     jobDetail.innerHTML = "<p>求人情報が見つかりません。</p>";
     return;
   }
 
   const data = snap.data();
-
-  jobDetail.innerHTML = `
+    jobDetail.innerHTML = `
     <div class="register-step">
       <span>NOX JOB DETAIL</span>
       <h2>${data.storeName || "店舗名未設定"}</h2>
@@ -89,24 +86,48 @@ const jobDetail = document.getElementById("jobDetail");
       <p>⚠️ ペナルティ：${data.penalty || "-"}</p>
       <p>🗓 シフト：${data.shift || "-"}</p>
     </div>
-        <div style="border:1px solid rgba(201,163,74,.5);border-radius:18px;padding:16px;margin:18px 0;background:#111;color:white;">
-      <h3 style="color:#f5d36b;">お店について</h3>
-      <p style="line-height:1.8;white-space:pre-wrap;">${data.shopPR || "-"}</p>
-      <p>雰囲気：${data.atmosphere || "-"}</p>
-      <p>客層：${data.customerBase || "-"}</p>
-      <p>在籍人数：${data.staffCount || "-"}</p>
-      <p>年齢層：${data.ageGroup || "-"}</p>
-    </div>
 
     <div style="border:1px solid rgba(201,163,74,.5);border-radius:18px;padding:16px;margin:18px 0;background:#111;color:white;">
-      <h3 style="color:#f5d36b;">SNS・応募先</h3>
-      <p>Instagram：${data.instagram || "-"}</p>
-      <p>TikTok：${data.tiktok || "-"}</p>
-      <p>X：${data.x || "-"}</p>
-      <p>公式LINE：${data.line || "-"}</p>
-      <p>応募用電話番号：${data.phone || "-"}</p>
+      <h3 style="color:#f5d36b;">応募フォーム</h3>
+
+      <input id="entryName" type="text" placeholder="お名前"
+      style="width:100%;padding:12px;margin:10px 0;border-radius:12px;">
+
+      <input id="entryPhone" type="tel" placeholder="電話番号"
+      style="width:100%;padding:12px;margin:10px 0;border-radius:12px;">
+
+      <button id="applyBtn" class="gold-btn">
+        応募する
+      </button>
+
     </div>
-      `;
+  `;
+  document.getElementById("applyBtn").addEventListener("click", async () => {
+
+  const name = document.getElementById("entryName").value.trim();
+  const phone = document.getElementById("entryPhone").value.trim();
+
+  if (!name || !phone) {
+    alert("お名前と電話番号を入力してください。");
+    return;
+  }
+
+  await addDoc(collection(db, "jobEntries"), {
+    jobId: id,
+    storeName: data.storeName || "",
+    applicantName: name,
+    applicantPhone: phone,
+    createdAt: serverTimestamp(),
+    status: "new"
+  });
+
+  alert("応募を受け付けました！店舗からのご連絡をお待ちください。");
+
+  document.getElementById("entryName").value = "";
+  document.getElementById("entryPhone").value = "";
+
+});
+
 }
 
 loadJobDetail();
