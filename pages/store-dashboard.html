@@ -22,10 +22,9 @@
     .card strong{font-size:28px;color:#d6a84f}
     .panel{background:#111;border:1px solid #222;border-radius:18px;padding:20px;margin-bottom:20px}
     .panel h2{margin:0 0 16px;font-size:18px}
-    input,textarea,select{width:100%;background:#080808;border:1px solid #333;color:#fff;border-radius:10px;padding:12px;margin-bottom:12px}
+    input,textarea{width:100%;background:#080808;border:1px solid #333;color:#fff;border-radius:10px;padding:12px;margin-bottom:12px}
     textarea{min-height:90px}
     .btn{background:#d6a84f;color:#000;border:0;border-radius:12px;padding:12px 18px;font-weight:bold;cursor:pointer}
-    .btn.dark{background:#222;color:#fff}
     .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
     table{width:100%;border-collapse:collapse}
     th,td{border-bottom:1px solid #222;padding:12px;text-align:left;font-size:14px}
@@ -59,141 +58,239 @@
   </aside>
 
   <main class="main">
-
     <section id="dashboard">
-      <h1>ダッシュボード</h1>
-      <div class="desc">店舗の掲載状況を確認できます。</div>
+  <h1>ダッシュボード</h1>
+  <div class="desc">店舗の掲載状況を確認できます。</div>
 
-      <div class="cards">
-        <div class="card"><p>今日の閲覧数</p><strong>128</strong></div>
-        <div class="card"><p>今月の応募数</p><strong>6</strong></div>
-        <div class="card"><p>お気に入り</p><strong>19</strong></div>
-        <div class="card"><p>契約残り</p><strong>24日</strong></div>
-      </div>
+  <div class="cards">
+    <div class="card">
+      <p>今日の閲覧数</p>
+      <strong id="viewCount">0</strong>
+    </div>
 
-      <div class="panel">
-        <h2>掲載状況</h2>
-        <p>現在：<span class="tag">公開中</span></p>
-        <p style="color:#aaa;">掲載反映日から1ヶ月間の掲載です。</p>
-      </div>
-    </section>
+    <div class="card">
+      <p>今月の応募数</p>
+      <strong id="applyCount">0</strong>
+    </div>
 
-    <section id="jobs" class="hidden">
-      <h1>求人管理</h1>
-      <div class="desc">求人内容の作成・編集ができます。</div>
+    <div class="card">
+      <p>求人掲載数</p>
+      <strong id="jobCount">0</strong>
+    </div>
 
-      <div class="panel">
-        <h2>求人を作成・編集</h2>
-        <input id="jobTitle" placeholder="求人タイトル 例：フロアキャスト募集">
-        <div class="row">
-          <input id="jobPay" placeholder="給与 例：時給3,000円〜">
-          <input id="jobArea" placeholder="エリア 例：新宿・歌舞伎町">
-        </div>
-        <textarea id="jobText" placeholder="求人説明 例：未経験歓迎、日払いOK、自由シフトなど"></textarea>
-        <button class="btn" onclick="saveJob()">求人を保存</button>
-      </div>
+    <div class="card">
+      <p>契約状況</p>
+      <strong>有効</strong>
+    </div>
+  </div>
 
-      <div class="panel">
-        <h2>求人一覧</h2>
-        <table>
-          <thead>
-            <tr><th>求人名</th><th>給与</th><th>状態</th></tr>
-          </thead>
-          <tbody id="jobList">
-            <tr><td>フロアキャスト募集</td><td>時給3,000円〜</td><td><span class="tag">公開中</span></td></tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
+  <div class="panel">
+    <h2>掲載状況</h2>
+    <p>現在：<span class="tag">公開中</span></p>
+    <p style="color:#aaa;">掲載中の求人はNOXに表示されています。</p>
+  </div>
+</section>
 
-    <section id="apps" class="hidden">
-      <h1>応募管理</h1>
-      <div class="desc">応募者の確認ができます。</div>
+<section id="jobs" class="hidden">
+  <h1>求人管理</h1>
 
-      <div class="panel">
-        <h2>応募者一覧</h2>
-        <table>
-          <thead>
-            <tr><th>名前</th><th>年齢</th><th>応募日</th><th>状態</th></tr>
-          </thead>
-          <tbody>
-            <tr><td>山田さん</td><td>20歳</td><td>7/8</td><td><span class="tag">未対応</span></td></tr>
-            <tr><td>佐藤さん</td><td>23歳</td><td>7/7</td><td><span class="tag">対応済み</span></td></tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
+  <div class="panel">
+    <h2>求人を追加</h2>
 
-    <section id="store" class="hidden">
-      <h1>店舗情報</h1>
-      <div class="desc">サイトに表示される店舗情報です。</div>
+    <input id="jobTitle" placeholder="求人タイトル">
 
-      <div class="panel">
-        <h2>基本情報</h2>
-        <input placeholder="店舗名">
-        <input placeholder="エリア">
-        <input placeholder="電話番号">
-        <input placeholder="公式LINE URL">
-        <input placeholder="Instagram URL">
-        <textarea placeholder="店舗紹介文"></textarea>
-        <button class="btn">店舗情報を保存</button>
-      </div>
-    </section>
+    <div class="row">
+      <input id="jobPay" placeholder="給与">
+      <input id="jobArea" placeholder="勤務地">
+    </div>
 
-    <section id="pay" class="hidden">
-      <h1>お支払い</h1>
-      <div class="desc">振込状況を確認できます。</div>
+    <textarea
+      id="jobText"
+      placeholder="仕事内容・待遇など"
+    ></textarea>
 
-      <div class="panel">
-        <h2>現在のプラン</h2>
-        <p>リリース記念プラン：<strong style="color:#d6a84f;">500円 / 1ヶ月</strong></p>
-        <p>状態：<span class="tag">入金確認待ち</span></p>
-        <p style="color:#aaa;">入金確認後、掲載開始となります。</p>
-      </div>
-    </section>
+    <button class="btn" onclick="saveJob()">
+      求人を保存
+    </button>
+  </div>
 
-    <section id="support" class="hidden">
-      <h1>サポート</h1>
-      <div class="desc">困った場合はこちらからお問い合わせください。</div>
+  <div class="panel">
+    <h2>求人一覧</h2>
 
-      <div class="panel">
-        <h2>お問い合わせ</h2>
-        <p>公式LINEまたはDMにてお問い合わせください。</p>
-        <button class="btn">公式LINEを開く</button>
-      </div>
-    </section>
+    <table>
+      <thead>
+        <tr>
+          <th>求人名</th>
+          <th>給与</th>
+          <th>状態</th>
+        </tr>
+      </thead>
 
-  </main>
+      <tbody id="jobList">
+      </tbody>
+
+    </table>
+
+  </div>
+</section>
+<section id="apps" class="hidden">
+
+  <h1>応募管理</h1>
+  <div class="desc">応募者一覧です。</div>
+
+  <div class="panel">
+
+    <h2>応募一覧</h2>
+
+    <table>
+
+      <thead>
+        <tr>
+          <th>名前</th>
+          <th>年齢</th>
+          <th>応募日時</th>
+          <th>状態</th>
+        </tr>
+      </thead>
+
+      <tbody id="applicationList">
+
+        <tr>
+          <td colspan="4" style="text-align:center;color:#888;">
+            まだ応募はありません
+          </td>
+        </tr>
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+</section>
+
+<section id="store" class="hidden">
+
+  <h1>店舗情報</h1>
+
+  <div class="desc">
+    サイトに表示される店舗情報です。
+  </div>
+
+  <div class="panel">
+
+    <h2>基本情報</h2>
+
+    <input id="storeName" placeholder="店舗名">
+
+    <input id="storeArea" placeholder="エリア">
+
+    <input id="storePhone" placeholder="電話番号">
+
+    <input id="storeLine" placeholder="公式LINE URL">
+
+    <input id="storeInstagram" placeholder="Instagram URL">
+
+    <textarea
+      id="storeDescription"
+      placeholder="店舗紹介"
+    ></textarea>
+
+    <button class="btn" onclick="saveStoreInfo()">
+      店舗情報を保存
+    </button>
+
+  </div>
+
+</section>
+
+<section id="pay" class="hidden">
+
+  <h1>お支払い</h1>
+
+  <div class="desc">
+    契約状況を確認できます。
+  </div>
+
+  <div class="panel">
+
+    <h2>現在のプラン</h2>
+
+    <p>
+      リリース記念プラン
+    </p>
+
+    <h2 style="color:#d6a84f;">
+      月額500円
+    </h2>
+
+    <p>
+      状態：
+      <span class="tag">
+        入金確認待ち
+      </span>
+    </p>
+
+  </div>
+
+</section>
+<section id="support" class="hidden">
+
+  <h1>サポート</h1>
+
+  <div class="desc">
+    お困りの場合はこちらからお問い合わせください。
+  </div>
+
+  <div class="panel">
+
+    <h2>お問い合わせ</h2>
+
+    <p>公式LINEまたはDMよりお問い合わせください。</p>
+
+    <button class="btn">
+      公式LINEを開く
+    </button>
+
+  </div>
+
+</section>
+
+</main>
 </div>
 
 <script>
-  function showPage(id, btn){
-    document.querySelectorAll("main section").forEach(s => s.classList.add("hidden"));
-    document.getElementById(id).classList.remove("hidden");
+function showPage(id, btn){
 
-    document.querySelectorAll(".menu button").forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
+  document.querySelectorAll("main section").forEach(section=>{
+    section.classList.add("hidden");
+  });
+
+  document.getElementById(id).classList.remove("hidden");
+
+  document.querySelectorAll(".menu button").forEach(button=>{
+    button.classList.remove("active");
+  });
+
+  btn.classList.add("active");
+
+}
+
+function saveJob(){
+  alert("次でFirebase保存を実装します");
+}
+
+function saveStoreInfo(){
+  alert("次でFirebase保存を実装します");
+}
+
+function logout(){
+
+  if(confirm("ログアウトしますか？")){
+    location.href="login.html";
   }
 
-  function saveJob(){
-    const title = document.getElementById("jobTitle").value || "未入力";
-    const pay = document.getElementById("jobPay").value || "未入力";
-
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${title}</td>
-      <td>${pay}</td>
-      <td><span class="tag">公開中</span></td>
-    `;
-    document.getElementById("jobList").appendChild(tr);
-
-    alert("求人を保存しました");
-  }
-
-  function logout(){
-    alert("ログアウトしました");
-    location.href = "login.html";
-  }
+}
 </script>
 
 </body>
