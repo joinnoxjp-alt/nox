@@ -305,10 +305,23 @@ snap.forEach((doc) => {
   if (job.status !== "approved") return;
 
   // テスト・ダミーは表示しない
-  if (job.storeName === "テスト") return;
-  if (job.name === "テスト") return;
-  if (job.isTest === true) return;
-  if (job.isDummy === true) return;
+const textCheck = `
+  ${job.storeName || ""}
+  ${job.name || ""}
+  ${job.title || ""}
+  ${job.shopName || ""}
+  ${job.storeTitle || ""}
+`;
+
+if (textCheck.includes("テスト")) return;
+if (textCheck.toLowerCase().includes("test")) return;
+if (textCheck.toLowerCase().includes("dummy")) return;
+
+if (job.isTest === true) return;
+if (job.isDummy === true) return;
+
+// 念のため、テスト用ドキュメントIDも非表示
+if (doc.id === "gD4vXsYZcVbpdxJkH9M6") return;
 
   jobs.push(job);
 });
