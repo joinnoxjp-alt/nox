@@ -115,24 +115,24 @@
         userList.appendChild(card);
       });
 
-      document.querySelectorAll(".blockBtn").forEach((btn) => {
-        btn.addEventListener("click", async () => {
-          const uid = btn.dataset.id;
-          const currentStatus = btn.dataset.status;
-          const newStatus = currentStatus === "blocked" ? "active" : "blocked";
-
-          await updateDoc(doc(db, "users", uid), {
-            status: newStatus
-          });
-
-          alert(newStatus === "blocked" ? "ブロックしました" : "ブロック解除しました");
-          loadUsers();
-        });
-        document.querySelectorAll(".detailBtn").forEach((btn) => {
+   document.querySelectorAll(".blockBtn").forEach((btn) => {
   btn.addEventListener("click", async () => {
-
     const uid = btn.dataset.id;
+    const currentStatus = btn.dataset.status;
+    const newStatus = currentStatus === "blocked" ? "active" : "blocked";
 
+    await updateDoc(doc(db, "users", uid), {
+      status: newStatus
+    });
+
+    alert(newStatus === "blocked" ? "ブロックしました" : "ブロック解除しました");
+    loadUsers();
+  });
+});
+
+document.querySelectorAll(".detailBtn").forEach((btn) => {
+  btn.addEventListener("click", async () => {
+    const uid = btn.dataset.id;
     const snap = await getDoc(doc(db, "users", uid));
 
     if (!snap.exists()) {
@@ -182,7 +182,10 @@ SNS:
 ${data.sns || "-"}
 `);
   });
-  }
+});
+}
   </script>
+</body>
+</html>
 </body>
 </html>
