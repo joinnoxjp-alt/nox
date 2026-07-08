@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>求人承認管理 | NOX</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+
+<body class="register-body">
+  <main class="register-page">
+    <section class="register-section">
+      <div class="register-card">
+
+        <div class="register-step">
+          <span>NOX JOB ADMIN</span>
+          <h2>求人承認管理</h2>
+          <p>店舗掲載申請の確認・承認</p>
+        </div>
+
+        <div id="jobList">
+          <p>読み込み中...</p>
+        </div>
+
+        <div class="header-actions">
+          <a href="../index.html" class="btn ghost">トップへ戻る</a>
+          <a href="./admin.html" class="btn ghost">管理者ページ</a>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+<script type="module">
+  import { auth } from "../firebase.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  getDoc,
+  doc,
+  addDoc,
+  updateDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const db = getFirestore();
+const jobList = document.getElementById("jobList");
+
+onAuthStateChanged(auth, async (user) => {
+
+  if (!user) {
+    alert("ログインしてください");
+    location.href = "./login.html";
+    return;
+  }
+
+  const adminRef = doc(db, "users", user.uid);
+  const adminSnap = await getDoc(adminRef);
+
+  if (!adminSnap.exists() || adminSnap.data().role !== "admin") {
+    alert("管理者のみアクセスできます");
+    location.href = "./mypage.html";
+    return;
+  }
+
+  loadJobs();
+
+});
+  async function loadJobs() {
+  const snap = await getDocs(collection(db, "jobApplications"));
+
+  jobList.innerHTML = "";
+
+  if (snap.empty) {
+    jobList.innerHTML = "<p>掲載申請はありません。</p>";
+    return;
+  }
+
+  snap.forEach((jobDoc) => {
+    const data = jobDoc.data();
+    const id = jobDoc.id;
+
+    if (data.status === "approved") return;
+
+    const card = document.createElement("div");
+    card.style.cssText = `
+      border:1px solid rgba(201,163,74,.5);
+      border-radius:18px;
+      padding:16px;
+      margin:16px 0;
+      background:#111;
+      color:white;
+    `;
+
+    card.innerHTML = `
+      <h3 style="color:#f5d36b;margin:0 0 8px;">
+        ${data.storeName || "店舗名未設定"}
+      </h3>
+
+      <p>業種：${data.businessType || "-"}</p>
+      <p>エリア：${data.area || "-"}</p>
+      <p>時給：${data.salary || "-"}</p>
+      <p>状態：${data.status || "pending"}</p>
+
+      <button class="gold-btn approveBtn" data-id="${id}" style="margin-top:12px;">
+        承認して公開
+      </button>
+    `;
+
+    jobList.appendChild(card);
+  });
+}
+  document.addEventListener("click", async (e) => {
+  if (!e.target.classList.contains("approveBtn")) return;
+
+  const id = e.target.dataset.id;
+
+  if (!confirm("この求人を承認して公開しますか？")) {
+    return;
+  }
+
+  const jobRef = doc(db, "jobApplications", id);
+  const jobSnap = await getDoc(jobRef);
+
+  if (!jobSnap.exists()) {
+    alert("申請データが見つかりません");
+    return;
+  }
+
+  const data = jobSnap.data();
+
+  await addDoc(collection(db, "jobs"), {
+    ...data,
+    status: "approved",
+    approvedAt: serverTimestamp()
+  });
+
+  await updateDoc(jobRef, {
+    status: "approved"
+  });
+
+  alert("承認して公開しました！");
+  loadJobs();
+});
+  </script>
+
+</body>
+</html>
