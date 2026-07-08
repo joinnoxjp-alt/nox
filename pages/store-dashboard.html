@@ -270,7 +270,13 @@ import {
 import {
   doc,
   getDoc,
-  setDoc
+  setDoc,
+  collection,
+  addDoc,
+  query,
+  where,
+  getDocs,
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 let currentUser = null;
@@ -283,7 +289,10 @@ onAuthStateChanged(auth, async(user)=>{
   }
 
   currentUser=user;
-await loadStoreInfo();
+  
+  await loadStoreInfo();
+await loadJobs();
+  
 });
 
 window.showPage=function(id,btn){
@@ -301,6 +310,35 @@ window.showPage=function(id,btn){
   btn.classList.add("active");
 
 }
+  async function loadJobs(){
+
+  if(!currentUser) return;
+
+  const q = query(
+    collection(db,"jobs"),
+    where("ownerId","==",currentUser.uid)
+  );
+
+  const snap = await getDocs(q);
+
+  const list = document.getElementById("jobList");
+  list.innerHTML="";
+
+  document.getElementById("jobCount").textContent = snap.size;
+    snap.forEach((docItem)=>{
+
+  const data = docItem.data();
+
+  list.innerHTML += `
+    <tr>
+      <td>${data.title}</td>
+      <td>${data.pay}</td>
+      <td><span class="tag">公開中</span></td>
+    </tr>
+  `;
+
+});
+    }
 async function loadStoreInfo(){
 
   const ref = doc(db, "stores", currentUser.uid);
