@@ -357,6 +357,33 @@ async function loadStoreInfo(){
 
 }
 
+window.saveJob = async function(){
+
+  if(!currentUser){
+    alert("ログインが必要です");
+    return;
+  }
+
+  await addDoc(collection(db,"jobs"),{
+    ownerId: currentUser.uid,
+    title: document.getElementById("jobTitle").value,
+    pay: document.getElementById("jobPay").value,
+    area: document.getElementById("jobArea").value,
+    description: document.getElementById("jobText").value,
+    status:"公開中",
+    createdAt:serverTimestamp()
+  });
+
+  document.getElementById("jobTitle").value="";
+  document.getElementById("jobPay").value="";
+  document.getElementById("jobArea").value="";
+  document.getElementById("jobText").value="";
+
+  alert("求人を保存しました");
+
+  await loadJobs();
+}
+
 window.saveStoreInfo = async function(){
 
   if(!currentUser){
@@ -364,17 +391,18 @@ window.saveStoreInfo = async function(){
     return;
   }
 
-  await setDoc(doc(db, "stores", currentUser.uid), {
-    ownerId: currentUser.uid,
-    storeName: document.getElementById("storeName").value,
-    area: document.getElementById("storeArea").value,
-    phone: document.getElementById("storePhone").value,
-    line: document.getElementById("storeLine").value,
-    instagram: document.getElementById("storeInstagram").value,
-    description: document.getElementById("storeDescription").value
-  }, { merge:true });
+  await setDoc(doc(db,"stores",currentUser.uid),{
+    ownerId:currentUser.uid,
+    storeName:document.getElementById("storeName").value,
+    area:document.getElementById("storeArea").value,
+    phone:document.getElementById("storePhone").value,
+    line:document.getElementById("storeLine").value,
+    instagram:document.getElementById("storeInstagram").value,
+    description:document.getElementById("storeDescription").value
+  },{merge:true});
 
   alert("店舗情報を保存しました");
+}
 
 }
   window.logout = async function(){
