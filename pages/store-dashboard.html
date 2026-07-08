@@ -295,19 +295,39 @@ await loadJobs();
   
 });
 
-window.showPage=function(id,btn){
+window.showPage = function(id, btn){
 
-  document.querySelectorAll("main section").forEach(section=>{
-    section.classList.add("hidden");
+  const pages = [
+    "dashboard",
+    "jobs",
+    "apps",
+    "store",
+    "pay",
+    "support"
+  ];
+
+  pages.forEach(pageId=>{
+    const page=document.getElementById(pageId);
+    if(page){
+      page.style.display="none";
+    }
   });
 
-  document.getElementById(id).classList.remove("hidden");
+  const target=document.getElementById(id);
+  if(target){
+    target.style.display="block";
+  }
 
   document.querySelectorAll(".menu button").forEach(button=>{
     button.classList.remove("active");
   });
 
   btn.classList.add("active");
+
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
 
 }
   async function loadJobs(){
