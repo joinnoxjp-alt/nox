@@ -5,109 +5,366 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>NOX | 求人一覧</title>
-<link rel="stylesheet" href="../style.css">
-</head>
 
-<body class="register-body">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
 
-<main class="register-page">
-<section class="register-section">
-
-<div class="register-card">
-
-<div class="register-step">
-<span>NOX JOBS</span>
-<h2>求人一覧</h2>
-<p>承認済みの求人を表示しています。</p>
-</div>
-
-<div id="jobList">
-<p>読み込み中...</p>
-</div>
-
-<div class="header-actions">
-<a href="../index.html" class="btn ghost">トップへ戻る</a>
-<a href="./mypage.html" class="btn ghost">マイページ</a>
-</div>
-
-</div>
-</section>
-</main>
-
-<script type="module">
-
-import "./firebase.js";
-
-import {
-  getFirestore,
-  collection,
-  getDocs,
-  query,
-  where
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-const db = getFirestore();
-const jobList = document.getElementById("jobList");
-
-async function loadJobs(){
-
-  jobList.innerHTML = "<p>読み込み中...</p>";
-
-  const q = query(
-    collection(db,"jobs"),
-    where("status","==","approved")
-  );
-
-  const snap = await getDocs(q);
-
-  if(snap.empty){
-    jobList.innerHTML = "<p>掲載中の求人はありません。</p>";
-    return;
-  }
-
-  jobList.innerHTML = "";
-
-  snap.forEach((jobDoc)=>{
-
-    const data = jobDoc.data();
-    const id = jobDoc.id;
-
-    const card = document.createElement("div");
-
-    card.style.cssText=`
-      border:1px solid rgba(201,163,74,.5);
-      border-radius:18px;
-      padding:18px;
-      margin:18px 0;
-      background:#111;
-      color:white;
-    `;
-
-    card.innerHTML=`
-      <h3 style="color:#f5d36b;margin-bottom:8px;">
-        ${data.storeName || "店舗名未設定"}
-      </h3>
-
-      <p>📍 ${data.area || "-"}</p>
-      <p>🍸 ${data.businessType || "-"}</p>
-      <p>💰 ${data.salary || "-"}</p>
-
-      <a href="./job-detail.html?id=${id}"
-         class="gold-btn"
-         style="display:block;text-align:center;margin-top:12px;text-decoration:none;">
-        詳細を見る
-      </a>
-    `;
-
-    jobList.appendChild(card);
-
-  });
-
+body{
+  min-height:100vh;
+  background:
+    radial-gradient(circle at top,rgba(255,215,0,.18),transparent 34%),
+    linear-gradient(180deg,#050505,#000);
+  color:#fff;
+  font-family:"Hiragino Mincho ProN","Yu Mincho",serif;
 }
 
-loadJobs();
+a{text-decoration:none;color:inherit}
 
+.page{
+  max-width:1120px;
+  margin:auto;
+  padding:32px 18px 80px;
+}
+
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:16px;
+  margin-bottom:36px;
+}
+
+.logo{
+  color:#FFD700;
+  font-size:38px;
+  font-weight:900;
+  letter-spacing:3px;
+}
+
+.logo small{
+  display:block;
+  color:#aaa;
+  font-size:11px;
+  letter-spacing:4px;
+  margin-top:4px;
+}
+
+.nav{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+}
+
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:13px 22px;
+  border-radius:999px;
+  border:1px solid rgba(255,215,0,.35);
+  color:#FFD700;
+  background:rgba(255,255,255,.04);
+  font-weight:bold;
+}
+
+.btn.gold{
+  background:#FFD700;
+  color:#000;
+}
+
+.hero{
+  border:1px solid rgba(255,215,0,.35);
+  border-radius:32px;
+  padding:40px 28px;
+  background:
+    radial-gradient(circle at top right,rgba(255,215,0,.15),transparent 38%),
+    linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.025));
+  box-shadow:0 25px 70px rgba(0,0,0,.6);
+  margin-bottom:30px;
+}
+
+.kicker{
+  color:#FFD700;
+  letter-spacing:5px;
+  font-size:13px;
+  margin-bottom:14px;
+}
+
+.hero h1{
+  font-size:clamp(44px,8vw,78px);
+  color:#FFD700;
+  line-height:1.05;
+  margin-bottom:16px;
+}
+
+.hero p{
+  color:#ddd;
+  line-height:1.9;
+  font-size:16px;
+}
+
+.filter-box{
+  margin:28px 0;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+  gap:12px;
+}
+
+.filter-box input,
+.filter-box select{
+  width:100%;
+  padding:14px 15px;
+  border-radius:14px;
+  border:1px solid rgba(255,215,0,.25);
+  background:#080808;
+  color:#fff;
+  font-size:15px;
+}
+
+.status{
+  color:#bbb;
+  margin:18px 0;
+  line-height:1.8;
+}
+
+.job-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:22px;
+}
+
+.job-card{
+  position:relative;
+  overflow:hidden;
+  border:1px solid rgba(255,215,0,.35);
+  border-radius:28px;
+  padding:24px;
+  background:
+    radial-gradient(circle at top right,rgba(255,215,0,.14),transparent 38%),
+    linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.025));
+  box-shadow:0 22px 60px rgba(0,0,0,.55);
+}
+
+.job-card:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(120deg,transparent,rgba(255,215,0,.08),transparent);
+  pointer-events:none;
+}
+
+.badge{
+  display:inline-block;
+  background:#FFD700;
+  color:#000;
+  padding:7px 12px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:bold;
+  margin-bottom:14px;
+}
+
+.job-card h2{
+  color:#FFD700;
+  font-size:28px;
+  margin-bottom:16px;
+  line-height:1.35;
+}
+
+.info{
+  color:#eee;
+  line-height:2;
+  font-size:16px;
+  margin-bottom:18px;
+}
+
+.salary{
+  color:#FFD700;
+  font-size:26px;
+  font-weight:bold;
+  margin:14px 0;
+}
+
+.tags{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin:16px 0 22px;
+}
+
+.tags span{
+  border:1px solid rgba(255,215,0,.25);
+  background:rgba(255,215,0,.07);
+  color:#eee;
+  padding:7px 10px;
+  border-radius:999px;
+  font-size:12px;
+}
+
+.empty{
+  text-align:center;
+  padding:50px 20px;
+  border:1px solid rgba(255,215,0,.25);
+  border-radius:28px;
+  color:#ccc;
+}
+
+.footer-actions{
+  display:flex;
+  justify-content:center;
+  gap:14px;
+  flex-wrap:wrap;
+  margin-top:42px;
+}
+
+@media(max-width:760px){
+  .header{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  .hero{
+    padding:32px 22px;
+  }
+
+  .job-card h2{
+    font-size:25px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="page">
+
+<header class="header">
+  <a href="../index.html" class="logo">
+    NOX
+    <small>Night Opens X</small>
+  </a>
+
+  <nav class="nav">
+    <a href="../index.html" class="btn">TOP</a>
+    <a href="../owner.html" class="btn">店舗掲載</a>
+    <a href="mypage.html" class="btn gold">マイページ</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <p class="kicker">NOX JOBS</p>
+  <h1>求人一覧</h1>
+  <p>
+    NOXに掲載中の承認済み求人を表示しています。<br>
+    エリア・業種・キーワードから、自分に合うお店を探せます。
+  </p>
+</section>
+
+<div class="filter-box">
+  <input type="text" id="keywordInput" placeholder="店舗名・エリアで検索">
+
+  <select id="areaSelect">
+    <option value="">エリアすべて</option>
+  </select>
+
+  <select id="typeSelect">
+    <option value="">業種すべて</option>
+  </select>
+
+  <select id="sortSelect">
+    <option value="new">新着順</option>
+    <option value="salary">給与が高い順</option>
+  </select>
+</div>
+
+<p class="status" id="statusText">求人を読み込み中です...</p>
+
+<div class="job-grid" id="jobsList"></div>
+<script type="module">
+import { db } from "../firebase-db.js";
+
+import {
+  collection,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const jobsList = document.getElementById("jobsList");
+const statusText = document.getElementById("statusText");
+
+let jobs = [];
+
+const snap = await getDocs(collection(db, "jobs"));
+
+snap.forEach((doc) => {
+  const job = {
+    id: doc.id,
+    ...doc.data()
+  };
+
+  // 承認済み以外は表示しない
+  if (job.status !== "approved") return;
+
+  // テスト・ダミーは表示しない
+  if (job.storeName === "テスト") return;
+  if (job.name === "テスト") return;
+  if (job.isTest === true) return;
+  if (job.isDummy === true) return;
+
+  jobs.push(job);
+});
+
+jobs.sort((a, b) => {
+  const da = a.createdAt?.seconds || 0;
+  const db = b.createdAt?.seconds || 0;
+  return db - da;
+});
+
+statusText.textContent = `掲載求人 ${jobs.length}件`;
+
+if (jobs.length === 0) {
+  jobsList.innerHTML = `
+    <div class="empty">
+      <h2 style="color:#FFD700;margin-bottom:15px;">
+        現在掲載中の求人はありません
+      </h2>
+      <p>新しい求人が掲載されるまでお待ちください。</p>
+    </div>
+  `;
+} else {
+  jobs.forEach((job) => {
+    jobsList.innerHTML += `
+      <div class="job-card">
+        <div class="badge">NEW</div>
+
+        <h2>${job.storeName || job.name || "店舗名未設定"}</h2>
+
+        <div class="info">
+          📍 ${job.area || "-"}<br>
+          🏷 ${job.genre || job.type || "-"}
+        </div>
+
+        <div class="salary">
+          ${job.salary || job.salaryText || "給与未設定"}
+        </div>
+
+        <div class="tags">
+          <span>${job.employment || "求人掲載中"}</span>
+        </div>
+
+        <a href="job.html?id=${job.id}" class="btn gold">
+          求人詳細を見る
+        </a>
+      </div>
+    `;
+  });
+}
 </script>
 
+<div class="footer-actions">
+  <a href="../index.html" class="btn">TOPへ戻る</a>
+  <a href="../owner.html" class="btn gold">店舗掲載はこちら</a>
+</div>
+
+</div>
 </body>
 </html>
