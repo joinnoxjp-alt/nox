@@ -283,11 +283,26 @@ async function loadJobDetail(){
   }
 
   const data = snap.data();
+let imageHtml = "";
 
+if (data.imageUrl) {
+  imageHtml = `
+    <img
+      src="${data.imageUrl}"
+      style="
+        width:100%;
+        max-height:420px;
+        object-fit:cover;
+        border-radius:20px;
+        margin:20px 0;
+      ">
+  `;
+}
   jobDetail.className = "";
 
   jobDetail.innerHTML = `
     <section class="hero">
+    ${imageHtml}
       <p class="kicker">NOX JOB DETAIL</p>
       <h1>${showValue(data.storeName || data.name)}</h1>
       <p>
