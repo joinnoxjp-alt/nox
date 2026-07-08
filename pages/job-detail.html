@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>NOX | 求人詳細</title>
+
+<link rel="stylesheet" href="../style.css">
+
+</head>
+
+<body class="register-body">
+
+<main class="register-page">
+<section class="register-section">
+
+<div class="register-card">
+
+<div id="jobDetail">
+<p>読み込み中...</p>
+</div>
+
+<div class="header-actions">
+<a href="./girls.html" class="btn ghost">← 求人一覧へ戻る</a>
+</div>
+
+</div>
+</section>
+</main>
+
+<script type="module">
+
+import "./firebase.js";
+
+import {
+getFirestore,
+doc,
+getDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const db = getFirestore();
+
+const params = new URLSearchParams(location.search);
+
+const id = params.get("id");
+
+const jobDetail = document.getElementById("jobDetail");
+  async function loadJobDetail(){
+
+  if(!id){
+    jobDetail.innerHTML = "<p>求人IDが見つかりません。</p>";
+    return;
+  }
+
+  const snap = await getDoc(doc(db,"jobs",id));
+
+  if(!snap.exists()){
+    jobDetail.innerHTML = "<p>求人情報が見つかりません。</p>";
+    return;
+  }
+
+  const data = snap.data();
+
+  jobDetail.innerHTML = `
+    <div class="register-step">
+      <span>NOX JOB DETAIL</span>
+      <h2>${data.storeName || "店舗名未設定"}</h2>
+      <p>${data.area || ""} / ${data.businessType || ""}</p>
+    </div>
+
+    <div style="border:1px solid rgba(201,163,74,.5);border-radius:18px;padding:16px;margin:18px 0;background:#111;color:white;">
+      <h3 style="color:#f5d36b;">基本情報</h3>
+      <p>📍 住所：${data.address || "-"}</p>
+      <p>🚃 最寄駅：${data.station || "-"}</p>
+      <p>🕒 営業時間：${data.businessHours || "-"}</p>
+      <p>📅 定休日：${data.closedDay || "-"}</p>
+    </div>
+
+    <div style="border:1px solid rgba(201,163,74,.5);border-radius:18px;padding:16px;margin:18px 0;background:#111;color:white;">
+      <h3 style="color:#f5d36b;">求人情報</h3>
+      <p>💰 時給：${data.salary || "-"}</p>
+      <p>🎁 各種バック：${data.back || "-"}</p>
+      <p>💵 日払い：${data.dailyPay || "-"}</p>
+      <p>✨ 体験入店：${data.trial || "-"}</p>
+      <p>🔰 未経験歓迎：${data.beginner || "-"}</p>
+      <p>🎂 採用年齢：${data.age || "-"}</p>
+      <p>📌 ノルマ：${data.quota || "-"}</p>
+      <p>⚠️ ペナルティ：${data.penalty || "-"}</p>
+      <p>🗓 シフト：${data.shift || "-"}</p>
+    </div>
+        <div style="border:1px solid rgba(201,163,74,.5);border-radius:18px;padding:16px;margin:18px 0;background:#111;color:white;">
+      <h3 style="color:#f5d36b;">お店について</h3>
+      <p style="line-height:1.8;white-space:pre-wrap;">${data.shopPR || "-"}</p>
+      <p>雰囲気：${data.atmosphere || "-"}</p>
+      <p>客層：${data.customerBase || "-"}</p>
+      <p>在籍人数：${data.staffCount || "-"}</p>
+      <p>年齢層：${data.ageGroup || "-"}</p>
+    </div>
+
+    <div style="border:1px solid rgba(201,163,74,.5);border-radius:18px;padding:16px;margin:18px 0;background:#111;color:white;">
+      <h3 style="color:#f5d36b;">SNS・応募先</h3>
+      <p>Instagram：${data.instagram || "-"}</p>
+      <p>TikTok：${data.tiktok || "-"}</p>
+      <p>X：${data.x || "-"}</p>
+      <p>公式LINE：${data.line || "-"}</p>
+      <p>応募用電話番号：${data.phone || "-"}</p>
+    </div>
+      `;
+}
+
+loadJobDetail();
+
+</script>
+
+</body>
+</html>
