@@ -259,8 +259,34 @@
 </main>
 </div>
 
-<script>
-function showPage(id, btn){
+<script type="module">
+import { auth, db } from "./firebase.js";
+
+import {
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
+  doc,
+  getDoc,
+  setDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+let currentUser = null;
+
+onAuthStateChanged(auth, async(user)=>{
+
+  if(!user){
+    location.href="login.html";
+    return;
+  }
+
+  currentUser=user;
+
+});
+
+window.showPage=function(id,btn){
 
   document.querySelectorAll("main section").forEach(section=>{
     section.classList.add("hidden");
@@ -275,23 +301,53 @@ function showPage(id, btn){
   btn.classList.add("active");
 
 }
+async function loadStoreInfo(){
 
-function saveJob(){
-  alert("次でFirebase保存を実装します");
+  const ref = doc(db, "stores", currentUser.uid);
+  const snap = await getDoc(ref);
+
+  if(!snap.exists()) return;
+
+  const data = snap.data();
+
+  document.getElementById("storeName").value = data.storeName || "";
+  document.getElementById("storeArea").value = data.area || "";
+  document.getElementById("storePhone").value = data.phone || "";
+  document.getElementById("storeLine").value = data.line || "";
+  document.getElementById("storeInstagram").value = data.instagram || "";
+  document.getElementById("storeDescription").value = data.description || "";
+
 }
 
-function saveStoreInfo(){
-  alert("次でFirebase保存を実装します");
-}
+window.saveStoreInfo = async function(){
 
-function logout(){
+  if(!currentUser){
+    alert("ログインが必要です");
+    return;
+  }
+
+  await setDoc(doc(db, "stores", currentUser.uid), {
+    ownerId: currentUser.uid,
+    storeName: document.getElementById("storeName").value,
+    area: document.getElementById("storeArea").value,
+    phone: document.getElementById("storePhone").value,
+    line: document.getElementById("storeLine").value,
+    instagram: document.getElementById("storeInstagram").value,
+    description: document.getElementById("storeDescription").value
+  }, { merge:true });
+
+  alert("店舗情報を保存しました");
+
+}
+  window.logout = async function(){
 
   if(confirm("ログアウトしますか？")){
-    location.href="login.html";
+    await signOut(auth);
+    location.href = "login.html";
   }
 
 }
-</script>
 
+</script>
 </body>
 </html>
