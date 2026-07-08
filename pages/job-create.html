@@ -94,12 +94,15 @@ button{
 
 </style>
 
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script type="module">
+import { db } from "./firebase-db.js";
+import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-<script src="firebase.js"></script>
-
+window.db = db;
+window.collection = collection;
+window.addDoc = addDoc;
+window.serverTimestamp = serverTimestamp;
+</script>
 </head>
 
 <body>
@@ -299,9 +302,63 @@ button{
 掲載申請後、NOX運営にて内容を確認し、<br>
 承認完了後に求人ページへ公開されます。
 </div>
-
 <script>
+async function submitJob() {
+
+    const data = {
+
+        storeName: document.getElementById("storeName").value,
+
+        businessType:
+            document.getElementById("businessType").value === "その他"
+            ? document.getElementById("otherBusinessType").value
+            : document.getElementById("businessType").value,
+
+        area: document.getElementById("area").value,
+        address: document.getElementById("address").value,
+        station: document.getElementById("station").value,
+        businessHours: document.getElementById("businessHours").value,
+        closedDay: document.getElementById("closedDay").value,
+
+        salary: document.getElementById("salary").value,
+        back: document.getElementById("back").value,
+        dailyPay: document.getElementById("dailyPay").value,
+        trial: document.getElementById("trial").value,
+        beginner: document.getElementById("beginner").value,
+        age: document.getElementById("age").value,
+        quota: document.getElementById("quota").value,
+        penalty: document.getElementById("penalty").value,
+        shift: document.getElementById("shift").value,
+                shopPR: document.querySelectorAll("textarea")[0].value,
+        atmosphere: document.querySelectorAll("textarea")[1].value,
+        customerBase: document.querySelector('input[placeholder*="20代〜50代"]').value,
+        staffCount: document.querySelector('input[placeholder*="20名"]').value,
+        ageGroup: document.querySelector('input[placeholder*="20歳〜30歳"]').value,
+
+        createdAt: serverTimestamp(),
+        status: "pending"
+    };
+
+    try {
+
+        await addDoc(
+            collection(db, "jobApplications"),
+            data
+        );
+
+        alert("掲載申請を受け付けました！");
+
+    } catch (e) {
+
+        console.error(e);
+        alert("送信に失敗しました。");
+
+    }
+
+}
+
 function toggleOtherBusiness() {
+
     const businessType = document.getElementById("businessType").value;
     const otherInput = document.getElementById("otherBusinessType");
 
@@ -311,6 +368,7 @@ function toggleOtherBusiness() {
         otherInput.style.display = "none";
         otherInput.value = "";
     }
+
 }
 </script>
 
