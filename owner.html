@@ -1,446 +1,776 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>NOX for Owner | 店舗掲載サービス</title>
-<meta name="description" content="NOX for Ownerは、水商売・風俗求人の店舗掲載サービスです。店舗掲載・TOP時間帯掲載・長期掲載プラン・オープン記念キャンペーンをご案内します。">
+
+<meta name="description"
+content="NOX店舗掲載サービス。全国の夜職求人掲載・オープン記念キャンペーン実施中。">
 
 <style>
-*{box-sizing:border-box}
-html{scroll-behavior:smooth}
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+html{
+scroll-behavior:smooth;
+}
+
 body{
-  margin:0;
-  background:
-    radial-gradient(circle at top, rgba(255,215,0,.16), transparent 34%),
-    linear-gradient(180deg,#050505,#000);
-  color:#fff;
-  font-family:"Noto Serif JP",serif;
+
+font-family:
+"Hiragino Mincho ProN",
+"Yu Mincho",
+serif;
+
+background:
+radial-gradient(circle at top,
+rgba(255,215,0,.10),
+transparent 35%),
+linear-gradient(180deg,#050505,#000);
+
+color:#fff;
+
+overflow-x:hidden;
+
 }
-a{color:inherit;text-decoration:none}
-.owner-header{
-  position:sticky;
-  top:0;
-  z-index:10;
-  background:rgba(0,0,0,.82);
-  backdrop-filter:blur(12px);
-  border-bottom:1px solid rgba(255,215,0,.2);
+
+a{
+text-decoration:none;
+color:inherit;
 }
-.owner-nav{
-  max-width:1180px;
-  margin:auto;
-  padding:15px 20px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:16px;
+
+img{
+max-width:100%;
+display:block;
 }
-.owner-logo{
-  font-size:30px;
-  font-weight:900;
-  color:#FFD700;
-  letter-spacing:2px;
+
+.container{
+
+max-width:1200px;
+margin:auto;
+padding:0 22px;
+
 }
-.owner-logo small{
-  display:block;
-  font-size:11px;
-  color:#aaa;
-  letter-spacing:3px;
+
+section{
+
+padding:90px 0;
+
 }
-.owner-nav-links{
-  display:flex;
-  flex-wrap:wrap;
-  gap:14px;
-  font-size:13px;
-  color:#ddd;
+
+/* ---------------- */
+
+header{
+
+position:sticky;
+top:0;
+z-index:999;
+
+background:
+rgba(0,0,0,.82);
+
+backdrop-filter:
+blur(12px);
+
+border-bottom:
+1px solid rgba(255,215,0,.18);
+
 }
-.owner-main{
-  max-width:1180px;
-  margin:auto;
-  padding:46px 20px 80px;
+
+nav{
+
+display:flex;
+justify-content:space-between;
+align-items:center;
+
+padding:18px 0;
+
 }
-.hero-owner{
-  min-height:72vh;
-  display:flex;
-  align-items:center;
-  padding:50px 0;
+
+.logo{
+
+font-size:38px;
+font-weight:900;
+
+color:#FFD700;
+
+letter-spacing:2px;
+
 }
+
+.logo small{
+
+display:block;
+
+font-size:11px;
+
+letter-spacing:4px;
+
+color:#aaa;
+
+margin-top:4px;
+
+}
+
+.menu{
+
+display:flex;
+
+gap:26px;
+
+flex-wrap:wrap;
+
+font-size:14px;
+
+color:#ddd;
+
+}
+
+/* ---------------- */
+
+.hero{
+
+min-height:85vh;
+
+display:flex;
+
+align-items:center;
+
+}
+
 .kicker{
-  color:#FFD700;
-  letter-spacing:4px;
-  font-size:13px;
-  font-weight:bold;
-  margin-bottom:18px;
+
+color:#FFD700;
+
+letter-spacing:5px;
+
+font-size:13px;
+
+margin-bottom:18px;
+
 }
-.hero-owner h1{
-  font-size:clamp(46px,9vw,108px);
-  line-height:.95;
-  margin:0 0 22px;
-  color:#FFD700;
-  letter-spacing:-2px;
+
+.hero h1{
+
+font-size:clamp(52px,8vw,105px);
+
+line-height:.95;
+
+color:#FFD700;
+
+margin-bottom:25px;
+
 }
-.hero-owner h2{
-  font-size:clamp(24px,5vw,50px);
-  margin:0 0 20px;
+
+.hero h2{
+
+font-size:clamp(28px,4vw,52px);
+
+margin-bottom:25px;
+
+line-height:1.4;
+
 }
-.hero-owner p{
-  max-width:800px;
-  color:#ddd;
-  line-height:2;
-  font-size:17px;
+
+.hero p{
+
+max-width:760px;
+
+font-size:18px;
+
+line-height:2;
+
+color:#ddd;
+
 }
-.owner-buttons{
-  display:flex;
-  flex-wrap:wrap;
-  gap:14px;
-  margin-top:32px;
+
+.button-area{
+
+display:flex;
+
+gap:16px;
+
+flex-wrap:wrap;
+
+margin-top:35px;
+
 }
-.owner-btn{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  padding:15px 24px;
-  border-radius:999px;
-  font-weight:bold;
-  border:1px solid rgba(255,215,0,.45);
+
+.btn{
+
+padding:17px 34px;
+
+border-radius:999px;
+
+font-weight:bold;
+
+transition:.3s;
+
 }
-.owner-btn.gold{background:#FFD700;color:#000}
-.owner-btn.dark{background:rgba(255,255,255,.05);color:#FFD700}
-.section-title{text-align:center;margin:70px 0 34px}
-.section-title p{
-  color:#FFD700;
-  letter-spacing:4px;
-  font-size:13px;
+
+.btn-gold{
+
+background:#FFD700;
+
+color:#000;
+
 }
-.section-title h2{
-  font-size:clamp(30px,6vw,56px);
-  margin:10px 0;
+
+.btn-dark{
+
+border:1px solid rgba(255,215,0,.35);
+
+color:#FFD700;
+
+background:rgba(255,255,255,.04);
+
 }
-.grid{display:grid;gap:20px}
-.grid.two{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
-.grid.three{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
-.card,.campaign-card,.price-card,.reason-card,.option-card,.flow-card,.cta-box,.faq-card{
-  background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.025));
-  border:1px solid rgba(255,215,0,.22);
-  border-radius:26px;
-  padding:28px;
-  box-shadow:0 20px 60px rgba(0,0,0,.45);
+
+.btn:hover{
+
+transform:translateY(-4px);
+
 }
-.campaign-card{
-  position:relative;
-  overflow:hidden;
-  border-color:rgba(255,215,0,.55);
+
+/* ---------------- */
+
+.title{
+
+text-align:center;
+
+margin-bottom:45px;
+
 }
-.badge{
-  display:inline-block;
-  background:#FFD700;
-  color:#000;
-  padding:8px 14px;
-  border-radius:999px;
-  font-weight:bold;
-  margin-bottom:16px;
+
+.title p{
+
+color:#FFD700;
+
+letter-spacing:4px;
+
+font-size:13px;
+
 }
-.big-number{
-  font-size:clamp(38px,8vw,78px);
-  color:#FFD700;
-  font-weight:900;
-  line-height:1.1;
-  margin:12px 0;
+
+.title h2{
+
+font-size:clamp(34px,5vw,60px);
+
+margin-top:12px;
+
 }
-.note{color:#bbb;line-height:1.8}
-strong.gold{color:#FFD700}
-.card h3,.price-card h3,.reason-card strong,.option-card strong,.flow-card strong{
-  color:#FFD700;
-  font-size:22px;
-  margin:0 0 10px;
-  display:block;
+
+/* ---------------- */
+
+.card{
+
+background:
+
+linear-gradient(
+180deg,
+rgba(255,255,255,.08),
+rgba(255,255,255,.02)
+);
+
+border:
+
+1px solid rgba(255,215,0,.18);
+
+border-radius:28px;
+
+padding:35px;
+
+box-shadow:
+
+0 25px 60px rgba(0,0,0,.45);
+
+margin-bottom:24px;
+
 }
-.card p,.price-card p,.reason-card p,.option-card p,.flow-card p,.faq-card p{
-  color:#ccc;
-  line-height:1.8;
+
+.card h3{
+
+font-size:28px;
+
+color:#FFD700;
+
+margin-bottom:18px;
+
 }
-.price-main{
-  font-size:clamp(38px,7vw,68px);
-  color:#FFD700;
-  font-weight:900;
-  margin:12px 0;
+
+.card p{
+
+line-height:2;
+
+color:#ddd;
+
 }
-.price-main small{font-size:20px}
-.old-price{
-  color:#999;
-  text-decoration:line-through;
-  font-size:18px;
+
+/* ---------------- */
+
+.grid2{
+
+display:grid;
+
+grid-template-columns:
+
+repeat(auto-fit,minmax(320px,1fr));
+
+gap:24px;
+
 }
-.table-wrap{
-  overflow-x:auto;
-  border:1px solid rgba(255,215,0,.22);
-  border-radius:24px;
+
+.grid3{
+
+display:grid;
+
+grid-template-columns:
+
+repeat(auto-fit,minmax(260px,1fr));
+
+gap:24px;
+
 }
-.owner-table{
-  width:100%;
-  border-collapse:collapse;
-  min-width:760px;
-  background:rgba(255,255,255,.035);
+
+/* ---------------- */
+
+.price{
+
+font-size:70px;
+
+font-weight:900;
+
+color:#FFD700;
+
+margin:20px 0;
+
 }
-.owner-table th,.owner-table td{
-  padding:18px;
-  border-bottom:1px solid rgba(255,215,0,.16);
-  text-align:left;
-  vertical-align:top;
+
+.old{
+
+text-decoration:line-through;
+
+color:#888;
+
 }
-.owner-table th{
-  color:#FFD700;
-  background:rgba(255,215,0,.08);
+
+/* ---------------- */
+
+footer{
+
+padding:60px 20px;
+
+text-align:center;
+
+border-top:
+
+1px solid rgba(255,215,0,.15);
+
+color:#888;
+
 }
-.owner-table td{color:#eee}
-.flow-number{
-  width:48px;height:48px;border-radius:50%;
-  background:#FFD700;color:#000;
-  display:flex;align-items:center;justify-content:center;
-  font-weight:900;font-size:22px;margin-bottom:14px;
+
+/* ---------------- */
+
+@media(max-width:768px){
+
+.hero{
+
+min-height:auto;
+
+padding-top:20px;
+
 }
-.cta-box{
-  text-align:center;
-  margin-top:70px;
-  border-color:rgba(255,215,0,.55);
-  background:
-    radial-gradient(circle at top,rgba(255,215,0,.16),transparent 45%),
-    rgba(255,255,255,.04);
+
+nav{
+
+flex-direction:column;
+
+align-items:flex-start;
+
+gap:18px;
+
 }
-.cta-box h2{
-  font-size:clamp(32px,7vw,64px);
-  color:#FFD700;
-  margin:0 0 16px;
+
+.menu{
+
+gap:12px;
+
 }
-.owner-footer{
-  border-top:1px solid rgba(255,215,0,.18);
-  padding:34px 20px;
-  text-align:center;
-  color:#888;
+
+.hero h1{
+
+font-size:62px;
+
 }
-@media(max-width:760px){
-  .owner-nav{align-items:flex-start;flex-direction:column}
-  .hero-owner{min-height:auto;padding:36px 0 20px}
-  .owner-main{padding-top:28px}
+
+.hero h2{
+
+font-size:38px;
+
 }
+
+.price{
+
+font-size:52px;
+
+}
+
+section{
+
+padding:70px 0;
+
+}
+
+}
+
 </style>
+
 </head>
 
 <body>
 
-<header class="owner-header">
-  <div class="owner-nav">
-    <a href="index.html" class="owner-logo">
-      NOX
-      <small>Night Opens X</small>
-    </a>
+<header>
 
-    <nav class="owner-nav-links">
-      <a href="index.html">TOP</a>
-      <a href="#campaign">料金</a>
-      <a href="#simulation">シミュレーション</a>
-      <a href="#flow">流れ</a>
-      <a href="#contact">相談</a>
-    </nav>
-  </div>
+<div class="container">
+
+<nav>
+
+<a href="index.html" class="logo">
+
+NOX
+
+<small>Night Opens X</small>
+
+</a>
+
+<div class="menu">
+
+<a href="#campaign">料金</a>
+
+<a href="#reason">長期掲載</a>
+
+<a href="#flow">流れ</a>
+
+<a href="#partner">協業</a>
+
+<a href="#contact">相談</a>
+
+</div>
+
+</nav>
+
+</div>
+
 </header>
 
-<main class="owner-main">
+<main>
 
-<section class="hero-owner">
-  <div>
-    <p class="kicker">NOX FOR OWNER</p>
-    <h1>店舗掲載<br>サービス</h1>
-    <h2>店舗と求職者をつなぐ、新しい夜職求人プラットフォーム。</h2>
-    <p>
-      NOXは、全国の水商売・風俗求人を掲載できるナイトワーク求人サービスです。
-      掲載店舗様と一緒に成長しながら、求人を探す方にお店の魅力を届けていきます。
-    </p>
+<section class="hero">
 
-    <div class="owner-buttons">
-      <a href="#campaign" class="owner-btn gold">料金を見る</a>
-      <a href="https://lin.ee/SbQWdjo" target="_blank" rel="noopener" class="owner-btn dark">LINEで相談</a>
-    </div>
-  </div>
+<div class="container">
+
+<p class="kicker">
+
+NOX FOR OWNER
+
+</p>
+
+<h1>
+
+店舗掲載<br>
+
+サービス
+
+</h1>
+
+<h2>
+
+店舗と求職者をつなぐ、
+
+新しい夜職求人プラットフォーム。
+
+</h2>
+
+<p>
+
+NOXは全国の水商売・風俗求人を掲載できる求人プラットフォームです。
+
+掲載店舗様とともに成長し、
+
+全国の求職者へ店舗の魅力を届けます。
+
+</p>
+
+<div class="button-area">
+
+<a href="#campaign" class="btn btn-gold">
+
+料金を見る
+
+</a>
+
+<a href="https://lin.ee/SbQWdjo"
+
+target="_blank"
+
+class="btn btn-dark">
+
+LINEで相談
+
+</a>
+
+</div>
+
+</div>
+
 </section>
 <section id="campaign">
 
-<div class="section-title">
+<div class="container">
+
+<div class="title">
+
 <p>OPEN CAMPAIGN</p>
+
 <h2>オープン記念キャンペーン</h2>
+
 </div>
 
-<div class="campaign-card">
+<div class="card" style="border-color:rgba(255,215,0,.55);">
 
-<span class="badge">先着20店舗限定</span>
+<h3>🎉 先着20店舗限定</h3>
 
-<div class="big-number">
-500円（税込）
-</div>
+<p>
 
-<p class="note">
-現在契約店舗：<strong class="gold">1店舗</strong><br>
-残り：<strong class="gold">19店舗</strong><br><br>
+サービス開始直後の特別キャンペーンとして、
 
-先着20店舗到達後は終了となります。
+先着20店舗限定で月額掲載料金を特別価格でご案内しております。
+
 </p>
 
-<hr style="border-color:rgba(255,215,0,.15);margin:28px 0;">
+<div class="price">
 
-<h3 style="color:#FFD700;">21〜100店舗限定価格</h3>
+500円
 
-<div class="table-wrap">
-
-<table class="owner-table">
-
-<tr>
-<th>プラン</th>
-<th>オープン記念価格</th>
-<th>通常価格</th>
-</tr>
-
-<tr>
-<td>1ヶ月</td>
-<td><strong>980円</strong></td>
-<td>4,980円</td>
-</tr>
-
-<tr>
-<td>6ヶ月【おすすめ】</td>
-<td><strong>9,800円</strong></td>
-<td>29,880円</td>
-</tr>
-
-<tr>
-<td>12ヶ月【一番お得】</td>
-<td><strong>19,800円</strong></td>
-<td>59,760円</td>
-</tr>
-
-</table>
+<span style="font-size:22px;">（税込）</span>
 
 </div>
 
-<p class="note" style="margin-top:24px;">
-※101店舗以降は通常料金となります。<br>
-水商売：4,980円／月　風俗店：5,980円／月
+<p>
+
+現在契約店舗：<strong style="color:#FFD700;">1店舗</strong>
+
+<br>
+
+残り：<strong style="color:#FFD700;">19店舗</strong>
+
+<br><br>
+
+※先着20店舗に達し次第終了となります。
+
+</p>
+
+</div>
+
+<div class="grid3">
+
+<div class="card">
+
+<h3>1ヶ月プラン</h3>
+
+<p>まずはNOXを試したい店舗様向け。</p>
+
+<div class="old">通常 4,980円</div>
+
+<div class="price" style="font-size:54px;">980円</div>
+
+<p>
+
+✅ 初回 時間帯TOP掲載1回無料
+
+</p>
+
+</div>
+
+<div class="card" style="border-color:rgba(255,215,0,.55);">
+
+<h3>6ヶ月プラン【一番人気】</h3>
+
+<p>
+
+安定して求人露出を増やしたい店舗様へ。
+
+長期掲載の入口としておすすめです。
+
+</p>
+
+<div class="old">通常 29,880円</div>
+
+<div class="price" style="font-size:54px;">9,800円</div>
+
+<p>
+
+✅ 時間帯TOP掲載6回無料
+
+<br>
+
+✅ TOPポップ掲載3回無料
+
+</p>
+
+</div>
+
+<div class="card" style="border-color:rgba(255,215,0,.75);">
+
+<h3>12ヶ月プラン【一番お得】</h3>
+
+<p>
+
+NOXの成長を長期的に活用したい店舗様へ。
+
+将来的な露出を見込めるお得なプランです。
+
+</p>
+
+<div class="old">通常 59,760円</div>
+
+<div class="price" style="font-size:54px;">19,800円</div>
+
+<p>
+
+✅ 時間帯TOP掲載15回無料
+
+<br>
+
+✅ TOPポップ掲載12回無料
+
+</p>
+
+</div>
+
+</div>
+
+<p style="color:#aaa;line-height:1.9;margin-top:20px;">
+
+※21〜100店舗限定のオープン記念価格です。
+
+<br>
+
+※101店舗以降は通常料金となります。
+
+<br>
+
+通常料金：水商売 4,980円／月、風俗店 5,980円／月
+
 </p>
 
 </div>
 
 </section>
 
-<section>
+<section id="reason">
 
-<div class="section-title">
-<p>WHY LONG TERM</p>
+<div class="container">
+
+<div class="title">
+
+<p>LONG TERM VALUE</p>
+
 <h2>長期掲載がおすすめな理由</h2>
-</div>
-
-<div class="grid three">
-
-<div class="reason-card">
-<strong>📈 長く掲載するほど認知が広がる</strong>
-<p>
-求人サイトは掲載してすぐ応募が来るとは限りません。継続掲載により店舗を知ってもらう機会が増えます。
-</p>
-</div>
-
-<div class="reason-card">
-<strong>🚀 NOXはこれから成長</strong>
-<p>
-サービス開始直後のため、今後SNS・SEO・広告などで認知拡大を予定しています。
-</p>
-</div>
-
-<div class="reason-card">
-<strong>💎 今が一番お得</strong>
-<p>
-通常料金前のオープン記念価格で長期契約できる期間は今だけです。
-</p>
-</div>
 
 </div>
 
-</section>
+<div class="card">
 
-<section id="simulation">
-
-<div class="section-title">
-<p>SIMULATION</p>
-<h2>料金シミュレーション</h2>
-</div>
-
-<div class="grid three">
-
-<div class="price-card">
-
-<h3>1ヶ月</h3>
-
-<div class="price-main">
-980円
-</div>
-
-<p>
-まず試したい店舗様向け
-</p>
-
-</div>
-
-<div class="price-card">
-
-<h3>6ヶ月【おすすめ】</h3>
-
-<div class="old-price">
-通常29,880円
-</div>
-
-<div class="price-main">
-9,800円
-</div>
+<h3>📈 求人は、継続して見られることが大切です。</h3>
 
 <p>
 
-実質 約1,633円／月
+求人サイトは、掲載したその日に必ず応募が来るものではありません。
+
+求職者に何度もお店を見てもらい、
+
+店舗の存在や魅力を知ってもらうことで、
+
+応募につながる可能性が高まります。
 
 <br><br>
 
-✅ TOP時間帯掲載6回無料
+NOXは現在サービス開始直後ですが、
 
-<br>
+今後SNS運用・Web広告・SEO対策・掲載店舗数拡大を進め、
 
-✅ TOPポップ3回無料
-
-</p>
-
-</div>
-
-<div class="price-card">
-
-<h3>12ヶ月【一番お得】</h3>
-
-<div class="old-price">
-通常59,760円
-</div>
-
-<div class="price-main">
-19,800円
-</div>
-
-<p>
-
-実質 約1,650円／月
+サイト全体の集客力を高めていきます。
 
 <br><br>
 
-✅ TOP時間帯掲載15回無料
+<strong style="color:#FFD700;">
 
-<br>
+サービスが成長していく今だからこそ、
 
-✅ TOPポップ12回無料
+長期的に掲載していただくことで、
+
+NOXの成長とともに露出機会を広げていくことができます。
+
+</strong>
 
 </p>
+
+</div>
+
+<div class="grid3">
+
+<div class="card">
+
+<h3>🚀 これから伸びる</h3>
+
+<p>
+
+サービス開始直後だからこそ、
+
+これから店舗数・求職者数・認知拡大を進めていきます。
+
+</p>
+
+</div>
+
+<div class="card">
+
+<h3>👀 継続露出</h3>
+
+<p>
+
+長く掲載することで、
+
+求職者の目に触れる回数が増え、
+
+店舗認知につながります。
+
+</p>
+
+</div>
+
+<div class="card">
+
+<h3>💰 今だけ価格</h3>
+
+<p>
+
+通常料金前のオープン記念価格で
+
+長期掲載できるのは今だけです。
+
+</p>
+
+</div>
 
 </div>
 
@@ -449,101 +779,152 @@ strong.gold{color:#FFD700}
 </section>
 <section id="option">
 
-<div class="section-title">
-<p>OPTION</p>
+<div class="container">
+
+<div class="title">
+
+<p>OPTION SERVICE</p>
+
 <h2>オプションサービス</h2>
-</div>
-
-<div class="table-wrap">
-
-<table class="owner-table">
-
-<tr>
-<th>サービス</th>
-<th>契約期間</th>
-<th>内容</th>
-</tr>
-
-<tr>
-<td>👑 TOP時間帯掲載</td>
-<td>1ヶ月・6ヶ月・12ヶ月</td>
-<td>時間帯ごとのTOPへ優先表示</td>
-</tr>
-
-<tr>
-<td>⭐ TOPポップ掲載</td>
-<td>1ヶ月・6ヶ月・12ヶ月</td>
-<td>トップページへ大きく表示</td>
-</tr>
-
-<tr>
-<td>📍 エリアおすすめ表示</td>
-<td>1ヶ月・6ヶ月・12ヶ月</td>
-<td>エリアページ上位表示</td>
-</tr>
-
-<tr>
-<td>📢 バナー広告</td>
-<td>1ヶ月・6ヶ月・12ヶ月</td>
-<td>トップページ・各ページへ広告掲載</td>
-</tr>
-
-</table>
 
 </div>
 
-<p class="note" style="margin-top:20px;">
-初回契約時にオプションをご案内いたします。<br>
-ご希望の場合は掲載料金と合わせてご入金いただき、掲載開始日（反映日）より契約開始となります。<br><br>
+<div class="card">
 
-掲載開始後にオプションを追加した場合は、オプションの反映日を契約開始日として1ヶ月・6ヶ月・12ヶ月の契約期間を計算いたします。
+<h3>💳 初回契約時にオプションもご案内します</h3>
+
+<p>
+
+通常掲載に加えて、
+
+TOP時間帯掲載・TOPポップ掲載・バナー広告・エリアおすすめ表示などの
+
+オプションサービスをご用意しております。
+
+<br><br>
+
+ご希望の場合は、掲載料金と合わせてご入金いただき、
+
+掲載開始日（反映日）よりサービスを開始いたします。
+
 </p>
+
+</div>
+
+<div class="grid2">
+
+<div class="card">
+
+<h3>⭐ TOP時間帯掲載</h3>
+
+<p>
+
+時間帯ごとにTOPへ表示。
+
+希望時間帯に店舗を目立たせたい場合におすすめです。
+
+</p>
+
+</div>
+
+<div class="card">
+
+<h3>👑 TOPポップ掲載</h3>
+
+<p>
+
+トップページ上部へ大きく掲載。
+
+掲載開始直後から注目を集めたい店舗様向けです。
+
+</p>
+
+</div>
+
+<div class="card">
+
+<h3>📍 エリアおすすめ表示</h3>
+
+<p>
+
+エリアページでおすすめ店舗として表示。
+
+地域で探している求職者にアピールできます。
+
+</p>
+
+</div>
+
+<div class="card">
+
+<h3>📢 バナー広告</h3>
+
+<p>
+
+NOX内に広告バナーを掲載。
+
+店舗・企業・サービスのPRに活用できます。
+
+</p>
+
+</div>
+
+</div>
+
+<div class="card">
+
+<h3>📅 オプション契約期間</h3>
+
+<p>
+
+オプション契約期間は
+
+<strong style="color:#FFD700;">1ヶ月・6ヶ月・12ヶ月</strong>
+
+からお選びいただけます。
+
+<br><br>
+
+掲載開始後にオプションを追加した場合は、
+
+<strong style="color:#FFD700;">オプション反映日</strong>
+
+を契約開始日として契約期間を計算いたします。
+
+</p>
+
+</div>
+
+</div>
 
 </section>
 
 <section id="flow">
 
-<div class="section-title">
+<div class="container">
+
+<div class="title">
+
 <p>FLOW</p>
+
 <h2>掲載までの流れ</h2>
+
 </div>
 
-<div class="grid two">
+<div class="grid3">
 
-<div class="flow-card">
-<div class="flow-number">1</div>
-<strong>掲載申請</strong>
-<p>掲載フォームまたはLINEよりお申し込み。</p>
-</div>
+<div class="card"><h3>① 掲載申請</h3><p>フォームまたはLINEより掲載希望をご連絡ください。</p></div>
 
-<div class="flow-card">
-<div class="flow-number">2</div>
-<strong>内容確認</strong>
-<p>求人内容・店舗情報を確認いたします。</p>
-</div>
+<div class="card"><h3>② 内容確認</h3><p>店舗情報・求人内容・掲載内容を確認いたします。</p></div>
 
-<div class="flow-card">
-<div class="flow-number">3</div>
-<strong>契約書送付</strong>
-<p>PDF契約書へ署名・返送していただきます。</p>
-</div>
+<div class="card"><h3>③ 契約書送付</h3><p>掲載契約書PDFを送付いたします。</p></div>
 
-<div class="flow-card">
-<div class="flow-number">4</div>
-<strong>ご入金</strong>
-<p>掲載料金・オプション料金をご入金いただきます。</p>
-</div>
+<div class="card"><h3>④ 署名・返送</h3><p>内容確認後、署名してご返送ください。</p></div>
 
-<div class="flow-card">
-<div class="flow-number">5</div>
-<strong>掲載開始</strong>
-<p>入金確認後、求人を反映します。</p>
-</div>
+<div class="card"><h3>⑤ ご入金</h3><p>掲載料金・オプション料金をご入金いただきます。</p></div>
 
-<div class="flow-card">
-<div class="flow-number">6</div>
-<strong>掲載スタート</strong>
-<p>掲載開始日を基準に契約期間が開始します。</p>
+<div class="card"><h3>⑥ 掲載開始</h3><p>入金確認後、求人ページを作成しNOXへ反映します。</p></div>
+
 </div>
 
 </div>
@@ -552,32 +933,106 @@ strong.gold{color:#FFD700}
 
 <section>
 
-<div class="section-title">
-<p>TOP TIME</p>
-<h2>TOP時間帯掲載ルール</h2>
+<div class="container">
+
+<div class="title">
+
+<p>UPDATE / CANCEL</p>
+
+<h2>更新・解約について</h2>
+
+</div>
+
+<div class="grid2">
+
+<div class="card">
+
+<h3>🔄 更新について</h3>
+
+<p>
+
+契約終了前にNOX運営より更新のご案内をいたします。
+
+<br><br>
+
+掲載終了をご希望の場合は、
+
+契約満了日までにご連絡ください。
+
+<br><br>
+
+ご連絡がない場合は掲載を継続し、
+
+次回契約分の掲載料金が発生いたします。
+
+</p>
+
 </div>
 
 <div class="card">
 
-<h3>基本ルール</h3>
+<h3>❌ 解約について</h3>
 
 <p>
 
-・契約・入金確認順（先着順）
+解約金・違約金はありません。
 
-<br>
+<br><br>
 
-・契約期間中の順位変更なし
+契約満了日までにご連絡いただければ、
 
-<br>
+更新料金は発生いたしません。
 
-・契約期間中の時間帯変更なし
+<br><br>
+
+ご連絡がない場合は継続掲載となります。
 
 </p>
 
-<hr style="border-color:rgba(255,215,0,.15);margin:24px 0;">
+</div>
 
-<h3>キャンセル待ち</h3>
+</div>
+
+</div>
+
+</section>
+<section>
+
+<div class="container">
+
+<div class="title">
+
+<p>TOP TIME RULE</p>
+
+<h2>TOP時間帯掲載ルール</h2>
+
+</div>
+
+<div class="grid2">
+
+<div class="card">
+
+<h3>⭐ 基本ルール</h3>
+
+<p>
+
+TOP時間帯掲載は、
+
+<strong style="color:#FFD700;">契約・入金確認順（先着順）</strong>
+
+で掲載いたします。
+
+<br><br>
+
+契約期間中は、掲載順位・掲載時間帯の変更は行いません。
+
+</p>
+
+</div>
+
+<div class="card">
+
+<h3>⏳ キャンセル待ち</h3>
 
 <p>
 
@@ -585,79 +1040,89 @@ strong.gold{color:#FFD700}
 
 <br><br>
 
-キャンセル待ちは自由に取消できます。
+キャンセル待ちはいつでも取消可能です。
 
 <br><br>
 
-キャンセルが発生した場合は
+キャンセルが発生した場合は、
 
-<strong class="gold">先着順で自動繰り上げ掲載</strong>
+<strong style="color:#FFD700;">先着順で自動繰り上げ掲載</strong>
 
 となります。
 
 </p>
 
-<hr style="border-color:rgba(255,215,0,.15);margin:24px 0;">
+</div>
 
-<h3>更新時優先</h3>
+<div class="card">
+
+<h3>👑 更新時優先</h3>
 
 <p>
 
-6ヶ月・12ヶ月契約のお客様は
+6ヶ月・12ヶ月契約のお客様は、
 
-<strong class="gold">契約更新時に人気時間帯を優先案内</strong>
-
-いたします。
+契約更新時に人気時間帯を優先的にご案内いたします。
 
 <br><br>
 
-契約期間中に掲載時間帯を変更することはありません。
+1ヶ月契約のお客様には、更新時に空き状況に応じて
+
+別時間帯をご案内する場合があります。
 
 </p>
+
+</div>
+
+<div class="card">
+
+<h3>🛡 契約期間中は安心</h3>
+
+<p>
+
+契約期間中に、時間帯変更・掲載終了をお願いすることはありません。
+
+<br><br>
+
+ご契約いただいた内容を尊重して運営いたします。
+
+</p>
+
+</div>
+
+</div>
 
 </div>
 
 </section>
+
 <section>
 
-<div class="section-title">
+<div class="container">
+
+<div class="title">
+
 <p>SUPPORT CAMPAIGN</p>
+
 <h2>NOX応援店舗キャンペーン</h2>
+
 </div>
 
-<div class="grid two">
+<div class="grid2">
 
 <div class="card">
 
-<h3>🏅 NOX応援店舗募集</h3>
+<h3>🏅 ポスター掲示で特典</h3>
 
 <p>
 
-店内へNOX求人ポスターを掲示していただける店舗様限定キャンペーンです。
+NOX求人ポスターを店内に掲示していただける店舗様限定キャンペーンです。
 
 <br><br>
 
-掲示場所
+掲示場所は、店舗入口・レジ横・お手洗い・スタッフルームなど、
 
-<br>
-
-・店舗入口
-
-<br>
-
-・レジ横
-
-<br>
-
-・お手洗い
-
-<br>
-
-・スタッフルーム
-
-<br>
-
-・その他目立つ場所
+目立つ場所であればOKです。
 
 </p>
 
@@ -665,17 +1130,33 @@ strong.gold{color:#FFD700}
 
 <div class="card">
 
-<h3>🎁 特典</h3>
+<h3>📸 写真を送るだけ</h3>
 
 <p>
 
-ポスター掲示後のお写真を
-
-LINEまたはメールで送るだけ。
+ポスター掲示後、写真をLINEまたはメールでお送りください。
 
 <br><br>
 
-お好きな特典を1つプレゼント
+写真確認後、キャンペーン特典を付与いたします。
+
+<br><br>
+
+必要に応じて掲示状況を確認させていただく場合があります。
+
+</p>
+
+</div>
+
+</div>
+
+<div class="card">
+
+<h3>🎁 選べる特典</h3>
+
+<p>
+
+以下よりお好きなものを1つお選びいただけます。
 
 <br><br>
 
@@ -683,51 +1164,154 @@ LINEまたはメールで送るだけ。
 
 <br>
 
-または
-
-<br>
-
 ✅ TOPポップ掲載3回無料
-
-<br>
-
-または
 
 <br>
 
 ✅ 翌月掲載料1,000円OFF
 
-</p>
-
-</div>
-
-</div>
-
-<div class="card" style="margin-top:20px;">
-
-<h3>📸 ご利用条件</h3>
-
-<p>
-
-ポスター掲示後のお写真をご提出ください。
-
-<br><br>
-
-写真確認後、特典を付与いたします。
-
-<br><br>
-
-必要に応じて掲示状況を確認させていただく場合があります。
-
 <br><br>
 
 掲示店舗には
 
-<strong class="gold">「NOX応援店舗」</strong>
+<strong style="color:#FFD700;">「NOX応援店舗」バッジ</strong>
 
-バッジを店舗ページへ表示いたします。
+を店舗ページへ表示いたします。
 
 </p>
+
+</div>
+
+</div>
+
+</section>
+<section id="partner">
+
+<div class="container">
+
+<div class="title">
+
+<p>FOUNDING PARTNER</p>
+
+<h2>🚀 NOX 創業パートナー募集</h2>
+
+</div>
+
+<div class="card" style="border:1px solid rgba(255,215,0,.45);">
+
+<h3>NOXと一緒に成長していただける企業様を募集しています。</h3>
+
+<p>
+
+NOXでは現在、
+
+<strong style="color:#FFD700;">
+
+スポンサー企業様・協業企業様・創業パートナー様
+
+</strong>
+
+を募集しております。
+
+<br><br>
+
+サービス開始直後だからこそ、
+
+長期的にNOXと共に歩んでいただける企業様とのご縁を大切にしております。
+
+</p>
+
+<div class="button-area">
+
+<a
+
+href="https://gamma.app/docs/NOX-hx45zfeyqk121f4"
+
+target="_blank"
+
+class="btn btn-gold">
+
+📊 NOX事業資料を見る
+
+</a>
+
+<a
+
+href="https://lin.ee/SbQWdjo"
+
+target="_blank"
+
+class="btn btn-dark">
+
+🤝 協業・スポンサー相談
+
+</a>
+
+</div>
+
+</div>
+
+<div class="grid3">
+
+<div class="card">
+
+<h3>🏆 Founding Partner</h3>
+
+<p>
+
+創業パートナーとして
+
+企業名・ロゴを掲載。
+
+初期から支えていただいた企業様としてご紹介いたします。
+
+</p>
+
+</div>
+
+<div class="card">
+
+<h3>📢 パートナー特典</h3>
+
+<p>
+
+・スポンサー認定
+
+<br>
+
+・広告掲載優待
+
+<br>
+
+・協業優先案内
+
+<br>
+
+・新サービス先行案内
+
+</p>
+
+</div>
+
+<div class="card">
+
+<h3>📈 共に成長</h3>
+
+<p>
+
+NOXは今後、
+
+SNS・広告・SEO・機能追加を進め、
+
+全国規模のサービスを目指します。
+
+共に成長していただける企業様を募集しております。
+
+</p>
+
+</div>
+
+</div>
 
 </div>
 
@@ -735,31 +1319,74 @@ LINEまたはメールで送るだけ。
 
 <section>
 
-<div class="section-title">
+<div class="container">
+
+<div class="title">
+
 <p>FAQ</p>
-<h2>よくある質問</h2>
+
+<h2>よくあるご質問</h2>
+
 </div>
 
-<div class="grid two">
+<div class="grid2">
 
-<div class="faq-card">
-<h3>掲載までどれくらい？</h3>
-<p>契約書返送・ご入金確認後、通常1〜3営業日以内に掲載いたします。</p>
+<div class="card">
+
+<h3>掲載開始までどれくらいですか？</h3>
+
+<p>
+
+契約書返送・ご入金確認後、
+
+通常1〜3営業日以内に掲載いたします。
+
+</p>
+
 </div>
 
-<div class="faq-card">
+<div class="card">
+
 <h3>掲載内容は変更できますか？</h3>
-<p>掲載期間中いつでも修正対応いたします。</p>
+
+<p>
+
+はい。
+
+掲載期間中はいつでも修正対応いたします。
+
+</p>
+
 </div>
 
-<div class="faq-card">
-<h3>解約できますか？</h3>
-<p>解約金・違約金はありません。契約満了日までにご連絡ください。</p>
+<div class="card">
+
+<h3>解約金はありますか？</h3>
+
+<p>
+
+ありません。
+
+契約満了日までにご連絡いただければ更新料金も発生いたしません。
+
+</p>
+
 </div>
 
-<div class="faq-card">
-<h3>TOP時間帯が満枠だったら？</h3>
-<p>キャンセル待ち登録となり、空きが出た場合は先着順で自動繰り上げとなります。</p>
+<div class="card">
+
+<h3>TOP時間帯が満枠だった場合は？</h3>
+
+<p>
+
+キャンセル待ちとなります。
+
+空きが出た場合は先着順で自動繰り上げとなります。
+
+</p>
+
+</div>
+
 </div>
 
 </div>
@@ -768,11 +1395,17 @@ LINEまたはメールで送るだけ。
 
 <section id="contact">
 
-<div class="cta-box">
+<div class="container">
 
-<h2>掲載相談受付中</h2>
+<div class="card" style="text-align:center;border:1px solid rgba(255,215,0,.45);">
 
-<p>
+<h2 style="color:#FFD700;font-size:48px;margin-bottom:20px;">
+
+掲載相談受付中
+
+</h2>
+
+<p style="font-size:18px;line-height:2;">
 
 掲載についてのご相談・ご質問は
 
@@ -780,7 +1413,7 @@ LINEまたはメールで送るだけ。
 
 <br><br>
 
-「話だけ聞いてみたい」
+「話だけ聞きたい」
 
 「料金だけ知りたい」
 
@@ -788,15 +1421,25 @@ LINEまたはメールで送るだけ。
 
 </p>
 
-<div class="owner-buttons" style="justify-content:center;">
+<div class="button-area" style="justify-content:center;">
 
-<a href="https://lin.ee/SbQWdjo" target="_blank" class="owner-btn gold">
+<a
+
+href="https://lin.ee/SbQWdjo"
+
+target="_blank"
+
+class="btn btn-gold">
 
 LINEで無料相談する
 
 </a>
 
-<a href="index.html" class="owner-btn dark">
+<a
+
+href="index.html"
+
+class="btn btn-dark">
 
 求職者ページへ戻る
 
@@ -806,25 +1449,38 @@ LINEで無料相談する
 
 </div>
 
+</div>
+
 </section>
 
 </main>
 
-<footer class="owner-footer">
+<footer>
 
-<h2 style="color:#FFD700;margin-bottom:10px;">
+<div class="container">
+
+<h2 style="color:#FFD700;font-size:34px;margin-bottom:12px;">
+
 NOX for Owner
+
 </h2>
 
 <p>
+
 Night Opens X
+
 </p>
 
-<p style="margin-top:15px;">
+<p style="margin-top:18px;">
+
 © 2026 NOX All Rights Reserved.
+
 </p>
+
+</div>
 
 </footer>
 
 </body>
+
 </html>
