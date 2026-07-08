@@ -92,9 +92,12 @@ const jobList = document.getElementById("jobList");
       <p>🍸 ${data.businessType}</p>
       <p>💰 ${data.salary}</p>
 
-      <button class="gold-btn" style="margin-top:12px;">
-        詳細を見る
-      </button>
+      <button
+class="gold-btn detailBtn"
+style="margin-top:12px;"
+data-store='${JSON.stringify(data)}'>
+詳細を見る
+</button>
     `;
 
     jobList.appendChild(card);
