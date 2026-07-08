@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NOX｜求人掲載申請</title>
+  <style>
+    body{margin:0;background:#050505;color:#fff;font-family:Arial,sans-serif;padding:24px}
+    .logo{color:#d4af37;font-size:42px;font-weight:900;margin-bottom:6px}
+    .sub{color:#aaa;margin-bottom:30px}
+    .box{background:#121212;border:1px solid #2a2a2a;border-radius:20px;padding:22px}
+    label{display:block;margin-top:16px;color:#ccc}
+    input,textarea{width:100%;box-sizing:border-box;margin-top:8px;padding:14px;border-radius:12px;border:1px solid #333;background:#080808;color:#fff;font-size:16px}
+    textarea{min-height:130px}
+    button{width:100%;margin-top:24px;padding:16px;border:0;border-radius:14px;background:#d4af37;color:#000;font-size:17px;font-weight:800}
+    a{display:block;margin-top:20px;color:#d4af37;text-decoration:none}
+  </style>
+</head>
+<body>
+
+  <div class="logo">NOX</div>
+  <div class="sub">求人掲載申請</div>
+
+  <div class="box">
+    <label>求人タイトル</label>
+    <input id="jobTitle" placeholder="例：ガールズバーキャスト募集">
+
+    <label>エリア</label>
+    <input id="jobArea" placeholder="例：千葉・富士見">
+
+    <label>時給</label>
+    <input id="jobSalary" placeholder="例：時給3,000円〜">
+
+    <label>勤務時間</label>
+    <input id="jobHours" placeholder="例：20:00〜LAST">
+
+    <label>求人PR</label>
+    <textarea id="jobPr" placeholder="お店の雰囲気、待遇、未経験歓迎など"></textarea>
+
+    <button onclick="alert('次にFirebase保存をつなげます')">掲載申請する</button>
+
+    <a href="store-dashboard.html">← 店舗管理画面に戻る</a>
+  </div>
+
+</body>
+</html>
