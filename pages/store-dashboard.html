@@ -294,28 +294,22 @@ onAuthStateChanged(auth, async(user)=>{
 await loadJobs();
   
 });
-
 window.showPage = function(id, btn){
 
-  const pages = [
-    "dashboard",
-    "jobs",
-    "apps",
-    "store",
-    "pay",
-    "support"
-  ];
+  const pages = ["dashboard","jobs","apps","store","pay","support"];
 
   pages.forEach(pageId=>{
-    const page=document.getElementById(pageId);
+    const page = document.getElementById(pageId);
     if(page){
-      page.style.display="none";
+      page.classList.add("hidden");
+      page.style.display = "none";
     }
   });
 
-  const target=document.getElementById(id);
+  const target = document.getElementById(id);
   if(target){
-    target.style.display="block";
+    target.classList.remove("hidden");
+    target.style.display = "block";
   }
 
   document.querySelectorAll(".menu button").forEach(button=>{
@@ -324,9 +318,9 @@ window.showPage = function(id, btn){
 
   btn.classList.add("active");
 
-  window.scrollTo({
-    top:0,
-    behavior:"smooth"
+  document.querySelector(".main").scrollIntoView({
+    behavior:"smooth",
+    block:"start"
   });
 
 }
@@ -424,7 +418,6 @@ window.saveStoreInfo = async function(){
   alert("店舗情報を保存しました");
 }
 
-}
   window.logout = async function(){
 
   if(confirm("ログアウトしますか？")){
