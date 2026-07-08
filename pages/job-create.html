@@ -1,46 +1,288 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NOX｜求人掲載申請</title>
-  <style>
-    body{margin:0;background:#050505;color:#fff;font-family:Arial,sans-serif;padding:24px}
-    .logo{color:#d4af37;font-size:42px;font-weight:900;margin-bottom:6px}
-    .sub{color:#aaa;margin-bottom:30px}
-    .box{background:#121212;border:1px solid #2a2a2a;border-radius:20px;padding:22px}
-    label{display:block;margin-top:16px;color:#ccc}
-    input,textarea{width:100%;box-sizing:border-box;margin-top:8px;padding:14px;border-radius:12px;border:1px solid #333;background:#080808;color:#fff;font-size:16px}
-    textarea{min-height:130px}
-    button{width:100%;margin-top:24px;padding:16px;border:0;border-radius:14px;background:#d4af37;color:#000;font-size:17px;font-weight:800}
-    a{display:block;margin-top:20px;color:#d4af37;text-decoration:none}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>NOX | 求人掲載申請</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;
+}
+
+body{
+    background:#050505;
+    color:white;
+    padding:25px;
+}
+
+.logo{
+    font-size:56px;
+    font-weight:900;
+    color:#d4af37;
+    margin-bottom:8px;
+}
+
+.sub{
+    color:#999;
+    margin-bottom:30px;
+    font-size:18px;
+}
+
+.card{
+    background:#141414;
+    border:1px solid #2c2c2c;
+    border-radius:22px;
+    padding:24px;
+    margin-bottom:28px;
+}
+
+.section-title{
+    color:#d4af37;
+    font-size:22px;
+    font-weight:bold;
+    margin-bottom:20px;
+}
+
+label{
+    display:block;
+    margin-top:18px;
+    margin-bottom:8px;
+    color:#ddd;
+    font-weight:600;
+}
+
+input,
+select,
+textarea{
+    width:100%;
+    background:#080808;
+    color:white;
+    border:1px solid #333;
+    border-radius:14px;
+    padding:14px;
+    font-size:16px;
+}
+
+textarea{
+    min-height:130px;
+    resize:vertical;
+}
+
+small{
+    color:#888;
+    display:block;
+    margin-top:6px;
+}
+
+button{
+    width:100%;
+    background:#d4af37;
+    color:#000;
+    border:none;
+    border-radius:16px;
+    padding:18px;
+    font-size:18px;
+    font-weight:bold;
+    margin-top:30px;
+}
+
+</style>
+
 </head>
+
 <body>
 
-  <div class="logo">NOX</div>
-  <div class="sub">求人掲載申請</div>
+<div class="logo">NOX</div>
+<div class="sub">掲載情報入力フォーム</div>
 
-  <div class="box">
-    <label>求人タイトル</label>
-    <input id="jobTitle" placeholder="例：ガールズバーキャスト募集">
+<div class="card">
 
-    <label>エリア</label>
-    <input id="jobArea" placeholder="例：千葉・富士見">
+<div class="section-title">
+■ 基本情報
+</div>
 
-    <label>時給</label>
-    <input id="jobSalary" placeholder="例：時給3,000円〜">
+<label>店舗名</label>
+<input type="text" placeholder="例：Girls Bar NOX 新宿店">
 
-    <label>勤務時間</label>
-    <input id="jobHours" placeholder="例：20:00〜LAST">
+<label>業種</label>
 
-    <label>求人PR</label>
-    <textarea id="jobPr" placeholder="お店の雰囲気、待遇、未経験歓迎など"></textarea>
+<select>
+<option>ガールズバー</option>
+<option>キャバクラ</option>
+<option>コンカフェ</option>
+<option>ラウンジ</option>
+<option>スナック</option>
+<option>クラブ</option>
+<option>その他</option>
+</select>
 
-    <button onclick="alert('次にFirebase保存をつなげます')">掲載申請する</button>
+<label>エリア</label>
+<input type="text" placeholder="例：東京都新宿区">
 
-    <a href="store-dashboard.html">← 店舗管理画面に戻る</a>
-  </div>
+<label>店舗住所</label>
+<input type="text" placeholder="例：東京都新宿区歌舞伎町1-○-○">
+
+<label>最寄駅</label>
+<input type="text" placeholder="例：JR新宿駅 徒歩5分">
+
+<label>営業時間</label>
+<input type="text" placeholder="例：20:00〜LAST">
+
+<label>定休日</label>
+<input type="text" placeholder="例：日曜日">
+
+</div>
+<div class="card">
+
+<div class="section-title">
+■ 求人情報
+</div>
+
+<label>時給</label>
+<input type="text" placeholder="例：時給3,500円〜">
+
+<label>各種バック</label>
+<input type="text" placeholder="例：ドリンクバック・ボトルバックあり">
+
+<label>日払い</label>
+<select>
+<option>あり</option>
+<option>なし</option>
+</select>
+
+<label>体験入店</label>
+<select>
+<option>可能</option>
+<option>不可</option>
+</select>
+
+<label>未経験歓迎</label>
+<select>
+<option>はい</option>
+<option>いいえ</option>
+</select>
+
+<label>採用年齢</label>
+<input type="text" placeholder="例：18歳〜35歳">
+
+<label>ノルマ</label>
+<select>
+<option>なし</option>
+<option>あり</option>
+</select>
+
+<label>ペナルティ</label>
+<select>
+<option>なし</option>
+<option>あり</option>
+</select>
+
+<label>シフト</label>
+<input type="text" placeholder="例：自由シフト・週1日からOK">
+
+</div>
+<div class="card">
+
+<div class="section-title">
+■ お店について
+</div>
+
+<label>お店のPR</label>
+<textarea placeholder="例：未経験者大歓迎！ノルマなし・全額日払いOK・送りあり・アットホームなお店です。"></textarea>
+
+<label>お店の雰囲気</label>
+<textarea placeholder="例：スタッフ同士の仲が良く、未経験の方でも安心して働ける環境です。"></textarea>
+
+<label>客層</label>
+<input type="text" placeholder="例：20代〜50代の落ち着いたお客様が中心">
+
+<label>在籍人数</label>
+<input type="text" placeholder="例：20名">
+
+<label>年齢層</label>
+<input type="text" placeholder="例：20歳〜30歳">
+
+</div>
+
+<div class="card">
+
+<div class="section-title">
+■ 掲載用画像
+</div>
+
+<label>ロゴ（あれば）</label>
+<input type="file" accept="image/*">
+
+<label>店舗外観</label>
+<input type="file" accept="image/*">
+
+<label>店内写真</label>
+<input type="file" accept="image/*" multiple>
+
+<label>求人画像（あれば）</label>
+<input type="file" accept="image/*">
+
+<small>
+※現在は画像アップロード機能の準備中です。後ほどFirebase Storageと連携予定です。
+</small>
+
+</div>
+<div class="card">
+
+<div class="section-title">
+■ SNS・連絡先
+</div>
+
+<label>ホームページ</label>
+<input type="url" placeholder="例：https://example.com">
+
+<label>Instagram</label>
+<input type="url" placeholder="例：https://www.instagram.com/nox_shinjuku">
+
+<label>TikTok</label>
+<input type="url" placeholder="例：https://www.tiktok.com/@nox_shinjuku">
+
+<label>X（Twitter）</label>
+<input type="url" placeholder="例：https://x.com/nox_shinjuku">
+
+<label>公式LINE</label>
+<input type="url" placeholder="例：https://lin.ee/xxxxxxxx">
+
+<label>応募用電話番号</label>
+<input type="tel" placeholder="例：03-1234-5678">
+
+</div>
+
+<div class="card">
+
+<div class="section-title">
+■ 担当者様
+</div>
+
+<label>ご担当者名</label>
+<input type="text" placeholder="例：山田">
+
+<label>ご連絡先</label>
+<input type="text" placeholder="例：090-1234-5678 または メールアドレス">
+
+</div>
+
+<button type="button">
+📤 掲載申請する
+</button>
+
+<br><br>
+
+<div style="text-align:center;color:#888;font-size:14px;line-height:1.8;">
+掲載申請後、NOX運営にて内容を確認し、<br>
+承認完了後に求人ページへ公開されます。
+</div>
 
 </body>
 </html>
