@@ -1,266 +1,199 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NOX 店舗管理画面</title>
-  <style>
-    *{box-sizing:border-box}
-    body{margin:0;font-family:Arial,"Hiragino Kaku Gothic ProN",Meiryo,sans-serif;background:#080808;color:#fff}
-    .wrap{display:flex;min-height:100vh}
-    .side{width:240px;background:#050505;border-right:1px solid #222;padding:24px 16px;position:fixed;height:100vh}
-    .logo{font-size:28px;font-weight:bold;color:#d6a84f;margin-bottom:6px}
-    .sub{font-size:12px;color:#aaa;margin-bottom:28px}
-    .menu button{width:100%;background:none;border:0;color:#ddd;text-align:left;padding:14px;border-radius:12px;font-size:15px;margin-bottom:6px}
-    .menu button:hover,.menu button.active{background:#151515;color:#d6a84f}
-    .main{margin-left:240px;padding:28px;width:100%}
-    h1{font-size:24px;margin:0 0 6px}
-    .desc{color:#aaa;margin-bottom:24px}
-    .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:24px}
-    .card{background:#111;border:1px solid #222;border-radius:18px;padding:20px}
-    .card p{color:#aaa;margin:0 0 10px;font-size:13px}
-    .card strong{font-size:28px;color:#d6a84f}
-    .panel{background:#111;border:1px solid #222;border-radius:18px;padding:20px;margin-bottom:20px}
-    .panel h2{margin:0 0 16px;font-size:18px}
-    input,textarea{width:100%;background:#080808;border:1px solid #333;color:#fff;border-radius:10px;padding:12px;margin-bottom:12px}
-    textarea{min-height:90px}
-    .btn{background:#d6a84f;color:#000;border:0;border-radius:12px;padding:12px 18px;font-weight:bold;cursor:pointer}
-    .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    table{width:100%;border-collapse:collapse}
-    th,td{border-bottom:1px solid #222;padding:12px;text-align:left;font-size:14px}
-    th{color:#aaa}
-    .tag{display:inline-block;padding:5px 10px;border-radius:999px;background:#1b1b1b;color:#d6a84f;font-size:12px}
-    .hidden{display:none}
-    @media(max-width:800px){
-      .wrap{display:block}
-      .side{position:relative;width:100%;height:auto}
-      .main{margin-left:0;padding:18px}
-      .row{grid-template-columns:1fr}
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NOX 店舗管理画面</title>
+
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,"Hiragino Kaku Gothic ProN",Meiryo,sans-serif;background:#080808;color:#fff}
+.wrap{display:flex;min-height:100vh}
+.side{width:240px;background:#050505;border-right:1px solid #222;padding:24px 16px;position:fixed;height:100vh}
+.logo{font-size:28px;font-weight:bold;color:#d6a84f;margin-bottom:6px}
+.sub{font-size:12px;color:#aaa;margin-bottom:28px}
+.menu button{width:100%;background:none;border:0;color:#ddd;text-align:left;padding:14px;border-radius:12px;font-size:15px;margin-bottom:6px}
+.menu button:hover,.menu button.active{background:#151515;color:#d6a84f}
+.main{margin-left:240px;padding:28px;width:100%}
+h1{font-size:24px;margin:0 0 6px}
+.desc{color:#aaa;margin-bottom:24px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:24px}
+.card{background:#111;border:1px solid #222;border-radius:18px;padding:20px}
+.card p{color:#aaa;margin:0 0 10px;font-size:13px}
+.card strong{font-size:28px;color:#d6a84f}
+.panel{background:#111;border:1px solid #222;border-radius:18px;padding:20px;margin-bottom:20px}
+.panel h2{margin:0 0 16px;font-size:18px}
+input,textarea,select{width:100%;background:#080808;border:1px solid #333;color:#fff;border-radius:10px;padding:12px;margin-bottom:12px}
+textarea{min-height:90px}
+.btn{background:#d6a84f;color:#000;border:0;border-radius:12px;padding:10px 14px;font-weight:bold;cursor:pointer;text-decoration:none;display:inline-block}
+.btn.gray{background:#222;color:#fff}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+table{width:100%;border-collapse:collapse}
+th,td{border-bottom:1px solid #222;padding:12px;text-align:left;font-size:14px;vertical-align:top}
+th{color:#aaa}
+.tag{display:inline-block;padding:5px 10px;border-radius:999px;background:#1b1b1b;color:#d6a84f;font-size:12px}
+.hidden{display:none}
+.actionBtns{display:flex;gap:8px;flex-wrap:wrap}
+@media(max-width:800px){
+.wrap{display:block}
+.side{position:relative;width:100%;height:auto}
+.main{margin-left:0;padding:18px}
+.row{grid-template-columns:1fr}
+table{font-size:12px}
+}
+</style>
 </head>
+
 <body>
-
 <div class="wrap">
-  <aside class="side">
-    <div class="logo">NOX</div>
-    <div class="sub">店舗管理画面</div>
+<aside class="side">
+<div class="logo">NOX</div>
+<div class="sub">店舗管理画面</div>
 
-    <div class="menu">
-      <button class="active" onclick="showPage('dashboard', this)">🏠 ダッシュボード</button>
-      <button onclick="showPage('jobs', this)">📝 求人管理</button>
-      <button onclick="showPage('apps', this)">📨 応募管理</button>
-      <button onclick="showPage('store', this)">🏪 店舗情報</button>
-      <button onclick="showPage('pay', this)">💰 お支払い</button>
-      <button onclick="showPage('support', this)">❓ サポート</button>
-      <button onclick="logout()">🚪 ログアウト</button>
-    </div>
-  </aside>
+<div class="menu">
+<button class="active" onclick="showPage('dashboard', this)">🏠 ダッシュボード</button>
+<button onclick="showPage('jobs', this)">📝 求人管理</button>
+<button onclick="showPage('apps', this)">📨 応募管理</button>
+<button onclick="showPage('store', this)">🏪 店舗情報</button>
+<button onclick="showPage('pay', this)">💰 お支払い</button>
+<button onclick="showPage('support', this)">❓ サポート</button>
+<button onclick="logout()">🚪 ログアウト</button>
+</div>
+</aside>
 
-  <main class="main">
-    <section id="dashboard">
-  <h1>ダッシュボード</h1>
-  <div class="desc">店舗の掲載状況を確認できます。</div>
+<main class="main">
+<section id="dashboard">
+<h1>ダッシュボード</h1>
+<div class="desc">店舗の掲載状況・応募状況を確認できます。</div>
 
-  <div class="cards">
-    <div class="card">
-      <p>今日の閲覧数</p>
-      <strong id="viewCount">0</strong>
-    </div>
+<div class="cards">
+<div class="card">
+<p>今日の閲覧数</p>
+<strong id="viewCount">0</strong>
+</div>
 
-    <div class="card">
-      <p>今月の応募数</p>
-      <strong id="applyCount">0</strong>
-    </div>
+<div class="card">
+<p>今月の応募数</p>
+<strong id="applyCount">0</strong>
+</div>
 
-    <div class="card">
-      <p>求人掲載数</p>
-      <strong id="jobCount">0</strong>
-    </div>
+<div class="card">
+<p>求人掲載数</p>
+<strong id="jobCount">0</strong>
+</div>
 
-    <div class="card">
-      <p>契約状況</p>
-      <strong>有効</strong>
-    </div>
-  </div>
+<div class="card">
+<p>契約状況</p>
+<strong>有効</strong>
+</div>
+</div>
 
-  <div class="panel">
-    <h2>掲載状況</h2>
-    <p>現在：<span class="tag">公開中</span></p>
-    <p style="color:#aaa;">掲載中の求人はNOXに表示されています。</p>
-  </div>
+<div class="panel">
+<h2>掲載状況</h2>
+<p>現在：<span class="tag">公開中</span></p>
+<p style="color:#aaa;">掲載中の求人はNOXに表示されています。</p>
+</div>
 </section>
-
 <section id="jobs" class="hidden">
-  <h1>求人管理</h1>
+<h1>求人管理</h1>
 
-  <div class="panel">
-    <h2>求人を追加</h2>
-
-    <input id="jobTitle" placeholder="求人タイトル">
-
-    <div class="row">
-      <input id="jobPay" placeholder="給与">
-      <input id="jobArea" placeholder="勤務地">
-    </div>
-
-    <textarea
-      id="jobText"
-      placeholder="仕事内容・待遇など"
-    ></textarea>
-
-    <button class="btn" onclick="saveJob()">
-      求人を保存
-    </button>
-  </div>
-
-  <div class="panel">
-    <h2>求人一覧</h2>
-
-    <table>
-      <thead>
-        <tr>
-          <th>求人名</th>
-          <th>給与</th>
-          <th>状態</th>
-        </tr>
-      </thead>
-
-      <tbody id="jobList">
-      </tbody>
-
-    </table>
-
-  </div>
+<div class="panel">
+<h2>求人一覧</h2>
+<table>
+<thead>
+<tr>
+<th>求人名</th>
+<th>給与</th>
+<th>状態</th>
+</tr>
+</thead>
+<tbody id="jobList">
+<tr>
+<td colspan="3" style="text-align:center;color:#888;">読み込み中...</td>
+</tr>
+</tbody>
+</table>
+</div>
 </section>
+
 <section id="apps" class="hidden">
+<h1>応募管理</h1>
+<div class="desc">応募者一覧・連絡状況を管理できます。</div>
 
-  <h1>応募管理</h1>
-  <div class="desc">応募者一覧です。</div>
+<div class="panel">
+<h2>応募一覧</h2>
 
-  <div class="panel">
+<table>
+<thead>
+<tr>
+<th>名前</th>
+<th>電話番号</th>
+<th>応募求人</th>
+<th>状態</th>
+<th>操作</th>
+</tr>
+</thead>
 
-    <h2>応募一覧</h2>
-
-    <table>
-
-      <thead>
-        <tr>
-          <th>名前</th>
-          <th>年齢</th>
-          <th>応募日時</th>
-          <th>状態</th>
-        </tr>
-      </thead>
-
-      <tbody id="applicationList">
-
-        <tr>
-          <td colspan="4" style="text-align:center;color:#888;">
-            まだ応募はありません
-          </td>
-        </tr>
-
-      </tbody>
-
-    </table>
-
-  </div>
-
+<tbody id="applicationList">
+<tr>
+<td colspan="5" style="text-align:center;color:#888;">
+読み込み中...
+</td>
+</tr>
+</tbody>
+</table>
+</div>
 </section>
 
 <section id="store" class="hidden">
+<h1>店舗情報</h1>
+<div class="desc">サイトに表示される店舗情報です。</div>
 
-  <h1>店舗情報</h1>
+<div class="panel">
+<h2>基本情報</h2>
 
-  <div class="desc">
-    サイトに表示される店舗情報です。
-  </div>
+<input id="storeName" placeholder="店舗名">
+<input id="storeArea" placeholder="エリア">
+<input id="storePhone" placeholder="電話番号">
+<input id="storeLine" placeholder="公式LINE URL">
+<input id="storeInstagram" placeholder="Instagram URL">
 
-  <div class="panel">
+<textarea id="storeDescription" placeholder="店舗紹介"></textarea>
 
-    <h2>基本情報</h2>
-
-    <input id="storeName" placeholder="店舗名">
-
-    <input id="storeArea" placeholder="エリア">
-
-    <input id="storePhone" placeholder="電話番号">
-
-    <input id="storeLine" placeholder="公式LINE URL">
-
-    <input id="storeInstagram" placeholder="Instagram URL">
-
-    <textarea
-      id="storeDescription"
-      placeholder="店舗紹介"
-    ></textarea>
-
-    <button class="btn" onclick="saveStoreInfo()">
-      店舗情報を保存
-    </button>
-
-  </div>
-
+<button class="btn" onclick="saveStoreInfo()">
+店舗情報を保存
+</button>
+</div>
 </section>
 
 <section id="pay" class="hidden">
+<h1>お支払い</h1>
+<div class="desc">契約状況を確認できます。</div>
 
-  <h1>お支払い</h1>
-
-  <div class="desc">
-    契約状況を確認できます。
-  </div>
-
-  <div class="panel">
-
-    <h2>現在のプラン</h2>
-
-    <p>
-      リリース記念プラン
-    </p>
-
-    <h2 style="color:#d6a84f;">
-      月額500円
-    </h2>
-
-    <p>
-      状態：
-      <span class="tag">
-        入金確認待ち
-      </span>
-    </p>
-
-  </div>
-
+<div class="panel">
+<h2>現在のプラン</h2>
+<p>リリース記念プラン</p>
+<h2 style="color:#d6a84f;">月額500円</h2>
+<p>状態：<span class="tag">入金確認待ち</span></p>
+</div>
 </section>
+
 <section id="support" class="hidden">
+<h1>サポート</h1>
+<div class="desc">お困りの場合はこちらからお問い合わせください。</div>
 
-  <h1>サポート</h1>
-
-  <div class="desc">
-    お困りの場合はこちらからお問い合わせください。
-  </div>
-
-  <div class="panel">
-
-    <h2>お問い合わせ</h2>
-
-    <p>公式LINEまたはDMよりお問い合わせください。</p>
-
-    <button class="btn">
-      公式LINEを開く
-    </button>
-
-  </div>
-
+<div class="panel">
+<h2>お問い合わせ</h2>
+<p>公式LINEまたはDMよりお問い合わせください。</p>
+<button class="btn">公式LINEを開く</button>
+</div>
 </section>
 
 </main>
 </div>
 
 <script type="module">
-import { auth, db } from "./firebase.js";
+  import { auth, db } from "./firebase.js";
 
 import {
   onAuthStateChanged,
@@ -273,92 +206,165 @@ import {
   setDoc,
   collection,
   addDoc,
+  getDocs,
   query,
   where,
-  getDocs,
+  updateDoc,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 let currentUser = null;
 
-onAuthStateChanged(auth, async(user)=>{
+onAuthStateChanged(auth, async (user) => {
 
-  if(!user){
-    location.href="login.html";
+  if (!user) {
+    location.href = "login.html";
     return;
   }
 
-  currentUser=user;
-  
+  currentUser = user;
+
   await loadStoreInfo();
-await loadJobs();
-  
+  await loadJobs();
+  await loadApplications();
+
 });
+
 window.showPage = function(id, btn){
 
   const pages = ["dashboard","jobs","apps","store","pay","support"];
 
-  pages.forEach(pageId=>{
-    const page = document.getElementById(pageId);
-    if(page){
-      page.classList.add("hidden");
-      page.style.display = "none";
-    }
+  pages.forEach(page=>{
+    document.getElementById(page).classList.add("hidden");
   });
 
-  const target = document.getElementById(id);
-  if(target){
-    target.classList.remove("hidden");
-    target.style.display = "block";
-  }
+  document.getElementById(id).classList.remove("hidden");
 
-  document.querySelectorAll(".menu button").forEach(button=>{
-    button.classList.remove("active");
+  document.querySelectorAll(".menu button").forEach(b=>{
+    b.classList.remove("active");
   });
 
   btn.classList.add("active");
-
-  document.querySelector(".main").scrollIntoView({
-    behavior:"smooth",
-    block:"start"
-  });
-
-}
-  async function loadJobs(){
-
-  if(!currentUser) return;
+};
+  async function loadJobs() {
 
   const q = query(
-    collection(db,"jobs"),
-    where("ownerId","==",currentUser.uid)
+    collection(db, "jobs"),
+    where("ownerId", "==", currentUser.uid)
   );
 
   const snap = await getDocs(q);
 
   const list = document.getElementById("jobList");
-  list.innerHTML="";
+
+  list.innerHTML = "";
 
   document.getElementById("jobCount").textContent = snap.size;
-    snap.forEach((docItem)=>{
 
-  const data = docItem.data();
+  if (snap.empty) {
+    list.innerHTML = `
+      <tr>
+        <td colspan="3" style="text-align:center;color:#888;">
+          求人はまだありません
+        </td>
+      </tr>
+    `;
+    return;
+  }
 
-  list.innerHTML += `
-    <tr>
-      <td>${data.title}</td>
-      <td>${data.pay}</td>
-      <td><span class="tag">公開中</span></td>
-    </tr>
-  `;
+  snap.forEach((jobDoc) => {
 
-});
-    }
-async function loadStoreInfo(){
+    const data = jobDoc.data();
+
+    list.innerHTML += `
+      <tr>
+        <td>${data.storeName || data.title || "-"}</td>
+        <td>${data.salary || data.pay || "-"}</td>
+        <td><span class="tag">公開中</span></td>
+      </tr>
+    `;
+
+  });
+
+}
+
+async function loadApplications() {
+
+  const storeSnap = await getDoc(doc(db, "stores", currentUser.uid));
+
+  let storeName = "";
+
+  if (storeSnap.exists()) {
+    storeName = storeSnap.data().storeName || "";
+  }
+
+  const q = query(
+    collection(db, "jobEntries"),
+    where("storeName", "==", storeName)
+  );
+
+  const snap = await getDocs(q);
+
+  const list = document.getElementById("applicationList");
+
+  document.getElementById("applyCount").textContent = snap.size;
+
+  list.innerHTML = "";
+
+  if (snap.empty) {
+
+    list.innerHTML = `
+      <tr>
+        <td colspan="5" style="text-align:center;color:#888;">
+          まだ応募はありません
+        </td>
+      </tr>
+    `;
+
+    return;
+  }
+
+  snap.forEach((entryDoc) => {
+
+    const data = entryDoc.data();
+
+    list.innerHTML += `
+      <tr>
+        <td>${data.applicantName || "-"}</td>
+        <td>${data.applicantPhone || "-"}</td>
+        <td>${data.storeName || "-"}</td>
+
+        <td>
+          <select onchange="changeStatus('${entryDoc.id}', this.value)">
+            <option value="new">未対応</option>
+            <option value="progress">対応中</option>
+            <option value="hired">採用</option>
+            <option value="ng">不採用</option>
+          </select>
+        </td>
+
+        <td class="actionBtns">
+          <a class="btn" href="tel:${data.applicantPhone}">
+            電話
+          </a>
+
+          <a class="btn gray"
+             href="https://line.me/R/ti/p/~${data.applicantPhone}">
+            LINE
+          </a>
+        </td>
+      </tr>
+    `;
+
+  });
+
+}
+  async function loadStoreInfo() {
 
   const ref = doc(db, "stores", currentUser.uid);
   const snap = await getDoc(ref);
 
-  if(!snap.exists()) return;
+  if (!snap.exists()) return;
 
   const data = snap.data();
 
@@ -368,64 +374,40 @@ async function loadStoreInfo(){
   document.getElementById("storeLine").value = data.line || "";
   document.getElementById("storeInstagram").value = data.instagram || "";
   document.getElementById("storeDescription").value = data.description || "";
-
 }
 
-window.saveJob = async function(){
+window.saveStoreInfo = async function() {
 
-  if(!currentUser){
-    alert("ログインが必要です");
-    return;
-  }
-
-  await addDoc(collection(db,"jobs"),{
+  await setDoc(doc(db, "stores", currentUser.uid), {
     ownerId: currentUser.uid,
-    title: document.getElementById("jobTitle").value,
-    pay: document.getElementById("jobPay").value,
-    area: document.getElementById("jobArea").value,
-    description: document.getElementById("jobText").value,
-    status:"公開中",
-    createdAt:serverTimestamp()
-  });
-
-  document.getElementById("jobTitle").value="";
-  document.getElementById("jobPay").value="";
-  document.getElementById("jobArea").value="";
-  document.getElementById("jobText").value="";
-
-  alert("求人を保存しました");
-
-  await loadJobs();
-}
-
-window.saveStoreInfo = async function(){
-
-  if(!currentUser){
-    alert("ログインが必要です");
-    return;
-  }
-
-  await setDoc(doc(db,"stores",currentUser.uid),{
-    ownerId:currentUser.uid,
-    storeName:document.getElementById("storeName").value,
-    area:document.getElementById("storeArea").value,
-    phone:document.getElementById("storePhone").value,
-    line:document.getElementById("storeLine").value,
-    instagram:document.getElementById("storeInstagram").value,
-    description:document.getElementById("storeDescription").value
-  },{merge:true});
+    storeName: document.getElementById("storeName").value,
+    area: document.getElementById("storeArea").value,
+    phone: document.getElementById("storePhone").value,
+    line: document.getElementById("storeLine").value,
+    instagram: document.getElementById("storeInstagram").value,
+    description: document.getElementById("storeDescription").value
+  }, { merge: true });
 
   alert("店舗情報を保存しました");
-}
 
-  window.logout = async function(){
+  await loadApplications();
+};
 
-  if(confirm("ログアウトしますか？")){
+window.changeStatus = async function(id, status) {
+
+  await updateDoc(doc(db, "jobEntries", id), {
+    status: status
+  });
+
+  alert("状態を更新しました");
+};
+
+window.logout = async function() {
+  if (confirm("ログアウトしますか？")) {
     await signOut(auth);
     location.href = "login.html";
   }
-
-}
+};
 
 </script>
 </body>
