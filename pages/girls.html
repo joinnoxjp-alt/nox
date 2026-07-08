@@ -5,9 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>NOX | 求人一覧</title>
-
 <link rel="stylesheet" href="../style.css">
-
 </head>
 
 <body class="register-body">
@@ -41,16 +39,17 @@
 import "./firebase.js";
 
 import {
-getFirestore,
-collection,
-getDocs,
-query,
-where
+  getFirestore,
+  collection,
+  getDocs,
+  query,
+  where
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const db = getFirestore();
 const jobList = document.getElementById("jobList");
-  async function loadJobs(){
+
+async function loadJobs(){
 
   jobList.innerHTML = "<p>読み込み中...</p>";
 
@@ -68,9 +67,10 @@ const jobList = document.getElementById("jobList");
 
   jobList.innerHTML = "";
 
-  snap.forEach((doc)=>{
+  snap.forEach((jobDoc)=>{
 
-    const data = doc.data();
+    const data = jobDoc.data();
+    const id = jobDoc.id;
 
     const card = document.createElement("div");
 
@@ -85,19 +85,18 @@ const jobList = document.getElementById("jobList");
 
     card.innerHTML=`
       <h3 style="color:#f5d36b;margin-bottom:8px;">
-        ${data.storeName}
+        ${data.storeName || "店舗名未設定"}
       </h3>
 
-      <p>📍 ${data.area}</p>
-      <p>🍸 ${data.businessType}</p>
-      <p>💰 ${data.salary}</p>
+      <p>📍 ${data.area || "-"}</p>
+      <p>🍸 ${data.businessType || "-"}</p>
+      <p>💰 ${data.salary || "-"}</p>
 
-      <button
-class="gold-btn detailBtn"
-style="margin-top:12px;"
-data-store='${JSON.stringify(data)}'>
-詳細を見る
-</button>
+      <a href="./job-detail.html?id=${id}"
+         class="gold-btn"
+         style="display:block;text-align:center;margin-top:12px;text-decoration:none;">
+        詳細を見る
+      </a>
     `;
 
     jobList.appendChild(card);
@@ -107,7 +106,8 @@ data-store='${JSON.stringify(data)}'>
 }
 
 loadJobs();
-  </script>
+
+</script>
 
 </body>
 </html>
