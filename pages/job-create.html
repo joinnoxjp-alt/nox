@@ -112,15 +112,25 @@ button{
 
 <label>業種</label>
 
-<select>
-<option>ガールズバー</option>
-<option>キャバクラ</option>
-<option>コンカフェ</option>
-<option>ラウンジ</option>
-<option>スナック</option>
-<option>クラブ</option>
-<option>その他</option>
+<select id="businessType" onchange="toggleOtherBusiness()">
+  <option>ガールズバー</option>
+  <option>キャバクラ</option>
+  <option>コンカフェ</option>
+  <option>ラウンジ</option>
+  <option>スナック</option>
+  <option>クラブ</option>
+  <option>メンズコンカフェ</option>
+  <option>ホストクラブ</option>
+  <option>バー</option>
+  <option>その他</option>
 </select>
+
+<input 
+  type="text" 
+  id="otherBusinessType" 
+  placeholder="例：その他の業種を入力"
+  style="display:none;margin-top:12px;"
+>
 
 <label>エリア</label>
 <input type="text" placeholder="例：東京都新宿区">
@@ -282,7 +292,20 @@ button{
 <div style="text-align:center;color:#888;font-size:14px;line-height:1.8;">
 掲載申請後、NOX運営にて内容を確認し、<br>
 承認完了後に求人ページへ公開されます。
-</div>
+
+<script>
+function toggleOtherBusiness() {
+    const businessType = document.getElementById("businessType").value;
+    const otherInput = document.getElementById("otherBusinessType");
+
+    if (businessType === "その他") {
+        otherInput.style.display = "block";
+    } else {
+        otherInput.style.display = "none";
+        otherInput.value = "";
+    }
+}
+</script>
 
 </body>
 </html>
