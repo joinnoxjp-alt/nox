@@ -114,7 +114,7 @@ button{
 </div>
 
 <label>店舗名</label>
-<input type="text" placeholder="例：Girls Bar NOX 新宿店">
+<input id="storeName" type="text" placeholder="例：Girls Bar NOX 新宿店">
 
 <label>業種</label>
 
@@ -131,27 +131,27 @@ button{
   <option>その他</option>
 </select>
 
-<input 
-  type="text" 
-  id="otherBusinessType" 
+<input
+  type="text"
+  id="otherBusinessType"
   placeholder="例：その他の業種を入力"
   style="display:none;margin-top:12px;"
 >
 
 <label>エリア</label>
-<input type="text" placeholder="例：東京都新宿区">
+<input id="area" type="text" placeholder="例：東京都新宿区">
 
 <label>店舗住所</label>
-<input type="text" placeholder="例：東京都新宿区歌舞伎町1-○-○">
+<input id="address" type="text" placeholder="例：東京都新宿区歌舞伎町1-○-○">
 
 <label>最寄駅</label>
-<input type="text" placeholder="例：JR新宿駅 徒歩5分">
+<input id="station" type="text" placeholder="例：JR新宿駅 徒歩5分">
 
 <label>営業時間</label>
-<input type="text" placeholder="例：20:00〜LAST">
+<input id="businessHours" type="text" placeholder="例：20:00〜LAST">
 
 <label>定休日</label>
-<input type="text" placeholder="例：日曜日">
+<input id="closedDay" type="text" placeholder="例：日曜日">
 
 </div>
 <div class="card">
@@ -161,46 +161,46 @@ button{
 </div>
 
 <label>時給</label>
-<input type="text" placeholder="例：時給3,500円〜">
+<input id="salary" type="text" placeholder="例：時給3,500円〜">
 
 <label>各種バック</label>
-<input type="text" placeholder="例：ドリンクバック・ボトルバックあり">
+<input id="back" type="text" placeholder="例：ドリンクバック・ボトルバックあり">
 
 <label>日払い</label>
-<select>
-<option>あり</option>
-<option>なし</option>
+<select id="dailyPay">
+  <option>あり</option>
+  <option>なし</option>
 </select>
 
 <label>体験入店</label>
-<select>
-<option>可能</option>
-<option>不可</option>
+<select id="trial">
+  <option>可能</option>
+  <option>不可</option>
 </select>
 
 <label>未経験歓迎</label>
-<select>
-<option>はい</option>
-<option>いいえ</option>
+<select id="beginner">
+  <option>はい</option>
+  <option>いいえ</option>
 </select>
 
 <label>採用年齢</label>
-<input type="text" placeholder="例：18歳〜35歳">
+<input id="age" type="text" placeholder="例：18歳〜35歳">
 
 <label>ノルマ</label>
-<select>
-<option>なし</option>
-<option>あり</option>
+<select id="quota">
+  <option>なし</option>
+  <option>あり</option>
 </select>
 
 <label>ペナルティ</label>
-<select>
-<option>なし</option>
-<option>あり</option>
+<select id="penalty">
+  <option>なし</option>
+  <option>あり</option>
 </select>
 
 <label>シフト</label>
-<input type="text" placeholder="例：自由シフト・週1日からOK">
+<input id="shift" type="text" placeholder="例：自由シフト・週1日からOK">
 
 </div>
 <div class="card">
