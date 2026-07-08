@@ -1,93 +1,110 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>女の子一覧 | NOX</title>
-  <link rel="stylesheet" href="../style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>NOX | 求人一覧</title>
+
+<link rel="stylesheet" href="../style.css">
+
 </head>
 
 <body class="register-body">
-  <main class="register-page">
-    <section class="register-section">
-      <div class="register-card">
-        <div class="register-step">
-          <span>NOX CAST</span>
-          <h2>女の子一覧</h2>
-          <p>登録プロフィールを表示しています。</p>
-        </div>
 
-        <div id="girlsList"></div>
+<main class="register-page">
+<section class="register-section">
 
-        <div class="header-actions">
-          <a href="../index.html" class="btn ghost">トップへ戻る</a>
-          <a href="./mypage.html" class="btn ghost">マイページ</a>
-        </div>
-      </div>
-    </section>
-  </main>
+<div class="register-card">
 
-  <script type="module">
-    import "./firebase.js";
-    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+<div class="register-step">
+<span>NOX JOBS</span>
+<h2>求人一覧</h2>
+<p>承認済みの求人を表示しています。</p>
+</div>
 
-    const db = getFirestore();
-    const girlsList = document.getElementById("girlsList");
+<div id="jobList">
+<p>読み込み中...</p>
+</div>
 
-    async function loadGirls() {
-      girlsList.innerHTML = "<p>読み込み中...</p>";
+<div class="header-actions">
+<a href="../index.html" class="btn ghost">トップへ戻る</a>
+<a href="./mypage.html" class="btn ghost">マイページ</a>
+</div>
 
-      const snap = await getDocs(collection(db, "users"));
+</div>
+</section>
+</main>
 
-      if (snap.empty) {
-        girlsList.innerHTML = "<p>まだ登録プロフィールがありません。</p>";
-        return;
-      }
+<script type="module">
 
-      girlsList.innerHTML = "";
+import "./firebase.js";
 
-      snap.forEach((doc) => {
-        const data = doc.data();
+import {
+getFirestore,
+collection,
+getDocs,
+query,
+where
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-        const name = data.name || data.nickname || "未設定";
-        const email = data.email || "";
-        const bio = data.bio || data.selfPr || "自己紹介はまだありません。";
-        const image = data.profileImage || "";
+const db = getFirestore();
+const jobList = document.getElementById("jobList");
+  async function loadJobs(){
 
-        const card = document.createElement("div");
-        card.style.cssText = `
-          border:1px solid rgba(201,163,74,.5);
-          border-radius:20px;
-          padding:18px;
-          margin:18px 0;
-          background:#111;
-          color:white;
-        `;
+  jobList.innerHTML = "<p>読み込み中...</p>";
 
-        card.innerHTML = `
-          <div style="display:flex;gap:16px;align-items:center;">
-            <img src="${image || "../images/no-image.png"}"
-              style="width:82px;height:82px;border-radius:50%;object-fit:cover;border:1px solid #c9a34a;background:#222;"
-              onerror="this.style.display='none'">
+  const q = query(
+    collection(db,"jobs"),
+    where("status","==","approved")
+  );
 
-            <div>
-              <h3 style="margin:0 0 6px;color:#f5d36b;">${name}</h3>
-              <p style="margin:0;color:#aaa;font-size:14px;">${email}</p>
-            </div>
-          </div>
+  const snap = await getDocs(q);
 
-          <p style="margin-top:14px;line-height:1.7;">${bio}</p>
+  if(snap.empty){
+    jobList.innerHTML = "<p>掲載中の求人はありません。</p>";
+    return;
+  }
 
-          <button class="gold-btn" type="button" style="margin-top:10px;">
-            詳細を見る
-          </button>
-        `;
+  jobList.innerHTML = "";
 
-        girlsList.appendChild(card);
-      });
-    }
+  snap.forEach((doc)=>{
 
-    loadGirls();
+    const data = doc.data();
+
+    const card = document.createElement("div");
+
+    card.style.cssText=`
+      border:1px solid rgba(201,163,74,.5);
+      border-radius:18px;
+      padding:18px;
+      margin:18px 0;
+      background:#111;
+      color:white;
+    `;
+
+    card.innerHTML=`
+      <h3 style="color:#f5d36b;margin-bottom:8px;">
+        ${data.storeName}
+      </h3>
+
+      <p>📍 ${data.area}</p>
+      <p>🍸 ${data.businessType}</p>
+      <p>💰 ${data.salary}</p>
+
+      <button class="gold-btn" style="margin-top:12px;">
+        詳細を見る
+      </button>
+    `;
+
+    jobList.appendChild(card);
+
+  });
+
+}
+
+loadJobs();
   </script>
+
 </body>
 </html>
