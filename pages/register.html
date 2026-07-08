@@ -200,9 +200,6 @@ form.addEventListener("submit", async (e) => {
 await fetch("https://script.google.com/macros/s/AKfycbxEt3a_8_OsRblt5N_galQwlUgp2Ty5JJsgxQA1Y35JFNX9dzjx7nrYwNkouT9cqER7tg/exec", {
   method: "POST",
   mode: "no-cors",
-  headers: {
-    "Content-Type": "application/json"
-  },
   body: JSON.stringify({
     name: document.getElementById("nickname").value,
     email: email
