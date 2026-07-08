@@ -5,34 +5,244 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>NOX | 求人詳細</title>
-<link rel="stylesheet" href="../style.css">
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+
+body{
+  min-height:100vh;
+  background:
+    radial-gradient(circle at top,rgba(255,215,0,.18),transparent 35%),
+    linear-gradient(180deg,#050505,#000);
+  color:#fff;
+  font-family:"Hiragino Mincho ProN","Yu Mincho",serif;
+}
+
+a{text-decoration:none;color:inherit}
+
+.page{
+  max-width:1000px;
+  margin:auto;
+  padding:32px 18px 80px;
+}
+
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:16px;
+  margin-bottom:34px;
+}
+
+.logo{
+  color:#FFD700;
+  font-size:38px;
+  font-weight:900;
+  letter-spacing:3px;
+}
+
+.logo small{
+  display:block;
+  color:#aaa;
+  font-size:11px;
+  letter-spacing:4px;
+  margin-top:4px;
+}
+
+.nav{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+}
+
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:13px 22px;
+  border-radius:999px;
+  border:1px solid rgba(255,215,0,.35);
+  color:#FFD700;
+  background:rgba(255,255,255,.04);
+  font-weight:bold;
+}
+
+.btn.gold{
+  background:#FFD700;
+  color:#000;
+}
+
+.hero{
+  border:1px solid rgba(255,215,0,.4);
+  border-radius:34px;
+  padding:38px 28px;
+  background:
+    radial-gradient(circle at top right,rgba(255,215,0,.18),transparent 40%),
+    linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.025));
+  box-shadow:0 28px 80px rgba(0,0,0,.6);
+  margin-bottom:24px;
+}
+
+.kicker{
+  color:#FFD700;
+  letter-spacing:5px;
+  font-size:13px;
+  margin-bottom:14px;
+}
+
+.hero h1{
+  font-size:clamp(42px,8vw,76px);
+  color:#FFD700;
+  line-height:1.08;
+  margin-bottom:16px;
+}
+
+.hero p{
+  color:#ddd;
+  line-height:1.9;
+  font-size:16px;
+}
+
+.section-card{
+  border:1px solid rgba(255,215,0,.28);
+  border-radius:28px;
+  padding:26px;
+  margin:20px 0;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.025));
+  box-shadow:0 22px 60px rgba(0,0,0,.5);
+}
+
+.section-card h2{
+  color:#FFD700;
+  font-size:28px;
+  margin-bottom:18px;
+}
+
+.info-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:14px;
+}
+
+.info-item{
+  border:1px solid rgba(255,215,0,.18);
+  border-radius:18px;
+  padding:16px;
+  background:rgba(255,255,255,.035);
+  line-height:1.8;
+}
+
+.info-item span{
+  display:block;
+  color:#aaa;
+  font-size:13px;
+  margin-bottom:6px;
+}
+
+.info-item strong{
+  color:#fff;
+  font-size:16px;
+}
+
+.salary-box{
+  margin:22px 0;
+  padding:24px;
+  border-radius:24px;
+  border:1px solid rgba(255,215,0,.45);
+  background:rgba(255,215,0,.08);
+}
+
+.salary-box span{
+  color:#aaa;
+  font-size:14px;
+}
+
+.salary-box strong{
+  display:block;
+  color:#FFD700;
+  font-size:44px;
+  margin-top:8px;
+}
+
+.text-box{
+  color:#ddd;
+  line-height:2;
+  white-space:pre-wrap;
+}
+
+.form input,
+.form textarea{
+  width:100%;
+  padding:15px;
+  margin:10px 0;
+  border-radius:14px;
+  border:1px solid rgba(255,215,0,.25);
+  background:#080808;
+  color:#fff;
+  font-size:16px;
+}
+
+.form textarea{
+  min-height:110px;
+  resize:vertical;
+}
+
+.footer-actions{
+  display:flex;
+  justify-content:center;
+  gap:14px;
+  flex-wrap:wrap;
+  margin-top:36px;
+}
+
+.loading{
+  color:#ccc;
+  text-align:center;
+  padding:60px 20px;
+}
+
+@media(max-width:760px){
+  .header{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  .hero{
+    padding:32px 22px;
+  }
+
+  .salary-box strong{
+    font-size:36px;
+  }
+}
+</style>
 </head>
 
-<body class="register-body">
+<body>
 
-<main class="register-page">
-<section class="register-section">
+<div class="page">
 
-<div class="register-card">
+<header class="header">
+  <a href="../index.html" class="logo">
+    NOX
+    <small>Night Opens X</small>
+  </a>
 
-<div id="jobDetail">
-<p>読み込み中...</p>
+  <nav class="nav">
+    <a href="./girls.html" class="btn">求人一覧</a>
+    <a href="../index.html" class="btn">TOP</a>
+    <a href="./mypage.html" class="btn gold">マイページ</a>
+  </nav>
+</header>
+
+<div id="jobDetail" class="loading">
+  求人情報を読み込み中です...
 </div>
-
-<div class="header-actions">
-<a href="./girls.html" class="btn ghost">← 求人一覧へ戻る</a>
-</div>
-
-</div>
-</section>
-</main>
-
 <script type="module">
-
-import "./firebase.js";
+import { db } from "./firebase-db.js";
 
 import {
-  getFirestore,
   doc,
   getDoc,
   collection,
@@ -40,99 +250,142 @@ import {
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-const db = getFirestore();
 const params = new URLSearchParams(location.search);
 const id = params.get("id");
 const jobDetail = document.getElementById("jobDetail");
 
-async function loadJobDetail() {
-  if (!id) {
-    jobDetail.innerHTML = "<p>求人IDが見つかりません。</p>";
+function showValue(value){
+  return value && String(value).trim() ? value : "-";
+}
+
+async function loadJobDetail(){
+
+  if(!id){
+    jobDetail.innerHTML = `
+      <div class="section-card">
+        <h2>求人IDが見つかりません</h2>
+        <p class="text-box">求人一覧ページから再度アクセスしてください。</p>
+      </div>
+    `;
     return;
   }
 
-  const snap = await getDoc(doc(db, "jobs", id));
+  const snap = await getDoc(doc(db,"jobs",id));
 
-  if (!snap.exists()) {
-    jobDetail.innerHTML = "<p>求人情報が見つかりません。</p>";
+  if(!snap.exists()){
+    jobDetail.innerHTML = `
+      <div class="section-card">
+        <h2>求人情報が見つかりません</h2>
+        <p class="text-box">求人一覧ページから再度アクセスしてください。</p>
+      </div>
+    `;
     return;
   }
 
   const data = snap.data();
-    jobDetail.innerHTML = `
-    <div class="register-step">
-      <span>NOX JOB DETAIL</span>
-      <h2>${data.storeName || "店舗名未設定"}</h2>
-      <p>${data.area || ""} / ${data.businessType || ""}</p>
-    </div>
 
-    <div style="border:1px solid rgba(201,163,74,.5);border-radius:18px;padding:16px;margin:18px 0;background:#111;color:white;">
-      <h3 style="color:#f5d36b;">基本情報</h3>
-      <p>📍 住所：${data.address || "-"}</p>
-      <p>🚃 最寄駅：${data.station || "-"}</p>
-      <p>🕒 営業時間：${data.businessHours || "-"}</p>
-      <p>📅 定休日：${data.closedDay || "-"}</p>
-    </div>
+  jobDetail.className = "";
 
-    <div style="border:1px solid rgba(201,163,74,.5);border-radius:18px;padding:16px;margin:18px 0;background:#111;color:white;">
-      <h3 style="color:#f5d36b;">求人情報</h3>
-      <p>💰 時給：${data.salary || "-"}</p>
-      <p>🎁 各種バック：${data.back || "-"}</p>
-      <p>💵 日払い：${data.dailyPay || "-"}</p>
-      <p>✨ 体験入店：${data.trial || "-"}</p>
-      <p>🔰 未経験歓迎：${data.beginner || "-"}</p>
-      <p>🎂 採用年齢：${data.age || "-"}</p>
-      <p>📌 ノルマ：${data.quota || "-"}</p>
-      <p>⚠️ ペナルティ：${data.penalty || "-"}</p>
-      <p>🗓 シフト：${data.shift || "-"}</p>
-    </div>
+  jobDetail.innerHTML = `
+    <section class="hero">
+      <p class="kicker">NOX JOB DETAIL</p>
+      <h1>${showValue(data.storeName || data.name)}</h1>
+      <p>
+        ${showValue(data.area)} / ${showValue(data.genre || data.type || data.businessType)}
+      </p>
 
-    <div style="border:1px solid rgba(201,163,74,.5);border-radius:18px;padding:16px;margin:18px 0;background:#111;color:white;">
-      <h3 style="color:#f5d36b;">応募フォーム</h3>
+      <div class="salary-box">
+        <span>給与</span>
+        <strong>${showValue(data.salary || data.salaryText)}</strong>
+      </div>
 
-      <input id="entryName" type="text" placeholder="お名前"
-      style="width:100%;padding:12px;margin:10px 0;border-radius:12px;">
+      <a href="#applyForm" class="btn gold">この求人に応募する</a>
+    </section>
 
-      <input id="entryPhone" type="tel" placeholder="電話番号"
-      style="width:100%;padding:12px;margin:10px 0;border-radius:12px;">
+    <section class="section-card">
+      <h2>基本情報</h2>
 
-      <button id="applyBtn" class="gold-btn">
+      <div class="info-grid">
+        <div class="info-item"><span>エリア</span><strong>${showValue(data.area)}</strong></div>
+        <div class="info-item"><span>業種</span><strong>${showValue(data.genre || data.type || data.businessType)}</strong></div>
+        <div class="info-item"><span>住所</span><strong>${showValue(data.address)}</strong></div>
+        <div class="info-item"><span>最寄駅</span><strong>${showValue(data.station)}</strong></div>
+        <div class="info-item"><span>営業時間</span><strong>${showValue(data.businessHours)}</strong></div>
+        <div class="info-item"><span>定休日</span><strong>${showValue(data.closedDay)}</strong></div>
+      </div>
+    </section>
+        <section class="section-card">
+      <h2>求人情報</h2>
+
+      <div class="info-grid">
+        <div class="info-item"><span>各種バック</span><strong>${showValue(data.back)}</strong></div>
+        <div class="info-item"><span>日払い</span><strong>${showValue(data.dailyPay)}</strong></div>
+        <div class="info-item"><span>体験入店</span><strong>${showValue(data.trial)}</strong></div>
+        <div class="info-item"><span>未経験歓迎</span><strong>${showValue(data.beginner)}</strong></div>
+        <div class="info-item"><span>採用年齢</span><strong>${showValue(data.age)}</strong></div>
+        <div class="info-item"><span>ノルマ</span><strong>${showValue(data.quota)}</strong></div>
+        <div class="info-item"><span>ペナルティ</span><strong>${showValue(data.penalty)}</strong></div>
+        <div class="info-item"><span>シフト</span><strong>${showValue(data.shift)}</strong></div>
+      </div>
+    </section>
+
+    <section class="section-card">
+      <h2>お店からのPR</h2>
+      <div class="text-box">
+        ${showValue(data.pr || data.description || data.message || "詳しいPR内容は準備中です。")}
+      </div>
+    </section>
+
+    <section class="section-card form" id="applyForm">
+      <h2>応募フォーム</h2>
+
+      <input id="entryName" type="text" placeholder="お名前">
+      <input id="entryPhone" type="tel" placeholder="電話番号">
+      <textarea id="entryMessage" placeholder="質問・希望条件などがあれば入力してください"></textarea>
+
+      <button id="applyBtn" class="btn gold" style="width:100%;margin-top:12px;">
         応募する
       </button>
-
-    </div>
+    </section>
   `;
+
   document.getElementById("applyBtn").addEventListener("click", async () => {
+    const name = document.getElementById("entryName").value.trim();
+    const phone = document.getElementById("entryPhone").value.trim();
+    const message = document.getElementById("entryMessage").value.trim();
 
-  const name = document.getElementById("entryName").value.trim();
-  const phone = document.getElementById("entryPhone").value.trim();
+    if(!name || !phone){
+      alert("お名前と電話番号を入力してください。");
+      return;
+    }
 
-  if (!name || !phone) {
-    alert("お名前と電話番号を入力してください。");
-    return;
-  }
+    await addDoc(collection(db,"jobApplications"),{
+      jobId:id,
+      storeName:data.storeName || data.name || "",
+      applicantName:name,
+      applicantPhone:phone,
+      message:message,
+      createdAt:serverTimestamp(),
+      status:"new"
+    });
 
-  await addDoc(collection(db, "jobEntries"), {
-    jobId: id,
-    storeName: data.storeName || "",
-    applicantName: name,
-    applicantPhone: phone,
-    createdAt: serverTimestamp(),
-    status: "new"
+    alert("応募を受け付けました！店舗からの連絡をお待ちください。");
+
+    document.getElementById("entryName").value="";
+    document.getElementById("entryPhone").value="";
+    document.getElementById("entryMessage").value="";
   });
-
-  alert("応募を受け付けました！店舗からのご連絡をお待ちください。");
-
-  document.getElementById("entryName").value = "";
-  document.getElementById("entryPhone").value = "";
-
-});
-
 }
 
 loadJobDetail();
 
 </script>
 
+<div class="footer-actions">
+  <a href="./girls.html" class="btn">求人一覧へ戻る</a>
+  <a href="../index.html" class="btn gold">TOPへ戻る</a>
+</div>
+
+</div>
 </body>
 </html>
