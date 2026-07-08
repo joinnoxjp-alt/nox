@@ -283,7 +283,7 @@ onAuthStateChanged(auth, async(user)=>{
   }
 
   currentUser=user;
-
+await loadStoreInfo();
 });
 
 window.showPage=function(id,btn){
