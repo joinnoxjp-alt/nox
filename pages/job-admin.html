@@ -79,7 +79,7 @@ onAuthStateChanged(auth, async (user) => {
   const snap = await getDocs(collection(db, "jobApplications"));
 
   jobList.innerHTML = "";
-
+let pendingCount = 0;
   if (snap.empty) {
     jobList.innerHTML = "<p>掲載申請はありません。</p>";
     return;
@@ -90,7 +90,7 @@ onAuthStateChanged(auth, async (user) => {
     const id = jobDoc.id;
 
     if (data.status === "approved") return;
-
+pendingCount++;
     const card = document.createElement("div");
     card.style.cssText = `
       border:1px solid rgba(201,163,74,.5);
@@ -122,6 +122,9 @@ style="width:100%;margin:12px 0;">
 
     jobList.appendChild(card);
   });
+    if (pendingCount === 0) {
+  jobList.innerHTML = "<p>承認待ちの掲載申請はありません。</p>";
+}
 }
   document.addEventListener("click", async (e) => {
   if (!e.target.classList.contains("approveBtn")) return;
