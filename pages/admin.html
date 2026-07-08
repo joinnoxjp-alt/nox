@@ -184,44 +184,58 @@ ${data.sns || "-"}
 `);
   });
 });
-}
 async function loadJobApplications() {
-  const snap = await getDocs(collection(db, "jobApplications"));
+  try {
+    const snap = await getDocs(collection(db, "jobApplications"));
 
-  const title = document.createElement("h2");
-  title.textContent = "店舗掲載申請";
-  title.style.cssText = "color:#f5d36b;margin-top:30px;";
-  userList.appendChild(title);
+    const title = document.createElement("h2");
+    title.textContent = "店舗掲載申請";
+    title.style.cssText = "color:#f5d36b;margin-top:30px;";
+    userList.appendChild(title);
 
-  if (snap.empty) {
+    if (snap.empty) {
+      const p = document.createElement("p");
+      p.textContent = "掲載申請はありません。";
+      userList.appendChild(p);
+      return;
+    }
+
+    snap.forEach((appDoc) => {
+      const data = appDoc.data();
+
+      const card = document.createElement("div");
+      card.style.cssText = `
+        border:1px solid rgba(201,163,74,.5);
+        border-radius:18px;
+        padding:16px;
+        margin:16px 0;
+        background:#111;
+        color:white;
+      `;
+
+      card.innerHTML = `
+        <h3 style="color:#f5d36b;">${data.storeName || "店舗名未設定"}</h3>
+        <p>業種：${data.businessType || "-"}</p>
+        <p>エリア：${data.area || "-"}</p>
+        <p>状態：${data.status || "pending"}</p>
+      `;
+
+      userList.appendChild(card);
+    });
+  } catch (e) {
+    console.error(e);
+
+    const title = document.createElement("h2");
+    title.textContent = "店舗掲載申請";
+    title.style.cssText = "color:#f5d36b;margin-top:30px;";
+    userList.appendChild(title);
+
     const p = document.createElement("p");
-    p.textContent = "掲載申請はありません。";
+    p.textContent = "掲載申請の読み込みに失敗しました。Firestoreルールを確認してください。";
+    p.style.color = "#ff7777";
     userList.appendChild(p);
-    return;
   }
-
-  snap.forEach((appDoc) => {
-    const data = appDoc.data();
-
-    const card = document.createElement("div");
-    card.style.cssText = `
-      border:1px solid rgba(201,163,74,.5);
-      border-radius:18px;
-      padding:16px;
-      margin:16px 0;
-      background:#111;
-      color:white;
-    `;
-
-    card.innerHTML = `
-      <h3 style="color:#f5d36b;">${data.storeName}</h3>
-      <p>業種：${data.businessType}</p>
-      <p>エリア：${data.area}</p>
-      <p>状態：${data.status}</p>
-    `;
-
-    userList.appendChild(card);
-  });
+}
 }
   </script>
 </body>
