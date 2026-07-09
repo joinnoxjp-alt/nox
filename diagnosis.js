@@ -132,6 +132,10 @@ function showResult() {
     const detailArea = document.getElementById("detailArea");
   if (detailArea && window.TYPE_DETAILS && window.TYPE_DETAILS[topType.id]) {
     detailArea.innerHTML = window.TYPE_DETAILS[topType.id].description;
+    detailArea.scrollIntoView({
+  behavior: "smooth",
+  block: "start"
+});
   }
 }
 
