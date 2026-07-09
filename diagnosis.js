@@ -329,3 +329,19 @@ function restartQuiz() {
   document.getElementById("resultScreen").classList.remove("active");
   document.getElementById("startScreen").classList.add("active");
 }
+
+// ↓ここから追加（332行目）
+
+async function saveResultImage() {
+  const card = document.querySelector(".result-card");
+
+  const canvas = await html2canvas(card, {
+    backgroundColor: "#050505",
+    scale: 2
+  });
+
+  const link = document.createElement("a");
+  link.download = "NOX-TYPE.png";
+  link.href = canvas.toDataURL("image/png");
+  link.click();
+}
