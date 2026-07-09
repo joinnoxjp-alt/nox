@@ -274,6 +274,7 @@
 
         <button class="main-btn" onclick="shareResult()">Xでシェア</button>
         <button class="sub-btn" onclick="copyResult()">結果をコピー</button>
+        <button class="sub-btn" onclick="saveResultImage()">📸 診断結果を画像で保存</button>
         <a href="index.html" class="main-btn">
 あなたに合う求人を見る
 </a>
@@ -283,8 +284,10 @@
 
   </main>
 
- <script src="types.js"></script>
+ <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="types.js"></script>
 <script src="detail.js"></script>
-<script src="diagnosis.js"></script> 
+<script src="diagnosis.js"></script>
+
 </body>
 </html>
