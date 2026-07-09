@@ -43,8 +43,9 @@ import {
   doc,
   getDoc,
   updateDoc,
-  addDoc,
-  serverTimestamp
+deleteDoc,
+addDoc,
+serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const db = getFirestore();
@@ -111,8 +112,12 @@ onAuthStateChanged(auth, async (user) => {
         </button>
 
         <button class="gold-btn blockBtn" data-id="${uid}" data-status="${status}">
-          ${status === "blocked" ? "ブロック解除" : "ブロックする"}
-        </button>
+  ${status === "blocked" ? "ブロック解除" : "ブロックする"}
+</button>
+
+<button class="gold-btn deleteBtn" data-id="${uid}" data-email="${email}">
+  🗑️ 削除
+</button>
       </div>
     `;
 
@@ -122,6 +127,20 @@ onAuthStateChanged(auth, async (user) => {
   setUserButtons();
 }
   function setUserButtons() {
+    document.querySelectorAll(".deleteBtn").forEach((btn) => {
+  btn.addEventListener("click", async () => {
+    const uid = btn.dataset.id;
+    const email = btn.dataset.email;
+
+    const ok = confirm(`${email} を完全に削除しますか？\nこの操作は元に戻せません。`);
+    if (!ok) return;
+
+    await deleteDoc(doc(db, "users", uid));
+
+    alert("ユーザーを削除しました");
+    loadUsers();
+  });
+});
   document.querySelectorAll(".blockBtn").forEach((btn) => {
     btn.addEventListener("click", async () => {
       const uid = btn.dataset.id;
