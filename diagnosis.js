@@ -334,11 +334,22 @@ function restartQuiz() {
 
 async function saveResultImage() {
   const card = document.querySelector(".result-card");
+  const detailArea = document.getElementById("detailArea");
+  const buttons = card.querySelectorAll("button, a");
+
+  const oldDetailDisplay = detailArea ? detailArea.style.display : "";
+
+  if (detailArea) detailArea.style.display = "none";
+  buttons.forEach(btn => btn.style.display = "none");
 
   const canvas = await html2canvas(card, {
     backgroundColor: "#050505",
-    scale: 2
+    scale: 2,
+    useCORS: true
   });
+
+  if (detailArea) detailArea.style.display = oldDetailDisplay;
+  buttons.forEach(btn => btn.style.display = "");
 
   const link = document.createElement("a");
   link.download = "NOX-TYPE.png";
