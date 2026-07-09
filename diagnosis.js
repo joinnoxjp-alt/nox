@@ -129,6 +129,10 @@ function showResult() {
     ${result.tags.map(t => `<span>${t}</span>`).join("")}
     <span>おすすめ職種：${jobs.slice(0, 3).join(" / ")}</span>
   `;
+    const detailArea = document.getElementById("detailArea");
+  if (detailArea && window.TYPE_DETAILS && window.TYPE_DETAILS[topType.id]) {
+    detailArea.innerHTML = window.TYPE_DETAILS[topType.id].description;
+  }
 }
 
 function shareResult() {
