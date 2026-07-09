@@ -333,14 +333,21 @@ function restartQuiz() {
 // ↓ここから追加（332行目）
 
 async function saveResultImage() {
-  const card = document.querySelector(".result-card");
-  const detailArea = document.getElementById("detailArea");
-  const buttons = card.querySelectorAll("button, a");
+  const card = document.getElementById("shareCard");
 
-  const oldDetailDisplay = detailArea ? detailArea.style.display : "";
+  document.getElementById("shareImage").src =
+    document.getElementById("resultImage").src;
 
-  if (detailArea) detailArea.style.display = "none";
-  buttons.forEach(btn => btn.style.display = "none");
+  document.getElementById("shareName").textContent =
+    document.getElementById("resultName").textContent;
+
+  document.getElementById("shareTitle").textContent =
+    document.getElementById("resultTitle").textContent;
+
+  document.getElementById("shareStats").innerHTML =
+    document.getElementById("statsArea").innerHTML;
+
+  card.style.display = "block";
 
   const canvas = await html2canvas(card, {
     backgroundColor: "#050505",
@@ -348,8 +355,7 @@ async function saveResultImage() {
     useCORS: true
   });
 
-  if (detailArea) detailArea.style.display = oldDetailDisplay;
-  buttons.forEach(btn => btn.style.display = "");
+  card.style.display = "none";
 
   const link = document.createElement("a");
   link.download = "NOX-TYPE.png";
