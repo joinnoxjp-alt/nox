@@ -141,3 +141,90 @@ if (adSlides.length) {
   },5500);
 
 }
+/* ===========================
+   TOP 新着求人
+=========================== */
+
+import { db } from "./pages/firebase-db.js";
+import {
+  collection,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const topJobs = document.getElementById("topNewJobs");
+
+if (topJobs) {
+
+  loadTopJobs();
+
+  async function loadTopJobs() {
+
+    const snap = await getDocs(collection(db, "jobs"));
+
+    let jobs = [];
+        snap.forEach((doc) => {
+
+      const job = {
+        id: doc.id,
+        ...doc.data()
+      };
+
+      if (job.status !== "approved") return;
+
+      const text =
+        `${job.storeName || ""}
+        ${job.name || ""}
+        ${job.title || ""}
+        ${job.shopName || ""}
+        ${job.storeTitle || ""}`;
+
+      if (text.includes("テスト")) return;
+      if (text.toLowerCase().includes("test")) return;
+      if (text.toLowerCase().includes("dummy")) return;
+
+      jobs.push(job);
+
+    });
+
+    jobs.sort((a, b) => {
+      const da = a.createdAt?.seconds || 0;
+      const db = b.createdAt?.seconds || 0;
+      return db - da;
+    });
+
+    jobs = jobs.slice(0, 3);
+        if (jobs.length === 0) {
+      topJobs.innerHTML = "<p>まだ求人がありません。</p>";
+      return;
+    }
+
+    topJobs.innerHTML = "";
+
+    jobs.forEach(job => {
+
+      topJobs.innerHTML += `
+      <div class="top-job-card">
+
+        <img src="${job.image || "images/no-image.jpg"}">
+
+        <div class="top-job-body">
+
+          <h3>${job.storeName || job.name || "店舗名未設定"}</h3>
+
+          <p>📍 ${job.area || "-"}</p>
+
+          <p>💰 ${job.salary || job.salaryText || "給与未設定"}</p>
+
+          <a href="pages/job-detail.html?id=${job.id}" class="btn gold">
+            詳細を見る
+          </a>
+
+        </div>
+
+      </div>
+      `;
+
+    });
+      }
+
+}
