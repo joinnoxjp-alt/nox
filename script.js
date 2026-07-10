@@ -206,9 +206,8 @@ if (topJobs) {
       <div class="top-job-card">
 
         <img
-src="${job.imageUrl || job.image || 'images/line_oa_chat_260708_192846.jpeg'}"
-alt="${job.storeName || job.name || '求人画像'}"
-onerror="this.src='images/line_oa_chat_260708_192846.jpeg';"
+  src="images/line_oa_chat_260708_192846.jpeg"
+  alt="${job.storeName || job.name || '求人画像'}"
 />
 />
 
