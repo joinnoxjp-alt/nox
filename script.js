@@ -205,7 +205,18 @@ if (topJobs) {
       topJobs.innerHTML += `
       <div class="top-job-card">
 
-        <img src="${job.image || "images/no-image.jpg"}">
+        <img
+  src="${
+    job.imageUrl ||
+    job.image ||
+    job.mainImage ||
+    job.thumbnail ||
+    job.images?.[0] ||
+    "images/no-image.jpg"
+  }"
+  alt="${job.storeName || job.name || "求人画像"}"
+  onerror="this.src='images/no-image.jpg';"
+/>
 
         <div class="top-job-body">
 
