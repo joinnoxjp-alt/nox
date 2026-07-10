@@ -327,43 +327,58 @@ window.getDownloadURL = getDownloadURL;
 </div>
 <script>
 async function submitJob() {
-
-    const data = {
-
-        storeName: document.getElementById("storeName").value,
-
-        businessType:
-            document.getElementById("businessType").value === "その他"
-            ? document.getElementById("otherBusinessType").value
-            : document.getElementById("businessType").value,
-
-        area: document.getElementById("area").value,
-        address: document.getElementById("address").value,
-        station: document.getElementById("station").value,
-        businessHours: document.getElementById("businessHours").value,
-        closedDay: document.getElementById("closedDay").value,
-
-        salary: document.getElementById("salary").value,
-        back: document.getElementById("back").value,
-        dailyPay: document.getElementById("dailyPay").value,
-        trial: document.getElementById("trial").value,
-        beginner: document.getElementById("beginner").value,
-        age: document.getElementById("age").value,
-        quota: document.getElementById("quota").value,
-        penalty: document.getElementById("penalty").value,
-        shift: document.getElementById("shift").value,
-                shopPR: document.querySelectorAll("textarea")[0].value,
-        atmosphere: document.querySelectorAll("textarea")[1].value,
-        customerBase: document.querySelector('input[placeholder*="20代〜50代"]').value,
-        staffCount: document.querySelector('input[placeholder*="20名"]').value,
-        ageGroup: document.querySelector('input[placeholder*="20歳〜30歳"]').value,
-
-        createdAt: serverTimestamp(),
-        status: "pending"
-    };
+const imageFile = document.getElementById("jobImage").files[0];
+let imageUrl = "";
 
     try {
+        if (imageFile) {
 
+    const imageRef = storageRef(
+        storage,
+        "jobs/" + Date.now() + "_" + imageFile.name
+    );
+
+    await uploadBytes(imageRef, imageFile);
+
+    imageUrl = await getDownloadURL(imageRef);
+
+}
+const data = {
+
+    storeName: document.getElementById("storeName").value,
+
+    businessType:
+        document.getElementById("businessType").value === "その他"
+        ? document.getElementById("otherBusinessType").value
+        : document.getElementById("businessType").value,
+
+    area: document.getElementById("area").value,
+    address: document.getElementById("address").value,
+    station: document.getElementById("station").value,
+    businessHours: document.getElementById("businessHours").value,
+    closedDay: document.getElementById("closedDay").value,
+
+    salary: document.getElementById("salary").value,
+    back: document.getElementById("back").value,
+    dailyPay: document.getElementById("dailyPay").value,
+    trial: document.getElementById("trial").value,
+    beginner: document.getElementById("beginner").value,
+    age: document.getElementById("age").value,
+    quota: document.getElementById("quota").value,
+    penalty: document.getElementById("penalty").value,
+    shift: document.getElementById("shift").value,
+
+    shopPR: document.querySelectorAll("textarea")[0].value,
+    atmosphere: document.querySelectorAll("textarea")[1].value,
+    customerBase: document.querySelector('input[placeholder*="20代〜50代"]').value,
+    staffCount: document.querySelector('input[placeholder*="20名"]').value,
+    ageGroup: document.querySelector('input[placeholder*="20歳〜30歳"]').value,
+
+    image: imageUrl,
+
+    createdAt: serverTimestamp(),
+    status: "pending"
+};
         await addDoc(
             collection(db, "jobApplications"),
             data
