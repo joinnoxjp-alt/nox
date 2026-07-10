@@ -95,13 +95,33 @@ button{
 </style>
 
 <script type="module">
-import { db } from "./firebase-db.js";
-import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { app, db } from "./firebase-db.js";
+
+import {
+  collection,
+  addDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+
+const storage = getStorage(app);
 
 window.db = db;
+window.storage = storage;
+
 window.collection = collection;
 window.addDoc = addDoc;
 window.serverTimestamp = serverTimestamp;
+
+window.storageRef = ref;
+window.uploadBytes = uploadBytes;
+window.getDownloadURL = getDownloadURL;
 </script>
 </head>
 
