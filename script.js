@@ -1,3 +1,4 @@
+
 // NOX script.js
 
 window.addEventListener("load", () => {
@@ -89,3 +90,54 @@ const noxAiQuestions = [
 ];
 
 console.log("NOX AI Questions Ready:", noxAiQuestions);
+/* ===========================
+   NOX 広告ローテーション
+=========================== */
+
+const adSlides = document.querySelectorAll(".nox-ad-slide");
+const adDots = document.querySelectorAll(".nox-ad-dots button");
+
+if (adSlides.length) {
+
+  let currentAd = 0;
+
+  function showAd(index){
+
+    adSlides.forEach(slide => slide.classList.remove("active"));
+
+    adDots.forEach(dot => dot.classList.remove("active"));
+
+    adSlides[index].classList.add("active");
+
+    if(adDots[index]){
+      adDots[index].classList.add("active");
+    }
+
+    currentAd = index;
+  }
+
+  adDots.forEach((dot,index)=>{
+
+    dot.addEventListener("click",()=>{
+
+      showAd(index);
+
+    });
+
+  });
+
+  setInterval(()=>{
+
+    currentAd++;
+
+    if(currentAd>=adSlides.length){
+
+      currentAd=0;
+
+    }
+
+    showAd(currentAd);
+
+  },5500);
+
+}
