@@ -389,7 +389,7 @@ const data = {
     } catch (e) {
 
         console.error(e);
-        alert("送信に失敗しました。");
+alert(e.message || e);
 
     }
 
