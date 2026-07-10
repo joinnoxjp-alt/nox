@@ -1080,3 +1080,183 @@ footer a:hover{
         font-size:32px;
     }
 }
+/* ==============================
+   NOX ローテーション広告
+============================== */
+
+.nox-ad-area{
+  position:relative;
+  z-index:3;
+  width:min(92%, 980px);
+  margin:18px auto 60px;
+  padding-top:0;
+}
+
+.nox-ad-slider{
+  position:relative;
+  min-height:150px;
+  overflow:hidden;
+  border:1px solid rgba(212,175,55,.6);
+  border-radius:18px;
+  background:#090909;
+  box-shadow:
+    0 14px 35px rgba(0,0,0,.5),
+    0 0 24px rgba(212,175,55,.08);
+}
+
+.nox-ad-slide{
+  display:none;
+  width:100%;
+  min-height:150px;
+  color:#fff;
+  text-decoration:none;
+  background:
+    radial-gradient(circle at top right, rgba(212,175,55,.2), transparent 40%),
+    linear-gradient(135deg, #17120a, #080808 65%);
+}
+
+.nox-ad-slide.active{
+  display:block;
+  animation:noxAdFade .65s ease;
+}
+
+.nox-ad-content{
+  min-height:150px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:16px;
+  box-sizing:border-box;
+  flex-wrap:wrap;
+}
+
+.nox-ad-badge{
+  flex:0 0 auto;
+  padding:6px 9px;
+  border:1px solid #d4af37;
+  border-radius:7px;
+  color:#d4af37;
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.15em;
+}
+
+.nox-ad-text{
+  flex:1 1 calc(100% - 55px);
+  min-width:0;
+}
+
+.nox-ad-text strong{
+  display:block;
+  color:#f5d77b;
+  font-size:16px;
+  line-height:1.45;
+}
+
+.nox-ad-text p{
+  margin:6px 0 0;
+  color:#ddd;
+  font-size:12px;
+  line-height:1.65;
+}
+
+.nox-ad-button{
+  width:100%;
+  box-sizing:border-box;
+  text-align:center;
+  padding:11px 14px;
+  border-radius:999px;
+  background:linear-gradient(135deg,#a97908,#f3d979);
+  color:#111;
+  font-size:13px;
+  font-weight:800;
+  white-space:nowrap;
+}
+
+.nox-ad-dots{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:8px;
+  margin-top:14px;
+}
+
+.nox-ad-dots button{
+  width:8px;
+  height:8px;
+  padding:0;
+  border:0;
+  border-radius:50%;
+  background:#555;
+  cursor:pointer;
+}
+
+.nox-ad-dots button.active{
+  width:20px;
+  border-radius:999px;
+  background:#d4af37;
+}
+
+.nox-ad-note{
+  margin:12px 0 0;
+  padding:0 6px;
+  text-align:center;
+  color:#aaa;
+  font-size:11px;
+  line-height:1.75;
+}
+
+@keyframes noxAdFade{
+  from{
+    opacity:0;
+    transform:translateY(5px);
+  }
+
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
+
+/* PC表示 */
+@media (min-width:601px){
+
+  .nox-ad-area{
+    width:min(94%, 980px);
+    margin:24px auto 55px;
+  }
+
+  .nox-ad-slider{
+    min-height:118px;
+  }
+
+  .nox-ad-slide{
+    min-height:118px;
+  }
+
+  .nox-ad-content{
+    min-height:118px;
+    flex-wrap:nowrap;
+    gap:16px;
+    padding:18px 22px;
+  }
+
+  .nox-ad-text{
+    flex:1;
+  }
+
+  .nox-ad-text strong{
+    font-size:18px;
+  }
+
+  .nox-ad-text p{
+    font-size:13px;
+  }
+
+  .nox-ad-button{
+    width:auto;
+    flex:0 0 auto;
+    padding:10px 15px;
+    font-size:12px;
+  }
+}
