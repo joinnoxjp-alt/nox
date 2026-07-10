@@ -206,16 +206,10 @@ if (topJobs) {
       <div class="top-job-card">
 
         <img
-  src="${
-    job.imageUrl ||
-    job.image ||
-    job.mainImage ||
-    job.thumbnail ||
-    job.images?.[0] ||
-    "images/no-image.jpg"
-  }"
-  alt="${job.storeName || job.name || "求人画像"}"
-  onerror="this.src='images/no-image.jpg';"
+src="${job.imageUrl || job.image || 'images/job1.jpg'}"
+alt="${job.storeName || job.name || '求人画像'}"
+onerror="this.src='images/job1.jpg';"
+/>
 />
 
         <div class="top-job-body">
