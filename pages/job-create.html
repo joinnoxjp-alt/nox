@@ -315,7 +315,7 @@ window.getDownloadURL = getDownloadURL;
 
 </div>
 
-<button type="button" onclick="alert('ボタン反応OK'); submitJob()">
+<button type="button" onclick="submitJob()"
 📤 掲載申請する
 </button>
 
@@ -330,10 +330,8 @@ async function submitJob() {
 const imageFile = document.getElementById("jobImage").files[0];
 let imageUrl = "";
 
-    alert("submitJob開始");
 
     try {
-        alert("tryに入った");
         if (imageFile) {
 
     const imageRef = storageRef(
@@ -344,7 +342,7 @@ let imageUrl = "";
     await uploadBytes(imageRef, imageFile);
 
     imageUrl = await getDownloadURL(imageRef);
-            alert("画像アップロード成功");
+            
 
 }
 const data = {
@@ -383,7 +381,7 @@ const data = {
     createdAt: serverTimestamp(),
     status: "pending"
 };
-        alert("Firestore保存開始");
+        
         await addDoc(
     
             collection(db, "jobApplications"),
