@@ -195,18 +195,26 @@ function escapeHtml(value) {
 function getJobImage(job) {
   if (job.mainImage) return job.mainImage;
   if (job.imageUrl) return job.imageUrl;
+  if (job.image) return job.image;
   if (job.logoUrl) return job.logoUrl;
   if (job.storeImage) return job.storeImage;
 
   if (Array.isArray(job.images) && job.images.length > 0) {
-    return job.images[0];
+    const validImage = job.images.find((image) => {
+      return typeof image === "string" && image.trim() !== "";
+    });
+
+    if (validImage) {
+      return validImage;
+    }
   }
 
   return "images/line_oa_chat_260708_192846.jpeg";
 }
 
 /* ===========================
-   TOP 新着求人
+   TOP 注目求人
+   topFeatured: true の店舗のみ表示
 =========================== */
 
 const topJobs = document.getElementById("topNewJobs");
@@ -217,9 +225,12 @@ if (topJobs) {
 
 async function loadTopJobs() {
   try {
-    topJobs.innerHTML = "<p>求人情報を読み込んでいます...</p>";
+    topJobs.innerHTML =
+      "<p>注目求人を読み込んでいます...</p>";
 
-    const snapshot = await getDocs(collection(db, "jobs"));
+    const snapshot =
+      await getDocs(collection(db, "jobs"));
+
     const jobs = [];
 
     snapshot.forEach((documentSnapshot) => {
@@ -228,8 +239,11 @@ async function loadTopJobs() {
         ...documentSnapshot.data()
       };
 
-      // 承認済み求人のみ表示
+      // 掲載中の求人だけ表示
       if (job.status !== "approved") return;
+
+      // トップ掲載オプションがONの求人だけ表示
+      if (job.topFeatured !== true) return;
 
       // テスト求人を非表示
       const searchText = [
@@ -246,33 +260,58 @@ async function loadTopJobs() {
       if (searchText.includes("テスト")) return;
       if (searchText.includes("test")) return;
       if (searchText.includes("dummy")) return;
+      if (searchText.includes("nox店舗")) return;
+      if (searchText.includes("nox確認店")) return;
 
       jobs.push(job);
     });
 
+    // topOrderの数字が小さい店舗を優先
+    // topOrder未設定の場合は新しい順
     jobs.sort((jobA, jobB) => {
+      const orderA =
+        typeof jobA.topOrder === "number"
+          ? jobA.topOrder
+          : 9999;
+
+      const orderB =
+        typeof jobB.topOrder === "number"
+          ? jobB.topOrder
+          : 9999;
+
+      if (orderA !== orderB) {
+        return orderA - orderB;
+      }
+
       const timeA =
-        jobA.createdAt?.seconds ??
+        jobA.topFeaturedAt?.seconds ??
         jobA.approvedAt?.seconds ??
+        jobA.createdAt?.seconds ??
         0;
 
       const timeB =
-        jobB.createdAt?.seconds ??
+        jobB.topFeaturedAt?.seconds ??
         jobB.approvedAt?.seconds ??
+        jobB.createdAt?.seconds ??
         0;
 
       return timeB - timeA;
     });
 
-    const latestJobs = jobs.slice(0, 3);
+    // トップには最大3店舗
+    const featuredJobs = jobs.slice(0, 3);
 
-    if (latestJobs.length === 0) {
-      topJobs.innerHTML =
-        '<p class="top-jobs-empty">現在、掲載準備中です。</p>';
+    if (featuredJobs.length === 0) {
+      topJobs.innerHTML = `
+        <p class="top-jobs-empty">
+          現在、注目求人を準備中です。
+        </p>
+      `;
+
       return;
     }
 
-    topJobs.innerHTML = latestJobs
+    topJobs.innerHTML = featuredJobs
       .map((job) => {
         const storeName =
           job.storeName ||
@@ -299,6 +338,10 @@ async function loadTopJobs() {
         return `
           <div class="top-job-card">
 
+            <div class="top-featured-label">
+              PICK UP
+            </div>
+
             <img
               src="${escapeHtml(imageUrl)}"
               alt="${escapeHtml(storeName)}の求人画像"
@@ -308,11 +351,17 @@ async function loadTopJobs() {
 
             <div class="top-job-body">
 
-              <h3>${escapeHtml(storeName)}</h3>
+              <h3>
+                ${escapeHtml(storeName)}
+              </h3>
 
-              <p>📍 ${escapeHtml(area)}</p>
+              <p>
+                📍 ${escapeHtml(area)}
+              </p>
 
-              <p>💰 ${escapeHtml(salary)}</p>
+              <p>
+                💰 ${escapeHtml(salary)}
+              </p>
 
               <a
                 href="pages/job-detail.html?id=${encodeURIComponent(job.id)}"
@@ -329,11 +378,14 @@ async function loadTopJobs() {
       .join("");
 
   } catch (error) {
-    console.error("TOP求人の読み込みエラー:", error);
+    console.error(
+      "TOP注目求人の読み込みエラー:",
+      error
+    );
 
     topJobs.innerHTML = `
       <p class="top-jobs-error">
-        求人情報を読み込めませんでした。時間を置いて再度お試しください。
+        求人情報を読み込めませんでした。
       </p>
     `;
   }
