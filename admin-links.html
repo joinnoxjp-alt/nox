@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>NOX 管理者専用URL一覧</title>
+
+<link rel="stylesheet" href="../style.css">
+
+<style>
+
+body{
+
+background:#050505;
+color:white;
+font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;
+
+padding:25px;
+
+}
+
+.container{
+
+max-width:1100px;
+margin:auto;
+
+}
+
+.logo{
+
+font-size:52px;
+font-weight:900;
+color:#d4af37;
+
+}
+
+.sub{
+
+color:#888;
+margin-top:8px;
+margin-bottom:35px;
+
+}
+
+.card{
+
+background:#121212;
+
+border:1px solid #2d2d2d;
+
+border-radius:22px;
+
+padding:22px;
+
+margin-bottom:20px;
+
+}
+
+.card h2{
+
+color:#d4af37;
+
+margin-bottom:18px;
+
+}
+
+.url-row{
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+gap:15px;
+
+padding:14px 0;
+
+border-bottom:1px solid #242424;
+
+flex-wrap:wrap;
+
+}
+
+.url-name{
+
+font-weight:bold;
+
+}
+
+.url-link{
+
+color:#9dd7ff;
+
+word-break:break-all;
+
+}
+
+.actions{
+
+display:flex;
+
+gap:10px;
+
+}
+
+button{
+
+background:#d4af37;
+
+color:#000;
+
+border:none;
+
+padding:10px 16px;
+
+border-radius:12px;
+
+font-weight:bold;
+
+cursor:pointer;
+
+}
+
+button:hover{
+
+opacity:.9;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="logo">
+
+NOX
+
+</div>
+
+<div class="sub">
+
+管理者専用URL一覧
+
+</div>
+
+<div class="card">
+
+<h2>
+
+🌐 サイトURL
+
+</h2>
+<div class="url-row">
+
+<div>
+
+<div class="url-name">🌐 TOPページ</div>
+
+<div class="url-link">
+https://joinnox.jp/
+</div>
+
+</div>
+
+<div class="actions">
+
+<button onclick="copyUrl('https://joinnox.jp/')">
+コピー
+</button>
+
+<button onclick="openUrl('https://joinnox.jp/')">
+開く
+</button>
+
+</div>
+
+</div>
+
+<div class="url-row">
+
+<div>
+
+<div class="url-name">🏪 店舗掲載案内</div>
+
+<div class="url-link">
+https://joinnox.jp/owner.html
+</div>
+
+</div>
+
+<div class="actions">
+
+<button onclick="copyUrl('https://joinnox.jp/owner.html')">
+コピー
+</button>
+
+<button onclick="openUrl('https://joinnox.jp/owner.html')">
+開く
+</button>
+
+</div>
+
+</div>
+
+<div class="url-row">
+
+<div>
+
+<div class="url-name">📤 店舗掲載申請</div>
+
+<div class="url-link">
+https://joinnox.jp/pages/job-create.html
+</div>
+
+</div>
+
+<div class="actions">
+
+<button onclick="copyUrl('https://joinnox.jp/pages/job-create.html')">
+コピー
+</button>
+
+<button onclick="openUrl('https://joinnox.jp/pages/job-create.html')">
+開く
+</button>
+
+</div>
+
+</div>
+
+<div class="url-row">
+
+<div>
+
+<div class="url-name">👩 求人一覧</div>
+
+<div class="url-link">
+https://joinnox.jp/pages/jobs.html
+</div>
+
+</div>
+
+<div class="actions">
+
+<button onclick="copyUrl('https://joinnox.jp/pages/jobs.html')">
+コピー
+</button>
+
+<button onclick="openUrl('https://joinnox.jp/pages/jobs.html')">
+開く
+</button>
+
+</div>
+
+</div>
+
+<div class="url-row">
+
+<div>
+
+<div class="url-name">📄 求人詳細</div>
+
+<div class="url-link">
+https://joinnox.jp/pages/job-detail.html
+</div>
+
+</div>
+
+<div class="actions">
+
+<button onclick="copyUrl('https://joinnox.jp/pages/job-detail.html')">
+コピー
+</button>
+
+<button onclick="openUrl('https://joinnox.jp/pages/job-detail.html')">
+開く
+</button>
+
+</div>
+
+</div>
+<div class="url-row">
+
+<div>
+
+<div class="url-name">👤 ログイン</div>
+
+<div class="url-link">
+https://joinnox.jp/pages/login.html
+</div>
+
+</div>
+
+<div class="actions">
+
+<button onclick="copyUrl('https://joinnox.jp/pages/login.html')">
+コピー
+</button>
+
+<button onclick="openUrl('https://joinnox.jp/pages/login.html')">
+開く
+</button>
+
+</div>
+
+</div>
+
+<div class="url-row">
+
+<div>
+
+<div class="url-name">📝 新規登録</div>
+
+<div class="url-link">
+https://joinnox.jp/pages/register.html
+</div>
+
+</div>
+
+<div class="actions">
+
+<button onclick="copyUrl('https://joinnox.jp/pages/register.html')">
+コピー
+</button>
+
+<button onclick="openUrl('https://joinnox.jp/pages/register.html')">
+開く
+</button>
+
+</div>
+
+</div>
+
+<div class="url-row">
+
+<div>
+
+<div class="url-name">🏠 マイページ</div>
+
+<div class="url-link">
+https://joinnox.jp/pages/mypage.html
+</div>
+
+</div>
+
+<div class="actions">
+
+<button onclick="copyUrl('https://joinnox.jp/pages/mypage.html')">
+コピー
+</button>
+
+<button onclick="openUrl('https://joinnox.jp/pages/mypage.html')">
+開く
+</button>
+
+</div>
+
+</div>
+
+<div class="url-row">
+
+<div>
+
+<div class="url-name">🛠 管理画面</div>
+
+<div class="url-link">
+https://joinnox.jp/pages/admin.html
+</div>
+
+</div>
+
+<div class="actions">
+
+<button onclick="copyUrl('https://joinnox.jp/pages/admin.html')">
+コピー
+</button>
+
+<button onclick="openUrl('https://joinnox.jp/pages/admin.html')">
+開く
+</button>
+
+</div>
+
+</div>
+
+<div class="url-row">
+
+<div>
+
+<div class="url-name">🤖 AI夜職診断</div>
+
+<div class="url-link">
+https://joinnox.jp/ai-diagnosis.html
+</div>
+
+</div>
+
+<div class="actions">
+
+<button onclick="copyUrl('https://joinnox.jp/ai-diagnosis.html')">
+コピー
+</button>
+
+<button onclick="openUrl('https://joinnox.jp/ai-diagnosis.html')">
+開く
+</button>
+
+</div>
+
+</div>
+
+<div class="url-row">
+
+<div>
+
+<div class="url-name">💬 チャットレディ特集</div>
+
+<div class="url-link">
+https://joinnox.jp/pages/chatlady.html
+</div>
+
+</div>
+
+<div class="actions">
+
+<button onclick="copyUrl('https://joinnox.jp/pages/chatlady.html')">
+コピー
+</button>
+
+<button onclick="openUrl('https://joinnox.jp/pages/chatlady.html')">
+開く
+</button>
+
+</div>
+
+</div>
+
+</div>
+<script type="module">
+
+import { auth } from "../firebase.js";
+
+import {
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
+  getFirestore,
+  doc,
+  getDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const db = getFirestore();
+
+onAuthStateChanged(auth, async(user)=>{
+
+  if(!user){
+
+    alert("ログインしてください");
+
+    location.href="./login.html";
+
+    return;
+
+  }
+
+  const adminRef =
+    doc(db,"users",user.uid);
+
+  const adminSnap =
+    await getDoc(adminRef);
+
+  if(
+    !adminSnap.exists() ||
+    adminSnap.data().role !== "admin"
+  ){
+
+    alert("管理者のみ閲覧できます");
+
+    location.href="./mypage.html";
+
+    return;
+
+  }
+
+});
+
+window.copyUrl = async(url)=>{
+
+  await navigator.clipboard.writeText(url);
+
+  alert("コピーしました！");
+
+}
+
+window.openUrl = (url)=>{
+
+  window.open(
+    url,
+    "_blank"
+  );
+
+}
+
+</script>
+
+</body>
+
+</html>
