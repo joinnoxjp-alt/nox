@@ -7,216 +7,300 @@
 <title>NOX | 求人詳細</title>
 
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
 
-body{
-  min-height:100vh;
-  background:
-    radial-gradient(circle at top,rgba(255,215,0,.18),transparent 35%),
-    linear-gradient(180deg,#050505,#000);
-  color:#fff;
-  font-family:"Hiragino Mincho ProN","Yu Mincho",serif;
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
 }
 
-a{text-decoration:none;color:inherit}
+body{
+min-height:100vh;
+background:
+radial-gradient(circle at top,rgba(255,215,0,.18),transparent 35%),
+linear-gradient(180deg,#050505,#000);
+color:#fff;
+font-family:"Hiragino Mincho ProN","Yu Mincho",serif;
+}
+
+a{
+text-decoration:none;
+color:inherit;
+}
 
 .page{
-  max-width:1000px;
-  margin:auto;
-  padding:32px 18px 80px;
+max-width:1100px;
+margin:auto;
+padding:30px 18px 80px;
 }
 
 .header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:16px;
-  margin-bottom:34px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:16px;
+margin-bottom:30px;
+flex-wrap:wrap;
 }
 
 .logo{
-  color:#FFD700;
-  font-size:38px;
-  font-weight:900;
-  letter-spacing:3px;
+font-size:40px;
+font-weight:900;
+color:#FFD700;
+letter-spacing:4px;
 }
 
 .logo small{
-  display:block;
-  color:#aaa;
-  font-size:11px;
-  letter-spacing:4px;
-  margin-top:4px;
+display:block;
+font-size:11px;
+color:#999;
+letter-spacing:5px;
+margin-top:5px;
 }
 
 .nav{
-  display:flex;
-  gap:12px;
-  flex-wrap:wrap;
+display:flex;
+gap:12px;
+flex-wrap:wrap;
 }
 
 .btn{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  padding:13px 22px;
-  border-radius:999px;
-  border:1px solid rgba(255,215,0,.35);
-  color:#FFD700;
-  background:rgba(255,255,255,.04);
-  font-weight:bold;
+display:inline-flex;
+justify-content:center;
+align-items:center;
+padding:14px 24px;
+border-radius:999px;
+border:1px solid rgba(255,215,0,.35);
+background:rgba(255,255,255,.04);
+color:#FFD700;
+font-weight:bold;
+cursor:pointer;
+transition:.25s;
+}
+
+.btn:hover{
+transform:translateY(-2px);
 }
 
 .btn.gold{
-  background:#FFD700;
-  color:#000;
+background:#FFD700;
+color:#000;
 }
 
 .hero{
-  border:1px solid rgba(255,215,0,.4);
-  border-radius:34px;
-  padding:38px 28px;
-  background:
-    radial-gradient(circle at top right,rgba(255,215,0,.18),transparent 40%),
-    linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.025));
-  box-shadow:0 28px 80px rgba(0,0,0,.6);
-  margin-bottom:24px;
+border:1px solid rgba(255,215,0,.35);
+border-radius:30px;
+padding:35px;
+background:
+radial-gradient(circle at top right,rgba(255,215,0,.18),transparent 40%),
+linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.02));
+box-shadow:0 20px 60px rgba(0,0,0,.55);
+margin-bottom:24px;
+}
+
+.hero img{
+width:100%;
+max-height:420px;
+object-fit:cover;
+border-radius:22px;
+margin-bottom:25px;
 }
 
 .kicker{
-  color:#FFD700;
-  letter-spacing:5px;
-  font-size:13px;
-  margin-bottom:14px;
+font-size:12px;
+letter-spacing:5px;
+color:#FFD700;
+margin-bottom:12px;
 }
 
 .hero h1{
-  font-size:clamp(42px,8vw,76px);
-  color:#FFD700;
-  line-height:1.08;
-  margin-bottom:16px;
+font-size:clamp(40px,8vw,72px);
+color:#FFD700;
+margin-bottom:15px;
+line-height:1.1;
 }
 
 .hero p{
-  color:#ddd;
-  line-height:1.9;
-  font-size:16px;
+color:#ddd;
+line-height:1.9;
+font-size:17px;
 }
 
-.section-card{
-  border:1px solid rgba(255,215,0,.28);
-  border-radius:28px;
-  padding:26px;
-  margin:20px 0;
-  background:
-    linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.025));
-  box-shadow:0 22px 60px rgba(0,0,0,.5);
+.salary{
+margin-top:28px;
+padding:25px;
+border-radius:22px;
+border:1px solid rgba(255,215,0,.45);
+background:rgba(255,215,0,.08);
 }
 
-.section-card h2{
-  color:#FFD700;
-  font-size:28px;
-  margin-bottom:18px;
+.salary small{
+display:block;
+color:#aaa;
+font-size:14px;
 }
 
-.info-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-  gap:14px;
+.salary strong{
+display:block;
+font-size:48px;
+margin-top:10px;
+color:#FFD700;
 }
 
-.info-item{
-  border:1px solid rgba(255,215,0,.18);
-  border-radius:18px;
-  padding:16px;
-  background:rgba(255,255,255,.035);
-  line-height:1.8;
+.section{
+margin-top:22px;
+padding:25px;
+border-radius:26px;
+border:1px solid rgba(255,215,0,.28);
+background:
+linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.02));
+box-shadow:0 20px 50px rgba(0,0,0,.45);
 }
 
-.info-item span{
-  display:block;
-  color:#aaa;
-  font-size:13px;
-  margin-bottom:6px;
+.section h2{
+color:#FFD700;
+font-size:28px;
+margin-bottom:20px;
 }
 
-.info-item strong{
-  color:#fff;
-  font-size:16px;
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+gap:14px;
+}
+  .info-card{
+padding:18px;
+border-radius:18px;
+border:1px solid rgba(255,215,0,.18);
+background:rgba(255,255,255,.03);
 }
 
-.salary-box{
-  margin:22px 0;
-  padding:24px;
-  border-radius:24px;
-  border:1px solid rgba(255,215,0,.45);
-  background:rgba(255,215,0,.08);
+.info-card span{
+display:block;
+font-size:13px;
+color:#999;
+margin-bottom:8px;
 }
 
-.salary-box span{
-  color:#aaa;
-  font-size:14px;
+.info-card strong{
+font-size:17px;
+font-weight:bold;
 }
 
-.salary-box strong{
-  display:block;
-  color:#FFD700;
-  font-size:44px;
-  margin-top:8px;
+.gallery{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:16px;
 }
 
-.text-box{
-  color:#ddd;
-  line-height:2;
-  white-space:pre-wrap;
+.gallery img{
+width:100%;
+height:220px;
+object-fit:cover;
+border-radius:18px;
+border:1px solid rgba(255,215,0,.18);
+transition:.25s;
+cursor:pointer;
 }
 
-.form input,
-.form textarea{
-  width:100%;
-  padding:15px;
-  margin:10px 0;
-  border-radius:14px;
-  border:1px solid rgba(255,215,0,.25);
-  background:#080808;
-  color:#fff;
-  font-size:16px;
+.gallery img:hover{
+transform:scale(1.02);
 }
 
-.form textarea{
-  min-height:110px;
-  resize:vertical;
+.pr{
+line-height:2;
+color:#ddd;
+white-space:pre-wrap;
 }
 
-.footer-actions{
-  display:flex;
-  justify-content:center;
-  gap:14px;
-  flex-wrap:wrap;
-  margin-top:36px;
+.apply-box{
+margin-top:25px;
+padding:25px;
+border-radius:26px;
+border:1px solid rgba(255,215,0,.35);
+background:
+linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.02));
+}
+
+.apply-box h2{
+color:#FFD700;
+margin-bottom:18px;
+}
+
+.apply-box input,
+.apply-box textarea{
+width:100%;
+padding:15px;
+margin:10px 0;
+background:#080808;
+border:1px solid rgba(255,215,0,.25);
+border-radius:14px;
+color:#fff;
+font-size:16px;
+}
+
+.apply-box textarea{
+min-height:120px;
+resize:vertical;
+}
+
+.line-btn{
+display:flex;
+justify-content:center;
+align-items:center;
+width:100%;
+padding:18px;
+margin-top:15px;
+border-radius:999px;
+background:#06C755;
+color:#fff;
+font-weight:bold;
+font-size:18px;
+border:none;
+cursor:pointer;
+transition:.25s;
+}
+
+.line-btn:hover{
+transform:translateY(-2px);
+}
+
+.footer{
+display:flex;
+justify-content:center;
+gap:15px;
+flex-wrap:wrap;
+margin-top:35px;
 }
 
 .loading{
-  color:#ccc;
-  text-align:center;
-  padding:60px 20px;
+padding:80px 20px;
+text-align:center;
+color:#ccc;
 }
 
 @media(max-width:760px){
-  .header{
-    align-items:flex-start;
-    flex-direction:column;
-  }
 
-  .hero{
-    padding:32px 22px;
-  }
-
-  .salary-box strong{
-    font-size:36px;
-  }
+.hero{
+padding:24px;
 }
+
+.hero h1{
+font-size:42px;
+}
+
+.salary strong{
+font-size:38px;
+}
+
+.gallery img{
+height:180px;
+}
+
+}
+
 </style>
+
 </head>
 
 <body>
@@ -224,22 +308,35 @@ a{text-decoration:none;color:inherit}
 <div class="page">
 
 <header class="header">
-  <a href="../index.html" class="logo">
-    NOX
-    <small>Night Opens X</small>
-  </a>
 
-  <nav class="nav">
-    <a href="./girls.html" class="btn">求人一覧</a>
-    <a href="../index.html" class="btn">TOP</a>
-    <a href="./mypage.html" class="btn gold">マイページ</a>
-  </nav>
+<a href="../index.html" class="logo">
+NOX
+<small>Night Opens X</small>
+</a>
+
+<nav class="nav">
+
+<a href="./jobs.html" class="btn">
+求人一覧
+</a>
+
+<a href="../index.html" class="btn">
+TOP
+</a>
+
+<a href="./mypage.html" class="btn gold">
+マイページ
+</a>
+
+</nav>
+
 </header>
 
 <div id="jobDetail" class="loading">
-  求人情報を読み込み中です...
+求人情報を読み込み中です...
 </div>
 <script type="module">
+
 import { db } from "./firebase-db.js";
 
 import {
@@ -252,169 +349,353 @@ import {
 
 const params = new URLSearchParams(location.search);
 const id = params.get("id");
-const jobDetail = document.getElementById("jobDetail");
 
-function showValue(value){
-  return value && String(value).trim() ? value : "-";
+const jobDetail =
+  document.getElementById("jobDetail");
+
+function value(v){
+  return v && String(v).trim()
+    ? v
+    : "未設定";
 }
 
-async function loadJobDetail(){
+async function loadJob(){
 
   if(!id){
-    jobDetail.innerHTML = `
-      <div class="section-card">
-        <h2>求人IDが見つかりません</h2>
-        <p class="text-box">求人一覧ページから再度アクセスしてください。</p>
+
+    jobDetail.innerHTML=`
+      <div class="section">
+        <h2>求人が見つかりません</h2>
       </div>
     `;
+
     return;
   }
 
-  const snap = await getDoc(doc(db,"jobs",id));
+  const snap =
+    await getDoc(
+      doc(db,"jobs",id)
+    );
 
   if(!snap.exists()){
-    jobDetail.innerHTML = `
-      <div class="section-card">
-        <h2>求人情報が見つかりません</h2>
-        <p class="text-box">求人一覧ページから再度アクセスしてください。</p>
+
+    jobDetail.innerHTML=`
+      <div class="section">
+        <h2>求人情報がありません</h2>
       </div>
     `;
+
     return;
   }
 
   const data = snap.data();
-let imageHtml = "";
 
-if (data.imageUrl) {
-  imageHtml = `
-    <img
-      src="${data.imageUrl}"
-      style="
-        width:100%;
-        max-height:420px;
-        object-fit:cover;
-        border-radius:20px;
-        margin:20px 0;
-      ">
-  `;
-}
-  jobDetail.className = "";
+  let images=[];
 
-  jobDetail.innerHTML = `
-    <section class="hero">
-    ${imageHtml}
-      <p class="kicker">NOX JOB DETAIL</p>
-      <h1>${showValue(data.storeName || data.name)}</h1>
-      <p>
-        ${showValue(data.area)} / ${showValue(data.genre || data.type || data.businessType)}
-      </p>
+  if(Array.isArray(data.images)){
+    images=data.images;
+  }else if(data.imageUrl){
+    images=[data.imageUrl];
+  }
 
-      <div class="salary-box">
-        <span>給与</span>
-        <strong>${showValue(data.salary || data.salaryText)}</strong>
-      </div>
+  if(images.length===0){
 
-      <a href="#applyForm" class="btn gold">この求人に応募する</a>
-    </section>
-    <section class="section-card">
-  <h2>店舗写真</h2>
+    images=[
+      "../images/nox.jpg"
+    ];
 
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;">
-    <img src="../images/line_oa_chat_260708_192840.jpeg" style="width:100%;border-radius:18px;">
-    <img src="../images/line_oa_chat_260708_192842.jpeg" style="width:100%;border-radius:18px;">
-    <img src="../images/line_oa_chat_260708_192843.jpeg" style="width:100%;border-radius:18px;">
-    <img src="../images/line_oa_chat_260708_192845.jpeg" style="width:100%;border-radius:18px;">
-    <img src="../images/line_oa_chat_260708_192846.jpeg" style="width:100%;border-radius:18px;">
-    <img src="../images/line_oa_chat_260708_192848.jpeg" style="width:100%;border-radius:18px;">
-    <img src="../images/line_oa_chat_260708_192850.jpeg" style="width:100%;border-radius:18px;">
-    <img src="../images/line_oa_chat_260708_192852.jpeg" style="width:100%;border-radius:18px;">
-    <img src="../images/line_oa_chat_260708_192853.jpeg" style="width:100%;border-radius:18px;">
-  </div>
-</section>
-    <section class="section-card">
-      <h2>基本情報</h2>
+  }
 
-      <div class="info-grid">
-        <div class="info-item"><span>エリア</span><strong>${showValue(data.area)}</strong></div>
-        <div class="info-item"><span>業種</span><strong>${showValue(data.genre || data.type || data.businessType)}</strong></div>
-        <div class="info-item"><span>住所</span><strong>${showValue(data.address)}</strong></div>
-        <div class="info-item"><span>最寄駅</span><strong>${showValue(data.station)}</strong></div>
-        <div class="info-item"><span>営業時間</span><strong>${showValue(data.businessHours)}</strong></div>
-        <div class="info-item"><span>定休日</span><strong>${showValue(data.closedDay)}</strong></div>
-      </div>
-    </section>
-        <section class="section-card">
-      <h2>求人情報</h2>
+  let gallery="";
 
-      <div class="info-grid">
-        <div class="info-item"><span>各種バック</span><strong>${showValue(data.back)}</strong></div>
-        <div class="info-item"><span>日払い</span><strong>${showValue(data.dailyPay)}</strong></div>
-        <div class="info-item"><span>体験入店</span><strong>${showValue(data.trial)}</strong></div>
-        <div class="info-item"><span>未経験歓迎</span><strong>${showValue(data.beginner)}</strong></div>
-        <div class="info-item"><span>採用年齢</span><strong>${showValue(data.age)}</strong></div>
-        <div class="info-item"><span>ノルマ</span><strong>${showValue(data.quota)}</strong></div>
-        <div class="info-item"><span>ペナルティ</span><strong>${showValue(data.penalty)}</strong></div>
-        <div class="info-item"><span>シフト</span><strong>${showValue(data.shift)}</strong></div>
-      </div>
-    </section>
+  images.forEach((img)=>{
 
-    <section class="section-card">
-      <h2>お店からのPR</h2>
-      <div class="text-box">
-        ${showValue(data.pr || data.description || data.message || "詳しいPR内容は準備中です。")}
-      </div>
-    </section>
+    gallery+=`
+      <img
+        src="${img}"
+        loading="lazy"
+      >
+    `;
 
-    <section class="section-card form" id="applyForm">
-      <h2>応募フォーム</h2>
-
-      <input id="entryName" type="text" placeholder="お名前">
-      <input id="entryPhone" type="tel" placeholder="電話番号">
-      <textarea id="entryMessage" placeholder="質問・希望条件などがあれば入力してください"></textarea>
-
-      <button id="applyBtn" class="btn gold" style="width:100%;margin-top:12px;">
-        応募する
-      </button>
-    </section>
-  `;
-
-  document.getElementById("applyBtn").addEventListener("click", async () => {
-    const name = document.getElementById("entryName").value.trim();
-    const phone = document.getElementById("entryPhone").value.trim();
-    const message = document.getElementById("entryMessage").value.trim();
-
-    if(!name || !phone){
-      alert("お名前と電話番号を入力してください。");
-      return;
-    }
-
-    await addDoc(collection(db,"jobApplications"),{
-      jobId:id,
-      storeName:data.storeName || data.name || "",
-      applicantName:name,
-      applicantPhone:phone,
-      message:message,
-      createdAt:serverTimestamp(),
-      status:"new"
-    });
-
-    alert("応募を受け付けました！店舗からの連絡をお待ちください。");
-
-    document.getElementById("entryName").value="";
-    document.getElementById("entryPhone").value="";
-    document.getElementById("entryMessage").value="";
   });
+
+  jobDetail.className="";
+
+  jobDetail.innerHTML=`
+
+<section class="hero">
+
+<img
+src="${images[0]}"
+>
+
+<p class="kicker">
+NOX JOB DETAIL
+</p>
+
+<h1>
+${value(data.storeName||data.name)}
+</h1>
+
+<p>
+${value(data.area)}
+／
+${value(data.genre||data.type||data.businessType)}
+</p>
+
+<div class="salary">
+
+<small>時給</small>
+
+<strong>
+${value(data.salary||data.salaryText)}
+</strong>
+
+</div>
+
+</section>
+
+<section class="section">
+
+<h2>
+店舗写真
+</h2>
+
+<div class="gallery">
+
+${gallery}
+
+</div>
+
+</section>
+
+<section class="section">
+
+<h2>
+基本情報
+</h2>
+
+<div class="grid">
+
+<div class="info-card">
+<span>エリア</span>
+<strong>${value(data.area)}</strong>
+</div>
+
+<div class="info-card">
+<span>業種</span>
+<strong>${value(data.genre||data.type)}</strong>
+</div>
+
+<div class="info-card">
+<span>住所</span>
+<strong>${value(data.address)}</strong>
+</div>
+
+<div class="info-card">
+<span>最寄駅</span>
+<strong>${value(data.station)}</strong>
+</div>
+
+<div class="info-card">
+<span>営業時間</span>
+<strong>${value(data.businessHours)}</strong>
+</div>
+
+<div class="info-card">
+<span>定休日</span>
+<strong>${value(data.closedDay)}</strong>
+</div>
+
+</div>
+
+</section>
+
+<section class="section">
+
+<h2>
+求人情報
+</h2>
+
+<div class="grid">
+
+<div class="info-card">
+<span>各種バック</span>
+<strong>${value(data.back)}</strong>
+</div>
+
+<div class="info-card">
+<span>日払い</span>
+<strong>${value(data.dailyPay)}</strong>
+</div>
+
+<div class="info-card">
+<span>体験入店</span>
+<strong>${value(data.trial)}</strong>
+</div>
+
+<div class="info-card">
+<span>未経験歓迎</span>
+<strong>${value(data.beginner)}</strong>
+</div>
+
+<div class="info-card">
+<span>採用年齢</span>
+<strong>${value(data.age)}</strong>
+</div>
+
+<div class="info-card">
+<span>シフト</span>
+<strong>${value(data.shift)}</strong>
+</div>
+
+</div>
+
+</section>
+
+<section class="section">
+
+<h2>
+店舗PR
+</h2>
+
+<div class="pr">
+${value(data.pr||data.description)}
+</div>
+
+</section>
+`;
+  jobDetail.innerHTML += `
+
+<section
+class="apply-box"
+id="applyForm"
+>
+
+<h2>
+応募フォーム
+</h2>
+
+<input
+id="entryName"
+type="text"
+placeholder="お名前"
+>
+
+<input
+id="entryPhone"
+type="tel"
+placeholder="電話番号"
+>
+
+<textarea
+id="entryMessage"
+placeholder="質問や希望条件があれば入力してください"
+></textarea>
+
+<button
+id="applyBtn"
+class="line-btn"
+>
+応募する
+</button>
+
+</section>
+`;
+
+document
+.getElementById("applyBtn")
+.addEventListener(
+"click",
+async()=>{
+
+const name=
+document
+.getElementById("entryName")
+.value
+.trim();
+
+const phone=
+document
+.getElementById("entryPhone")
+.value
+.trim();
+
+const message=
+document
+.getElementById("entryMessage")
+.value
+.trim();
+
+if(!name||!phone){
+
+alert(
+"お名前と電話番号を入力してください。"
+);
+
+return;
+
 }
 
-loadJobDetail();
+await addDoc(
+collection(
+db,
+"applications"
+),
+{
+jobId:id,
+storeId:
+data.storeId||
+"",
+storeName:
+data.storeName||
+data.name||
+"",
+applicantName:name,
+applicantPhone:phone,
+message:message,
+status:"new",
+createdAt:
+serverTimestamp()
+}
+);
+
+alert(
+"応募が完了しました！店舗からの連絡をお待ちください。"
+);
+
+document.getElementById("entryName").value="";
+document.getElementById("entryPhone").value="";
+document.getElementById("entryMessage").value="";
+
+}
+);
+
+}
+
+loadJob();
 
 </script>
 
-<div class="footer-actions">
-  <a href="./girls.html" class="btn">求人一覧へ戻る</a>
-  <a href="../index.html" class="btn gold">TOPへ戻る</a>
+<div class="footer">
+
+<a
+href="./jobs.html"
+class="btn"
+>
+求人一覧へ戻る
+</a>
+
+<a
+href="../index.html"
+class="btn gold"
+>
+TOPへ戻る
+</a>
+
 </div>
 
 </div>
+
 </body>
 </html>
