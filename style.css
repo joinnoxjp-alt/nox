@@ -1322,3 +1322,29 @@ footer a:hover{
     text-align:center;
     margin-top:35px;
 }
+
+.chatlady-btn-wrap{
+    text-align:center;
+    margin-top:28px;
+}
+
+.chatlady-btn{
+    display:inline-block;
+    padding:14px 34px;
+    background:linear-gradient(135deg,#d4af37,#f5d76e);
+    color:#111;
+    font-weight:700;
+    text-decoration:none;
+    border-radius:999px;
+    transition:.25s;
+    box-shadow:0 8px 25px rgba(212,175,55,.35);
+}
+
+.chatlady-btn:hover{
+    transform:translateY(-2px);
+    box-shadow:0 12px 30px rgba(212,175,55,.45);
+}
+
+.chatlady-btn:active{
+    transform:scale(.97);
+}
