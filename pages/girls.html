@@ -1,383 +1,1407 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
 
-<title>NOX | 求人一覧</title>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
+  <title>NOX | 求人一覧</title>
 
-body{
-  min-height:100vh;
-  background:
-    radial-gradient(circle at top,rgba(255,215,0,.18),transparent 34%),
-    linear-gradient(180deg,#050505,#000);
-  color:#fff;
-  font-family:"Hiragino Mincho ProN","Yu Mincho",serif;
-}
+  <meta
+    name="description"
+    content="NOXに掲載中の承認済み求人一覧。水商売求人・風俗求人をカテゴリ別に検索できます。"
+  >
 
-a{text-decoration:none;color:inherit}
+  <meta
+    name="theme-color"
+    content="#050505"
+  >
 
-.page{
-  max-width:1120px;
-  margin:auto;
-  padding:32px 18px 80px;
-}
+  <style>
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+    }
 
-.header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:16px;
-  margin-bottom:36px;
-}
+    html{
+      scroll-behavior:smooth;
+    }
 
-.logo{
-  color:#FFD700;
-  font-size:38px;
-  font-weight:900;
-  letter-spacing:3px;
-}
+    body{
+      min-height:100vh;
+      background:
+        radial-gradient(
+          circle at top,
+          rgba(255,215,0,.18),
+          transparent 34%
+        ),
+        linear-gradient(
+          180deg,
+          #050505,
+          #000
+        );
+      color:#fff;
+      font-family:
+        "Hiragino Mincho ProN",
+        "Yu Mincho",
+        serif;
+    }
 
-.logo small{
-  display:block;
-  color:#aaa;
-  font-size:11px;
-  letter-spacing:4px;
-  margin-top:4px;
-}
+    a{
+      color:inherit;
+      text-decoration:none;
+    }
 
-.nav{
-  display:flex;
-  gap:12px;
-  flex-wrap:wrap;
-}
+    button,
+    input,
+    select{
+      font:inherit;
+    }
 
-.btn{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  padding:13px 22px;
-  border-radius:999px;
-  border:1px solid rgba(255,215,0,.35);
-  color:#FFD700;
-  background:rgba(255,255,255,.04);
-  font-weight:bold;
-}
+    .page{
+      width:min(1120px,100%);
+      margin:0 auto;
+      padding:32px 18px 80px;
+    }
 
-.btn.gold{
-  background:#FFD700;
-  color:#000;
-}
+    .header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:16px;
+      margin-bottom:36px;
+    }
 
-.hero{
-  border:1px solid rgba(255,215,0,.35);
-  border-radius:32px;
-  padding:40px 28px;
-  background:
-    radial-gradient(circle at top right,rgba(255,215,0,.15),transparent 38%),
-    linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.025));
-  box-shadow:0 25px 70px rgba(0,0,0,.6);
-  margin-bottom:30px;
-}
+    .logo{
+      color:#ffd700;
+      font-size:38px;
+      font-weight:900;
+      letter-spacing:3px;
+    }
 
-.kicker{
-  color:#FFD700;
-  letter-spacing:5px;
-  font-size:13px;
-  margin-bottom:14px;
-}
+    .logo small{
+      display:block;
+      margin-top:4px;
+      color:#aaa;
+      font-size:11px;
+      letter-spacing:4px;
+    }
 
-.hero h1{
-  font-size:clamp(44px,8vw,78px);
-  color:#FFD700;
-  line-height:1.05;
-  margin-bottom:16px;
-}
+    .nav{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+    }
 
-.hero p{
-  color:#ddd;
-  line-height:1.9;
-  font-size:16px;
-}
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:48px;
+      padding:13px 22px;
+      border:1px solid rgba(255,215,0,.35);
+      border-radius:999px;
+      background:rgba(255,255,255,.04);
+      color:#ffd700;
+      font-weight:bold;
+      cursor:pointer;
+      transition:.25s;
+    }
 
-.filter-box{
-  margin:28px 0;
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
-  gap:12px;
-}
+    .btn:hover{
+      transform:translateY(-2px);
+      background:rgba(255,215,0,.1);
+    }
 
-.filter-box input,
-.filter-box select{
-  width:100%;
-  padding:14px 15px;
-  border-radius:14px;
-  border:1px solid rgba(255,215,0,.25);
-  background:#080808;
-  color:#fff;
-  font-size:15px;
-}
+    .btn.gold{
+      background:#ffd700;
+      color:#000;
+    }
 
-.status{
-  color:#bbb;
-  margin:18px 0;
-  line-height:1.8;
-}
+    .hero{
+      margin-bottom:30px;
+      padding:40px 28px;
+      border:1px solid rgba(255,215,0,.35);
+      border-radius:32px;
+      background:
+        radial-gradient(
+          circle at top right,
+          rgba(255,215,0,.15),
+          transparent 38%
+        ),
+        linear-gradient(
+          180deg,
+          rgba(255,255,255,.08),
+          rgba(255,255,255,.025)
+        );
+      box-shadow:0 25px 70px rgba(0,0,0,.6);
+    }
 
-.job-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-  gap:22px;
-}
+    .kicker{
+      margin-bottom:14px;
+      color:#ffd700;
+      font-size:13px;
+      letter-spacing:5px;
+    }
 
-.job-card{
-  position:relative;
-  overflow:hidden;
-  border:1px solid rgba(255,215,0,.35);
-  border-radius:28px;
-  padding:24px;
-  background:
-    radial-gradient(circle at top right,rgba(255,215,0,.14),transparent 38%),
-    linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.025));
-  box-shadow:0 22px 60px rgba(0,0,0,.55);
-}
+    .hero h1{
+      margin-bottom:16px;
+      color:#ffd700;
+      font-size:clamp(44px,8vw,78px);
+      line-height:1.05;
+    }
 
-.job-card:before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:linear-gradient(120deg,transparent,rgba(255,215,0,.08),transparent);
-  pointer-events:none;
-}
+    .hero p{
+      color:#ddd;
+      font-size:16px;
+      line-height:1.9;
+    }
 
-.badge{
-  display:inline-block;
-  background:#FFD700;
-  color:#000;
-  padding:7px 12px;
-  border-radius:999px;
-  font-size:12px;
-  font-weight:bold;
-  margin-bottom:14px;
-}
+    /* カテゴリ選択 */
 
-.job-card h2{
-  color:#FFD700;
-  font-size:28px;
-  margin-bottom:16px;
-  line-height:1.35;
-}
+    .category-section{
+      margin:28px 0;
+    }
 
-.info{
-  color:#eee;
-  line-height:2;
-  font-size:16px;
-  margin-bottom:18px;
-}
+    .category-title{
+      margin-bottom:16px;
+      color:#ffd700;
+      font-size:22px;
+      text-align:center;
+    }
 
-.salary{
-  color:#FFD700;
-  font-size:26px;
-  font-weight:bold;
-  margin:14px 0;
-}
+    .category-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:18px;
+    }
 
-.tags{
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-  margin:16px 0 22px;
-}
+    .category-button{
+      position:relative;
+      min-height:190px;
+      overflow:hidden;
+      padding:24px;
+      border:1px solid rgba(255,215,0,.4);
+      border-radius:26px;
+      background:
+        radial-gradient(
+          circle at top right,
+          rgba(255,215,0,.2),
+          transparent 40%
+        ),
+        linear-gradient(
+          145deg,
+          #111,
+          #050505
+        );
+      color:#fff;
+      text-align:left;
+      cursor:pointer;
+      transition:.3s;
+    }
 
-.tags span{
-  border:1px solid rgba(255,215,0,.25);
-  background:rgba(255,215,0,.07);
-  color:#eee;
-  padding:7px 10px;
-  border-radius:999px;
-  font-size:12px;
-}
+    .category-button:hover{
+      transform:translateY(-5px);
+      border-color:#ffd700;
+      box-shadow:
+        0 18px 50px rgba(0,0,0,.55),
+        0 0 25px rgba(255,215,0,.12);
+    }
 
-.empty{
-  text-align:center;
-  padding:50px 20px;
-  border:1px solid rgba(255,215,0,.25);
-  border-radius:28px;
-  color:#ccc;
-}
+    .category-button.active{
+      border-color:#ffd700;
+      box-shadow:
+        0 0 0 2px rgba(255,215,0,.15),
+        0 18px 50px rgba(0,0,0,.55);
+    }
 
-.footer-actions{
-  display:flex;
-  justify-content:center;
-  gap:14px;
-  flex-wrap:wrap;
-  margin-top:42px;
-}
+    .category-icon{
+      display:block;
+      margin-bottom:12px;
+      font-size:40px;
+    }
 
-@media(max-width:760px){
-  .header{
-    align-items:flex-start;
-    flex-direction:column;
-  }
+    .category-button strong{
+      display:block;
+      color:#ffd700;
+      font-size:28px;
+      margin-bottom:10px;
+    }
 
-  .hero{
-    padding:32px 22px;
-  }
+    .category-button p{
+      color:#ccc;
+      font-size:14px;
+      line-height:1.8;
+    }
 
-  .job-card h2{
-    font-size:25px;
-  }
-}
-</style>
+    .category-count{
+      display:inline-block;
+      margin-top:15px;
+      padding:6px 11px;
+      border:1px solid rgba(255,215,0,.3);
+      border-radius:999px;
+      color:#ffd700;
+      font-size:12px;
+    }
+
+    .all-button-wrap{
+      margin-top:15px;
+      text-align:center;
+    }
+
+    .all-category-button{
+      min-width:190px;
+    }
+
+    .all-category-button.active{
+      background:#ffd700;
+      color:#000;
+    }
+
+    /* 絞り込み */
+
+    .filter-box{
+      display:grid;
+      grid-template-columns:
+        repeat(
+          auto-fit,
+          minmax(170px,1fr)
+        );
+      gap:12px;
+      margin:28px 0;
+    }
+
+    .filter-box input,
+    .filter-box select{
+      width:100%;
+      padding:14px 15px;
+      border:1px solid rgba(255,215,0,.25);
+      border-radius:14px;
+      outline:none;
+      background:#080808;
+      color:#fff;
+      font-size:15px;
+    }
+
+    .filter-box input:focus,
+    .filter-box select:focus{
+      border-color:rgba(255,215,0,.75);
+      box-shadow:
+        0 0 0 3px
+        rgba(255,215,0,.08);
+    }
+
+    .status{
+      margin:18px 0;
+      color:#bbb;
+      line-height:1.8;
+    }
+
+    /* 求人カード */
+
+    .job-grid{
+      display:grid;
+      grid-template-columns:
+        repeat(
+          auto-fit,
+          minmax(280px,1fr)
+        );
+      gap:22px;
+    }
+
+    .job-card{
+      position:relative;
+      overflow:hidden;
+      padding:24px;
+      border:1px solid rgba(255,215,0,.35);
+      border-radius:28px;
+      background:
+        radial-gradient(
+          circle at top right,
+          rgba(255,215,0,.14),
+          transparent 38%
+        ),
+        linear-gradient(
+          180deg,
+          rgba(255,255,255,.08),
+          rgba(255,255,255,.025)
+        );
+      box-shadow:
+        0 22px 60px
+        rgba(0,0,0,.55);
+    }
+
+    .job-card::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        linear-gradient(
+          120deg,
+          transparent,
+          rgba(255,215,0,.08),
+          transparent
+        );
+      pointer-events:none;
+    }
+
+    .job-card > *{
+      position:relative;
+      z-index:1;
+    }
+
+    .badge{
+      display:inline-block;
+      margin-bottom:14px;
+      padding:7px 12px;
+      border-radius:999px;
+      background:#ffd700;
+      color:#000;
+      font-size:12px;
+      font-weight:bold;
+    }
+
+    .category-badge{
+      display:inline-block;
+      margin-left:6px;
+      margin-bottom:14px;
+      padding:7px 12px;
+      border:1px solid rgba(255,215,0,.35);
+      border-radius:999px;
+      color:#ffd700;
+      font-size:12px;
+      font-weight:bold;
+    }
+
+    .job-card h2{
+      margin-bottom:16px;
+      color:#ffd700;
+      font-size:28px;
+      line-height:1.35;
+    }
+
+    .info{
+      margin-bottom:18px;
+      color:#eee;
+      font-size:16px;
+      line-height:2;
+    }
+
+    .salary{
+      margin:14px 0;
+      color:#ffd700;
+      font-size:26px;
+      font-weight:bold;
+    }
+
+    .tags{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin:16px 0 22px;
+    }
+
+    .tags span{
+      padding:7px 10px;
+      border:1px solid rgba(255,215,0,.25);
+      border-radius:999px;
+      background:rgba(255,215,0,.07);
+      color:#eee;
+      font-size:12px;
+    }
+
+    .empty{
+      grid-column:1 / -1;
+      padding:50px 20px;
+      border:1px solid rgba(255,215,0,.25);
+      border-radius:28px;
+      color:#ccc;
+      text-align:center;
+    }
+
+    .footer-actions{
+      display:flex;
+      justify-content:center;
+      flex-wrap:wrap;
+      gap:14px;
+      margin-top:42px;
+    }
+
+    @media(max-width:760px){
+
+      .header{
+        align-items:flex-start;
+        flex-direction:column;
+      }
+
+      .hero{
+        padding:32px 22px;
+      }
+
+      .category-grid{
+        grid-template-columns:1fr;
+      }
+
+      .category-button{
+        min-height:165px;
+      }
+
+      .category-button strong{
+        font-size:25px;
+      }
+
+      .job-card h2{
+        font-size:25px;
+      }
+
+      .btn{
+        padding:12px 18px;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="page">
+  <div class="page">
 
-<header class="header">
-  <a href="../index.html" class="logo">
-    NOX
-    <small>Night Opens X</small>
-  </a>
+    <header class="header">
 
-  <nav class="nav">
-    <a href="../index.html" class="btn">TOP</a>
-    <a href="../owner.html" class="btn">店舗掲載</a>
-    <a href="mypage.html" class="btn gold">マイページ</a>
-  </nav>
-</header>
+      <a
+        href="../index.html"
+        class="logo"
+      >
+        NOX
 
-<section class="hero">
-  <p class="kicker">NOX JOBS</p>
-  <h1>求人一覧</h1>
-  <p>
-    NOXに掲載中の承認済み求人を表示しています。<br>
-    エリア・業種・キーワードから、自分に合うお店を探せます。
-  </p>
-</section>
+        <small>
+          Night Opens X
+        </small>
+      </a>
 
-<div class="filter-box">
-  <input type="text" id="keywordInput" placeholder="店舗名・エリアで検索">
+      <nav class="nav">
 
-  <select id="areaSelect">
-    <option value="">エリアすべて</option>
-  </select>
-
-  <select id="typeSelect">
-    <option value="">業種すべて</option>
-  </select>
-
-  <select id="sortSelect">
-    <option value="new">新着順</option>
-    <option value="salary">給与が高い順</option>
-  </select>
-</div>
-
-<p class="status" id="statusText">求人を読み込み中です...</p>
-
-<div class="job-grid" id="jobsList"></div>
-<script type="module">
-import { db } from "./firebase-db.js";
-
-import {
-  collection,
-  getDocs
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-const jobsList = document.getElementById("jobsList");
-const statusText = document.getElementById("statusText");
-
-let jobs = [];
-
-const snap = await getDocs(collection(db, "jobs"));
-
-snap.forEach((doc) => {
-  const job = {
-    id: doc.id,
-    ...doc.data()
-  };
-
-  // 承認済み以外は表示しない
-  if (job.status !== "approved") return;
-
-  // テスト・ダミーは表示しない
-const textCheck = `
-  ${job.storeName || ""}
-  ${job.name || ""}
-  ${job.title || ""}
-  ${job.shopName || ""}
-  ${job.storeTitle || ""}
-`;
-
-if (textCheck.includes("テスト")) return;
-if (textCheck.toLowerCase().includes("test")) return;
-if (textCheck.toLowerCase().includes("dummy")) return;
-
-if (job.isTest === true) return;
-if (job.isDummy === true) return;
-
-// 念のため、テスト用ドキュメントIDも非表示
-if (doc.id === "gD4vXsYZcVbpdxJkH9M6") return;
-
-  jobs.push(job);
-});
-
-jobs.sort((a, b) => {
-  const da = a.createdAt?.seconds || 0;
-  const db = b.createdAt?.seconds || 0;
-  return db - da;
-});
-
-statusText.textContent = `掲載求人 ${jobs.length}件`;
-
-if (jobs.length === 0) {
-  jobsList.innerHTML = `
-    <div class="empty">
-      <h2 style="color:#FFD700;margin-bottom:15px;">
-        現在掲載中の求人はありません
-      </h2>
-      <p>新しい求人が掲載されるまでお待ちください。</p>
-    </div>
-  `;
-} else {
-  jobs.forEach((job) => {
-    jobsList.innerHTML += `
-      <div class="job-card">
-        <div class="badge">NEW</div>
-
-        <h2>${job.storeName || job.name || "店舗名未設定"}</h2>
-
-        <div class="info">
-          📍 ${job.area || "-"}<br>
-          🏷 ${job.genre || job.type || "-"}
-        </div>
-
-        <div class="salary">
-          ${job.salary || job.salaryText || "給与未設定"}
-        </div>
-
-        <div class="tags">
-          <span>${job.employment || "求人掲載中"}</span>
-        </div>
-
-        <a href="job-detail.html?id=${job.id}" class="btn gold">
-          求人詳細を見る
+        <a
+          href="../index.html"
+          class="btn"
+        >
+          TOP
         </a>
+
+        <a
+          href="../owner.html"
+          class="btn"
+        >
+          店舗掲載
+        </a>
+
+        <a
+          href="./mypage.html"
+          class="btn gold"
+        >
+          マイページ
+        </a>
+
+      </nav>
+
+    </header>
+
+    <section class="hero">
+
+      <p class="kicker">
+        NOX JOBS
+      </p>
+
+      <h1>
+        求人一覧
+      </h1>
+
+      <p>
+        水商売求人と風俗求人を分けて探せます。<br>
+        希望するカテゴリを選択してください。
+      </p>
+
+    </section>
+
+    <!-- カテゴリ選択 -->
+    <section class="category-section">
+
+      <h2 class="category-title">
+        求人カテゴリを選択
+      </h2>
+
+      <div class="category-grid">
+
+        <button
+          type="button"
+          class="category-button"
+          id="waterBusinessButton"
+          data-category="water"
+        >
+          <span class="category-icon">
+            🍾
+          </span>
+
+          <strong>
+            水商売求人
+          </strong>
+
+          <p>
+            キャバクラ・ガールズバー・ラウンジ・スナック・コンカフェなど
+          </p>
+
+          <span
+            class="category-count"
+            id="waterBusinessCount"
+          >
+            0件
+          </span>
+        </button>
+
+        <button
+          type="button"
+          class="category-button"
+          id="adultBusinessButton"
+          data-category="adult"
+        >
+          <span class="category-icon">
+            🌙
+          </span>
+
+          <strong>
+            風俗求人
+          </strong>
+
+          <p>
+            メンズエステ・デリヘル・ソープ・ヘルスなど
+          </p>
+
+          <span
+            class="category-count"
+            id="adultBusinessCount"
+          >
+            0件
+          </span>
+        </button>
+
       </div>
-    `;
-  });
-}
-</script>
 
-<div class="footer-actions">
-  <a href="../index.html" class="btn">TOPへ戻る</a>
-  <a href="../owner.html" class="btn gold">店舗掲載はこちら</a>
-</div>
+      <div class="all-button-wrap">
 
-</div>
+        <button
+          type="button"
+          class="btn all-category-button active"
+          id="allCategoryButton"
+        >
+          すべての求人
+        </button>
+
+      </div>
+
+    </section>
+
+    <!-- 検索 -->
+    <div class="filter-box">
+
+      <input
+        type="text"
+        id="keywordInput"
+        placeholder="店舗名・エリアで検索"
+      >
+
+      <select id="areaSelect">
+        <option value="">
+          エリアすべて
+        </option>
+      </select>
+
+      <select id="typeSelect">
+        <option value="">
+          業種すべて
+        </option>
+      </select>
+
+      <select id="sortSelect">
+
+        <option value="new">
+          新着順
+        </option>
+
+        <option value="salary">
+          給与が高い順
+        </option>
+
+      </select>
+
+    </div>
+
+    <p
+      class="status"
+      id="statusText"
+    >
+      求人を読み込み中です...
+    </p>
+
+    <div
+      class="job-grid"
+      id="jobsList"
+    ></div>
+
+    <div class="footer-actions">
+
+      <a
+        href="../index.html"
+        class="btn"
+      >
+        TOPへ戻る
+      </a>
+
+      <a
+        href="../owner.html"
+        class="btn gold"
+      >
+        店舗掲載はこちら
+      </a>
+
+    </div>
+
+  </div>
+
+  <script type="module">
+
+    import { db } from "./firebase-db.js";
+
+    import {
+      collection,
+      getDocs
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const jobsList =
+      document.getElementById("jobsList");
+
+    const statusText =
+      document.getElementById("statusText");
+
+    const keywordInput =
+      document.getElementById("keywordInput");
+
+    const areaSelect =
+      document.getElementById("areaSelect");
+
+    const typeSelect =
+      document.getElementById("typeSelect");
+
+    const sortSelect =
+      document.getElementById("sortSelect");
+
+    const waterBusinessButton =
+      document.getElementById(
+        "waterBusinessButton"
+      );
+
+    const adultBusinessButton =
+      document.getElementById(
+        "adultBusinessButton"
+      );
+
+    const allCategoryButton =
+      document.getElementById(
+        "allCategoryButton"
+      );
+
+    const waterBusinessCount =
+      document.getElementById(
+        "waterBusinessCount"
+      );
+
+    const adultBusinessCount =
+      document.getElementById(
+        "adultBusinessCount"
+      );
+
+    let jobs = [];
+    let selectedCategory = "all";
+
+    const WATER_BUSINESS_TYPES = [
+      "キャバクラ",
+      "ガールズバー",
+      "ガルバ",
+      "ラウンジ",
+      "クラブ",
+      "スナック",
+      "コンカフェ",
+      "コンセプトカフェ",
+      "メンズコンカフェ",
+      "ホスト",
+      "ボーイズバー",
+      "水商売"
+    ];
+
+    const ADULT_BUSINESS_TYPES = [
+      "メンズエステ",
+      "メンエス",
+      "デリヘル",
+      "ソープ",
+      "ソープランド",
+      "ヘルス",
+      "ファッションヘルス",
+      "ホテヘル",
+      "店舗型ヘルス",
+      "エステ",
+      "風俗",
+      "チャットレディ"
+    ];
+
+    function escapeHtml(value){
+      return String(value ?? "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    function getJobType(job){
+      return (
+        job.businessType ||
+        job.jobType ||
+        job.genre ||
+        job.type ||
+        ""
+      );
+    }
+
+    function getJobCategory(job){
+
+      const explicitCategory =
+        String(
+          job.jobCategory ||
+          job.category ||
+          job.industryCategory ||
+          ""
+        ).toLowerCase();
+
+      if(
+        explicitCategory === "water" ||
+        explicitCategory === "水商売"
+      ){
+        return "water";
+      }
+
+      if(
+        explicitCategory === "adult" ||
+        explicitCategory === "風俗"
+      ){
+        return "adult";
+      }
+
+      const type =
+        getJobType(job).toLowerCase();
+
+      const isAdult =
+        ADULT_BUSINESS_TYPES.some(
+          (keyword) =>
+            type.includes(
+              keyword.toLowerCase()
+            )
+        );
+
+      if(isAdult){
+        return "adult";
+      }
+
+      const isWater =
+        WATER_BUSINESS_TYPES.some(
+          (keyword) =>
+            type.includes(
+              keyword.toLowerCase()
+            )
+        );
+
+      if(isWater){
+        return "water";
+      }
+
+      return "water";
+    }
+
+    function getSalaryNumber(job){
+
+      const salaryText =
+        String(
+          job.salary ||
+          job.salaryText ||
+          ""
+        );
+
+      const numbers =
+        salaryText.match(/\d[\d,]*/g);
+
+      if(
+        !numbers ||
+        numbers.length === 0
+      ){
+        return 0;
+      }
+
+      return Math.max(
+        ...numbers.map(
+          (number) =>
+            Number(
+              number.replaceAll(",","")
+            )
+        )
+      );
+    }
+
+    function getCreatedSeconds(job){
+
+      if(
+        job.createdAt &&
+        typeof job.createdAt.seconds ===
+        "number"
+      ){
+        return job.createdAt.seconds;
+      }
+
+      if(
+        job.approvedAt &&
+        typeof job.approvedAt.seconds ===
+        "number"
+      ){
+        return job.approvedAt.seconds;
+      }
+
+      return 0;
+    }
+
+    async function loadJobs(){
+
+      statusText.textContent =
+        "求人を読み込み中です...";
+
+      jobsList.innerHTML = "";
+
+      try{
+
+        const snapshot =
+          await getDocs(
+            collection(db,"jobs")
+          );
+
+        jobs = [];
+
+        snapshot.forEach(
+          (jobDocument) => {
+
+            const job = {
+              id:jobDocument.id,
+              ...jobDocument.data()
+            };
+
+            if(job.status !== "approved"){
+              return;
+            }
+
+            const textCheck = `
+              ${job.storeName || ""}
+              ${job.name || ""}
+              ${job.title || ""}
+              ${job.shopName || ""}
+              ${job.storeTitle || ""}
+            `.toLowerCase();
+
+            if(
+              textCheck.includes("テスト") ||
+              textCheck.includes("test") ||
+              textCheck.includes("dummy")
+            ){
+              return;
+            }
+
+            if(
+              job.isTest === true ||
+              job.isDummy === true
+            ){
+              return;
+            }
+
+            jobs.push({
+              ...job,
+              resolvedCategory:
+                getJobCategory(job)
+            });
+          }
+        );
+
+        updateCategoryCounts();
+        createFilterOptions();
+        applyCategoryFromUrl();
+        renderJobs();
+
+      }catch(error){
+
+        console.error(
+          "求人読み込みエラー:",
+          error
+        );
+
+        statusText.textContent =
+          "求人の読み込みに失敗しました。";
+
+        jobsList.innerHTML = `
+          <div class="empty">
+
+            <h2
+              style="
+                color:#ffd700;
+                margin-bottom:15px;
+              "
+            >
+              求人を読み込めませんでした
+            </h2>
+
+            <p>
+              時間を空けて、
+              もう一度お試しください。
+            </p>
+
+          </div>
+        `;
+      }
+    }
+
+    function updateCategoryCounts(){
+
+      const waterCount =
+        jobs.filter(
+          (job) =>
+            job.resolvedCategory ===
+            "water"
+        ).length;
+
+      const adultCount =
+        jobs.filter(
+          (job) =>
+            job.resolvedCategory ===
+            "adult"
+        ).length;
+
+      waterBusinessCount.textContent =
+        `${waterCount}件`;
+
+      adultBusinessCount.textContent =
+        `${adultCount}件`;
+    }
+
+    function createFilterOptions(){
+
+      const categoryJobs =
+        selectedCategory === "all"
+          ? jobs
+          : jobs.filter(
+              (job) =>
+                job.resolvedCategory ===
+                selectedCategory
+            );
+
+      const currentArea =
+        areaSelect.value;
+
+      const currentType =
+        typeSelect.value;
+
+      const areas = [
+        ...new Set(
+          categoryJobs
+            .map(
+              (job) =>
+                job.area ||
+                job.location ||
+                job.prefecture
+            )
+            .filter(Boolean)
+        )
+      ].sort();
+
+      const types = [
+        ...new Set(
+          categoryJobs
+            .map(getJobType)
+            .filter(Boolean)
+        )
+      ].sort();
+
+      areaSelect.innerHTML = `
+        <option value="">
+          エリアすべて
+        </option>
+      `;
+
+      typeSelect.innerHTML = `
+        <option value="">
+          業種すべて
+        </option>
+      `;
+
+      areas.forEach((area) => {
+
+        const option =
+          document.createElement("option");
+
+        option.value = area;
+        option.textContent = area;
+
+        areaSelect.appendChild(option);
+      });
+
+      types.forEach((type) => {
+
+        const option =
+          document.createElement("option");
+
+        option.value = type;
+        option.textContent = type;
+
+        typeSelect.appendChild(option);
+      });
+
+      if(areas.includes(currentArea)){
+        areaSelect.value = currentArea;
+      }
+
+      if(types.includes(currentType)){
+        typeSelect.value = currentType;
+      }
+    }
+
+    function setCategory(category){
+
+      selectedCategory = category;
+
+      waterBusinessButton.classList.toggle(
+        "active",
+        category === "water"
+      );
+
+      adultBusinessButton.classList.toggle(
+        "active",
+        category === "adult"
+      );
+
+      allCategoryButton.classList.toggle(
+        "active",
+        category === "all"
+      );
+
+      areaSelect.value = "";
+      typeSelect.value = "";
+
+      createFilterOptions();
+      renderJobs();
+
+      const url =
+        new URL(location.href);
+
+      if(category === "all"){
+        url.searchParams.delete("category");
+      }else{
+        url.searchParams.set(
+          "category",
+          category
+        );
+      }
+
+      history.replaceState(
+        {},
+        "",
+        url
+      );
+    }
+
+    function applyCategoryFromUrl(){
+
+      const params =
+        new URLSearchParams(
+          location.search
+        );
+
+      const category =
+        params.get("category");
+
+      if(
+        category === "water" ||
+        category === "adult"
+      ){
+        selectedCategory = category;
+      }
+
+      waterBusinessButton.classList.toggle(
+        "active",
+        selectedCategory === "water"
+      );
+
+      adultBusinessButton.classList.toggle(
+        "active",
+        selectedCategory === "adult"
+      );
+
+      allCategoryButton.classList.toggle(
+        "active",
+        selectedCategory === "all"
+      );
+
+      createFilterOptions();
+    }
+
+    function renderJobs(){
+
+      const keyword =
+        keywordInput.value
+          .trim()
+          .toLowerCase();
+
+      const selectedArea =
+        areaSelect.value;
+
+      const selectedType =
+        typeSelect.value;
+
+      const selectedSort =
+        sortSelect.value;
+
+      let filteredJobs =
+        jobs.filter((job) => {
+
+          const storeName =
+            job.storeName ||
+            job.name ||
+            job.shopName ||
+            job.storeTitle ||
+            "";
+
+          const area =
+            job.area ||
+            job.location ||
+            job.prefecture ||
+            "";
+
+          const type =
+            getJobType(job);
+
+          const searchText = `
+            ${storeName}
+            ${area}
+            ${type}
+            ${job.title || ""}
+            ${job.description || ""}
+            ${job.pr || ""}
+          `.toLowerCase();
+
+          const categoryMatch =
+            selectedCategory === "all" ||
+            job.resolvedCategory ===
+              selectedCategory;
+
+          const keywordMatch =
+            !keyword ||
+            searchText.includes(keyword);
+
+          const areaMatch =
+            !selectedArea ||
+            area === selectedArea;
+
+          const typeMatch =
+            !selectedType ||
+            type === selectedType;
+
+          return (
+            categoryMatch &&
+            keywordMatch &&
+            areaMatch &&
+            typeMatch
+          );
+        });
+
+      filteredJobs.sort((a,b) => {
+
+        if(selectedSort === "salary"){
+          return (
+            getSalaryNumber(b) -
+            getSalaryNumber(a)
+          );
+        }
+
+        return (
+          getCreatedSeconds(b) -
+          getCreatedSeconds(a)
+        );
+      });
+
+      const categoryName =
+        selectedCategory === "water"
+          ? "水商売求人"
+          : selectedCategory === "adult"
+            ? "風俗求人"
+            : "すべての求人";
+
+      statusText.textContent =
+        `${categoryName} ${filteredJobs.length}件`;
+
+      jobsList.innerHTML = "";
+
+      if(filteredJobs.length === 0){
+
+        jobsList.innerHTML = `
+          <div class="empty">
+
+            <h2
+              style="
+                color:#ffd700;
+                margin-bottom:15px;
+              "
+            >
+              条件に合う求人はありません
+            </h2>
+
+            <p>
+              検索条件または求人カテゴリを変更して、
+              もう一度お試しください。
+            </p>
+
+          </div>
+        `;
+
+        return;
+      }
+
+      filteredJobs.forEach((job) => {
+
+        const storeName =
+          job.storeName ||
+          job.name ||
+          job.shopName ||
+          job.storeTitle ||
+          "店舗名未設定";
+
+        const area =
+          job.area ||
+          job.location ||
+          job.prefecture ||
+          "-";
+
+        const type =
+          getJobType(job) ||
+          "業種未設定";
+
+        const salary =
+          job.salary ||
+          job.salaryText ||
+          "給与未設定";
+
+        const employment =
+          job.employment ||
+          job.employmentType ||
+          "求人掲載中";
+
+        const categoryLabel =
+          job.resolvedCategory === "adult"
+            ? "風俗求人"
+            : "水商売求人";
+
+        const card =
+          document.createElement("article");
+
+        card.className = "job-card";
+
+        card.innerHTML = `
+          <div class="badge">
+            NEW
+          </div>
+
+          <div class="category-badge">
+            ${escapeHtml(categoryLabel)}
+          </div>
+
+          <h2>
+            ${escapeHtml(storeName)}
+          </h2>
+
+          <div class="info">
+            📍 ${escapeHtml(area)}<br>
+            🏷 ${escapeHtml(type)}
+          </div>
+
+          <div class="salary">
+            ${escapeHtml(salary)}
+          </div>
+
+          <div class="tags">
+            <span>
+              ${escapeHtml(employment)}
+            </span>
+          </div>
+
+          <a
+            href="./job-detail.html?id=${encodeURIComponent(job.id)}"
+            class="btn gold"
+          >
+            求人詳細を見る
+          </a>
+        `;
+
+        jobsList.appendChild(card);
+      });
+    }
+
+    waterBusinessButton.addEventListener(
+      "click",
+      () => {
+        setCategory("water");
+      }
+    );
+
+    adultBusinessButton.addEventListener(
+      "click",
+      () => {
+        setCategory("adult");
+      }
+    );
+
+    allCategoryButton.addEventListener(
+      "click",
+      () => {
+        setCategory("all");
+      }
+    );
+
+    keywordInput.addEventListener(
+      "input",
+      renderJobs
+    );
+
+    areaSelect.addEventListener(
+      "change",
+      renderJobs
+    );
+
+    typeSelect.addEventListener(
+      "change",
+      renderJobs
+    );
+
+    sortSelect.addEventListener(
+      "change",
+      renderJobs
+    );
+
+    loadJobs();
+
+  </script>
+
 </body>
 </html>
