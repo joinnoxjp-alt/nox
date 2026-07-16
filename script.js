@@ -4,8 +4,24 @@ import { db } from "./pages/firebase-db.js";
 
 import {
   collection,
-  getDocs
+  getDocs,
+  doc,
+  getDoc,
+  updateDoc,
+  increment
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+/* ===========================
+   基本設定
+=========================== */
+
+const AD_SLOT_COUNT = 6;
+const AD_CHANGE_TIME = 5000;
+const AD_CONTACT_URL = "https://lin.ee/waXmsqX";
+
+let noxAds = [];
+let currentAdIndex = 0;
+let adInterval = null;
 
 /* ===========================
    ページ読み込み
@@ -17,6 +33,10 @@ window.addEventListener("load", () => {
   if (loading) {
     setTimeout(() => {
       loading.classList.add("hide");
+
+      setTimeout(() => {
+        loading.style.display = "none";
+      }, 700);
     }, 900);
   }
 
@@ -31,23 +51,25 @@ const header = document.querySelector(".site-header");
 
 window.addEventListener("scroll", () => {
   if (header) {
-    if (window.scrollY > 40) {
-      header.classList.add("scrolled");
-    } else {
-      header.classList.remove("scrolled");
-    }
+    header.classList.toggle(
+      "scrolled",
+      window.scrollY > 40
+    );
   }
 
   revealOnScroll();
 });
 
 function revealOnScroll() {
-  const reveals = document.querySelectorAll(".reveal");
+  const reveals =
+    document.querySelectorAll(".reveal");
+
   const windowHeight = window.innerHeight;
   const revealPoint = 90;
 
   reveals.forEach((item) => {
-    const itemTop = item.getBoundingClientRect().top;
+    const itemTop =
+      item.getBoundingClientRect().top;
 
     if (itemTop < windowHeight - revealPoint) {
       item.classList.add("active");
@@ -60,7 +82,8 @@ function revealOnScroll() {
 =========================== */
 
 function showNotice(message) {
-  const notice = document.getElementById("notice");
+  const notice =
+    document.getElementById("notice");
 
   if (!notice) {
     alert(message);
@@ -84,7 +107,9 @@ document.addEventListener("click", (event) => {
     ".btn, .job-card button, .sns-grid a"
   );
 
-  if (!button) return;
+  if (!button) {
+    return;
+  }
 
   button.style.transform = "scale(0.96)";
 
@@ -98,9 +123,12 @@ document.addEventListener("click", (event) => {
 =========================== */
 
 document.addEventListener("dblclick", (event) => {
-  const card = event.target.closest(".job-card");
+  const card =
+    event.target.closest(".job-card");
 
-  if (!card) return;
+  if (!card) {
+    return;
+  }
 
   showNotice("お気に入り機能は準備中です");
 });
@@ -122,61 +150,13 @@ const noxAiQuestions = [
   "送り希望？"
 ];
 
-console.log("NOX AI Questions Ready:", noxAiQuestions);
+console.log(
+  "NOX AI Questions Ready:",
+  noxAiQuestions
+);
 
 /* ===========================
-   NOX 広告ローテーション
-=========================== */
-
-const adSlides = document.querySelectorAll(".nox-ad-slide");
-const adDots = document.querySelectorAll(".nox-ad-dots button");
-
-if (adSlides.length > 0) {
-  let currentAd = 0;
-
-  function showAd(index) {
-    if (!adSlides[index]) return;
-
-    adSlides.forEach((slide) => {
-      slide.classList.remove("active");
-    });
-
-    adDots.forEach((dot) => {
-      dot.classList.remove("active");
-    });
-
-    adSlides[index].classList.add("active");
-
-    if (adDots[index]) {
-      adDots[index].classList.add("active");
-    }
-
-    currentAd = index;
-  }
-
-  adDots.forEach((dot, index) => {
-    dot.addEventListener("click", () => {
-      showAd(index);
-    });
-  });
-
-  showAd(0);
-
-  if (adSlides.length > 1) {
-    setInterval(() => {
-      currentAd += 1;
-
-      if (currentAd >= adSlides.length) {
-        currentAd = 0;
-      }
-
-      showAd(currentAd);
-    }, 5500);
-  }
-}
-
-/* ===========================
-   HTML特殊文字の処理
+   HTML特殊文字処理
 =========================== */
 
 function escapeHtml(value) {
@@ -189,6 +169,506 @@ function escapeHtml(value) {
 }
 
 /* ===========================
+   広告掲載期間チェック
+=========================== */
+
+function isAdWithinPeriod(ad) {
+  const now = new Date();
+
+  if (ad.startDate) {
+    const startDate = new Date(
+      `${ad.startDate}T00:00:00`
+    );
+
+    if (
+      !Number.isNaN(startDate.getTime()) &&
+      now < startDate
+    ) {
+      return false;
+    }
+  }
+
+  if (ad.endDate) {
+    const endDate = new Date(
+      `${ad.endDate}T23:59:59`
+    );
+
+    if (
+      !Number.isNaN(endDate.getTime()) &&
+      now > endDate
+    ) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+/* ===========================
+   空き広告枠
+=========================== */
+
+function createRecruitmentAd(slotNumber) {
+  return {
+    id: `recruitment${slotNumber}`,
+    slot: slotNumber,
+    isRecruitment: true,
+    enabled: true,
+    advertiserName: "NOX",
+    title: "広告掲載企業・店舗様募集中",
+    description:
+      "あなたの企業・店舗・サービスをNOXでPRしませんか？",
+    buttonText: "広告掲載のご相談",
+    linkUrl: AD_CONTACT_URL,
+    imageUrl: ""
+  };
+}
+
+/* ===========================
+   表示回数
+=========================== */
+
+async function countAdImpression(ad) {
+  if (!ad || ad.isRecruitment) {
+    return;
+  }
+
+  try {
+    await updateDoc(
+      doc(db, "ads", ad.id),
+      {
+        impressions: increment(1)
+      }
+    );
+  } catch (error) {
+    console.warn(
+      "広告表示回数を記録できませんでした",
+      error
+    );
+  }
+}
+
+/* ===========================
+   クリック数
+=========================== */
+
+async function countAdClick(ad) {
+  if (!ad || ad.isRecruitment) {
+    return;
+  }
+
+  try {
+    await updateDoc(
+      doc(db, "ads", ad.id),
+      {
+        clicks: increment(1)
+      }
+    );
+  } catch (error) {
+    console.warn(
+      "広告クリック数を記録できませんでした",
+      error
+    );
+  }
+}
+
+/* ===========================
+   契約広告を作成
+=========================== */
+
+function createContractAdSlide(ad, index) {
+  const link = document.createElement("a");
+
+  link.className =
+    `nox-ad-slide ${
+      index === 0 ? "active" : ""
+    }`;
+
+  link.href = ad.linkUrl || "#";
+  link.target = "_blank";
+  link.rel = "noopener noreferrer";
+  link.dataset.index = String(index);
+
+  if (ad.imageUrl) {
+    link.innerHTML = `
+      <img
+        src="${escapeHtml(ad.imageUrl)}"
+        alt="${escapeHtml(
+          ad.title || `広告${ad.slot}`
+        )}"
+        loading="${index === 0 ? "eager" : "lazy"}"
+      >
+    `;
+  } else {
+    link.innerHTML = `
+      <div class="nox-ad-content">
+
+        <span class="nox-ad-badge">
+          AD ${escapeHtml(ad.slot)}
+        </span>
+
+        <div class="nox-ad-text">
+          <strong>
+            ${escapeHtml(
+              ad.title || "広告掲載中"
+            )}
+          </strong>
+
+          <p>
+            ${escapeHtml(
+              ad.description || ""
+            )}
+          </p>
+        </div>
+
+        <span class="nox-ad-button">
+          ${escapeHtml(
+            ad.buttonText || "詳しく見る"
+          )}
+        </span>
+
+      </div>
+    `;
+  }
+
+  link.addEventListener("click", (event) => {
+    if (!ad.linkUrl) {
+      event.preventDefault();
+    }
+
+    countAdClick(ad);
+  });
+
+  return link;
+}
+
+/* ===========================
+   広告募集中枠を作成
+=========================== */
+
+function createRecruitmentAdSlide(ad, index) {
+  const link = document.createElement("a");
+
+  link.className =
+    `nox-ad-slide nox-ad-recruitment ${
+      index === 0 ? "active" : ""
+    }`;
+
+  link.href = AD_CONTACT_URL;
+  link.target = "_blank";
+  link.rel = "noopener noreferrer";
+
+  link.innerHTML = `
+    <div class="nox-ad-recruitment-inner">
+
+      <span class="nox-ad-recruitment-slot">
+        AD SPACE ${escapeHtml(ad.slot)}
+      </span>
+
+      <p class="nox-ad-recruitment-small">
+        NOX PREMIUM ADVERTISEMENT
+      </p>
+
+      <strong>
+        広告掲載企業・店舗様募集中
+      </strong>
+
+      <p>
+        あなたの企業・店舗・サービスを、<br>
+        NOXユーザーへ大きくPRしませんか？
+      </p>
+
+      <span class="nox-ad-recruitment-price">
+        月額15,000円〜
+      </span>
+
+      <span class="nox-ad-button">
+        広告掲載のご相談はこちら
+      </span>
+
+    </div>
+  `;
+
+  return link;
+}
+
+/* ===========================
+   広告スライド作成
+=========================== */
+
+function createAdSlide(ad, index) {
+  if (ad.isRecruitment) {
+    return createRecruitmentAdSlide(
+      ad,
+      index
+    );
+  }
+
+  return createContractAdSlide(
+    ad,
+    index
+  );
+}
+
+/* ===========================
+   広告ドット作成
+=========================== */
+
+function createAdDot(index) {
+  const button =
+    document.createElement("button");
+
+  button.type = "button";
+  button.className =
+    index === 0 ? "active" : "";
+
+  button.setAttribute(
+    "aria-label",
+    `広告${index + 1}を表示`
+  );
+
+  button.addEventListener("click", () => {
+    showAd(index);
+    restartAdInterval();
+  });
+
+  return button;
+}
+
+/* ===========================
+   指定広告を表示
+=========================== */
+
+function showAd(index) {
+  const slider =
+    document.getElementById("noxAdSlider");
+
+  const dotsContainer =
+    document.getElementById("noxAdDots");
+
+  if (!slider || !dotsContainer) {
+    return;
+  }
+
+  const slides =
+    slider.querySelectorAll(".nox-ad-slide");
+
+  const dots =
+    dotsContainer.querySelectorAll("button");
+
+  if (slides.length === 0) {
+    return;
+  }
+
+  if (index >= slides.length) {
+    index = 0;
+  }
+
+  if (index < 0) {
+    index = slides.length - 1;
+  }
+
+  slides.forEach((slide, slideIndex) => {
+    slide.classList.toggle(
+      "active",
+      slideIndex === index
+    );
+  });
+
+  dots.forEach((dot, dotIndex) => {
+    dot.classList.toggle(
+      "active",
+      dotIndex === index
+    );
+  });
+
+  currentAdIndex = index;
+
+  countAdImpression(
+    noxAds[currentAdIndex]
+  );
+}
+
+/* ===========================
+   次の広告
+=========================== */
+
+function showNextAd() {
+  if (noxAds.length <= 1) {
+    return;
+  }
+
+  const nextIndex =
+    (currentAdIndex + 1) %
+    noxAds.length;
+
+  showAd(nextIndex);
+}
+
+/* ===========================
+   自動切り替え
+=========================== */
+
+function startAdInterval() {
+  if (noxAds.length <= 1) {
+    return;
+  }
+
+  adInterval = window.setInterval(
+    showNextAd,
+    AD_CHANGE_TIME
+  );
+}
+
+function restartAdInterval() {
+  if (adInterval) {
+    window.clearInterval(adInterval);
+  }
+
+  startAdInterval();
+}
+
+/* ===========================
+   Firestoreから広告①〜⑥取得
+=========================== */
+
+async function loadNoxAdvertisements() {
+  const adArea =
+    document.getElementById("noxAdArea");
+
+  const slider =
+    document.getElementById("noxAdSlider");
+
+  const dotsContainer =
+    document.getElementById("noxAdDots");
+
+  if (!adArea || !slider || !dotsContainer) {
+    return;
+  }
+
+  slider.innerHTML = `
+    <div class="nox-ad-empty">
+      広告を読み込んでいます...
+    </div>
+  `;
+
+  dotsContainer.innerHTML = "";
+
+  try {
+    const completedSlots = [];
+
+    for (
+      let slotNumber = 1;
+      slotNumber <= AD_SLOT_COUNT;
+      slotNumber++
+    ) {
+      const adId = `slot${slotNumber}`;
+
+      const adSnapshot = await getDoc(
+        doc(db, "ads", adId)
+      );
+
+      if (adSnapshot.exists()) {
+        const adData = {
+          id: adSnapshot.id,
+          slot: slotNumber,
+          ...adSnapshot.data()
+        };
+
+        const hasContent =
+          Boolean(adData.imageUrl) ||
+          Boolean(adData.title);
+
+        const canDisplay =
+          adData.enabled === true &&
+          hasContent &&
+          isAdWithinPeriod(adData);
+
+        if (canDisplay) {
+          completedSlots.push(adData);
+          continue;
+        }
+      }
+
+      completedSlots.push(
+        createRecruitmentAd(slotNumber)
+      );
+    }
+
+    noxAds = completedSlots;
+
+    slider.innerHTML = "";
+    dotsContainer.innerHTML = "";
+
+    noxAds.forEach((ad, index) => {
+      slider.appendChild(
+        createAdSlide(ad, index)
+      );
+
+      dotsContainer.appendChild(
+        createAdDot(index)
+      );
+    });
+
+    currentAdIndex = 0;
+
+    showAd(0);
+    startAdInterval();
+
+  } catch (error) {
+    console.error(
+      "広告読み込みエラー",
+      error
+    );
+
+    noxAds = [];
+
+    for (
+      let slotNumber = 1;
+      slotNumber <= AD_SLOT_COUNT;
+      slotNumber++
+    ) {
+      noxAds.push(
+        createRecruitmentAd(slotNumber)
+      );
+    }
+
+    slider.innerHTML = "";
+    dotsContainer.innerHTML = "";
+
+    noxAds.forEach((ad, index) => {
+      slider.appendChild(
+        createAdSlide(ad, index)
+      );
+
+      dotsContainer.appendChild(
+        createAdDot(index)
+      );
+    });
+
+    showAd(0);
+    startAdInterval();
+  }
+}
+
+/* ===========================
+   タブ非表示中の自動切替停止
+=========================== */
+
+document.addEventListener(
+  "visibilitychange",
+  () => {
+    if (document.hidden) {
+      if (adInterval) {
+        window.clearInterval(adInterval);
+      }
+    } else {
+      restartAdInterval();
+    }
+  }
+);
+
+/* ===========================
    求人画像取得
 =========================== */
 
@@ -199,10 +679,17 @@ function getJobImage(job) {
   if (job.logoUrl) return job.logoUrl;
   if (job.storeImage) return job.storeImage;
 
-  if (Array.isArray(job.images) && job.images.length > 0) {
-    const validImage = job.images.find((image) => {
-      return typeof image === "string" && image.trim() !== "";
-    });
+  if (
+    Array.isArray(job.images) &&
+    job.images.length > 0
+  ) {
+    const validImage =
+      job.images.find((image) => {
+        return (
+          typeof image === "string" &&
+          image.trim() !== ""
+        );
+      });
 
     if (validImage) {
       return validImage;
@@ -214,10 +701,10 @@ function getJobImage(job) {
 
 /* ===========================
    TOP 注目求人
-   topFeatured: true の店舗のみ表示
 =========================== */
 
-const topJobs = document.getElementById("topNewJobs");
+const topJobs =
+  document.getElementById("topNewJobs");
 
 if (topJobs) {
   loadTopJobs();
@@ -229,45 +716,48 @@ async function loadTopJobs() {
       "<p>注目求人を読み込んでいます...</p>";
 
     const snapshot =
-      await getDocs(collection(db, "jobs"));
+      await getDocs(
+        collection(db, "jobs")
+      );
 
     const jobs = [];
 
-    snapshot.forEach((documentSnapshot) => {
-      const job = {
-        id: documentSnapshot.id,
-        ...documentSnapshot.data()
-      };
+    snapshot.forEach(
+      (documentSnapshot) => {
+        const job = {
+          id: documentSnapshot.id,
+          ...documentSnapshot.data()
+        };
 
-      // 掲載中の求人だけ表示
-      if (job.status !== "approved") return;
+        if (job.status !== "approved") {
+          return;
+        }
 
-      // トップ掲載オプションがONの求人だけ表示
-      if (job.topFeatured !== true) return;
+        if (job.topFeatured !== true) {
+          return;
+        }
 
-      // テスト求人を非表示
-      const searchText = [
-        job.storeName,
-        job.name,
-        job.title,
-        job.shopName,
-        job.storeTitle
-      ]
-        .filter(Boolean)
-        .join(" ")
-        .toLowerCase();
+        const searchText = [
+          job.storeName,
+          job.name,
+          job.title,
+          job.shopName,
+          job.storeTitle
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
 
-      if (searchText.includes("テスト")) return;
-      if (searchText.includes("test")) return;
-      if (searchText.includes("dummy")) return;
-      if (searchText.includes("nox店舗")) return;
-      if (searchText.includes("nox確認店")) return;
+        if (searchText.includes("テスト")) return;
+        if (searchText.includes("test")) return;
+        if (searchText.includes("dummy")) return;
+        if (searchText.includes("nox店舗")) return;
+        if (searchText.includes("nox確認店")) return;
 
-      jobs.push(job);
-    });
+        jobs.push(job);
+      }
+    );
 
-    // topOrderの数字が小さい店舗を優先
-    // topOrder未設定の場合は新しい順
     jobs.sort((jobA, jobB) => {
       const orderA =
         typeof jobA.topOrder === "number"
@@ -298,7 +788,6 @@ async function loadTopJobs() {
       return timeB - timeA;
     });
 
-    // トップには最大3店舗
     const featuredJobs = jobs.slice(0, 3);
 
     if (featuredJobs.length === 0) {
@@ -311,71 +800,73 @@ async function loadTopJobs() {
       return;
     }
 
-    topJobs.innerHTML = featuredJobs
-      .map((job) => {
-        const storeName =
-          job.storeName ||
-          job.shopName ||
-          job.storeTitle ||
-          job.name ||
-          "店舗名未設定";
+    topJobs.innerHTML =
+      featuredJobs
+        .map((job) => {
+          const storeName =
+            job.storeName ||
+            job.shopName ||
+            job.storeTitle ||
+            job.name ||
+            "店舗名未設定";
 
-        const area =
-          job.area ||
-          job.prefecture ||
-          job.location ||
-          "エリア未設定";
+          const area =
+            job.area ||
+            job.prefecture ||
+            job.location ||
+            "エリア未設定";
 
-        const salary =
-          job.salary ||
-          job.salaryText ||
-          job.hourlyWage ||
-          job.hourlyPay ||
-          "給与は詳細ページをご確認ください";
+          const salary =
+            job.salary ||
+            job.salaryText ||
+            job.hourlyWage ||
+            job.hourlyPay ||
+            "給与は詳細ページをご確認ください";
 
-        const imageUrl = getJobImage(job);
+          const imageUrl =
+            getJobImage(job);
 
-        return `
-          <div class="top-job-card">
+          return `
+            <div class="top-job-card">
 
-            <div class="top-featured-label">
-              PICK UP
-            </div>
+              <div class="top-featured-label">
+                PICK UP
+              </div>
 
-            <img
-              src="${escapeHtml(imageUrl)}"
-              alt="${escapeHtml(storeName)}の求人画像"
-              loading="lazy"
-              onerror="this.onerror=null; this.src='images/line_oa_chat_260708_192846.jpeg';"
-            >
-
-            <div class="top-job-body">
-
-              <h3>
-                ${escapeHtml(storeName)}
-              </h3>
-
-              <p>
-                📍 ${escapeHtml(area)}
-              </p>
-
-              <p>
-                💰 ${escapeHtml(salary)}
-              </p>
-
-              <a
-                href="pages/job-detail.html?id=${encodeURIComponent(job.id)}"
-                class="btn gold"
+              <img
+                src="${escapeHtml(imageUrl)}"
+                alt="${escapeHtml(storeName)}の求人画像"
+                loading="lazy"
+                onerror="this.onerror=null;this.src='images/line_oa_chat_260708_192846.jpeg';"
               >
-                詳細を見る
-              </a>
+
+              <div class="top-job-body">
+
+                <h3>
+                  ${escapeHtml(storeName)}
+                </h3>
+
+                <p>
+                  📍 ${escapeHtml(area)}
+                </p>
+
+                <p>
+                  💰 ${escapeHtml(salary)}
+                </p>
+
+                <a
+                  href="pages/job-detail.html?id=${encodeURIComponent(job.id)}"
+                  class="btn gold"
+                >
+                  詳細を見る
+                </a>
+
+              </div>
 
             </div>
-
-          </div>
-        `;
-      })
-      .join("");
+          `;
+        })
+        .join("");
 
   } catch (error) {
     console.error(
@@ -390,3 +881,9 @@ async function loadTopJobs() {
     `;
   }
 }
+
+/* ===========================
+   初期実行
+=========================== */
+
+loadNoxAdvertisements();
