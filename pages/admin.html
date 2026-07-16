@@ -2,203 +2,1816 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
   <title>管理者ページ | NOX</title>
+
   <link rel="stylesheet" href="../style.css">
+
+  <style>
+    .admin-page{
+      width:100%;
+      max-width:1200px;
+      margin:0 auto;
+    }
+
+    .admin-main-card{
+      width:100%;
+      max-width:none;
+    }
+
+    .admin-header{
+      text-align:center;
+      margin-bottom:36px;
+    }
+
+    .admin-header span{
+      display:block;
+      color:#f5d36b;
+      font-size:13px;
+      letter-spacing:5px;
+      margin-bottom:8px;
+    }
+
+    .admin-header h1{
+      color:#f5d36b;
+      font-size:38px;
+      margin-bottom:8px;
+    }
+
+    .admin-header p{
+      color:#aaa;
+    }
+
+    .admin-section{
+      margin-top:42px;
+      padding-top:36px;
+      border-top:1px solid rgba(212,175,55,.25);
+    }
+
+    .admin-section:first-of-type{
+      margin-top:0;
+    }
+
+    .admin-section-title{
+      color:#f5d36b;
+      font-size:27px;
+      margin-bottom:8px;
+    }
+
+    .admin-section-description{
+      color:#bbb;
+      line-height:1.8;
+      margin-bottom:22px;
+    }
+
+    .admin-message{
+      color:#aaa;
+      padding:22px 0;
+      text-align:center;
+    }
+
+    .admin-item-card{
+      border:1px solid rgba(201,163,74,.5);
+      border-radius:18px;
+      padding:18px;
+      margin:16px 0;
+      background:#111;
+      color:#fff;
+    }
+
+    .admin-item-card h3{
+      color:#f5d36b;
+      margin-bottom:10px;
+    }
+
+    .admin-item-card p{
+      color:#ddd;
+      margin:6px 0;
+      line-height:1.65;
+      overflow-wrap:anywhere;
+    }
+
+    .admin-btn-row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:14px;
+    }
+
+    .admin-button{
+      border:1px solid rgba(212,175,55,.6);
+      border-radius:999px;
+      padding:11px 18px;
+      background:linear-gradient(135deg,#9f7217,#f4d777);
+      color:#111;
+      font-size:14px;
+      font-weight:800;
+      cursor:pointer;
+      transition:.25s;
+    }
+
+    .admin-button:hover{
+      transform:translateY(-2px);
+      filter:brightness(1.08);
+    }
+
+    .admin-button.sub{
+      background:#111;
+      color:#f5d36b;
+    }
+
+    .admin-button.danger{
+      border-color:rgba(255,92,92,.65);
+      background:rgba(100,0,0,.3);
+      color:#ff9f9f;
+    }
+
+    .admin-button:disabled{
+      opacity:.45;
+      cursor:not-allowed;
+      transform:none;
+    }
+
+    /* 広告管理 */
+
+    .ad-management-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:22px;
+    }
+
+    .ad-admin-card{
+      position:relative;
+      border:1px solid rgba(212,175,55,.45);
+      border-radius:22px;
+      padding:22px;
+      background:
+        radial-gradient(
+          circle at top right,
+          rgba(212,175,55,.12),
+          transparent 35%
+        ),
+        linear-gradient(145deg,#101010,#070707);
+      box-shadow:0 18px 40px rgba(0,0,0,.35);
+    }
+
+    .ad-admin-card.is-disabled{
+      opacity:.75;
+      border-color:rgba(255,255,255,.2);
+    }
+
+    .ad-card-top{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      margin-bottom:18px;
+    }
+
+    .ad-card-top h3{
+      color:#f5d36b;
+      font-size:25px;
+    }
+
+    .ad-status-badge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-width:88px;
+      padding:7px 12px;
+      border-radius:999px;
+      border:1px solid rgba(212,175,55,.5);
+      color:#f5d36b;
+      background:rgba(0,0,0,.5);
+      font-size:12px;
+      font-weight:800;
+    }
+
+    .ad-status-badge.off{
+      border-color:rgba(255,255,255,.25);
+      color:#aaa;
+    }
+
+    .ad-preview{
+      width:100%;
+      aspect-ratio:16 / 7;
+      border:1px dashed rgba(212,175,55,.35);
+      border-radius:16px;
+      overflow:hidden;
+      background:#080808;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      margin-bottom:18px;
+      color:#777;
+      text-align:center;
+    }
+
+    .ad-preview img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+
+    .ad-form{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:15px;
+    }
+
+    .ad-form-group{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      min-width:0;
+    }
+
+    .ad-form-group.full{
+      grid-column:1 / -1;
+    }
+
+    .ad-form-group label{
+      color:#f5d36b;
+      font-size:13px;
+      font-weight:700;
+    }
+
+    .ad-form-group input,
+    .ad-form-group textarea,
+    .ad-form-group select{
+      width:100%;
+      min-width:0;
+      border:1px solid rgba(212,175,55,.28);
+      border-radius:12px;
+      padding:13px 14px;
+      background:#111;
+      color:#fff;
+      font-size:15px;
+      outline:none;
+    }
+
+    .ad-form-group textarea{
+      min-height:100px;
+      resize:vertical;
+    }
+
+    .ad-form-group input:focus,
+    .ad-form-group textarea:focus,
+    .ad-form-group select:focus{
+      border-color:#d4af37;
+      box-shadow:0 0 18px rgba(212,175,55,.16);
+    }
+
+    .ad-image-input{
+      padding:10px !important;
+    }
+
+    .ad-switch-row{
+      grid-column:1 / -1;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:15px;
+      border:1px solid rgba(212,175,55,.22);
+      border-radius:14px;
+      padding:13px 15px;
+      background:rgba(255,255,255,.02);
+    }
+
+    .ad-switch-row span{
+      color:#ddd;
+      font-size:14px;
+    }
+
+    .ad-switch{
+      position:relative;
+      width:54px;
+      height:30px;
+      flex:0 0 auto;
+    }
+
+    .ad-switch input{
+      position:absolute;
+      opacity:0;
+      pointer-events:none;
+    }
+
+    .ad-switch-slider{
+      position:absolute;
+      inset:0;
+      border-radius:999px;
+      background:#444;
+      cursor:pointer;
+      transition:.25s;
+    }
+
+    .ad-switch-slider::before{
+      content:"";
+      position:absolute;
+      top:4px;
+      left:4px;
+      width:22px;
+      height:22px;
+      border-radius:50%;
+      background:#fff;
+      transition:.25s;
+    }
+
+    .ad-switch input:checked + .ad-switch-slider{
+      background:linear-gradient(90deg,#9f7217,#f4d777);
+    }
+
+    .ad-switch input:checked + .ad-switch-slider::before{
+      transform:translateX(24px);
+      background:#111;
+    }
+
+    .ad-stats{
+      grid-column:1 / -1;
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:10px;
+      margin-top:4px;
+    }
+
+    .ad-stat{
+      border:1px solid rgba(212,175,55,.18);
+      border-radius:13px;
+      padding:12px 8px;
+      text-align:center;
+      background:rgba(0,0,0,.34);
+    }
+
+    .ad-stat strong{
+      display:block;
+      color:#f5d36b;
+      font-size:18px;
+      margin-bottom:4px;
+    }
+
+    .ad-stat span{
+      color:#999;
+      font-size:11px;
+    }
+
+    .ad-card-actions{
+      grid-column:1 / -1;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:5px;
+    }
+
+    .ad-card-actions button{
+      flex:1 1 150px;
+    }
+
+    .save-status{
+      grid-column:1 / -1;
+      min-height:20px;
+      color:#aaa;
+      font-size:13px;
+      text-align:center;
+    }
+
+    .save-status.success{
+      color:#86e7a5;
+    }
+
+    .save-status.error{
+      color:#ff9292;
+    }
+
+    .admin-bottom-actions{
+      display:flex;
+      justify-content:center;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top:40px;
+    }
+
+    @media(max-width:900px){
+      .ad-management-grid{
+        grid-template-columns:1fr;
+      }
+
+      .admin-main-card{
+        padding:30px 18px;
+      }
+    }
+
+    @media(max-width:600px){
+      .admin-header h1{
+        font-size:30px;
+      }
+
+      .admin-section-title{
+        font-size:23px;
+      }
+
+      .ad-admin-card{
+        padding:17px;
+      }
+
+      .ad-form{
+        grid-template-columns:1fr;
+      }
+
+      .ad-form-group.full{
+        grid-column:auto;
+      }
+
+      .ad-switch-row,
+      .ad-stats,
+      .ad-card-actions,
+      .save-status{
+        grid-column:auto;
+      }
+
+      .ad-stats{
+        grid-template-columns:1fr 1fr;
+      }
+    }
+  </style>
 </head>
 
 <body class="register-body">
+
   <main class="register-page">
-    <section class="register-section">
-      <div class="register-card">
+    <section class="register-section admin-page">
 
-        <div class="register-step">
+      <div class="register-card admin-main-card">
+
+        <div class="admin-header">
           <span>NOX ADMIN</span>
-          <h2>管理者ページ</h2>
-          <p>ユーザー管理</p>
-        </div>
-     <div style="margin:30px 0;">
-
-  <h2 style="color:#f5d36b;">
-🏪 店舗掲載申請一覧
-</h2>
-
-<p style="color:#bbb;margin-bottom:15px;">
-店舗から届いた掲載申請を確認・承認できます。
-</p>
-
-  <div id="jobApplicationList">
-    <p>求人申請を読み込み中...</p>
-  </div>
-
-</div>
+          <h1>管理者ページ</h1>
+          <p>求人・広告・会員情報を管理できます。</p>
         </div>
 
-<div style="margin-top:40px;">
+        <!-- 広告管理 -->
+        <section class="admin-section">
 
-  <h2 style="color:#f5d36b;">
-    👩 会員登録した女の子一覧
-  </h2>
+          <h2 class="admin-section-title">
+            📢 広告掲載管理
+          </h2>
 
-  <p style="color:#bbb;margin-bottom:15px;">
-    NOXに会員登録している女の子を確認できます。
-  </p>
+          <p class="admin-section-description">
+            トップページに表示する広告①〜⑥を管理できます。
+            画像や文章を変更して保存すると、Firestoreへ保存されます。
+          </p>
 
-</div>
+          <div
+            id="adManagementGrid"
+            class="ad-management-grid"
+          >
+            <p class="admin-message">
+              広告情報を読み込み中...
+            </p>
+          </div>
 
-<div id="userList">
-    <p>読み込み中...</p>
-</div>
+        </section>
 
-        <div class="header-actions">
-          <a href="../index.html" class="btn ghost">トップへ戻る</a>
-          <a href="./mypage.html" class="btn ghost">マイページ</a>
+        <!-- 店舗申請 -->
+        <section class="admin-section">
+
+          <h2 class="admin-section-title">
+            🏪 店舗掲載申請一覧
+          </h2>
+
+          <p class="admin-section-description">
+            店舗から届いた掲載申請を確認・承認できます。
+          </p>
+
+          <div id="jobApplicationList">
+            <p class="admin-message">
+              求人申請を読み込み中...
+            </p>
+          </div>
+
+        </section>
+
+        <!-- 女の子一覧 -->
+        <section class="admin-section">
+
+          <h2 class="admin-section-title">
+            👩 会員登録した女の子一覧
+          </h2>
+
+          <p class="admin-section-description">
+            NOXに会員登録しているユーザーを確認できます。
+          </p>
+
+          <div id="userList">
+            <p class="admin-message">
+              ユーザーを読み込み中...
+            </p>
+          </div>
+
+        </section>
+
+        <div class="admin-bottom-actions">
+          <a href="../index.html" class="btn ghost">
+            トップへ戻る
+          </a>
+
+          <a href="./mypage.html" class="btn ghost">
+            マイページ
+          </a>
         </div>
 
       </div>
     </section>
   </main>
 
-<script type="module">
+  <script type="module">
 
-import { auth } from "../firebase.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { auth } from "../firebase.js";
 
-import {
-  getFirestore,
-  collection,
-  getDocs,
-  doc,
-  getDoc,
-  updateDoc,
-deleteDoc,
-addDoc,
-serverTimestamp
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import {
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-const db = getFirestore();
-const userList = document.getElementById("userList");
-const jobApplicationList = document.getElementById("jobApplicationList");
-onAuthStateChanged(auth, async (user) => {
+    import {
+      getFirestore,
+      collection,
+      getDocs,
+      doc,
+      getDoc,
+      setDoc,
+      updateDoc,
+      deleteDoc,
+      addDoc,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  if (!user) {
-    alert("ログインしてください");
-    location.href = "./login.html";
-    return;
-  }
+    import {
+      getStorage,
+      ref,
+      uploadBytes,
+      getDownloadURL,
+      deleteObject
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
-  const adminRef = doc(db,"users",user.uid);
-  const adminSnap = await getDoc(adminRef);
+    const db = getFirestore();
+    const storage = getStorage();
 
-  if(!adminSnap.exists() || adminSnap.data().role !== "admin"){
-    alert("管理者のみアクセスできます");
-    location.href="./mypage.html";
-    return;
-  }
+    const userList =
+      document.getElementById("userList");
 
- loadUsers();
-loadJobApplications();
+    const jobApplicationList =
+      document.getElementById("jobApplicationList");
 
-});
-  async function loadUsers() {
-  const snap = await getDocs(collection(db, "users"));
+    const adManagementGrid =
+      document.getElementById("adManagementGrid");
 
-  userList.innerHTML = "";
+    const AD_SLOT_COUNT = 6;
 
-  if (snap.empty) {
-    userList.innerHTML = "<p>ユーザーがいません。</p>";
-    return;
-  }
+    let currentAdminUser = null;
 
-  snap.forEach((userDoc) => {
-    const data = userDoc.data();
-    const uid = userDoc.id;
+    onAuthStateChanged(auth, async (user) => {
 
-    const name = data.name || data.nickname || "名前未設定";
-    const email = data.email || "メールなし";
-    const status = data.status || "active";
-    const role = data.role || "user";
-
-    const card = document.createElement("div");
-    card.style.cssText = `
-      border:1px solid rgba(201,163,74,.5);
-      border-radius:18px;
-      padding:16px;
-      margin:16px 0;
-      background:#111;
-      color:white;
-    `;
-
-    card.innerHTML = `
-      <h3 style="color:#f5d36b;margin:0 0 8px;">${name}</h3>
-      <p>📧 ${email}</p>
-      <p>🔑 権限：${role}</p>
-      <p>📍 状態：${status === "blocked" ? "🚫 ブロック中" : "✅ 利用中"}</p>
-
-      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;">
-        <button class="gold-btn detailBtn" data-id="${uid}">
-          詳細を見る
-        </button>
-
-        <button class="gold-btn blockBtn" data-id="${uid}" data-status="${status}">
-  ${status === "blocked" ? "ブロック解除" : "ブロックする"}
-</button>
-
-<button class="gold-btn deleteBtn" data-id="${uid}" data-email="${email}">
-  🗑️ 削除
-</button>
-      </div>
-    `;
-
-    userList.appendChild(card);
-  });
-
-  setUserButtons();
-}
-  function setUserButtons() {
-    document.querySelectorAll(".deleteBtn").forEach((btn) => {
-  btn.addEventListener("click", async () => {
-    const uid = btn.dataset.id;
-    const email = btn.dataset.email;
-
-    const ok = confirm(`${email} を完全に削除しますか？\nこの操作は元に戻せません。`);
-    if (!ok) return;
-
-    await deleteDoc(doc(db, "users", uid));
-
-    alert("ユーザーを削除しました");
-    loadUsers();
-  });
-});
-  document.querySelectorAll(".blockBtn").forEach((btn) => {
-    btn.addEventListener("click", async () => {
-      const uid = btn.dataset.id;
-      const currentStatus = btn.dataset.status;
-      const newStatus = currentStatus === "blocked" ? "active" : "blocked";
-
-      await updateDoc(doc(db, "users", uid), {
-        status: newStatus
-      });
-
-      alert(newStatus === "blocked" ? "ブロックしました" : "ブロック解除しました");
-      loadUsers();
-    });
-  });
-
-  document.querySelectorAll(".detailBtn").forEach((btn) => {
-    btn.addEventListener("click", async () => {
-      const uid = btn.dataset.id;
-      const snap = await getDoc(doc(db, "users", uid));
-
-      if (!snap.exists()) {
-        alert("ユーザーが見つかりません");
+      if (!user) {
+        alert("ログインしてください");
+        location.href = "./login.html";
         return;
       }
 
-      const data = snap.data();
+      const adminRef = doc(
+        db,
+        "users",
+        user.uid
+      );
 
-      alert(`
-名前: ${data.name || data.nickname || "未設定"}
+      const adminSnap = await getDoc(adminRef);
+
+      if (
+        !adminSnap.exists() ||
+        adminSnap.data().role !== "admin"
+      ) {
+        alert("管理者のみアクセスできます");
+        location.href = "./mypage.html";
+        return;
+      }
+
+      currentAdminUser = user;
+
+      await Promise.all([
+        loadAds(),
+        loadUsers(),
+        loadJobApplications()
+      ]);
+    });
+
+    /* =========================
+       共通関数
+    ========================= */
+
+    function escapeHTML(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function numberValue(value) {
+      const number = Number(value);
+
+      if (!Number.isFinite(number)) {
+        return 0;
+      }
+
+      return number;
+    }
+
+    function formatNumber(value) {
+      return numberValue(value).toLocaleString("ja-JP");
+    }
+
+    function calculateCTR(impressions, clicks) {
+      const safeImpressions = numberValue(impressions);
+      const safeClicks = numberValue(clicks);
+
+      if (safeImpressions <= 0) {
+        return "0.00";
+      }
+
+      return (
+        (safeClicks / safeImpressions) *
+        100
+      ).toFixed(2);
+    }
+
+    function getRemainingDays(endDate) {
+      if (!endDate) {
+        return {
+          text: "未設定",
+          days: null,
+          expired: false
+        };
+      }
+
+      const end = new Date(`${endDate}T23:59:59`);
+      const now = new Date();
+
+      if (Number.isNaN(end.getTime())) {
+        return {
+          text: "日付エラー",
+          days: null,
+          expired: false
+        };
+      }
+
+      const difference =
+        end.getTime() - now.getTime();
+
+      const days = Math.ceil(
+        difference / (1000 * 60 * 60 * 24)
+      );
+
+      if (days < 0) {
+        return {
+          text: "掲載終了",
+          days,
+          expired: true
+        };
+      }
+
+      if (days === 0) {
+        return {
+          text: "本日まで",
+          days,
+          expired: false
+        };
+      }
+
+      return {
+        text: `残り${days}日`,
+        days,
+        expired: false
+      };
+    }
+
+    function isStartDateReached(startDate) {
+      if (!startDate) {
+        return true;
+      }
+
+      const start = new Date(`${startDate}T00:00:00`);
+
+      if (Number.isNaN(start.getTime())) {
+        return true;
+      }
+
+      return new Date() >= start;
+    }
+
+    function getAdDefaultData(slotNumber) {
+      return {
+        slot: slotNumber,
+        advertiserName: "",
+        title: "",
+        description: "",
+        linkUrl: "",
+        buttonText: "詳しく見る",
+        imageUrl: "",
+        storagePath: "",
+        enabled: false,
+        startDate: "",
+        endDate: "",
+        contractPrice: 0,
+        paymentStatus: "unpaid",
+        impressions: 0,
+        clicks: 0
+      };
+    }
+
+    /* =========================
+       広告管理
+    ========================= */
+
+    async function loadAds() {
+      adManagementGrid.innerHTML = "";
+
+      for (
+        let slotNumber = 1;
+        slotNumber <= AD_SLOT_COUNT;
+        slotNumber++
+      ) {
+        try {
+          const adRef = doc(
+            db,
+            "ads",
+            `slot${slotNumber}`
+          );
+
+          const adSnap = await getDoc(adRef);
+
+          let adData = getAdDefaultData(slotNumber);
+
+          if (adSnap.exists()) {
+            adData = {
+              ...adData,
+              ...adSnap.data(),
+              slot: slotNumber
+            };
+          }
+
+          const remaining =
+            getRemainingDays(adData.endDate);
+
+          if (
+            remaining.expired &&
+            adData.enabled === true
+          ) {
+            adData.enabled = false;
+
+            await setDoc(
+              adRef,
+              {
+                enabled: false,
+                automaticallyDisabledAt:
+                  serverTimestamp()
+              },
+              {
+                merge: true
+              }
+            );
+          }
+
+          createAdCard(slotNumber, adData);
+
+        } catch (error) {
+          console.error(
+            `広告${slotNumber}の読み込みエラー`,
+            error
+          );
+
+          createAdCard(
+            slotNumber,
+            getAdDefaultData(slotNumber)
+          );
+        }
+      }
+    }
+
+    function createAdCard(slotNumber, data) {
+      const impressions =
+        numberValue(data.impressions);
+
+      const clicks =
+        numberValue(data.clicks);
+
+      const ctr =
+        calculateCTR(impressions, clicks);
+
+      const remaining =
+        getRemainingDays(data.endDate);
+
+      const isWaiting =
+        data.enabled &&
+        !isStartDateReached(data.startDate);
+
+      let statusText = "非表示";
+
+      if (data.enabled && isWaiting) {
+        statusText = "開始待ち";
+      } else if (data.enabled) {
+        statusText = "表示中";
+      } else if (remaining.expired) {
+        statusText = "掲載終了";
+      }
+
+      const card = document.createElement("article");
+
+      card.className =
+        `ad-admin-card ${
+          data.enabled ? "" : "is-disabled"
+        }`;
+
+      card.dataset.slot =
+        String(slotNumber);
+
+      card.innerHTML = `
+        <div class="ad-card-top">
+          <h3>広告${slotNumber}</h3>
+
+          <span
+            class="ad-status-badge ${
+              data.enabled ? "" : "off"
+            }"
+            id="adStatus${slotNumber}"
+          >
+            ${escapeHTML(statusText)}
+          </span>
+        </div>
+
+        <div
+          class="ad-preview"
+          id="adPreview${slotNumber}"
+        >
+          ${
+            data.imageUrl
+              ? `
+                <img
+                  src="${escapeHTML(data.imageUrl)}"
+                  alt="広告${slotNumber}プレビュー"
+                >
+              `
+              : `
+                <span>
+                  広告画像がまだ登録されていません
+                </span>
+              `
+          }
+        </div>
+
+        <div class="ad-form">
+
+          <div class="ad-form-group full">
+            <label for="adImage${slotNumber}">
+              広告画像
+            </label>
+
+            <input
+              type="file"
+              id="adImage${slotNumber}"
+              class="ad-image-input"
+              accept="image/jpeg,image/png,image/webp"
+            >
+          </div>
+
+          <div class="ad-form-group full">
+            <label for="advertiserName${slotNumber}">
+              広告主名・企業名
+            </label>
+
+            <input
+              type="text"
+              id="advertiserName${slotNumber}"
+              value="${escapeHTML(data.advertiserName)}"
+              placeholder="例：広告主名"
+            >
+          </div>
+
+          <div class="ad-form-group full">
+            <label for="adTitle${slotNumber}">
+              広告タイトル
+            </label>
+
+            <input
+              type="text"
+              id="adTitle${slotNumber}"
+              value="${escapeHTML(data.title)}"
+              placeholder="例：今だけ！登録キャンペーン"
+            >
+          </div>
+
+          <div class="ad-form-group full">
+            <label for="adDescription${slotNumber}">
+              広告説明文
+            </label>
+
+            <textarea
+              id="adDescription${slotNumber}"
+              placeholder="広告に表示する説明文"
+            >${escapeHTML(data.description)}</textarea>
+          </div>
+
+          <div class="ad-form-group full">
+            <label for="adLink${slotNumber}">
+              リンク先URL
+            </label>
+
+            <input
+              type="url"
+              id="adLink${slotNumber}"
+              value="${escapeHTML(data.linkUrl)}"
+              placeholder="https://example.com/"
+            >
+          </div>
+
+          <div class="ad-form-group">
+            <label for="adButtonText${slotNumber}">
+              ボタン文字
+            </label>
+
+            <input
+              type="text"
+              id="adButtonText${slotNumber}"
+              value="${escapeHTML(
+                data.buttonText || "詳しく見る"
+              )}"
+              placeholder="詳しく見る"
+            >
+          </div>
+
+          <div class="ad-form-group">
+            <label for="adPrice${slotNumber}">
+              契約料金
+            </label>
+
+            <input
+              type="number"
+              id="adPrice${slotNumber}"
+              value="${numberValue(data.contractPrice)}"
+              min="0"
+              step="1"
+              placeholder="15000"
+            >
+          </div>
+
+          <div class="ad-form-group">
+            <label for="adStartDate${slotNumber}">
+              掲載開始日
+            </label>
+
+            <input
+              type="date"
+              id="adStartDate${slotNumber}"
+              value="${escapeHTML(data.startDate)}"
+            >
+          </div>
+
+          <div class="ad-form-group">
+            <label for="adEndDate${slotNumber}">
+              掲載終了日
+            </label>
+
+            <input
+              type="date"
+              id="adEndDate${slotNumber}"
+              value="${escapeHTML(data.endDate)}"
+            >
+          </div>
+
+          <div class="ad-form-group full">
+            <label for="adPaymentStatus${slotNumber}">
+              入金状況
+            </label>
+
+            <select id="adPaymentStatus${slotNumber}">
+              <option
+                value="unpaid"
+                ${
+                  data.paymentStatus === "unpaid"
+                    ? "selected"
+                    : ""
+                }
+              >
+                未入金
+              </option>
+
+              <option
+                value="paid"
+                ${
+                  data.paymentStatus === "paid"
+                    ? "selected"
+                    : ""
+                }
+              >
+                入金済み
+              </option>
+
+              <option
+                value="free"
+                ${
+                  data.paymentStatus === "free"
+                    ? "selected"
+                    : ""
+                }
+              >
+                無料掲載
+              </option>
+            </select>
+          </div>
+
+          <div class="ad-switch-row">
+            <span>
+              トップページにこの広告を表示する
+            </span>
+
+            <label class="ad-switch">
+              <input
+                type="checkbox"
+                id="adEnabled${slotNumber}"
+                ${data.enabled ? "checked" : ""}
+              >
+
+              <span class="ad-switch-slider"></span>
+            </label>
+          </div>
+
+          <div class="ad-stats">
+
+            <div class="ad-stat">
+              <strong>
+                ${formatNumber(impressions)}
+              </strong>
+              <span>表示回数</span>
+            </div>
+
+            <div class="ad-stat">
+              <strong>
+                ${formatNumber(clicks)}
+              </strong>
+              <span>クリック数</span>
+            </div>
+
+            <div class="ad-stat">
+              <strong>
+                ${ctr}%
+              </strong>
+              <span>CTR</span>
+            </div>
+
+            <div class="ad-stat">
+              <strong>
+                ${escapeHTML(remaining.text)}
+              </strong>
+              <span>契約期限</span>
+            </div>
+
+          </div>
+
+          <div class="ad-card-actions">
+
+            <button
+              type="button"
+              class="admin-button saveAdButton"
+              data-slot="${slotNumber}"
+            >
+              広告${slotNumber}を保存
+            </button>
+
+            <button
+              type="button"
+              class="admin-button danger deleteAdButton"
+              data-slot="${slotNumber}"
+            >
+              広告${slotNumber}を削除
+            </button>
+
+          </div>
+
+          <p
+            class="save-status"
+            id="adSaveStatus${slotNumber}"
+          ></p>
+
+        </div>
+      `;
+
+      adManagementGrid.appendChild(card);
+
+      setAdCardEvents(slotNumber);
+    }
+
+    function setAdCardEvents(slotNumber) {
+      const imageInput =
+        document.getElementById(
+          `adImage${slotNumber}`
+        );
+
+      const enabledInput =
+        document.getElementById(
+          `adEnabled${slotNumber}`
+        );
+
+      imageInput.addEventListener(
+        "change",
+        () => {
+          const file = imageInput.files?.[0];
+
+          if (!file) {
+            return;
+          }
+
+          if (!file.type.startsWith("image/")) {
+            alert("画像ファイルを選択してください");
+            imageInput.value = "";
+            return;
+          }
+
+          const previewURL =
+            URL.createObjectURL(file);
+
+          const preview =
+            document.getElementById(
+              `adPreview${slotNumber}`
+            );
+
+          preview.innerHTML = `
+            <img
+              src="${previewURL}"
+              alt="広告${slotNumber}プレビュー"
+            >
+          `;
+        }
+      );
+
+      enabledInput.addEventListener(
+        "change",
+        () => {
+          updateAdCardVisual(slotNumber);
+        }
+      );
+
+      document
+        .querySelector(
+          `.saveAdButton[data-slot="${slotNumber}"]`
+        )
+        .addEventListener(
+          "click",
+          () => saveAd(slotNumber)
+        );
+
+      document
+        .querySelector(
+          `.deleteAdButton[data-slot="${slotNumber}"]`
+        )
+        .addEventListener(
+          "click",
+          () => deleteAd(slotNumber)
+        );
+    }
+
+    function updateAdCardVisual(slotNumber) {
+      const enabled =
+        document.getElementById(
+          `adEnabled${slotNumber}`
+        ).checked;
+
+      const card = document.querySelector(
+        `.ad-admin-card[data-slot="${slotNumber}"]`
+      );
+
+      const status = document.getElementById(
+        `adStatus${slotNumber}`
+      );
+
+      if (!card || !status) {
+        return;
+      }
+
+      if (enabled) {
+        card.classList.remove("is-disabled");
+        status.classList.remove("off");
+        status.textContent = "表示予定";
+      } else {
+        card.classList.add("is-disabled");
+        status.classList.add("off");
+        status.textContent = "非表示";
+      }
+    }
+
+    async function saveAd(slotNumber) {
+      const saveButton = document.querySelector(
+        `.saveAdButton[data-slot="${slotNumber}"]`
+      );
+
+      const statusElement =
+        document.getElementById(
+          `adSaveStatus${slotNumber}`
+        );
+
+      const imageInput =
+        document.getElementById(
+          `adImage${slotNumber}`
+        );
+
+      const advertiserName =
+        document.getElementById(
+          `advertiserName${slotNumber}`
+        ).value.trim();
+
+      const title =
+        document.getElementById(
+          `adTitle${slotNumber}`
+        ).value.trim();
+
+      const description =
+        document.getElementById(
+          `adDescription${slotNumber}`
+        ).value.trim();
+
+      const linkUrl =
+        document.getElementById(
+          `adLink${slotNumber}`
+        ).value.trim();
+
+      const buttonText =
+        document.getElementById(
+          `adButtonText${slotNumber}`
+        ).value.trim() || "詳しく見る";
+
+      const contractPrice =
+        numberValue(
+          document.getElementById(
+            `adPrice${slotNumber}`
+          ).value
+        );
+
+      const startDate =
+        document.getElementById(
+          `adStartDate${slotNumber}`
+        ).value;
+
+      const endDate =
+        document.getElementById(
+          `adEndDate${slotNumber}`
+        ).value;
+
+      const paymentStatus =
+        document.getElementById(
+          `adPaymentStatus${slotNumber}`
+        ).value;
+
+      let enabled =
+        document.getElementById(
+          `adEnabled${slotNumber}`
+        ).checked;
+
+      if (
+        startDate &&
+        endDate &&
+        startDate > endDate
+      ) {
+        alert(
+          "掲載終了日は、掲載開始日より後に設定してください"
+        );
+        return;
+      }
+
+      if (linkUrl) {
+        try {
+          const parsedURL = new URL(linkUrl);
+
+          if (
+            parsedURL.protocol !== "https:" &&
+            parsedURL.protocol !== "http:"
+          ) {
+            throw new Error("無効なURL");
+          }
+        } catch {
+          alert(
+            "リンク先URLを正しく入力してください"
+          );
+          return;
+        }
+      }
+
+      const remaining =
+        getRemainingDays(endDate);
+
+      if (remaining.expired) {
+        enabled = false;
+
+        document.getElementById(
+          `adEnabled${slotNumber}`
+        ).checked = false;
+      }
+
+      saveButton.disabled = true;
+
+      statusElement.className = "save-status";
+      statusElement.textContent =
+        "広告情報を保存中...";
+
+      try {
+        const adRef = doc(
+          db,
+          "ads",
+          `slot${slotNumber}`
+        );
+
+        const oldSnap = await getDoc(adRef);
+
+        const oldData =
+          oldSnap.exists()
+            ? oldSnap.data()
+            : {};
+
+        let imageUrl =
+          oldData.imageUrl || "";
+
+        let storagePath =
+          oldData.storagePath || "";
+
+        const selectedImage =
+          imageInput.files?.[0];
+
+        if (selectedImage) {
+          if (selectedImage.size > 8 * 1024 * 1024) {
+            throw new Error(
+              "画像サイズは8MB以下にしてください"
+            );
+          }
+
+          const safeExtension =
+            selectedImage.name
+              .split(".")
+              .pop()
+              ?.toLowerCase()
+              .replace(/[^a-z0-9]/g, "") || "jpg";
+
+          const newStoragePath =
+            `ads/slot${slotNumber}/` +
+            `${Date.now()}.${safeExtension}`;
+
+          const imageRef = ref(
+            storage,
+            newStoragePath
+          );
+
+          await uploadBytes(
+            imageRef,
+            selectedImage,
+            {
+              contentType:selectedImage.type
+            }
+          );
+
+          imageUrl =
+            await getDownloadURL(imageRef);
+
+          if (
+            storagePath &&
+            storagePath !== newStoragePath
+          ) {
+            try {
+              await deleteObject(
+                ref(storage, storagePath)
+              );
+            } catch (deleteError) {
+              console.warn(
+                "古い広告画像を削除できませんでした",
+                deleteError
+              );
+            }
+          }
+
+          storagePath = newStoragePath;
+        }
+
+        await setDoc(
+          adRef,
+          {
+            slot:slotNumber,
+            advertiserName,
+            title,
+            description,
+            linkUrl,
+            buttonText,
+            imageUrl,
+            storagePath,
+            enabled,
+            startDate,
+            endDate,
+            contractPrice,
+            paymentStatus,
+
+            impressions:
+              numberValue(oldData.impressions),
+
+            clicks:
+              numberValue(oldData.clicks),
+
+            updatedAt:serverTimestamp(),
+
+            updatedBy:
+              currentAdminUser?.uid || ""
+          },
+          {
+            merge:true
+          }
+        );
+
+        statusElement.className =
+          "save-status success";
+
+        statusElement.textContent =
+          `広告${slotNumber}を保存しました`;
+
+        imageInput.value = "";
+
+        setTimeout(() => {
+          loadAds();
+        }, 700);
+
+      } catch (error) {
+        console.error(
+          "広告保存エラー",
+          error
+        );
+
+        statusElement.className =
+          "save-status error";
+
+        statusElement.textContent =
+          error.message ||
+          "広告を保存できませんでした";
+
+        saveButton.disabled = false;
+      }
+    }
+
+    async function deleteAd(slotNumber) {
+      const ok = confirm(
+        `広告${slotNumber}の登録内容を削除しますか？\n` +
+        "表示回数・クリック数もリセットされます。"
+      );
+
+      if (!ok) {
+        return;
+      }
+
+      const deleteButton =
+        document.querySelector(
+          `.deleteAdButton[data-slot="${slotNumber}"]`
+        );
+
+      const statusElement =
+        document.getElementById(
+          `adSaveStatus${slotNumber}`
+        );
+
+      deleteButton.disabled = true;
+
+      statusElement.className = "save-status";
+      statusElement.textContent =
+        "広告を削除中...";
+
+      try {
+        const adRef = doc(
+          db,
+          "ads",
+          `slot${slotNumber}`
+        );
+
+        const adSnap = await getDoc(adRef);
+
+        if (adSnap.exists()) {
+          const data = adSnap.data();
+
+          if (data.storagePath) {
+            try {
+              await deleteObject(
+                ref(storage, data.storagePath)
+              );
+            } catch (storageError) {
+              console.warn(
+                "Storage画像削除エラー",
+                storageError
+              );
+            }
+          }
+
+          await deleteDoc(adRef);
+        }
+
+        statusElement.className =
+          "save-status success";
+
+        statusElement.textContent =
+          `広告${slotNumber}を削除しました`;
+
+        setTimeout(() => {
+          loadAds();
+        }, 600);
+
+      } catch (error) {
+        console.error(
+          "広告削除エラー",
+          error
+        );
+
+        statusElement.className =
+          "save-status error";
+
+        statusElement.textContent =
+          "広告を削除できませんでした";
+
+        deleteButton.disabled = false;
+      }
+    }
+
+    /* =========================
+       ユーザー管理
+    ========================= */
+
+    async function loadUsers() {
+      try {
+        const snap = await getDocs(
+          collection(db, "users")
+        );
+
+        userList.innerHTML = "";
+
+        if (snap.empty) {
+          userList.innerHTML = `
+            <p class="admin-message">
+              ユーザーがいません。
+            </p>
+          `;
+          return;
+        }
+
+        snap.forEach((userDoc) => {
+          const data = userDoc.data();
+          const uid = userDoc.id;
+
+          const name =
+            data.name ||
+            data.nickname ||
+            "名前未設定";
+
+          const email =
+            data.email ||
+            "メールなし";
+
+          const status =
+            data.status ||
+            "active";
+
+          const role =
+            data.role ||
+            "user";
+
+          const card =
+            document.createElement("div");
+
+          card.className =
+            "admin-item-card";
+
+          card.innerHTML = `
+            <h3>
+              ${escapeHTML(name)}
+            </h3>
+
+            <p>
+              📧 ${escapeHTML(email)}
+            </p>
+
+            <p>
+              🔑 権限：${escapeHTML(role)}
+            </p>
+
+            <p>
+              📍 状態：
+              ${
+                status === "blocked"
+                  ? "🚫 ブロック中"
+                  : "✅ 利用中"
+              }
+            </p>
+
+            <div class="admin-btn-row">
+
+              <button
+                type="button"
+                class="admin-button detailBtn"
+                data-id="${escapeHTML(uid)}"
+              >
+                詳細を見る
+              </button>
+
+              <button
+                type="button"
+                class="admin-button sub blockBtn"
+                data-id="${escapeHTML(uid)}"
+                data-status="${escapeHTML(status)}"
+              >
+                ${
+                  status === "blocked"
+                    ? "ブロック解除"
+                    : "ブロックする"
+                }
+              </button>
+
+              <button
+                type="button"
+                class="admin-button danger deleteBtn"
+                data-id="${escapeHTML(uid)}"
+                data-email="${escapeHTML(email)}"
+              >
+                🗑️ 削除
+              </button>
+
+            </div>
+          `;
+
+          userList.appendChild(card);
+        });
+
+        setUserButtons();
+
+      } catch (error) {
+        console.error(
+          "ユーザー読み込みエラー",
+          error
+        );
+
+        userList.innerHTML = `
+          <p class="admin-message">
+            ユーザーを読み込めませんでした。
+          </p>
+        `;
+      }
+    }
+
+    function setUserButtons() {
+      document
+        .querySelectorAll(".deleteBtn")
+        .forEach((button) => {
+
+          button.addEventListener(
+            "click",
+            async () => {
+              const uid =
+                button.dataset.id;
+
+              const email =
+                button.dataset.email;
+
+              if (
+                currentAdminUser &&
+                uid === currentAdminUser.uid
+              ) {
+                alert(
+                  "現在ログイン中の管理者は削除できません"
+                );
+                return;
+              }
+
+              const ok = confirm(
+                `${email} のFirestore上のユーザーデータを削除しますか？\n` +
+                "この操作は元に戻せません。"
+              );
+
+              if (!ok) {
+                return;
+              }
+
+              try {
+                await deleteDoc(
+                  doc(db, "users", uid)
+                );
+
+                alert(
+                  "ユーザーデータを削除しました"
+                );
+
+                loadUsers();
+
+              } catch (error) {
+                console.error(
+                  "ユーザー削除エラー",
+                  error
+                );
+
+                alert(
+                  "ユーザーを削除できませんでした"
+                );
+              }
+            }
+          );
+        });
+
+      document
+        .querySelectorAll(".blockBtn")
+        .forEach((button) => {
+
+          button.addEventListener(
+            "click",
+            async () => {
+              const uid =
+                button.dataset.id;
+
+              const currentStatus =
+                button.dataset.status;
+
+              if (
+                currentAdminUser &&
+                uid === currentAdminUser.uid
+              ) {
+                alert(
+                  "現在ログイン中の管理者はブロックできません"
+                );
+                return;
+              }
+
+              const newStatus =
+                currentStatus === "blocked"
+                  ? "active"
+                  : "blocked";
+
+              try {
+                await updateDoc(
+                  doc(db, "users", uid),
+                  {
+                    status:newStatus,
+                    statusUpdatedAt:
+                      serverTimestamp()
+                  }
+                );
+
+                alert(
+                  newStatus === "blocked"
+                    ? "ブロックしました"
+                    : "ブロック解除しました"
+                );
+
+                loadUsers();
+
+              } catch (error) {
+                console.error(
+                  "ブロック変更エラー",
+                  error
+                );
+
+                alert(
+                  "状態を変更できませんでした"
+                );
+              }
+            }
+          );
+        });
+
+      document
+        .querySelectorAll(".detailBtn")
+        .forEach((button) => {
+
+          button.addEventListener(
+            "click",
+            async () => {
+              const uid =
+                button.dataset.id;
+
+              try {
+                const snap = await getDoc(
+                  doc(db, "users", uid)
+                );
+
+                if (!snap.exists()) {
+                  alert(
+                    "ユーザーが見つかりません"
+                  );
+                  return;
+                }
+
+                const data = snap.data();
+
+                alert(`
+名前:
+${data.name || data.nickname || "未設定"}
 
 メール:
 ${data.email || "-"}
@@ -235,100 +1848,256 @@ ${data.selfPr || "-"}
 
 SNS:
 ${data.sns || "-"}
-`);
-    });
-  });
-}
-  async function loadJobApplications() {
+                `);
 
-  const snap = await getDocs(collection(db, "jobApplications"));
+              } catch (error) {
+                console.error(
+                  "ユーザー詳細エラー",
+                  error
+                );
 
-  jobApplicationList.innerHTML = "";
+                alert(
+                  "ユーザー情報を取得できませんでした"
+                );
+              }
+            }
+          );
+        });
+    }
 
-  if (snap.empty) {
-    jobApplicationList.innerHTML = "<p>求人申請はありません。</p>";
-    return;
-  }
+    /* =========================
+       求人申請管理
+    ========================= */
 
-  snap.forEach((jobDoc) => {
+    async function loadJobApplications() {
+      try {
+        const snap = await getDocs(
+          collection(db, "jobApplications")
+        );
 
-    const data = jobDoc.data();
+        jobApplicationList.innerHTML = "";
 
-    const card = document.createElement("div");
+        if (snap.empty) {
+          jobApplicationList.innerHTML = `
+            <p class="admin-message">
+              求人申請はありません。
+            </p>
+          `;
+          return;
+        }
 
-    card.style.cssText = `
-      border:1px solid rgba(201,163,74,.5);
-      border-radius:18px;
-      padding:16px;
-      margin:16px 0;
-      background:#111;
-      color:white;
-    `;
+        let displayCount = 0;
 
-    card.innerHTML = `
-      <h3 style="color:#f5d36b;">
-        ${data.storeName || "店舗名なし"}
-      </h3>
+        snap.forEach((jobDoc) => {
+          const data = jobDoc.data();
 
-      <p>職種：${data.jobType || "-"}</p>
-      <p>勤務地：${data.area || "-"}</p>
-      <p>時給：${data.salary || "-"}</p>
+          const status =
+            data.status || "pending";
 
-      <button
-  class="gold-btn approveBtn"
-  data-id="${jobDoc.id}">
-  ✅ 承認する
-</button>
-    `;
+          if (status === "approved") {
+            return;
+          }
 
-    jobApplicationList.appendChild(card);
+          displayCount++;
 
-  });
-document.querySelectorAll(".approveBtn").forEach((btn) => {
+          const card =
+            document.createElement("div");
 
-  btn.addEventListener("click", async () => {
+          card.className =
+            "admin-item-card";
 
-    const jobId = btn.dataset.id;
+          card.innerHTML = `
+            <h3>
+              ${escapeHTML(
+                data.storeName ||
+                "店舗名なし"
+              )}
+            </h3>
 
-    const ok = confirm("この求人を承認して公開しますか？");
+            <p>
+              職種：
+              ${escapeHTML(data.jobType || "-")}
+            </p>
 
-    if (!ok) return;
+            <p>
+              勤務地：
+              ${escapeHTML(data.area || "-")}
+            </p>
 
-    await updateDoc(
-  doc(db, "jobApplications", jobId),
-  {
-    status: "approved",
-    approvedAt: serverTimestamp()
-  }
-);
+            <p>
+              時給・給与：
+              ${escapeHTML(data.salary || "-")}
+            </p>
 
-const approvedSnap = await getDoc(
-  doc(db, "jobApplications", jobId)
-);
+            <p>
+              状態：
+              ${
+                status === "pending"
+                  ? "審査待ち"
+                  : escapeHTML(status)
+              }
+            </p>
 
-if (!approvedSnap.exists()) {
-  alert("求人データが見つかりません");
-  return;
-}
+            <div class="admin-btn-row">
 
-const approvedData = approvedSnap.data();
+              <button
+                type="button"
+                class="admin-button approveBtn"
+                data-id="${escapeHTML(jobDoc.id)}"
+              >
+                ✅ 承認して公開
+              </button>
 
-await addDoc(collection(db, "jobs"), {
-  ...approvedData,
-  sourceApplicationId: jobId,
-  status: "approved",
-  approvedAt: serverTimestamp(),
-  createdAt: approvedData.createdAt || serverTimestamp()
-});
+            </div>
+          `;
 
-alert("承認しました");
+          jobApplicationList.appendChild(card);
+        });
 
-loadJobApplications();
+        if (displayCount === 0) {
+          jobApplicationList.innerHTML = `
+            <p class="admin-message">
+              現在、承認待ちの求人申請はありません。
+            </p>
+          `;
+          return;
+        }
 
-  });
+        setApproveButtons();
 
-});
-}
+      } catch (error) {
+        console.error(
+          "求人申請読み込みエラー",
+          error
+        );
+
+        jobApplicationList.innerHTML = `
+          <p class="admin-message">
+            求人申請を読み込めませんでした。
+          </p>
+        `;
+      }
+    }
+
+    function setApproveButtons() {
+      document
+        .querySelectorAll(".approveBtn")
+        .forEach((button) => {
+
+          button.addEventListener(
+            "click",
+            async () => {
+              const jobId =
+                button.dataset.id;
+
+              const ok = confirm(
+                "この求人を承認して公開しますか？"
+              );
+
+              if (!ok) {
+                return;
+              }
+
+              button.disabled = true;
+              button.textContent =
+                "承認処理中...";
+
+              try {
+                const applicationRef = doc(
+                  db,
+                  "jobApplications",
+                  jobId
+                );
+
+                const approvedSnap =
+                  await getDoc(applicationRef);
+
+                if (!approvedSnap.exists()) {
+                  alert(
+                    "求人データが見つかりません"
+                  );
+                  loadJobApplications();
+                  return;
+                }
+
+                const approvedData =
+                  approvedSnap.data();
+
+                await updateDoc(
+                  applicationRef,
+                  {
+                    status:"approved",
+                    approvedAt:
+                      serverTimestamp(),
+
+                    approvedBy:
+                      currentAdminUser?.uid || ""
+                  }
+                );
+
+                const existingJobs =
+                  await getDocs(
+                    collection(db, "jobs")
+                  );
+
+                let alreadyPublished = false;
+
+                existingJobs.forEach((jobSnap) => {
+                  const jobData =
+                    jobSnap.data();
+
+                  if (
+                    jobData.sourceApplicationId ===
+                    jobId
+                  ) {
+                    alreadyPublished = true;
+                  }
+                });
+
+                if (!alreadyPublished) {
+                  await addDoc(
+                    collection(db, "jobs"),
+                    {
+                      ...approvedData,
+                      sourceApplicationId:jobId,
+                      status:"approved",
+                      isPublished:true,
+
+                      approvedAt:
+                        serverTimestamp(),
+
+                      createdAt:
+                        approvedData.createdAt ||
+                        serverTimestamp()
+                    }
+                  );
+                }
+
+                alert(
+                  "求人を承認して公開しました"
+                );
+
+                loadJobApplications();
+
+              } catch (error) {
+                console.error(
+                  "求人承認エラー",
+                  error
+                );
+
+                alert(
+                  "求人を承認できませんでした"
+                );
+
+                button.disabled = false;
+                button.textContent =
+                  "✅ 承認して公開";
+              }
+            }
+          );
+        });
+    }
+
   </script>
 
 </body>
