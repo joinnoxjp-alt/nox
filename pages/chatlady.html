@@ -1,5 +1,109 @@
 <div class="apply-box">
 
+    <style>
+        .apply-box{
+            max-width:700px;
+            margin:60px auto;
+            padding:40px 25px;
+            background:linear-gradient(180deg,#111,#080808);
+            border:1px solid rgba(212,175,55,.35);
+            border-radius:25px;
+            box-shadow:0 0 35px rgba(212,175,55,.12);
+            text-align:center;
+            color:#fff;
+        }
+
+        .apply-box h2{
+            color:#d4af37;
+            font-size:34px;
+            margin-bottom:20px;
+        }
+
+        .apply-box p{
+            color:#ddd;
+            line-height:1.9;
+            font-size:18px;
+        }
+
+        .line-btn{
+            display:inline-block;
+            margin-top:30px;
+            padding:18px 45px;
+            background:linear-gradient(90deg,#06C755,#04b84b);
+            color:#fff;
+            text-decoration:none;
+            font-size:22px;
+            font-weight:bold;
+            border-radius:999px;
+            transition:.25s;
+            box-shadow:0 10px 30px rgba(6,199,85,.35);
+        }
+
+        .line-btn:hover{
+            transform:translateY(-3px);
+        }
+
+        .notice{
+            margin-top:45px;
+        }
+
+        .notice h3{
+            color:#d4af37;
+            margin-bottom:20px;
+        }
+
+        .copy-box{
+            background:#111;
+            border:2px solid #d4af37;
+            border-radius:20px;
+            padding:25px;
+            margin:25px auto;
+            max-width:320px;
+            cursor:pointer;
+            transition:.25s;
+        }
+
+        .copy-box:hover{
+            transform:scale(1.03);
+        }
+
+        .copy-title{
+            color:#aaa;
+            font-size:18px;
+        }
+
+        .copy-name{
+            color:#d4af37;
+            font-size:48px;
+            font-weight:bold;
+            letter-spacing:3px;
+            margin-top:10px;
+        }
+
+        .copy-sub{
+            color:#999;
+            margin-top:12px;
+        }
+
+        @media(max-width:600px){
+
+            .apply-box h2{
+                font-size:28px;
+            }
+
+            .copy-name{
+                font-size:42px;
+            }
+
+            .line-btn{
+                width:100%;
+                box-sizing:border-box;
+            }
+
+        }
+
+    </style>
+
     <h2>LINEから簡単応募</h2>
 
     <p>
@@ -7,47 +111,49 @@
         下のボタンからLINEを追加してください。
     </p>
 
-    <a href="https://line.me/ti/p/3TpvqaIQYW" class="line-btn" target="_blank" rel="noopener noreferrer">
+    <a
+        href="https://line.me/ti/p/3TpvqaIQYW"
+        class="line-btn"
+        target="_blank"
+        rel="noopener noreferrer"
+        onclick="return confirm('LINE追加後、最初のメッセージで必ず「yumaの紹介」と送信してください。');">
+
         LINEを追加する
+
     </a>
 
     <div class="notice">
 
-        <h3 style="color:#d4af37;">⚠️ 応募前に必ずご確認ください</h3>
+        <h3>⚠️ 応募前に必ずご確認ください</h3>
 
         <p>
             LINE追加後、最初のメッセージで
         </p>
 
-        <div style="
-            background:#1a1a1a;
-            border:2px solid #d4af37;
-            border-radius:15px;
-            padding:20px;
-            margin:20px auto;
-            max-width:350px;
-        ">
+        <div class="copy-box" onclick="copyYuma()">
 
-            <div style="font-size:18px;color:#ccc;">
+            <div class="copy-title">
                 紹介名
             </div>
 
-            <div style="
-                font-size:42px;
-                font-weight:bold;
-                color:#d4af37;
-                letter-spacing:2px;
-            ">
+            <div class="copy-name">
                 yuma
+            </div>
+
+            <div class="copy-sub">
+                タップしてコピー
             </div>
 
         </div>
 
-        <p style="font-size:20px;">
-            <strong>必ず「yumaの紹介」</strong>と送信してください。
+        <p style="font-size:22px;">
+            <strong style="color:#d4af37;">
+                「yumaの紹介」
+            </strong>
+            と送信してください。
         </p>
 
-        <p style="color:#bbb; line-height:1.8;">
+        <p style="color:#aaa;line-height:1.8;">
             紹介名が確認できない場合は、<br>
             紹介経由としてご案内できない場合があります。
         </p>
@@ -55,3 +161,13 @@
     </div>
 
 </div>
+
+<script>
+function copyYuma(){
+
+    navigator.clipboard.writeText("yuma");
+
+    alert("『yuma』をコピーしました！");
+
+}
+</script>
