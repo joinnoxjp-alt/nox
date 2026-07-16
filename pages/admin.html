@@ -17,7 +17,21 @@
           <h2>管理者ページ</h2>
           <p>ユーザー管理</p>
         </div>
+     <div style="margin:30px 0;">
 
+  <h2 style="color:#f5d36b;">
+    📝 求人申請管理
+  </h2>
+
+  <p style="color:#bbb;margin-bottom:15px;">
+    店舗から届いた求人申請を承認できます。
+  </p>
+
+  <div id="jobApplicationList">
+    <p>求人申請を読み込み中...</p>
+  </div>
+
+</div>
         <div id="userList">
           <p>読み込み中...</p>
         </div>
@@ -50,7 +64,7 @@ serverTimestamp
 
 const db = getFirestore();
 const userList = document.getElementById("userList");
-
+const jobApplicationList = document.getElementById("jobApplicationList");
 onAuthStateChanged(auth, async (user) => {
 
   if (!user) {
@@ -68,7 +82,8 @@ onAuthStateChanged(auth, async (user) => {
     return;
   }
 
-  loadUsers();
+ loadUsers();
+loadJobApplications();
 
 });
   async function loadUsers() {
@@ -209,6 +224,53 @@ ${data.sns || "-"}
 `);
     });
   });
+}
+  async function loadJobApplications() {
+
+  const snap = await getDocs(collection(db, "jobApplications"));
+
+  jobApplicationList.innerHTML = "";
+
+  if (snap.empty) {
+    jobApplicationList.innerHTML = "<p>求人申請はありません。</p>";
+    return;
+  }
+
+  snap.forEach((jobDoc) => {
+
+    const data = jobDoc.data();
+
+    const card = document.createElement("div");
+
+    card.style.cssText = `
+      border:1px solid rgba(201,163,74,.5);
+      border-radius:18px;
+      padding:16px;
+      margin:16px 0;
+      background:#111;
+      color:white;
+    `;
+
+    card.innerHTML = `
+      <h3 style="color:#f5d36b;">
+        ${data.storeName || "店舗名なし"}
+      </h3>
+
+      <p>職種：${data.jobType || "-"}</p>
+      <p>勤務地：${data.area || "-"}</p>
+      <p>時給：${data.salary || "-"}</p>
+
+      <button
+  class="gold-btn approveBtn"
+  data-id="${jobDoc.id}">
+  ✅ 承認する
+</button>
+    `;
+
+    jobApplicationList.appendChild(card);
+
+  });
+
 }
   </script>
 
