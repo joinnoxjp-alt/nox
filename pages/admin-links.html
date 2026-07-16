@@ -108,6 +108,34 @@ margin-top:25px;
 このページのURLを知っている人だけが開けます。<br>
 ただし完全な管理者認証ではないため、後でFirebaseログイン必須にするのがおすすめです。
 </p>
+<script type="module">
+import { auth, db } from "./firebase-db.js";
 
+import {
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
+  doc,
+  getDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+onAuthStateChanged(auth, async(user)=>{
+
+  if(!user){
+    location.href="./login.html";
+    return;
+  }
+
+  const snap = await getDoc(doc(db,"users",user.uid));
+
+  if(!snap.exists() || snap.data().isAdmin !== true){
+    alert("管理者のみ閲覧できます");
+    location.href="../index.html";
+    return;
+  }
+
+});
+</script>
 </body>
 </html>
