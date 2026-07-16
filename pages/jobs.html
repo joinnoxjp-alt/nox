@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>NOX | 求人一覧</title>
+
+  <meta
+    name="description"
+    content="NOXに掲載中の承認済み求人一覧。エリア・業種・キーワードから夜職求人を検索できます。"
+  >
+
+  <meta name="theme-color" content="#050505">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-height: 100vh;
+
+      background:
+        radial-gradient(
+          circle at top,
+          rgba(255, 215, 0, 0.18),
+          transparent 34%
+        ),
+        linear-gradient(
+          180deg,
+          #050505,
+          #000000
+        );
+
+      color: #ffffff;
+
+      font-family:
+        "Hiragino Mincho ProN",
+        "Yu Mincho",
+        serif;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    .page {
+      width: min(1120px, 100%);
+      margin: 0 auto;
+      padding: 32px 18px 80px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      gap: 16px;
+
+      margin-bottom: 36px;
+    }
+
+    .logo {
+      color: #ffd700;
+
+      font-size: 38px;
+      font-weight: 900;
+
+      letter-spacing: 3px;
+    }
+
+    .logo small {
+      display: block;
+
+      margin-top: 4px;
+
+      color: #aaaaaa;
+
+      font-size: 11px;
+
+      letter-spacing: 4px;
+    }
+
+    .nav {
+      display: flex;
+      flex-wrap: wrap;
+
+      gap: 12px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      min-height: 48px;
+      padding: 13px 22px;
+
+      border:
+        1px solid
+        rgba(255, 215, 0, 0.35);
+
+      border-radius: 999px;
+
+      background:
+        rgba(255, 255, 255, 0.04);
+
+      color: #ffd700;
+
+      font-weight: bold;
+
+      cursor: pointer;
+
+      transition:
+        transform 0.2s ease,
+        background 0.2s ease;
+    }
+
+    .btn:hover {
+      background:
+        rgba(255, 215, 0, 0.1);
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn.gold {
+      background: #ffd700;
+      color: #000000;
+    }
+
+    .hero {
+      margin-bottom: 30px;
+      padding: 40px 28px;
+
+      border:
+        1px solid
+        rgba(255, 215, 0, 0.35);
+
+      border-radius: 32px;
+
+      background:
+        radial-gradient(
+          circle at top right,
+          rgba(255, 215, 0, 0.15),
+          transparent 38%
+        ),
+        linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.08),
+          rgba(255, 255, 255, 0.025)
+        );
+
+      box-shadow:
+        0 25px 70px
+        rgba(0, 0, 0, 0.6);
+    }
+
+    .kicker {
+      margin-bottom: 14px;
+
+      color: #ffd700;
+
+      font-size: 13px;
+
+      letter-spacing: 5px;
+    }
+
+    .hero h1 {
+      margin-bottom: 16px;
+
+      color: #ffd700;
+
+      font-size:
+        clamp(44px, 8vw, 78px);
+
+      line-height: 1.05;
+    }
+
+    .hero p {
+      color: #dddddd;
+
+      font-size: 16px;
+
+      line-height: 1.9;
+    }
+
+    .filter-box {
+      display: grid;
+
+      grid-template-columns:
+        repeat(
+          auto-fit,
+          minmax(170px, 1fr)
+        );
+
+      gap: 12px;
+
+      margin: 28px 0;
+    }
+
+    .filter-box input,
+    .filter-box select {
+      width: 100%;
+
+      padding: 14px 15px;
+
+      border:
+        1px solid
+        rgba(255, 215, 0, 0.25);
+
+      border-radius: 14px;
+
+      outline: none;
+
+      background: #080808;
+      color: #ffffff;
+
+      font-size: 15px;
+    }
+
+    .filter-box input:focus,
+    .filter-box select:focus {
+      border-color:
+        rgba(255, 215, 0, 0.75);
+
+      box-shadow:
+        0 0 0 3px
+        rgba(255, 215, 0, 0.08);
+    }
+
+    .status {
+      margin: 18px 0;
+
+      color: #bbbbbb;
+
+      line-height: 1.8;
+    }
+
+    .job-grid {
+      display: grid;
+
+      grid-template-columns:
+        repeat(
+          auto-fit,
+          minmax(280px, 1fr)
+        );
+
+      gap: 22px;
+    }
+
+    .job-card {
+      position: relative;
+
+      overflow: hidden;
+
+      padding: 24px;
+
+      border:
+        1px solid
+        rgba(255, 215, 0, 0.35);
+
+      border-radius: 28px;
+
+      background:
+        radial-gradient(
+          circle at top right,
+          rgba(255, 215, 0, 0.14),
+          transparent 38%
+        ),
+        linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.08),
+          rgba(255, 255, 255, 0.025)
+        );
+
+      box-shadow:
+        0 22px 60px
+        rgba(0, 0, 0, 0.55);
+    }
+
+    .job-card::before {
+      content: "";
+
+      position: absolute;
+      inset: 0;
+
+      background:
+        linear-gradient(
+          120deg,
+          transparent,
+          rgba(255, 215, 0, 0.08),
+          transparent
+        );
+
+      pointer-events: none;
+    }
+
+    .job-card > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .badge {
+      display: inline-block;
+
+      margin-bottom: 14px;
+      padding: 7px 12px;
+
+      border-radius: 999px;
+
+      background: #ffd700;
+      color: #000000;
+
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .job-card h2 {
+      margin-bottom: 16px;
+
+      color: #ffd700;
+
+      font-size: 28px;
+
+      line-height: 1.35;
+    }
+
+    .info {
+      margin-bottom: 18px;
+
+      color: #eeeeee;
+
+      font-size: 16px;
+
+      line-height: 2;
+    }
+
+    .salary {
+      margin: 14px 0;
+
+      color: #ffd700;
+
+      font-size: 26px;
+      font-weight: bold;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+
+      gap: 8px;
+
+      margin: 16px 0 22px;
+    }
+
+    .tags span {
+      padding: 7px 10px;
+
+      border:
+        1px solid
+        rgba(255, 215, 0, 0.25);
+
+      border-radius: 999px;
+
+      background:
+        rgba(255, 215, 0, 0.07);
+
+      color: #eeeeee;
+
+      font-size: 12px;
+    }
+
+    .empty {
+      grid-column: 1 / -1;
+
+      padding: 50px 20px;
+
+      border:
+        1px solid
+        rgba(255, 215, 0, 0.25);
+
+      border-radius: 28px;
+
+      color: #cccccc;
+
+      text-align: center;
+    }
+
+    .footer-actions {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+
+      gap: 14px;
+
+      margin-top: 42px;
+    }
+
+    @media (max-width: 760px) {
+      .header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .hero {
+        padding: 32px 22px;
+      }
+
+      .job-card h2 {
+        font-size: 25px;
+      }
+
+      .btn {
+        padding: 12px 18px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="page">
+
+    <header class="header">
+
+      <a
+        href="../index.html"
+        class="logo"
+      >
+        NOX
+
+        <small>
+          Night Opens X
+        </small>
+      </a>
+
+      <nav class="nav">
+
+        <a
+          href="../index.html"
+          class="btn"
+        >
+          TOP
+        </a>
+
+        <a
+          href="../owner.html"
+          class="btn"
+        >
+          店舗掲載
+        </a>
+
+        <a
+          href="./mypage.html"
+          class="btn gold"
+        >
+          マイページ
+        </a>
+
+      </nav>
+
+    </header>
+
+    <section class="hero">
+
+      <p class="kicker">
+        NOX JOBS
+      </p>
+
+      <h1>
+        求人一覧
+      </h1>
+
+      <p>
+        NOXに掲載中の承認済み求人を表示しています。<br>
+        エリア・業種・キーワードから、
+        自分に合うお店を探せます。
+      </p>
+
+    </section>
+
+    <div class="filter-box">
+
+      <input
+        type="text"
+        id="keywordInput"
+        placeholder="店舗名・エリアで検索"
+      >
+
+      <select id="areaSelect">
+        <option value="">
+          エリアすべて
+        </option>
+      </select>
+
+      <select id="typeSelect">
+        <option value="">
+          業種すべて
+        </option>
+      </select>
+
+      <select id="sortSelect">
+
+        <option value="new">
+          新着順
+        </option>
+
+        <option value="salary">
+          給与が高い順
+        </option>
+
+      </select>
+
+    </div>
+
+    <p
+      class="status"
+      id="statusText"
+    >
+      求人を読み込み中です...
+    </p>
+
+    <div
+      class="job-grid"
+      id="jobsList"
+    ></div>
+        <script type="module">
+
+      import { db } from "./firebase-db.js";
+
+      import {
+        collection,
+        getDocs
+      } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+      const jobsList =
+        document.getElementById("jobsList");
+
+      const statusText =
+        document.getElementById("statusText");
+
+      const keywordInput =
+        document.getElementById("keywordInput");
+
+      const areaSelect =
+        document.getElementById("areaSelect");
+
+      const typeSelect =
+        document.getElementById("typeSelect");
+
+      const sortSelect =
+        document.getElementById("sortSelect");
+
+      let jobs = [];
+
+      async function loadJobs() {
+
+        statusText.textContent =
+          "求人を読み込み中です...";
+
+        jobsList.innerHTML = "";
+
+        try {
+
+          const snap =
+            await getDocs(
+              collection(db, "jobs")
+            );
+
+          jobs = [];
+
+          snap.forEach((jobDoc) => {
+
+            const job = {
+              id: jobDoc.id,
+              ...jobDoc.data()
+            };
+
+            if (job.status !== "approved") {
+              return;
+            }
+
+            const textCheck = `
+              ${job.storeName || ""}
+              ${job.name || ""}
+              ${job.title || ""}
+              ${job.shopName || ""}
+              ${job.storeTitle || ""}
+            `.toLowerCase();
+
+            if (
+              textCheck.includes("テスト") ||
+              textCheck.includes("test") ||
+              textCheck.includes("dummy")
+            ) {
+              return;
+            }
+
+            if (
+              job.isTest === true ||
+              job.isDummy === true
+            ) {
+              return;
+            }
+
+            jobs.push(job);
+
+          });
+
+          createFilterOptions();
+
+          renderJobs();
+
+        } catch (error) {
+
+          console.error(error);
+
+          statusText.textContent =
+            "求人の読み込みに失敗しました。";
+
+          jobsList.innerHTML = `
+            <div class="empty">
+
+              <h2
+                style="
+                  color:#ffd700;
+                  margin-bottom:15px;
+                "
+              >
+                求人を読み込めませんでした
+              </h2>
+
+              <p>
+                時間を空けて、もう一度お試しください。
+              </p>
+
+            </div>
+          `;
+        }
+      }
+
+      function createFilterOptions() {
+
+        const currentArea =
+          areaSelect.value;
+
+        const currentType =
+          typeSelect.value;
+
+        const areas = [
+          ...new Set(
+            jobs
+              .map((job) => job.area)
+              .filter(Boolean)
+          )
+        ].sort();
+
+        const types = [
+          ...new Set(
+            jobs
+              .map(
+                (job) =>
+                  job.genre ||
+                  job.type ||
+                  job.jobType
+              )
+              .filter(Boolean)
+          )
+        ].sort();
+
+        areaSelect.innerHTML = `
+          <option value="">
+            エリアすべて
+          </option>
+        `;
+
+        typeSelect.innerHTML = `
+          <option value="">
+            業種すべて
+          </option>
+        `;
+
+        areas.forEach((area) => {
+
+          const option =
+            document.createElement("option");
+
+          option.value = area;
+          option.textContent = area;
+
+          areaSelect.appendChild(option);
+
+        });
+
+        types.forEach((type) => {
+
+          const option =
+            document.createElement("option");
+
+          option.value = type;
+          option.textContent = type;
+
+          typeSelect.appendChild(option);
+
+        });
+
+        if (areas.includes(currentArea)) {
+          areaSelect.value = currentArea;
+        }
+
+        if (types.includes(currentType)) {
+          typeSelect.value = currentType;
+        }
+      }
+
+      function getSalaryNumber(job) {
+
+        const salaryText = String(
+          job.salary ||
+          job.salaryText ||
+          ""
+        );
+
+        const numbers =
+          salaryText.match(/\d[\d,]*/g);
+
+        if (!numbers || numbers.length === 0) {
+          return 0;
+        }
+
+        return Math.max(
+          ...numbers.map((number) =>
+            Number(
+              number.replaceAll(",", "")
+            )
+          )
+        );
+      }
+
+      function getCreatedSeconds(job) {
+
+        if (
+          job.createdAt &&
+          typeof job.createdAt.seconds === "number"
+        ) {
+          return job.createdAt.seconds;
+        }
+
+        if (
+          job.approvedAt &&
+          typeof job.approvedAt.seconds === "number"
+        ) {
+          return job.approvedAt.seconds;
+        }
+
+        return 0;
+      }
+
+      function renderJobs() {
+
+        const keyword =
+          keywordInput.value
+            .trim()
+            .toLowerCase();
+
+        const selectedArea =
+          areaSelect.value;
+
+        const selectedType =
+          typeSelect.value;
+
+        const selectedSort =
+          sortSelect.value;
+
+        let filteredJobs =
+          jobs.filter((job) => {
+
+            const storeName =
+              job.storeName ||
+              job.name ||
+              job.shopName ||
+              job.storeTitle ||
+              "";
+
+            const area =
+              job.area || "";
+
+            const type =
+              job.genre ||
+              job.type ||
+              job.jobType ||
+              "";
+
+            const searchText = `
+              ${storeName}
+              ${area}
+              ${type}
+              ${job.title || ""}
+              ${job.description || ""}
+              ${job.pr || ""}
+            `.toLowerCase();
+
+            const keywordMatch =
+              !keyword ||
+              searchText.includes(keyword);
+
+            const areaMatch =
+              !selectedArea ||
+              area === selectedArea;
+
+            const typeMatch =
+              !selectedType ||
+              type === selectedType;
+
+            return (
+              keywordMatch &&
+              areaMatch &&
+              typeMatch
+            );
+
+          });
+
+        filteredJobs.sort((a, b) => {
+
+          if (selectedSort === "salary") {
+            return (
+              getSalaryNumber(b) -
+              getSalaryNumber(a)
+            );
+          }
+
+          return (
+            getCreatedSeconds(b) -
+            getCreatedSeconds(a)
+          );
+        });
+
+        statusText.textContent =
+          `掲載求人 ${filteredJobs.length}件`;
+
+        jobsList.innerHTML = "";
+
+        if (filteredJobs.length === 0) {
+
+          jobsList.innerHTML = `
+            <div class="empty">
+
+              <h2
+                style="
+                  color:#ffd700;
+                  margin-bottom:15px;
+                "
+              >
+                条件に合う求人はありません
+              </h2>
+
+              <p>
+                検索条件を変更して、
+                もう一度お試しください。
+              </p>
+
+            </div>
+          `;
+
+          return;
+        }
+
+        filteredJobs.forEach((job) => {
+
+          const storeName =
+            job.storeName ||
+            job.name ||
+            job.shopName ||
+            job.storeTitle ||
+            "店舗名未設定";
+
+          const area =
+            job.area || "-";
+
+          const type =
+            job.genre ||
+            job.type ||
+            job.jobType ||
+            "-";
+
+          const salary =
+            job.salary ||
+            job.salaryText ||
+            "給与未設定";
+
+          const employment =
+            job.employment ||
+            job.employmentType ||
+            "求人掲載中";
+
+          const card =
+            document.createElement("article");
+
+          card.className = "job-card";
+
+          card.innerHTML = `
+            <div class="badge">
+              NEW
+            </div>
+
+            <h2>
+              ${escapeHtml(storeName)}
+            </h2>
+
+            <div class="info">
+              📍 ${escapeHtml(area)}<br>
+              🏷 ${escapeHtml(type)}
+            </div>
+
+            <div class="salary">
+              ${escapeHtml(salary)}
+            </div>
+
+            <div class="tags">
+              <span>
+                ${escapeHtml(employment)}
+              </span>
+            </div>
+
+            <a
+              href="./job-detail.html?id=${encodeURIComponent(job.id)}"
+              class="btn gold"
+            >
+              求人詳細を見る
+            </a>
+          `;
+
+          jobsList.appendChild(card);
+
+        });
+      }
+
+      function escapeHtml(value) {
+
+        return String(value)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      keywordInput.addEventListener(
+        "input",
+        renderJobs
+      );
+
+      areaSelect.addEventListener(
+        "change",
+        renderJobs
+      );
+
+      typeSelect.addEventListener(
+        "change",
+        renderJobs
+      );
+
+      sortSelect.addEventListener(
+        "change",
+        renderJobs
+      );
+
+      loadJobs();
+
+    </script>
+
+    <div class="footer-actions">
+
+      <a
+        href="../index.html"
+        class="btn"
+      >
+        TOPへ戻る
+      </a>
+
+      <a
+        href="../owner.html"
+        class="btn gold"
+      >
+        店舗掲載はこちら
+      </a>
+
+    </div>
+
+  </div>
+
+</body>
+</html>
