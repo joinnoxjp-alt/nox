@@ -12,12 +12,13 @@
 
   <meta
     name="description"
-    content="空いているスキマ時間を収入に。スマホ1台から始められるチャットレディのお仕事。登録無料・在宅OK・顔出しなしOK。"
+    content="スマホ1台から始められるチャットレディのお仕事。登録無料・在宅OK・顔出しなし相談可能。今だけ翌月300円還元キャンペーン実施中。"
   >
 
   <meta name="theme-color" content="#070707">
 
   <style>
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -30,6 +31,9 @@
 
     body {
       min-height: 100vh;
+      overflow-x: hidden;
+      padding-bottom: 110px;
+
       background:
         radial-gradient(
           circle at 50% 0%,
@@ -42,14 +46,14 @@
           #11100d 48%,
           #070707 100%
         );
+
       color: #ffffff;
+
       font-family:
         "Hiragino Kaku Gothic ProN",
         "Yu Gothic",
         "Meiryo",
         sans-serif;
-      overflow-x: hidden;
-      padding-bottom: 110px;
     }
 
     a {
@@ -68,48 +72,72 @@
 
     .hero {
       position: relative;
+
       min-height: 100svh;
+
       display: flex;
       align-items: center;
       justify-content: center;
+
       padding:
         max(34px, env(safe-area-inset-top))
         20px
         55px;
+
       isolation: isolate;
     }
 
     .hero::before {
       content: "";
+
       position: absolute;
       top: 90px;
       left: -100px;
+
       width: 260px;
       height: 260px;
+
       border-radius: 50%;
-      background: rgba(211, 166, 45, 0.13);
+
+      background:
+        rgba(211, 166, 45, 0.13);
+
       filter: blur(70px);
+
       z-index: -2;
     }
 
     .hero::after {
       content: "";
+
       position: absolute;
       right: -110px;
       bottom: 80px;
+
       width: 280px;
       height: 280px;
+
       border-radius: 50%;
-      background: rgba(255, 219, 117, 0.1);
+
+      background:
+        rgba(255, 219, 117, 0.1);
+
       filter: blur(80px);
+
       z-index: -2;
     }
 
     .hero-inner {
       width: min(1100px, 100%);
+
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(320px, 0.9fr);
+
+      grid-template-columns:
+        minmax(0, 1fr)
+        minmax(320px, 0.9fr);
+
       align-items: center;
+
       gap: 45px;
     }
 
@@ -117,22 +145,36 @@
       display: inline-flex;
       align-items: center;
       gap: 10px;
+
       margin-bottom: 22px;
-      font-family: Georgia, "Times New Roman", serif;
-      letter-spacing: 0.25em;
+
       color: #e0bd55;
+
+      font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
       font-size: 14px;
       font-weight: bold;
+
+      letter-spacing: 0.25em;
     }
 
     .brand-mark {
       width: 35px;
       height: 35px;
-      border: 1px solid #d8af3b;
+
       display: grid;
       place-items: center;
+
+      border:
+        1px solid #d8af3b;
+
       border-radius: 50%;
+
       font-size: 11px;
+
       letter-spacing: 0;
     }
 
@@ -140,61 +182,185 @@
       display: inline-flex;
       align-items: center;
       gap: 7px;
+
       padding: 8px 14px;
       margin-bottom: 18px;
-      border: 1px solid rgba(225, 187, 79, 0.55);
+
+      border:
+        1px solid
+        rgba(225, 187, 79, 0.55);
+
       border-radius: 999px;
-      background: rgba(216, 173, 58, 0.08);
+
+      background:
+        rgba(216, 173, 58, 0.08);
+
       color: #efd371;
+
       font-size: 13px;
       font-weight: bold;
     }
 
+    .campaign-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      margin-bottom: 18px;
+      padding: 10px 16px;
+
+      border-radius: 999px;
+
+      background:
+        linear-gradient(
+          135deg,
+          #d3a52c,
+          #f4dc80
+        );
+
+      color: #111111;
+
+      font-size: 13px;
+      font-weight: 900;
+
+      box-shadow:
+        0 8px 24px
+        rgba(218, 174, 49, 0.25);
+    }
+
     .hero-title {
+      margin-bottom: 20px;
+
       font-family:
         "Yu Mincho",
         "Hiragino Mincho ProN",
         serif;
-      font-size: clamp(37px, 6vw, 67px);
+
+      font-size:
+        clamp(37px, 6vw, 67px);
+
       line-height: 1.25;
+
       letter-spacing: 0.06em;
-      margin-bottom: 20px;
     }
 
     .hero-title .gold {
       display: block;
+
       color: #e5bd4b;
-      text-shadow: 0 0 25px rgba(218, 173, 47, 0.22);
+
+      text-shadow:
+        0 0 25px
+        rgba(218, 173, 47, 0.22);
     }
 
     .hero-description {
+      margin-bottom: 24px;
+
       color: #ddd8cc;
-      font-size: clamp(16px, 2vw, 19px);
+
+      font-size:
+        clamp(16px, 2vw, 19px);
+
       line-height: 2;
-      margin-bottom: 26px;
     }
 
     .hero-description strong {
       color: #f2d575;
     }
 
+    .campaign-box {
+      width: min(440px, 100%);
+
+      margin-bottom: 24px;
+      padding: 18px 16px;
+
+      border:
+        1px solid
+        rgba(237, 199, 87, 0.55);
+
+      border-radius: 18px;
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(220, 174, 50, 0.17),
+          rgba(255, 255, 255, 0.03)
+        );
+
+      box-shadow:
+        0 15px 40px
+        rgba(0, 0, 0, 0.35);
+
+      text-align: center;
+    }
+
+    .campaign-box-title {
+      margin-bottom: 6px;
+
+      color: #f2d370;
+
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .campaign-box-main {
+      color: #ffffff;
+
+      font-size: 20px;
+      font-weight: 900;
+
+      line-height: 1.5;
+    }
+
+    .campaign-box-main strong {
+      color: #f3d16a;
+
+      font-size: 25px;
+    }
+
+    .campaign-box-note {
+      margin-top: 7px;
+
+      color: #aaa69c;
+
+      font-size: 11px;
+
+      line-height: 1.7;
+    }
+
     .quick-points {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+
+      grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
       gap: 10px;
+
       margin-bottom: 28px;
     }
 
     .quick-point {
+      min-height: 48px;
+
       display: flex;
       align-items: center;
+
       gap: 8px;
-      min-height: 48px;
+
       padding: 10px 13px;
-      border: 1px solid rgba(220, 180, 65, 0.25);
+
+      border:
+        1px solid
+        rgba(220, 180, 65, 0.25);
+
       border-radius: 12px;
-      background: rgba(255, 255, 255, 0.035);
+
+      background:
+        rgba(255, 255, 255, 0.035);
+
       color: #eeeae1;
+
       font-size: 14px;
     }
 
@@ -207,34 +373,56 @@
       display: flex;
       flex-direction: column;
       align-items: flex-start;
+
       gap: 11px;
     }
 
     .line-button {
       width: min(430px, 100%);
       min-height: 66px;
+
       border: none;
       border-radius: 999px;
+
       background:
         linear-gradient(
           90deg,
           #32c95b 0%,
           #55dc72 100%
         );
+
       color: #ffffff;
+
       font-size: 18px;
       font-weight: bold;
+
       letter-spacing: 0.03em;
+
       display: flex;
       align-items: center;
       justify-content: center;
+
       gap: 10px;
+
       box-shadow:
-        0 12px 30px rgba(49, 201, 91, 0.28),
-        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        0 12px 30px
+        rgba(49, 201, 91, 0.28),
+        inset 0 1px 0
+        rgba(255, 255, 255, 0.3);
+
       transition:
         transform 0.2s ease,
         box-shadow 0.2s ease;
+
+      cursor: pointer;
+    }
+
+    .line-button:hover {
+      box-shadow:
+        0 15px 36px
+        rgba(49, 201, 91, 0.38),
+        inset 0 1px 0
+        rgba(255, 255, 255, 0.3);
     }
 
     .line-button:active {
@@ -244,69 +432,104 @@
     .line-icon {
       width: 30px;
       height: 30px;
-      border-radius: 50%;
-      background: #ffffff;
-      color: #36c95b;
+
       display: grid;
       place-items: center;
-      font-size: 12px;
+
+      border-radius: 50%;
+
+      background: #ffffff;
+      color: #36c95b;
+
+      font-size: 11px;
       font-weight: 900;
     }
 
     .cta-note {
       width: min(430px, 100%);
+
       color: #aba79d;
+
       font-size: 12px;
       line-height: 1.7;
+
       text-align: center;
     }
-
-    .visual-wrap {
+        .visual-wrap {
       position: relative;
+
       width: 100%;
+
       display: flex;
       justify-content: center;
     }
 
     .visual-glow {
       position: absolute;
+
       inset: 15% 12%;
-      background: rgba(221, 180, 63, 0.19);
-      filter: blur(65px);
+
       border-radius: 50%;
+
+      background:
+        rgba(221, 180, 63, 0.19);
+
+      filter: blur(65px);
+
       z-index: -1;
     }
 
     .visual-card {
       position: relative;
+
       width: min(430px, 100%);
+
       padding: 22px;
-      border: 1px solid rgba(226, 187, 77, 0.42);
+
+      border:
+        1px solid
+        rgba(226, 187, 77, 0.42);
+
       border-radius: 34px;
+
       background:
         linear-gradient(
           145deg,
           rgba(255, 255, 255, 0.08),
           rgba(255, 255, 255, 0.02)
         );
+
       box-shadow:
-        0 30px 80px rgba(0, 0, 0, 0.55),
-        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        0 30px 80px
+        rgba(0, 0, 0, 0.55),
+        inset 0 1px 0
+        rgba(255, 255, 255, 0.08);
+
       backdrop-filter: blur(14px);
     }
 
     .visual-label {
       display: inline-flex;
       align-items: center;
+
       gap: 6px;
+
       padding: 8px 12px;
-      background: rgba(225, 185, 69, 0.12);
-      border: 1px solid rgba(225, 185, 69, 0.32);
+      margin-bottom: 14px;
+
+      border:
+        1px solid
+        rgba(225, 185, 69, 0.32);
+
       border-radius: 999px;
+
+      background:
+        rgba(225, 185, 69, 0.12);
+
       color: #f0d579;
+
       font-size: 12px;
       font-weight: bold;
-      margin-bottom: 14px;
     }
 
     .illustration {
@@ -316,13 +539,26 @@
 
     .floating-card {
       position: absolute;
-      border: 1px solid rgba(225, 185, 69, 0.32);
-      background: rgba(13, 13, 13, 0.91);
-      box-shadow: 0 15px 38px rgba(0, 0, 0, 0.42);
-      backdrop-filter: blur(10px);
-      border-radius: 16px;
+
       padding: 12px 15px;
+
+      border:
+        1px solid
+        rgba(225, 185, 69, 0.32);
+
+      border-radius: 16px;
+
+      background:
+        rgba(13, 13, 13, 0.91);
+
+      box-shadow:
+        0 15px 38px
+        rgba(0, 0, 0, 0.42);
+
+      backdrop-filter: blur(10px);
+
       color: #ffffff;
+
       font-size: 13px;
       line-height: 1.6;
     }
@@ -344,21 +580,29 @@
 
     .scroll-guide {
       position: absolute;
-      bottom: 17px;
+
       left: 50%;
+      bottom: 17px;
+
       transform: translateX(-50%);
-      color: #8d887d;
-      font-size: 11px;
-      letter-spacing: 0.2em;
+
       display: flex;
       flex-direction: column;
       align-items: center;
+
       gap: 8px;
+
+      color: #8d887d;
+
+      font-size: 11px;
+
+      letter-spacing: 0.2em;
     }
 
     .scroll-line {
       width: 1px;
       height: 28px;
+
       background:
         linear-gradient(
           180deg,
@@ -377,59 +621,88 @@
     }
 
     .section-heading {
-      text-align: center;
       margin-bottom: 45px;
+      text-align: center;
     }
 
     .section-en {
       display: block;
-      color: #c99f35;
-      font-family: Georgia, "Times New Roman", serif;
-      letter-spacing: 0.35em;
-      font-size: 12px;
+
       margin-bottom: 10px;
+
+      color: #c99f35;
+
+      font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+      font-size: 12px;
+
+      letter-spacing: 0.35em;
     }
 
     .section-title {
+      color: #f5e4ad;
+
       font-family:
         "Yu Mincho",
         "Hiragino Mincho ProN",
         serif;
-      color: #f5e4ad;
-      font-size: clamp(27px, 4vw, 40px);
+
+      font-size:
+        clamp(27px, 4vw, 40px);
+
       letter-spacing: 0.08em;
+
       line-height: 1.5;
     }
 
     .section-lead {
       max-width: 620px;
+
       margin: 16px auto 0;
+
       color: #bfbab0;
+
       font-size: 15px;
+
       line-height: 2;
     }
 
     .recommend-grid {
       display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
+
+      grid-template-columns:
+        repeat(5, minmax(0, 1fr));
+
       gap: 14px;
     }
 
     .recommend-card {
       min-height: 180px;
+
       padding: 24px 15px;
-      border: 1px solid rgba(220, 180, 65, 0.22);
+
+      border:
+        1px solid
+        rgba(220, 180, 65, 0.22);
+
       border-radius: 20px;
+
       background:
         linear-gradient(
           160deg,
           rgba(255, 255, 255, 0.055),
           rgba(255, 255, 255, 0.015)
         );
-      text-align: center;
+
       display: flex;
       flex-direction: column;
       justify-content: center;
+
+      text-align: center;
+
       transition:
         transform 0.2s ease,
         border-color 0.2s ease;
@@ -437,27 +710,33 @@
 
     .recommend-card:hover {
       transform: translateY(-4px);
-      border-color: rgba(229, 191, 78, 0.55);
+
+      border-color:
+        rgba(229, 191, 78, 0.55);
     }
 
     .recommend-icon {
-      font-size: 34px;
       margin-bottom: 15px;
+      font-size: 34px;
     }
 
     .recommend-card h3 {
-      color: #f0d477;
-      font-size: 15px;
       margin-bottom: 8px;
+
+      color: #f0d477;
+
+      font-size: 15px;
     }
 
     .recommend-card p {
       color: #aaa69e;
+
       font-size: 12px;
+
       line-height: 1.7;
     }
 
-    .安心-section {
+    .safe-section {
       background:
         radial-gradient(
           circle at center,
@@ -466,91 +745,140 @@
         );
     }
 
-    .安心-grid {
+    .safe-grid {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+
+      grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
       gap: 16px;
     }
 
-    .安心-card {
+    .safe-card {
       display: flex;
-      gap: 15px;
       align-items: flex-start;
+
+      gap: 15px;
+
       padding: 25px;
+
+      border:
+        1px solid
+        rgba(222, 184, 75, 0.24);
+
       border-radius: 18px;
-      border: 1px solid rgba(222, 184, 75, 0.24);
-      background: rgba(255, 255, 255, 0.03);
+
+      background:
+        rgba(255, 255, 255, 0.03);
     }
 
-    .安心-number {
+    .safe-number {
       flex: 0 0 auto;
+
       width: 42px;
       height: 42px;
+
       display: grid;
       place-items: center;
+
+      border:
+        1px solid
+        rgba(228, 188, 73, 0.55);
+
       border-radius: 50%;
-      border: 1px solid rgba(228, 188, 73, 0.55);
+
       color: #e5c158;
-      font-family: Georgia, serif;
+
+      font-family:
+        Georgia,
+        serif;
+
       font-weight: bold;
     }
 
-    .安心-card h3 {
-      color: #f0d477;
-      font-size: 16px;
+    .safe-card h3 {
       margin-bottom: 7px;
+
+      color: #f0d477;
+
+      font-size: 16px;
     }
 
-    .安心-card p {
+    .safe-card p {
       color: #b7b2a9;
+
       font-size: 13px;
+
       line-height: 1.8;
     }
 
     .message-panel {
       position: relative;
+
       overflow: hidden;
+
       padding: 55px 30px;
-      border: 1px solid rgba(224, 183, 68, 0.42);
+
+      border:
+        1px solid
+        rgba(224, 183, 68, 0.42);
+
       border-radius: 30px;
+
       background:
         linear-gradient(
           145deg,
           rgba(225, 183, 68, 0.11),
           rgba(255, 255, 255, 0.02)
         );
+
       text-align: center;
     }
 
     .message-panel::before {
       content: "";
+
       position: absolute;
-      width: 240px;
-      height: 240px;
+
       top: -140px;
       left: -100px;
+
+      width: 240px;
+      height: 240px;
+
       border-radius: 50%;
-      background: rgba(217, 173, 47, 0.13);
+
+      background:
+        rgba(217, 173, 47, 0.13);
+
       filter: blur(30px);
     }
 
     .message-small {
+      margin-bottom: 15px;
+
       color: #d1af4f;
+
       font-size: 13px;
       font-weight: bold;
+
       letter-spacing: 0.12em;
-      margin-bottom: 15px;
     }
 
     .message-title {
+      margin-bottom: 14px;
+
       color: #ffffff;
+
       font-family:
         "Yu Mincho",
         "Hiragino Mincho ProN",
         serif;
-      font-size: clamp(27px, 5vw, 46px);
+
+      font-size:
+        clamp(27px, 5vw, 46px);
+
       line-height: 1.65;
-      margin-bottom: 14px;
     }
 
     .message-title strong {
@@ -558,28 +886,45 @@
     }
 
     .message-text {
-      color: #bcb7ad;
-      font-size: 15px;
-      line-height: 2;
       margin-bottom: 28px;
+
+      color: #bcb7ad;
+
+      font-size: 15px;
+
+      line-height: 2;
     }
 
     .registration-box {
       width: min(760px, 100%);
+
       margin: 0 auto;
       padding: 36px 28px;
+
+      border:
+        1px solid
+        rgba(225, 187, 76, 0.38);
+
       border-radius: 28px;
-      border: 1px solid rgba(225, 187, 76, 0.38);
+
       background: #0d0d0d;
-      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
+
+      box-shadow:
+        0 30px 80px
+        rgba(0, 0, 0, 0.4);
     }
 
     .registration-step {
       display: flex;
       align-items: flex-start;
+
       gap: 15px;
+
       padding: 20px 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+
+      border-bottom:
+        1px solid
+        rgba(255, 255, 255, 0.07);
     }
 
     .registration-step:last-of-type {
@@ -587,31 +932,41 @@
     }
 
     .step-number {
+      flex: 0 0 auto;
+
       width: 38px;
       height: 38px;
-      flex: 0 0 auto;
+
       display: grid;
       place-items: center;
+
       border-radius: 50%;
+
       background:
         linear-gradient(
           135deg,
           #c69320,
           #f4d86f
         );
+
       color: #0b0b0b;
+
       font-weight: bold;
     }
 
     .step-content h3 {
-      color: #f2d676;
       margin-bottom: 7px;
+
+      color: #f2d676;
+
       font-size: 16px;
     }
 
     .step-content p {
       color: #aaa69d;
+
       font-size: 13px;
+
       line-height: 1.8;
     }
 
@@ -621,54 +976,78 @@
     }
 
     .copy-label {
-      color: #c5c0b7;
-      font-size: 13px;
       margin-bottom: 10px;
+
+      color: #c5c0b7;
+
+      font-size: 13px;
     }
 
     .copy-box {
       width: min(360px, 100%);
+
       margin: 0 auto;
       padding: 19px;
-      border: 1px solid #d4a72f;
+
+      border:
+        1px solid #d4a72f;
+
       border-radius: 17px;
-      background: rgba(255, 255, 255, 0.025);
+
+      background:
+        rgba(255, 255, 255, 0.025);
+
       cursor: pointer;
+
       transition:
         transform 0.2s ease,
         background 0.2s ease;
+    }
+
+    .copy-box:hover {
+      background:
+        rgba(214, 170, 47, 0.08);
     }
 
     .copy-box:active {
       transform: scale(0.98);
     }
 
-    .copy-box:hover {
-      background: rgba(214, 170, 47, 0.08);
-    }
-
     .copy-name {
       display: block;
+
       color: #e1bd55;
-      font-family: Georgia, serif;
+
+      font-family:
+        Georgia,
+        serif;
+
       font-size: 38px;
       font-weight: bold;
+
       letter-spacing: 0.08em;
     }
 
     .copy-help {
       display: block;
-      color: #77736b;
-      font-size: 11px;
+
       margin-top: 5px;
+
+      color: #77736b;
+
+      font-size: 11px;
     }
 
     .important-text {
-      color: #f0ce61;
-      font-size: 13px;
-      line-height: 1.8;
-      text-align: center;
       margin-bottom: 22px;
+
+      color: #f0ce61;
+
+      font-size: 13px;
+
+      line-height: 1.8;
+
+      text-align: center;
     }
 
     .registration-box .line-button {
@@ -681,103 +1060,290 @@
     }
 
     .faq-item {
-      border-bottom: 1px solid rgba(255, 255, 255, 0.09);
       padding: 22px 0;
+
+      border-bottom:
+        1px solid
+        rgba(255, 255, 255, 0.09);
     }
 
     .faq-question {
+      margin-bottom: 10px;
+
       color: #f0d478;
+
       font-size: 15px;
       font-weight: bold;
-      margin-bottom: 10px;
     }
 
     .faq-answer {
       color: #aaa69d;
+
       font-size: 13px;
+
       line-height: 1.9;
     }
 
     .footer {
       padding: 45px 20px;
-      text-align: center;
-      border-top: 1px solid rgba(255, 255, 255, 0.06);
+
+      border-top:
+        1px solid
+        rgba(255, 255, 255, 0.06);
+
       color: #77736b;
+
       font-size: 11px;
+
       line-height: 1.9;
+
+      text-align: center;
     }
 
     .footer-logo {
-      color: #d5ad43;
-      font-family: Georgia, serif;
-      font-size: 25px;
-      letter-spacing: 0.28em;
       margin-bottom: 10px;
+
+      color: #d5ad43;
+
+      font-family:
+        Georgia,
+        serif;
+
+      font-size: 25px;
+
+      letter-spacing: 0.28em;
     }
 
     .sticky-cta {
       position: fixed;
+
       z-index: 100;
+
       left: 50%;
-      bottom: calc(12px + env(safe-area-inset-bottom));
+      bottom:
+        calc(
+          12px + env(safe-area-inset-bottom)
+        );
+
       transform: translateX(-50%);
-      width: min(680px, calc(100% - 24px));
+
+      width:
+        min(
+          680px,
+          calc(100% - 24px)
+        );
+
       padding: 8px;
-      border: 1px solid rgba(226, 187, 75, 0.3);
+
+      border:
+        1px solid
+        rgba(226, 187, 75, 0.3);
+
       border-radius: 999px;
-      background: rgba(10, 10, 10, 0.9);
-      box-shadow: 0 15px 45px rgba(0, 0, 0, 0.55);
+
+      background:
+        rgba(10, 10, 10, 0.9);
+
+      box-shadow:
+        0 15px 45px
+        rgba(0, 0, 0, 0.55);
+
       backdrop-filter: blur(16px);
     }
 
     .sticky-button {
       min-height: 59px;
-      border-radius: 999px;
+
       display: flex;
-      justify-content: center;
       align-items: center;
+      justify-content: center;
+
       gap: 10px;
+
+      border-radius: 999px;
+
       background:
         linear-gradient(
           90deg,
           #31c95a,
           #5bdd78
         );
+
       color: #ffffff;
+
       font-size: 16px;
       font-weight: bold;
-      box-shadow: 0 8px 22px rgba(49, 201, 90, 0.24);
+
+      box-shadow:
+        0 8px 22px
+        rgba(49, 201, 90, 0.24);
+
+      cursor: pointer;
     }
 
     .toast {
       position: fixed;
+
       z-index: 200;
+
       left: 50%;
       bottom: 105px;
-      transform: translate(-50%, 20px);
+
+      transform:
+        translate(-50%, 20px);
+
       padding: 12px 20px;
-      border: 1px solid rgba(226, 187, 75, 0.45);
+
+      border:
+        1px solid
+        rgba(226, 187, 75, 0.45);
+
       border-radius: 999px;
-      background: rgba(15, 15, 15, 0.96);
+
+      background:
+        rgba(15, 15, 15, 0.96);
+
       color: #f1d471;
+
       font-size: 13px;
+
       opacity: 0;
+
       pointer-events: none;
+
       transition:
         opacity 0.25s ease,
         transform 0.25s ease;
+
       white-space: nowrap;
     }
 
     .toast.show {
       opacity: 1;
-      transform: translate(-50%, 0);
+
+      transform:
+        translate(-50%, 0);
+    }
+
+    .support-popup {
+      position: fixed;
+
+      z-index: 150;
+
+      right: 18px;
+      bottom: 100px;
+
+      width: min(330px, calc(100% - 36px));
+
+      padding: 18px;
+
+      border:
+        1px solid
+        rgba(224, 183, 68, 0.42);
+
+      border-radius: 20px;
+
+      background:
+        rgba(13, 13, 13, 0.97);
+
+      box-shadow:
+        0 20px 55px
+        rgba(0, 0, 0, 0.55);
+
+      opacity: 0;
+
+      visibility: hidden;
+
+      transform:
+        translateY(20px);
+
+      transition:
+        opacity 0.3s ease,
+        transform 0.3s ease,
+        visibility 0.3s ease;
+    }
+
+    .support-popup.show {
+      opacity: 1;
+
+      visibility: visible;
+
+      transform:
+        translateY(0);
+    }
+
+    .support-popup-close {
+      position: absolute;
+
+      top: 8px;
+      right: 10px;
+
+      border: none;
+
+      background: transparent;
+
+      color: #8e8a82;
+
+      font-size: 20px;
+
+      cursor: pointer;
+    }
+
+    .support-popup-title {
+      margin-bottom: 7px;
+
+      color: #f0cf65;
+
+      font-size: 15px;
+      font-weight: bold;
+    }
+
+    .support-popup-text {
+      margin-bottom: 14px;
+
+      color: #c4bfb5;
+
+      font-size: 13px;
+
+      line-height: 1.7;
+    }
+
+    .support-popup-button {
+      width: 100%;
+      min-height: 45px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      border-radius: 999px;
+
+      background:
+        linear-gradient(
+          90deg,
+          #31c95a,
+          #5bdd78
+        );
+
+      color: #ffffff;
+
+      font-size: 13px;
+      font-weight: bold;
+
+      cursor: pointer;
     }
 
     @media (max-width: 850px) {
+
       .hero {
         min-height: auto;
-        padding-top: max(35px, env(safe-area-inset-top));
+
+        padding-top:
+          max(
+            35px,
+            env(safe-area-inset-top)
+          );
+
         padding-bottom: 70px;
       }
 
@@ -791,7 +1357,8 @@
       }
 
       .brand,
-      .badge {
+      .badge,
+      .campaign-badge {
         margin-left: auto;
         margin-right: auto;
       }
@@ -804,8 +1371,14 @@
         align-items: center;
       }
 
+      .campaign-box {
+        margin-left: auto;
+        margin-right: auto;
+      }
+
       .quick-points {
         max-width: 560px;
+
         margin-left: auto;
         margin-right: auto;
         margin-bottom: 27px;
@@ -824,7 +1397,8 @@
       }
 
       .recommend-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns:
+          repeat(2, minmax(0, 1fr));
       }
 
       .recommend-card:last-child {
@@ -833,6 +1407,7 @@
     }
 
     @media (max-width: 600px) {
+
       body {
         padding-bottom: 100px;
       }
@@ -855,13 +1430,17 @@
       }
 
       .quick-points {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns:
+          repeat(2, minmax(0, 1fr));
+
         gap: 8px;
       }
 
       .quick-point {
         justify-content: center;
+
         padding: 9px 6px;
+
         font-size: 12px;
       }
 
@@ -871,8 +1450,8 @@
       }
 
       .floating-card {
-        font-size: 11px;
         padding: 9px 11px;
+        font-size: 11px;
       }
 
       .floating-left {
@@ -906,11 +1485,11 @@
         font-size: 28px;
       }
 
-      .安心-grid {
+      .safe-grid {
         grid-template-columns: 1fr;
       }
 
-      .安心-card {
+      .safe-card {
         padding: 20px;
       }
 
@@ -934,21 +1513,32 @@
       }
 
       .sticky-cta {
-        bottom: calc(8px + env(safe-area-inset-bottom));
+        bottom:
+          calc(
+            8px + env(safe-area-inset-bottom)
+          );
       }
 
       .sticky-button {
         min-height: 56px;
       }
+
+      .support-popup {
+        left: 18px;
+        right: 18px;
+        bottom: 92px;
+
+        width: auto;
+      }
     }
+
   </style>
 </head>
 
 <body>
 
   <div class="page">
-
-    <!-- ファーストビュー -->
+        <!-- ファーストビュー -->
     <section class="hero">
 
       <div class="hero-inner">
@@ -964,6 +1554,10 @@
             ✨ 登録無料・相談だけでもOK
           </div>
 
+          <div class="campaign-badge">
+            🎁 今だけの登録キャンペーン
+          </div>
+
           <h1 class="hero-title">
             空いてる時間が
             <span class="gold">お金に変わる。</span>
@@ -976,6 +1570,24 @@
             まずは登録だけしておくのがおすすめです。
           </p>
 
+          <div class="campaign-box">
+
+            <p class="campaign-box-title">
+              今登録していただいた方限定
+            </p>
+
+            <p class="campaign-box-main">
+              翌月
+              <strong>300円還元！</strong>
+            </p>
+
+            <p class="campaign-box-note">
+              ※紹介名「yuma」が確認できた方が対象です。<br>
+              ※還元条件や受取方法はLINE追加後にご確認ください。
+            </p>
+
+          </div>
+
           <div class="quick-points">
 
             <div class="quick-point">
@@ -985,7 +1597,7 @@
 
             <div class="quick-point">
               <span>✓</span>
-              顔出しなしOK
+              顔出しなし相談OK
             </div>
 
             <div class="quick-point">
@@ -1012,26 +1624,25 @@
 
           <div class="hero-cta">
 
-            <a
-              href="https://line.me/ti/p/3TpvqaIQYW"
+            <button
+              type="button"
               class="line-button"
-              target="_blank"
-              rel="noopener noreferrer"
+              onclick="confirmLineOpen()"
             >
               <span class="line-icon">LINE</span>
               無料で登録だけする
-            </a>
+            </button>
 
             <p class="cta-note">
               登録料・相談料はかかりません。<br>
-              LINE追加後に紹介名「yuma」と送信してください。
+              LINE追加後、最初に「yumaの紹介」と送信してください。
             </p>
 
           </div>
 
         </div>
 
-        <!-- CSS・SVGで作成した女性イラスト -->
+        <!-- 女性イラスト -->
         <div class="visual-wrap">
 
           <div class="visual-glow"></div>
@@ -1059,14 +1670,8 @@
                   x2="1"
                   y2="1"
                 >
-                  <stop
-                    offset="0%"
-                    stop-color="#19160f"
-                  />
-                  <stop
-                    offset="100%"
-                    stop-color="#0a0a0a"
-                  />
+                  <stop offset="0%" stop-color="#19160f" />
+                  <stop offset="100%" stop-color="#0a0a0a" />
                 </linearGradient>
 
                 <linearGradient
@@ -1076,18 +1681,9 @@
                   x2="1"
                   y2="1"
                 >
-                  <stop
-                    offset="0%"
-                    stop-color="#bb871e"
-                  />
-                  <stop
-                    offset="50%"
-                    stop-color="#f2d36a"
-                  />
-                  <stop
-                    offset="100%"
-                    stop-color="#b98418"
-                  />
+                  <stop offset="0%" stop-color="#bb871e" />
+                  <stop offset="50%" stop-color="#f2d36a" />
+                  <stop offset="100%" stop-color="#b98418" />
                 </linearGradient>
 
                 <linearGradient
@@ -1097,14 +1693,8 @@
                   x2="0"
                   y2="1"
                 >
-                  <stop
-                    offset="0%"
-                    stop-color="#2b2928"
-                  />
-                  <stop
-                    offset="100%"
-                    stop-color="#111111"
-                  />
+                  <stop offset="0%" stop-color="#2b2928" />
+                  <stop offset="100%" stop-color="#111111" />
                 </linearGradient>
 
                 <filter id="softGlow">
@@ -1113,7 +1703,6 @@
 
               </defs>
 
-              <!-- 背景 -->
               <rect
                 x="0"
                 y="0"
@@ -1141,32 +1730,15 @@
                 filter="url(#softGlow)"
               />
 
-              <!-- 星 -->
               <g fill="#e8c95f">
 
-                <circle
-                  cx="65"
-                  cy="90"
-                  r="2.3"
-                />
+                <circle cx="65" cy="90" r="2.3" />
 
-                <circle
-                  cx="102"
-                  cy="58"
-                  r="1.4"
-                />
+                <circle cx="102" cy="58" r="1.4" />
 
-                <circle
-                  cx="344"
-                  cy="65"
-                  r="2"
-                />
+                <circle cx="344" cy="65" r="2" />
 
-                <circle
-                  cx="374"
-                  cy="138"
-                  r="1.5"
-                />
+                <circle cx="374" cy="138" r="1.5" />
 
                 <path
                   d="M69 145
@@ -1194,7 +1766,6 @@
 
               </g>
 
-              <!-- ソファ -->
               <rect
                 x="42"
                 y="338"
@@ -1215,7 +1786,6 @@
                 fill="#22201d"
               />
 
-              <!-- 女性の髪 -->
               <ellipse
                 cx="224"
                 cy="150"
@@ -1233,7 +1803,6 @@
                 fill="#29201d"
               />
 
-              <!-- 顔 -->
               <ellipse
                 cx="228"
                 cy="145"
@@ -1242,7 +1811,6 @@
                 fill="#f0c5ac"
               />
 
-              <!-- 前髪 -->
               <path
                 d="M181 135
                    C184 86 211 72 240 78
@@ -1252,7 +1820,6 @@
                 fill="#251c19"
               />
 
-              <!-- 目 -->
               <path
                 d="M202 146 Q211 151 219 146"
                 fill="none"
@@ -1269,7 +1836,6 @@
                 stroke-linecap="round"
               />
 
-              <!-- 鼻 -->
               <path
                 d="M230 150 Q226 161 231 164"
                 fill="none"
@@ -1278,7 +1844,6 @@
                 stroke-linecap="round"
               />
 
-              <!-- 口 -->
               <path
                 d="M215 175 Q228 185 243 175"
                 fill="none"
@@ -1287,7 +1852,6 @@
                 stroke-linecap="round"
               />
 
-              <!-- 首 -->
               <rect
                 x="211"
                 y="194"
@@ -1297,7 +1861,6 @@
                 fill="#edbda4"
               />
 
-              <!-- 服 -->
               <path
                 d="M157 247
                    C176 218 201 213 229 216
@@ -1310,7 +1873,6 @@
                 stroke-opacity="0.32"
               />
 
-              <!-- ゴールドアクセサリー -->
               <path
                 d="M207 220 Q229 239 251 220"
                 fill="none"
@@ -1325,7 +1887,6 @@
                 fill="#e6bd4b"
               />
 
-              <!-- 腕 -->
               <path
                 d="M169 260
                    C135 291 140 335 179 347"
@@ -1344,7 +1905,6 @@
                 stroke-linecap="round"
               />
 
-              <!-- スマホ -->
               <g transform="rotate(-4 232 304)">
 
                 <rect
@@ -1391,7 +1951,6 @@
 
               </g>
 
-              <!-- 手 -->
               <circle
                 cx="192"
                 cy="332"
@@ -1406,7 +1965,6 @@
                 fill="#efc1a8"
               />
 
-              <!-- コイン -->
               <g>
 
                 <circle
@@ -1467,7 +2025,6 @@
 
               </g>
 
-              <!-- 下部テキスト -->
               <text
                 x="215"
                 y="445"
@@ -1579,9 +2136,8 @@
       </div>
 
     </section>
-
-    <!-- 安心ポイント -->
-    <section class="section 安心-section">
+      <!-- 安心ポイント -->
+    <section class="section safe-section">
 
       <div class="section-inner">
 
@@ -1595,63 +2151,95 @@
             はじめやすい安心ポイント
           </h2>
 
+          <p class="section-lead">
+            今すぐ働く必要はありません。<br>
+            まずは登録だけして、仕事内容や条件を確認できます。
+          </p>
+
         </div>
 
-        <div class="安心-grid">
+        <div class="safe-grid">
 
-          <article class="安心-card">
+          <article class="safe-card">
 
-            <div class="安心-number">01</div>
+            <div class="safe-number">
+              01
+            </div>
 
             <div>
-              <h3>登録は無料</h3>
+
+              <h3>
+                登録・相談は無料
+              </h3>
+
               <p>
                 登録料や相談料はかかりません。
-                費用を気にせず相談できます。
+                気になることをLINEから確認できます。
               </p>
+
             </div>
 
           </article>
 
-          <article class="安心-card">
+          <article class="safe-card">
 
-            <div class="安心-number">02</div>
+            <div class="safe-number">
+              02
+            </div>
 
             <div>
-              <h3>登録だけでもOK</h3>
+
+              <h3>
+                登録だけでもOK
+              </h3>
+
               <p>
-                今すぐ働く必要はありません。
-                まずは登録だけして、
-                始めたい時に相談できます。
+                すぐに働かなくても問題ありません。
+                始めたいタイミングで相談できます。
               </p>
+
             </div>
 
           </article>
 
-          <article class="安心-card">
+          <article class="safe-card">
 
-            <div class="安心-number">03</div>
+            <div class="safe-number">
+              03
+            </div>
 
             <div>
-              <h3>自分のペースで働ける</h3>
+
+              <h3>
+                自分のペースで働ける
+              </h3>
+
               <p>
-                決まった勤務時間やノルマに縛られず、
+                空いている時間を活用しながら、
                 ライフスタイルに合わせて働けます。
               </p>
+
             </div>
 
           </article>
 
-          <article class="安心-card">
+          <article class="safe-card">
 
-            <div class="安心-number">04</div>
+            <div class="safe-number">
+              04
+            </div>
 
             <div>
-              <h3>顔出しなしも相談可能</h3>
+
+              <h3>
+                顔出しなしも相談可能
+              </h3>
+
               <p>
                 顔出しに抵抗がある方も、
                 希望に合った働き方を相談できます。
               </p>
+
             </div>
 
           </article>
@@ -1679,21 +2267,42 @@
           </h2>
 
           <p class="message-text">
-            気になっていても、すぐに始める必要はありません。<br>
+            気になっていても、
+            すぐに始める必要はありません。<br>
             まずは無料登録だけして、
             条件や働き方を確認しておくのがおすすめです。
           </p>
 
-          <a
-            href="https://line.me/ti/p/3TpvqaIQYW"
+          <div class="campaign-box" style="margin: 0 auto 25px;">
+
+            <p class="campaign-box-title">
+              🎁 今登録していただいた方限定
+            </p>
+
+            <p class="campaign-box-main">
+              翌月
+              <strong>300円還元！</strong>
+            </p>
+
+            <p class="campaign-box-note">
+              ※紹介名「yuma」が確認できた方が対象です。<br>
+              ※還元条件・受取方法はLINE追加後にご案内します。
+            </p>
+
+          </div>
+
+          <button
+            type="button"
             class="line-button"
-            target="_blank"
-            rel="noopener noreferrer"
+            onclick="confirmLineOpen()"
             style="margin: 0 auto;"
           >
-            <span class="line-icon">LINE</span>
-            無料で登録しておく
-          </a>
+            <span class="line-icon">
+              LINE
+            </span>
+
+            LINEで無料相談する
+          </button>
 
         </div>
 
@@ -1702,7 +2311,10 @@
     </section>
 
     <!-- 登録手順 -->
-    <section class="section" id="entry">
+    <section
+      class="section"
+      id="entry"
+    >
 
       <div class="section-inner">
 
@@ -1717,8 +2329,8 @@
           </h2>
 
           <p class="section-lead">
-            LINE追加後、最初のメッセージで
-            紹介名を送信してください。
+            LINE追加後、最初のメッセージで<br>
+            必ず「yumaの紹介」と送信してください。
           </p>
 
         </div>
@@ -1727,14 +2339,21 @@
 
           <div class="registration-step">
 
-            <div class="step-number">1</div>
+            <div class="step-number">
+              1
+            </div>
 
             <div class="step-content">
-              <h3>紹介名をコピー</h3>
+
+              <h3>
+                紹介名をコピー
+              </h3>
+
               <p>
                 下に表示されている「yuma」を
                 タップしてコピーしてください。
               </p>
+
             </div>
 
           </div>
@@ -1751,6 +2370,7 @@
               id="copyButton"
               onclick="copyReferralName()"
             >
+
               <span class="copy-name">
                 yuma
               </span>
@@ -1758,59 +2378,98 @@
               <span class="copy-help">
                 タップしてコピー
               </span>
+
             </button>
 
           </div>
 
           <div class="registration-step">
 
-            <div class="step-number">2</div>
+            <div class="step-number">
+              2
+            </div>
 
             <div class="step-content">
-              <h3>公式LINEを追加</h3>
+
+              <h3>
+                公式LINEを追加
+              </h3>
+
               <p>
-                下のボタンからLINEを追加してください。
+                下のボタンを押して、
+                チャットレディ公式LINEを追加してください。
               </p>
+
             </div>
 
           </div>
 
           <div class="registration-step">
 
-            <div class="step-number">3</div>
+            <div class="step-number">
+              3
+            </div>
 
             <div class="step-content">
-              <h3>「yumaの紹介」と送信</h3>
+
+              <h3>
+                「yumaの紹介」と送信
+              </h3>
+
               <p>
                 LINE追加後、最初のメッセージで
                 「yumaの紹介」と送信してください。
               </p>
+
             </div>
 
           </div>
 
+          <div class="campaign-box" style="margin: 20px auto 24px;">
+
+            <p class="campaign-box-title">
+              🎁 登録キャンペーン
+            </p>
+
+            <p class="campaign-box-main">
+              翌月
+              <strong>300円還元！</strong>
+            </p>
+
+            <p class="campaign-box-note">
+              紹介名「yuma」が確認できた方限定です。
+            </p>
+
+          </div>
+
           <p class="important-text">
-            ⚠ 紹介名が確認できない場合、<br>
-            紹介経由として案内できない場合があります。
+            ⚠ LINE追加後は、必ず最初に<br>
+            「yumaの紹介」と送信してください。<br><br>
+
+            紹介名が確認できない場合、<br>
+            サポートや300円還元の対象として<br>
+            ご案内できない可能性があります。
           </p>
 
-          <a
-            href="https://line.me/ti/p/3TpvqaIQYW"
+          <button
+            type="button"
             class="line-button"
-            target="_blank"
-            rel="noopener noreferrer"
+            onclick="confirmLineOpen()"
           >
-            <span class="line-icon">LINE</span>
+
+            <span class="line-icon">
+              LINE
+            </span>
+
             LINEを追加して無料登録
-          </a>
+          </button>
 
         </div>
 
       </div>
 
     </section>
-
-    <!-- よくある質問 -->
+        <!-- よくある質問 -->
     <section class="section">
 
       <div class="section-inner">
@@ -1832,12 +2491,12 @@
           <div class="faq-item">
 
             <p class="faq-question">
-              Q. 登録したらすぐに働かないといけませんか？
+              Q. 登録したらすぐ働かないといけませんか？
             </p>
 
             <p class="faq-answer">
               いいえ。まずは登録だけでも問題ありません。
-              条件や仕事内容を確認してから判断できます。
+              条件や仕事内容を確認してから決められます。
             </p>
 
           </div>
@@ -1858,12 +2517,12 @@
           <div class="faq-item">
 
             <p class="faq-question">
-              Q. スマートフォンだけでもできますか？
+              Q. 顔出しなしでも働けますか？
             </p>
 
             <p class="faq-answer">
-              スマートフォンから始められる働き方もあります。
-              詳しい条件はLINE追加後にご確認ください。
+              顔出しなしを希望する方も、
+              LINE追加後に働き方を相談できます。
             </p>
 
           </div>
@@ -1871,12 +2530,27 @@
           <div class="faq-item">
 
             <p class="faq-question">
-              Q. 顔出しをしたくありません。
+              Q. 300円還元は誰でも対象ですか？
             </p>
 
             <p class="faq-answer">
-              顔出しなしを希望する場合も、
-              LINEから働き方について相談できます。
+              LINE追加後、最初のメッセージで
+              「yumaの紹介」と送信し、紹介確認ができた方が対象です。
+              詳しい条件や受取方法はLINEでご案内します。
+            </p>
+
+          </div>
+
+          <div class="faq-item">
+
+            <p class="faq-question">
+              Q. 紹介名を送らなかった場合はどうなりますか？
+            </p>
+
+            <p class="faq-answer">
+              紹介経由の確認ができないため、
+              サポートや300円還元をご案内できない可能性があります。
+              必ず最初に「yumaの紹介」と送信してください。
             </p>
 
           </div>
@@ -1905,22 +2579,26 @@
 
   </div>
 
-  <!-- 画面下固定ボタン -->
+  <!-- 下部固定LINEボタン -->
   <div class="sticky-cta">
 
-    <a
-      href="https://line.me/ti/p/3TpvqaIQYW"
+    <button
+      type="button"
       class="sticky-button"
-      target="_blank"
-      rel="noopener noreferrer"
+      onclick="confirmLineOpen()"
+      style="width:100%; border:none;"
     >
-      <span class="line-icon">LINE</span>
+
+      <span class="line-icon">
+        LINE
+      </span>
+
       無料登録だけしておく
-    </a>
+    </button>
 
   </div>
 
-  <!-- コピー完了表示 -->
+  <!-- 紹介名コピー完了 -->
   <div
     class="toast"
     id="copyToast"
@@ -1928,43 +2606,187 @@
     「yuma」をコピーしました
   </div>
 
+  <!-- 5秒後の案内ポップアップ -->
+  <div
+    class="support-popup"
+    id="supportPopup"
+  >
+
+    <button
+      type="button"
+      class="support-popup-close"
+      onclick="closeSupportPopup()"
+      aria-label="閉じる"
+    >
+      ×
+    </button>
+
+    <p class="support-popup-title">
+      💬 登録だけでも大丈夫です
+    </p>
+
+    <p class="support-popup-text">
+      今すぐ働かなくてもOK。<br>
+      まずはLINEで仕事内容を確認できます。
+    </p>
+
+    <button
+      type="button"
+      class="support-popup-button"
+      onclick="confirmLineOpen()"
+      style="border:none;"
+    >
+      LINEで無料相談する
+    </button>
+
+  </div>
+
   <script>
+
+    const lineUrl =
+      "https://line.me/ti/p/3TpvqaIQYW";
+
+    function confirmLineOpen() {
+
+      const confirmed = window.confirm(
+`⚠ LINE追加前にご確認ください
+
+LINE追加後、最初のメッセージで必ず
+
+「yumaの紹介」
+
+と送信してください。
+
+紹介名が確認できない場合、
+サポートや翌月300円還元の対象として
+ご案内できない可能性があります。
+
+このままLINEを開きますか？`
+      );
+
+      if (!confirmed) {
+        return;
+      }
+
+      window.open(
+        lineUrl,
+        "_blank",
+        "noopener,noreferrer"
+      );
+    }
+
     async function copyReferralName() {
-      const referralName = "yuma";
-      const toast = document.getElementById("copyToast");
+
+      const referralText =
+        "yumaの紹介";
+
+      const toast =
+        document.getElementById("copyToast");
 
       try {
-        await navigator.clipboard.writeText(referralName);
+
+        await navigator.clipboard.writeText(
+          referralText
+        );
+
         showCopyToast(toast);
+
       } catch (error) {
-        const textArea = document.createElement("textarea");
 
-        textArea.value = referralName;
-        textArea.style.position = "fixed";
-        textArea.style.opacity = "0";
+        const textArea =
+          document.createElement("textarea");
 
-        document.body.appendChild(textArea);
+        textArea.value =
+          referralText;
+
+        textArea.style.position =
+          "fixed";
+
+        textArea.style.opacity =
+          "0";
+
+        document.body.appendChild(
+          textArea
+        );
+
         textArea.focus();
         textArea.select();
 
         try {
+
           document.execCommand("copy");
+
           showCopyToast(toast);
+
         } catch (copyError) {
-          alert("コピーできませんでした。yumaと入力してください。");
+
+          alert(
+            "コピーできませんでした。「yumaの紹介」と入力してください。"
+          );
+
         }
 
-        document.body.removeChild(textArea);
+        document.body.removeChild(
+          textArea
+        );
       }
     }
 
     function showCopyToast(toast) {
+
+      toast.textContent =
+        "「yumaの紹介」をコピーしました";
+
       toast.classList.add("show");
 
       setTimeout(() => {
+
         toast.classList.remove("show");
+
       }, 2200);
     }
+
+    function closeSupportPopup() {
+
+      const popup =
+        document.getElementById(
+          "supportPopup"
+        );
+
+      popup.classList.remove("show");
+
+      sessionStorage.setItem(
+        "chatladyPopupClosed",
+        "true"
+      );
+    }
+
+    window.addEventListener(
+      "load",
+      () => {
+
+        const alreadyClosed =
+          sessionStorage.getItem(
+            "chatladyPopupClosed"
+          );
+
+        if (alreadyClosed === "true") {
+          return;
+        }
+
+        setTimeout(() => {
+
+          const popup =
+            document.getElementById(
+              "supportPopup"
+            );
+
+          popup.classList.add("show");
+
+        }, 5000);
+      }
+    );
+
   </script>
 
 </body>
