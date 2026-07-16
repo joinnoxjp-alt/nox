@@ -1,173 +1,1971 @@
-<div class="apply-box">
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
 
-    <style>
-        .apply-box{
-            max-width:700px;
-            margin:60px auto;
-            padding:40px 25px;
-            background:linear-gradient(180deg,#111,#080808);
-            border:1px solid rgba(212,175,55,.35);
-            border-radius:25px;
-            box-shadow:0 0 35px rgba(212,175,55,.12);
-            text-align:center;
-            color:#fff;
-        }
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+  >
 
-        .apply-box h2{
-            color:#d4af37;
-            font-size:34px;
-            margin-bottom:20px;
-        }
+  <title>チャットレディ無料登録 | NOX</title>
 
-        .apply-box p{
-            color:#ddd;
-            line-height:1.9;
-            font-size:18px;
-        }
+  <meta
+    name="description"
+    content="空いているスキマ時間を収入に。スマホ1台から始められるチャットレディのお仕事。登録無料・在宅OK・顔出しなしOK。"
+  >
 
-        .line-btn{
-            display:inline-block;
-            margin-top:30px;
-            padding:18px 45px;
-            background:linear-gradient(90deg,#06C755,#04b84b);
-            color:#fff;
-            text-decoration:none;
-            font-size:22px;
-            font-weight:bold;
-            border-radius:999px;
-            transition:.25s;
-            box-shadow:0 10px 30px rgba(6,199,85,.35);
-        }
+  <meta name="theme-color" content="#070707">
 
-        .line-btn:hover{
-            transform:translateY(-3px);
-        }
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-        .notice{
-            margin-top:45px;
-        }
+    html {
+      scroll-behavior: smooth;
+    }
 
-        .notice h3{
-            color:#d4af37;
-            margin-bottom:20px;
-        }
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(
+          circle at 50% 0%,
+          rgba(213, 168, 46, 0.14),
+          transparent 32%
+        ),
+        linear-gradient(
+          180deg,
+          #080808 0%,
+          #11100d 48%,
+          #070707 100%
+        );
+      color: #ffffff;
+      font-family:
+        "Hiragino Kaku Gothic ProN",
+        "Yu Gothic",
+        "Meiryo",
+        sans-serif;
+      overflow-x: hidden;
+      padding-bottom: 110px;
+    }
 
-        .copy-box{
-            background:#111;
-            border:2px solid #d4af37;
-            border-radius:20px;
-            padding:25px;
-            margin:25px auto;
-            max-width:320px;
-            cursor:pointer;
-            transition:.25s;
-        }
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
 
-        .copy-box:hover{
-            transform:scale(1.03);
-        }
+    button {
+      font: inherit;
+    }
 
-        .copy-title{
-            color:#aaa;
-            font-size:18px;
-        }
+    .page {
+      width: 100%;
+      overflow: hidden;
+    }
 
-        .copy-name{
-            color:#d4af37;
-            font-size:48px;
-            font-weight:bold;
-            letter-spacing:3px;
-            margin-top:10px;
-        }
+    .hero {
+      position: relative;
+      min-height: 100svh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding:
+        max(34px, env(safe-area-inset-top))
+        20px
+        55px;
+      isolation: isolate;
+    }
 
-        .copy-sub{
-            color:#999;
-            margin-top:12px;
-        }
+    .hero::before {
+      content: "";
+      position: absolute;
+      top: 90px;
+      left: -100px;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      background: rgba(211, 166, 45, 0.13);
+      filter: blur(70px);
+      z-index: -2;
+    }
 
-        @media(max-width:600px){
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -110px;
+      bottom: 80px;
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      background: rgba(255, 219, 117, 0.1);
+      filter: blur(80px);
+      z-index: -2;
+    }
 
-            .apply-box h2{
-                font-size:28px;
-            }
+    .hero-inner {
+      width: min(1100px, 100%);
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(320px, 0.9fr);
+      align-items: center;
+      gap: 45px;
+    }
 
-            .copy-name{
-                font-size:42px;
-            }
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 22px;
+      font-family: Georgia, "Times New Roman", serif;
+      letter-spacing: 0.25em;
+      color: #e0bd55;
+      font-size: 14px;
+      font-weight: bold;
+    }
 
-            .line-btn{
-                width:100%;
-                box-sizing:border-box;
-            }
+    .brand-mark {
+      width: 35px;
+      height: 35px;
+      border: 1px solid #d8af3b;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      font-size: 11px;
+      letter-spacing: 0;
+    }
 
-        }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 14px;
+      margin-bottom: 18px;
+      border: 1px solid rgba(225, 187, 79, 0.55);
+      border-radius: 999px;
+      background: rgba(216, 173, 58, 0.08);
+      color: #efd371;
+      font-size: 13px;
+      font-weight: bold;
+    }
 
-    </style>
+    .hero-title {
+      font-family:
+        "Yu Mincho",
+        "Hiragino Mincho ProN",
+        serif;
+      font-size: clamp(37px, 6vw, 67px);
+      line-height: 1.25;
+      letter-spacing: 0.06em;
+      margin-bottom: 20px;
+    }
 
-    <h2>LINEから簡単応募</h2>
+    .hero-title .gold {
+      display: block;
+      color: #e5bd4b;
+      text-shadow: 0 0 25px rgba(218, 173, 47, 0.22);
+    }
 
-    <p>
-        ご応募をご希望の方は、<br>
-        下のボタンからLINEを追加してください。
-    </p>
+    .hero-description {
+      color: #ddd8cc;
+      font-size: clamp(16px, 2vw, 19px);
+      line-height: 2;
+      margin-bottom: 26px;
+    }
 
-    <a
-        href="https://line.me/ti/p/3TpvqaIQYW"
-        class="line-btn"
-        target="_blank"
-        rel="noopener noreferrer"
-        onclick="return confirm('LINE追加後、最初のメッセージで必ず「yumaの紹介」と送信してください。');">
+    .hero-description strong {
+      color: #f2d575;
+    }
 
-        LINEを追加する
+    .quick-points {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 28px;
+    }
 
-    </a>
+    .quick-point {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 48px;
+      padding: 10px 13px;
+      border: 1px solid rgba(220, 180, 65, 0.25);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.035);
+      color: #eeeae1;
+      font-size: 14px;
+    }
 
-    <div class="notice">
+    .quick-point span {
+      color: #e9c657;
+      font-weight: bold;
+    }
 
-        <h3>⚠️ 応募前に必ずご確認ください</h3>
+    .hero-cta {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 11px;
+    }
 
-        <p>
-            LINE追加後、最初のメッセージで
-        </p>
+    .line-button {
+      width: min(430px, 100%);
+      min-height: 66px;
+      border: none;
+      border-radius: 999px;
+      background:
+        linear-gradient(
+          90deg,
+          #32c95b 0%,
+          #55dc72 100%
+        );
+      color: #ffffff;
+      font-size: 18px;
+      font-weight: bold;
+      letter-spacing: 0.03em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow:
+        0 12px 30px rgba(49, 201, 91, 0.28),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+    }
 
-        <div class="copy-box" onclick="copyYuma()">
+    .line-button:active {
+      transform: scale(0.98);
+    }
 
-            <div class="copy-title">
-                紹介名
+    .line-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #ffffff;
+      color: #36c95b;
+      display: grid;
+      place-items: center;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .cta-note {
+      width: min(430px, 100%);
+      color: #aba79d;
+      font-size: 12px;
+      line-height: 1.7;
+      text-align: center;
+    }
+
+    .visual-wrap {
+      position: relative;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+
+    .visual-glow {
+      position: absolute;
+      inset: 15% 12%;
+      background: rgba(221, 180, 63, 0.19);
+      filter: blur(65px);
+      border-radius: 50%;
+      z-index: -1;
+    }
+
+    .visual-card {
+      position: relative;
+      width: min(430px, 100%);
+      padding: 22px;
+      border: 1px solid rgba(226, 187, 77, 0.42);
+      border-radius: 34px;
+      background:
+        linear-gradient(
+          145deg,
+          rgba(255, 255, 255, 0.08),
+          rgba(255, 255, 255, 0.02)
+        );
+      box-shadow:
+        0 30px 80px rgba(0, 0, 0, 0.55),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(14px);
+    }
+
+    .visual-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      background: rgba(225, 185, 69, 0.12);
+      border: 1px solid rgba(225, 185, 69, 0.32);
+      border-radius: 999px;
+      color: #f0d579;
+      font-size: 12px;
+      font-weight: bold;
+      margin-bottom: 14px;
+    }
+
+    .illustration {
+      width: 100%;
+      display: block;
+    }
+
+    .floating-card {
+      position: absolute;
+      border: 1px solid rgba(225, 185, 69, 0.32);
+      background: rgba(13, 13, 13, 0.91);
+      box-shadow: 0 15px 38px rgba(0, 0, 0, 0.42);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 12px 15px;
+      color: #ffffff;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .floating-card strong {
+      display: block;
+      color: #f0cf65;
+    }
+
+    .floating-left {
+      left: -15px;
+      bottom: 78px;
+    }
+
+    .floating-right {
+      right: -13px;
+      top: 95px;
+    }
+
+    .scroll-guide {
+      position: absolute;
+      bottom: 17px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #8d887d;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .scroll-line {
+      width: 1px;
+      height: 28px;
+      background:
+        linear-gradient(
+          180deg,
+          #d8b34c,
+          transparent
+        );
+    }
+
+    .section {
+      padding: 90px 20px;
+    }
+
+    .section-inner {
+      width: min(1000px, 100%);
+      margin: 0 auto;
+    }
+
+    .section-heading {
+      text-align: center;
+      margin-bottom: 45px;
+    }
+
+    .section-en {
+      display: block;
+      color: #c99f35;
+      font-family: Georgia, "Times New Roman", serif;
+      letter-spacing: 0.35em;
+      font-size: 12px;
+      margin-bottom: 10px;
+    }
+
+    .section-title {
+      font-family:
+        "Yu Mincho",
+        "Hiragino Mincho ProN",
+        serif;
+      color: #f5e4ad;
+      font-size: clamp(27px, 4vw, 40px);
+      letter-spacing: 0.08em;
+      line-height: 1.5;
+    }
+
+    .section-lead {
+      max-width: 620px;
+      margin: 16px auto 0;
+      color: #bfbab0;
+      font-size: 15px;
+      line-height: 2;
+    }
+
+    .recommend-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .recommend-card {
+      min-height: 180px;
+      padding: 24px 15px;
+      border: 1px solid rgba(220, 180, 65, 0.22);
+      border-radius: 20px;
+      background:
+        linear-gradient(
+          160deg,
+          rgba(255, 255, 255, 0.055),
+          rgba(255, 255, 255, 0.015)
+        );
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      transition:
+        transform 0.2s ease,
+        border-color 0.2s ease;
+    }
+
+    .recommend-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(229, 191, 78, 0.55);
+    }
+
+    .recommend-icon {
+      font-size: 34px;
+      margin-bottom: 15px;
+    }
+
+    .recommend-card h3 {
+      color: #f0d477;
+      font-size: 15px;
+      margin-bottom: 8px;
+    }
+
+    .recommend-card p {
+      color: #aaa69e;
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    .安心-section {
+      background:
+        radial-gradient(
+          circle at center,
+          rgba(206, 161, 41, 0.08),
+          transparent 55%
+        );
+    }
+
+    .安心-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .安心-card {
+      display: flex;
+      gap: 15px;
+      align-items: flex-start;
+      padding: 25px;
+      border-radius: 18px;
+      border: 1px solid rgba(222, 184, 75, 0.24);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .安心-number {
+      flex: 0 0 auto;
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      border: 1px solid rgba(228, 188, 73, 0.55);
+      color: #e5c158;
+      font-family: Georgia, serif;
+      font-weight: bold;
+    }
+
+    .安心-card h3 {
+      color: #f0d477;
+      font-size: 16px;
+      margin-bottom: 7px;
+    }
+
+    .安心-card p {
+      color: #b7b2a9;
+      font-size: 13px;
+      line-height: 1.8;
+    }
+
+    .message-panel {
+      position: relative;
+      overflow: hidden;
+      padding: 55px 30px;
+      border: 1px solid rgba(224, 183, 68, 0.42);
+      border-radius: 30px;
+      background:
+        linear-gradient(
+          145deg,
+          rgba(225, 183, 68, 0.11),
+          rgba(255, 255, 255, 0.02)
+        );
+      text-align: center;
+    }
+
+    .message-panel::before {
+      content: "";
+      position: absolute;
+      width: 240px;
+      height: 240px;
+      top: -140px;
+      left: -100px;
+      border-radius: 50%;
+      background: rgba(217, 173, 47, 0.13);
+      filter: blur(30px);
+    }
+
+    .message-small {
+      color: #d1af4f;
+      font-size: 13px;
+      font-weight: bold;
+      letter-spacing: 0.12em;
+      margin-bottom: 15px;
+    }
+
+    .message-title {
+      color: #ffffff;
+      font-family:
+        "Yu Mincho",
+        "Hiragino Mincho ProN",
+        serif;
+      font-size: clamp(27px, 5vw, 46px);
+      line-height: 1.65;
+      margin-bottom: 14px;
+    }
+
+    .message-title strong {
+      color: #f0cf64;
+    }
+
+    .message-text {
+      color: #bcb7ad;
+      font-size: 15px;
+      line-height: 2;
+      margin-bottom: 28px;
+    }
+
+    .registration-box {
+      width: min(760px, 100%);
+      margin: 0 auto;
+      padding: 36px 28px;
+      border-radius: 28px;
+      border: 1px solid rgba(225, 187, 76, 0.38);
+      background: #0d0d0d;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
+    }
+
+    .registration-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 15px;
+      padding: 20px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .registration-step:last-of-type {
+      border-bottom: none;
+    }
+
+    .step-number {
+      width: 38px;
+      height: 38px;
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background:
+        linear-gradient(
+          135deg,
+          #c69320,
+          #f4d86f
+        );
+      color: #0b0b0b;
+      font-weight: bold;
+    }
+
+    .step-content h3 {
+      color: #f2d676;
+      margin-bottom: 7px;
+      font-size: 16px;
+    }
+
+    .step-content p {
+      color: #aaa69d;
+      font-size: 13px;
+      line-height: 1.8;
+    }
+
+    .copy-area {
+      margin: 25px 0;
+      text-align: center;
+    }
+
+    .copy-label {
+      color: #c5c0b7;
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+
+    .copy-box {
+      width: min(360px, 100%);
+      margin: 0 auto;
+      padding: 19px;
+      border: 1px solid #d4a72f;
+      border-radius: 17px;
+      background: rgba(255, 255, 255, 0.025);
+      cursor: pointer;
+      transition:
+        transform 0.2s ease,
+        background 0.2s ease;
+    }
+
+    .copy-box:active {
+      transform: scale(0.98);
+    }
+
+    .copy-box:hover {
+      background: rgba(214, 170, 47, 0.08);
+    }
+
+    .copy-name {
+      display: block;
+      color: #e1bd55;
+      font-family: Georgia, serif;
+      font-size: 38px;
+      font-weight: bold;
+      letter-spacing: 0.08em;
+    }
+
+    .copy-help {
+      display: block;
+      color: #77736b;
+      font-size: 11px;
+      margin-top: 5px;
+    }
+
+    .important-text {
+      color: #f0ce61;
+      font-size: 13px;
+      line-height: 1.8;
+      text-align: center;
+      margin-bottom: 22px;
+    }
+
+    .registration-box .line-button {
+      margin: 0 auto;
+    }
+
+    .faq-list {
+      width: min(780px, 100%);
+      margin: 0 auto;
+    }
+
+    .faq-item {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+      padding: 22px 0;
+    }
+
+    .faq-question {
+      color: #f0d478;
+      font-size: 15px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .faq-answer {
+      color: #aaa69d;
+      font-size: 13px;
+      line-height: 1.9;
+    }
+
+    .footer {
+      padding: 45px 20px;
+      text-align: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      color: #77736b;
+      font-size: 11px;
+      line-height: 1.9;
+    }
+
+    .footer-logo {
+      color: #d5ad43;
+      font-family: Georgia, serif;
+      font-size: 25px;
+      letter-spacing: 0.28em;
+      margin-bottom: 10px;
+    }
+
+    .sticky-cta {
+      position: fixed;
+      z-index: 100;
+      left: 50%;
+      bottom: calc(12px + env(safe-area-inset-bottom));
+      transform: translateX(-50%);
+      width: min(680px, calc(100% - 24px));
+      padding: 8px;
+      border: 1px solid rgba(226, 187, 75, 0.3);
+      border-radius: 999px;
+      background: rgba(10, 10, 10, 0.9);
+      box-shadow: 0 15px 45px rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(16px);
+    }
+
+    .sticky-button {
+      min-height: 59px;
+      border-radius: 999px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      background:
+        linear-gradient(
+          90deg,
+          #31c95a,
+          #5bdd78
+        );
+      color: #ffffff;
+      font-size: 16px;
+      font-weight: bold;
+      box-shadow: 0 8px 22px rgba(49, 201, 90, 0.24);
+    }
+
+    .toast {
+      position: fixed;
+      z-index: 200;
+      left: 50%;
+      bottom: 105px;
+      transform: translate(-50%, 20px);
+      padding: 12px 20px;
+      border: 1px solid rgba(226, 187, 75, 0.45);
+      border-radius: 999px;
+      background: rgba(15, 15, 15, 0.96);
+      color: #f1d471;
+      font-size: 13px;
+      opacity: 0;
+      pointer-events: none;
+      transition:
+        opacity 0.25s ease,
+        transform 0.25s ease;
+      white-space: nowrap;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    @media (max-width: 850px) {
+      .hero {
+        min-height: auto;
+        padding-top: max(35px, env(safe-area-inset-top));
+        padding-bottom: 70px;
+      }
+
+      .hero-inner {
+        grid-template-columns: 1fr;
+        gap: 35px;
+      }
+
+      .hero-copy {
+        text-align: center;
+      }
+
+      .brand,
+      .badge {
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .hero-description {
+        font-size: 16px;
+      }
+
+      .hero-cta {
+        align-items: center;
+      }
+
+      .quick-points {
+        max-width: 560px;
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: 27px;
+      }
+
+      .visual-wrap {
+        padding: 0 8px;
+      }
+
+      .visual-card {
+        max-width: 430px;
+      }
+
+      .scroll-guide {
+        display: none;
+      }
+
+      .recommend-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .recommend-card:last-child {
+        grid-column: span 2;
+      }
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding-bottom: 100px;
+      }
+
+      .hero {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+
+      .brand {
+        margin-bottom: 18px;
+      }
+
+      .hero-title {
+        font-size: 38px;
+      }
+
+      .hero-description {
+        line-height: 1.9;
+      }
+
+      .quick-points {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .quick-point {
+        justify-content: center;
+        padding: 9px 6px;
+        font-size: 12px;
+      }
+
+      .visual-card {
+        padding: 15px;
+        border-radius: 25px;
+      }
+
+      .floating-card {
+        font-size: 11px;
+        padding: 9px 11px;
+      }
+
+      .floating-left {
+        left: -5px;
+        bottom: 52px;
+      }
+
+      .floating-right {
+        right: -4px;
+        top: 75px;
+      }
+
+      .section {
+        padding: 70px 16px;
+      }
+
+      .section-heading {
+        margin-bottom: 30px;
+      }
+
+      .recommend-grid {
+        gap: 10px;
+      }
+
+      .recommend-card {
+        min-height: 155px;
+        padding: 18px 10px;
+      }
+
+      .recommend-icon {
+        font-size: 28px;
+      }
+
+      .安心-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .安心-card {
+        padding: 20px;
+      }
+
+      .message-panel {
+        padding: 42px 18px;
+        border-radius: 24px;
+      }
+
+      .registration-box {
+        padding: 28px 18px;
+        border-radius: 22px;
+      }
+
+      .registration-step {
+        padding: 17px 0;
+      }
+
+      .line-button {
+        min-height: 61px;
+        font-size: 16px;
+      }
+
+      .sticky-cta {
+        bottom: calc(8px + env(safe-area-inset-bottom));
+      }
+
+      .sticky-button {
+        min-height: 56px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="page">
+
+    <!-- ファーストビュー -->
+    <section class="hero">
+
+      <div class="hero-inner">
+
+        <div class="hero-copy">
+
+          <div class="brand">
+            <span class="brand-mark">N</span>
+            NOX SPECIAL
+          </div>
+
+          <div class="badge">
+            ✨ 登録無料・相談だけでもOK
+          </div>
+
+          <h1 class="hero-title">
+            空いてる時間が
+            <span class="gold">お金に変わる。</span>
+          </h1>
+
+          <p class="hero-description">
+            スマホ1台で始められる<br>
+            チャットレディのお仕事。<br>
+            <strong>今すぐ働かなくても大丈夫。</strong><br>
+            まずは登録だけしておくのがおすすめです。
+          </p>
+
+          <div class="quick-points">
+
+            <div class="quick-point">
+              <span>✓</span>
+              在宅OK
             </div>
 
-            <div class="copy-name">
-                yuma
+            <div class="quick-point">
+              <span>✓</span>
+              顔出しなしOK
             </div>
 
-            <div class="copy-sub">
-                タップしてコピー
+            <div class="quick-point">
+              <span>✓</span>
+              スマホだけOK
             </div>
+
+            <div class="quick-point">
+              <span>✓</span>
+              ノルマなし
+            </div>
+
+            <div class="quick-point">
+              <span>✓</span>
+              未経験OK
+            </div>
+
+            <div class="quick-point">
+              <span>✓</span>
+              登録だけでもOK
+            </div>
+
+          </div>
+
+          <div class="hero-cta">
+
+            <a
+              href="https://line.me/ti/p/3TpvqaIQYW"
+              class="line-button"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span class="line-icon">LINE</span>
+              無料で登録だけする
+            </a>
+
+            <p class="cta-note">
+              登録料・相談料はかかりません。<br>
+              LINE追加後に紹介名「yuma」と送信してください。
+            </p>
+
+          </div>
 
         </div>
 
-        <p style="font-size:22px;">
-            <strong style="color:#d4af37;">
-                「yumaの紹介」
-            </strong>
-            と送信してください。
-        </p>
+        <!-- CSS・SVGで作成した女性イラスト -->
+        <div class="visual-wrap">
 
-        <p style="color:#aaa;line-height:1.8;">
-            紹介名が確認できない場合は、<br>
-            紹介経由としてご案内できない場合があります。
-        </p>
+          <div class="visual-glow"></div>
 
-    </div>
+          <div class="visual-card">
 
-</div>
+            <div class="visual-label">
+              🌙 自分のペースで働ける
+            </div>
 
-<script>
-function copyYuma(){
+            <svg
+              class="illustration"
+              viewBox="0 0 430 470"
+              xmlns="http://www.w3.org/2000/svg"
+              role="img"
+              aria-label="スマートフォンを持つ女性のイラスト"
+            >
 
-    navigator.clipboard.writeText("yuma");
+              <defs>
 
-    alert("『yuma』をコピーしました！");
+                <linearGradient
+                  id="bgGradient"
+                  x1="0"
+                  y1="0"
+                  x2="1"
+                  y2="1"
+                >
+                  <stop
+                    offset="0%"
+                    stop-color="#19160f"
+                  />
+                  <stop
+                    offset="100%"
+                    stop-color="#0a0a0a"
+                  />
+                </linearGradient>
 
-}
-</script>
+                <linearGradient
+                  id="goldGradient"
+                  x1="0"
+                  y1="0"
+                  x2="1"
+                  y2="1"
+                >
+                  <stop
+                    offset="0%"
+                    stop-color="#bb871e"
+                  />
+                  <stop
+                    offset="50%"
+                    stop-color="#f2d36a"
+                  />
+                  <stop
+                    offset="100%"
+                    stop-color="#b98418"
+                  />
+                </linearGradient>
+
+                <linearGradient
+                  id="dressGradient"
+                  x1="0"
+                  y1="0"
+                  x2="0"
+                  y2="1"
+                >
+                  <stop
+                    offset="0%"
+                    stop-color="#2b2928"
+                  />
+                  <stop
+                    offset="100%"
+                    stop-color="#111111"
+                  />
+                </linearGradient>
+
+                <filter id="softGlow">
+                  <feGaussianBlur stdDeviation="12" />
+                </filter>
+
+              </defs>
+
+              <!-- 背景 -->
+              <rect
+                x="0"
+                y="0"
+                width="430"
+                height="470"
+                rx="28"
+                fill="url(#bgGradient)"
+              />
+
+              <circle
+                cx="324"
+                cy="105"
+                r="72"
+                fill="#c99527"
+                opacity="0.12"
+                filter="url(#softGlow)"
+              />
+
+              <circle
+                cx="86"
+                cy="345"
+                r="72"
+                fill="#e5c04d"
+                opacity="0.08"
+                filter="url(#softGlow)"
+              />
+
+              <!-- 星 -->
+              <g fill="#e8c95f">
+
+                <circle
+                  cx="65"
+                  cy="90"
+                  r="2.3"
+                />
+
+                <circle
+                  cx="102"
+                  cy="58"
+                  r="1.4"
+                />
+
+                <circle
+                  cx="344"
+                  cy="65"
+                  r="2"
+                />
+
+                <circle
+                  cx="374"
+                  cy="138"
+                  r="1.5"
+                />
+
+                <path
+                  d="M69 145
+                     L72 152
+                     L79 155
+                     L72 158
+                     L69 165
+                     L66 158
+                     L59 155
+                     L66 152 Z"
+                  opacity="0.75"
+                />
+
+                <path
+                  d="M352 210
+                     L355 216
+                     L361 219
+                     L355 222
+                     L352 228
+                     L349 222
+                     L343 219
+                     L349 216 Z"
+                  opacity="0.7"
+                />
+
+              </g>
+
+              <!-- ソファ -->
+              <rect
+                x="42"
+                y="338"
+                width="346"
+                height="79"
+                rx="30"
+                fill="#191919"
+                stroke="#b88820"
+                stroke-opacity="0.45"
+              />
+
+              <rect
+                x="65"
+                y="306"
+                width="300"
+                height="82"
+                rx="35"
+                fill="#22201d"
+              />
+
+              <!-- 女性の髪 -->
+              <ellipse
+                cx="224"
+                cy="150"
+                rx="76"
+                ry="94"
+                fill="#171313"
+              />
+
+              <path
+                d="M155 156
+                   C151 72 190 52 231 58
+                   C283 66 305 105 294 177
+                   C279 151 271 119 257 96
+                   C231 124 202 142 155 156 Z"
+                fill="#29201d"
+              />
+
+              <!-- 顔 -->
+              <ellipse
+                cx="228"
+                cy="145"
+                rx="48"
+                ry="58"
+                fill="#f0c5ac"
+              />
+
+              <!-- 前髪 -->
+              <path
+                d="M181 135
+                   C184 86 211 72 240 78
+                   C269 84 282 105 278 133
+                   C255 114 234 99 218 94
+                   C208 111 196 125 181 135 Z"
+                fill="#251c19"
+              />
+
+              <!-- 目 -->
+              <path
+                d="M202 146 Q211 151 219 146"
+                fill="none"
+                stroke="#342724"
+                stroke-width="3"
+                stroke-linecap="round"
+              />
+
+              <path
+                d="M239 146 Q248 151 256 146"
+                fill="none"
+                stroke="#342724"
+                stroke-width="3"
+                stroke-linecap="round"
+              />
+
+              <!-- 鼻 -->
+              <path
+                d="M230 150 Q226 161 231 164"
+                fill="none"
+                stroke="#d39a83"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+
+              <!-- 口 -->
+              <path
+                d="M215 175 Q228 185 243 175"
+                fill="none"
+                stroke="#bb6371"
+                stroke-width="3"
+                stroke-linecap="round"
+              />
+
+              <!-- 首 -->
+              <rect
+                x="211"
+                y="194"
+                width="38"
+                height="43"
+                rx="15"
+                fill="#edbda4"
+              />
+
+              <!-- 服 -->
+              <path
+                d="M157 247
+                   C176 218 201 213 229 216
+                   C261 215 287 224 304 253
+                   L326 374
+                   L126 374
+                   Z"
+                fill="url(#dressGradient)"
+                stroke="#c99b2e"
+                stroke-opacity="0.32"
+              />
+
+              <!-- ゴールドアクセサリー -->
+              <path
+                d="M207 220 Q229 239 251 220"
+                fill="none"
+                stroke="url(#goldGradient)"
+                stroke-width="4"
+              />
+
+              <circle
+                cx="229"
+                cy="239"
+                r="6"
+                fill="#e6bd4b"
+              />
+
+              <!-- 腕 -->
+              <path
+                d="M169 260
+                   C135 291 140 335 179 347"
+                fill="none"
+                stroke="#efc1a8"
+                stroke-width="25"
+                stroke-linecap="round"
+              />
+
+              <path
+                d="M291 260
+                   C320 290 312 325 283 339"
+                fill="none"
+                stroke="#efc1a8"
+                stroke-width="25"
+                stroke-linecap="round"
+              />
+
+              <!-- スマホ -->
+              <g transform="rotate(-4 232 304)">
+
+                <rect
+                  x="194"
+                  y="247"
+                  width="78"
+                  height="127"
+                  rx="15"
+                  fill="#111111"
+                  stroke="url(#goldGradient)"
+                  stroke-width="3"
+                />
+
+                <rect
+                  x="203"
+                  y="260"
+                  width="60"
+                  height="93"
+                  rx="8"
+                  fill="#202020"
+                />
+
+                <circle
+                  cx="233"
+                  cy="364"
+                  r="5"
+                  fill="#d4a836"
+                />
+
+                <circle
+                  cx="233"
+                  cy="288"
+                  r="17"
+                  fill="#42d66b"
+                />
+
+                <path
+                  d="M222 286
+                     Q233 276 244 286
+                     Q244 298 233 301
+                     Q222 298 222 286 Z"
+                  fill="#ffffff"
+                />
+
+              </g>
+
+              <!-- 手 -->
+              <circle
+                cx="192"
+                cy="332"
+                r="14"
+                fill="#efc1a8"
+              />
+
+              <circle
+                cx="276"
+                cy="330"
+                r="14"
+                fill="#efc1a8"
+              />
+
+              <!-- コイン -->
+              <g>
+
+                <circle
+                  cx="322"
+                  cy="260"
+                  r="21"
+                  fill="url(#goldGradient)"
+                />
+
+                <text
+                  x="322"
+                  y="268"
+                  text-anchor="middle"
+                  font-size="23"
+                  font-weight="bold"
+                  fill="#1a1408"
+                >
+                  ¥
+                </text>
+
+                <circle
+                  cx="353"
+                  cy="298"
+                  r="14"
+                  fill="url(#goldGradient)"
+                  opacity="0.9"
+                />
+
+                <text
+                  x="353"
+                  y="304"
+                  text-anchor="middle"
+                  font-size="14"
+                  font-weight="bold"
+                  fill="#1a1408"
+                >
+                  ¥
+                </text>
+
+                <circle
+                  cx="104"
+                  cy="241"
+                  r="16"
+                  fill="url(#goldGradient)"
+                  opacity="0.85"
+                />
+
+                <text
+                  x="104"
+                  y="247"
+                  text-anchor="middle"
+                  font-size="16"
+                  font-weight="bold"
+                  fill="#1a1408"
+                >
+                  ¥
+                </text>
+
+              </g>
+
+              <!-- 下部テキスト -->
+              <text
+                x="215"
+                y="445"
+                text-anchor="middle"
+                font-size="14"
+                font-weight="bold"
+                letter-spacing="3"
+                fill="#e4c45e"
+              >
+                SMART WORK STYLE
+              </text>
+
+            </svg>
+
+            <div class="floating-card floating-left">
+              <strong>登録無料</strong>
+              相談だけでもOK
+            </div>
+
+            <div class="floating-card floating-right">
+              <strong>スマホ1台</strong>
+              好きな場所で
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="scroll-guide">
+        SCROLL
+        <span class="scroll-line"></span>
+      </div>
+
+    </section>
+
+    <!-- おすすめ -->
+    <section class="section">
+
+      <div class="section-inner">
+
+        <div class="section-heading">
+
+          <span class="section-en">
+            RECOMMENDED
+          </span>
+
+          <h2 class="section-title">
+            こんな方におすすめ
+          </h2>
+
+          <p class="section-lead">
+            決まった時間に働くのが難しい方や、
+            自分のペースで収入を増やしたい方におすすめです。
+          </p>
+
+        </div>
+
+        <div class="recommend-grid">
+
+          <article class="recommend-card">
+            <div class="recommend-icon">⏰</div>
+            <h3>スキマ時間を活用</h3>
+            <p>
+              空いている時間を使って
+              自分のペースで働けます。
+            </p>
+          </article>
+
+          <article class="recommend-card">
+            <div class="recommend-icon">🏠</div>
+            <h3>在宅で働きたい</h3>
+            <p>
+              自宅から始められるため、
+              移動時間もかかりません。
+            </p>
+          </article>
+
+          <article class="recommend-card">
+            <div class="recommend-icon">💰</div>
+            <h3>副収入が欲しい</h3>
+            <p>
+              本業やアルバイトと両立しながら
+              収入アップを目指せます。
+            </p>
+          </article>
+
+          <article class="recommend-card">
+            <div class="recommend-icon">📱</div>
+            <h3>スマホで始めたい</h3>
+            <p>
+              特別な機材がなくても、
+              スマホ1台から始められます。
+            </p>
+          </article>
+
+          <article class="recommend-card">
+            <div class="recommend-icon">✨</div>
+            <h3>未経験から挑戦</h3>
+            <p>
+              経験がない方でも、
+              相談しながら始められます。
+            </p>
+          </article>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- 安心ポイント -->
+    <section class="section 安心-section">
+
+      <div class="section-inner">
+
+        <div class="section-heading">
+
+          <span class="section-en">
+            SAFE & EASY
+          </span>
+
+          <h2 class="section-title">
+            はじめやすい安心ポイント
+          </h2>
+
+        </div>
+
+        <div class="安心-grid">
+
+          <article class="安心-card">
+
+            <div class="安心-number">01</div>
+
+            <div>
+              <h3>登録は無料</h3>
+              <p>
+                登録料や相談料はかかりません。
+                費用を気にせず相談できます。
+              </p>
+            </div>
+
+          </article>
+
+          <article class="安心-card">
+
+            <div class="安心-number">02</div>
+
+            <div>
+              <h3>登録だけでもOK</h3>
+              <p>
+                今すぐ働く必要はありません。
+                まずは登録だけして、
+                始めたい時に相談できます。
+              </p>
+            </div>
+
+          </article>
+
+          <article class="安心-card">
+
+            <div class="安心-number">03</div>
+
+            <div>
+              <h3>自分のペースで働ける</h3>
+              <p>
+                決まった勤務時間やノルマに縛られず、
+                ライフスタイルに合わせて働けます。
+              </p>
+            </div>
+
+          </article>
+
+          <article class="安心-card">
+
+            <div class="安心-number">04</div>
+
+            <div>
+              <h3>顔出しなしも相談可能</h3>
+              <p>
+                顔出しに抵抗がある方も、
+                希望に合った働き方を相談できます。
+              </p>
+            </div>
+
+          </article>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- 登録だけ推奨 -->
+    <section class="section">
+
+      <div class="section-inner">
+
+        <div class="message-panel">
+
+          <p class="message-small">
+            迷っている方へ
+          </p>
+
+          <h2 class="message-title">
+            今すぐ働かなくても<br>
+            <strong>大丈夫です。</strong>
+          </h2>
+
+          <p class="message-text">
+            気になっていても、すぐに始める必要はありません。<br>
+            まずは無料登録だけして、
+            条件や働き方を確認しておくのがおすすめです。
+          </p>
+
+          <a
+            href="https://line.me/ti/p/3TpvqaIQYW"
+            class="line-button"
+            target="_blank"
+            rel="noopener noreferrer"
+            style="margin: 0 auto;"
+          >
+            <span class="line-icon">LINE</span>
+            無料で登録しておく
+          </a>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- 登録手順 -->
+    <section class="section" id="entry">
+
+      <div class="section-inner">
+
+        <div class="section-heading">
+
+          <span class="section-en">
+            ENTRY
+          </span>
+
+          <h2 class="section-title">
+            LINEから簡単無料登録
+          </h2>
+
+          <p class="section-lead">
+            LINE追加後、最初のメッセージで
+            紹介名を送信してください。
+          </p>
+
+        </div>
+
+        <div class="registration-box">
+
+          <div class="registration-step">
+
+            <div class="step-number">1</div>
+
+            <div class="step-content">
+              <h3>紹介名をコピー</h3>
+              <p>
+                下に表示されている「yuma」を
+                タップしてコピーしてください。
+              </p>
+            </div>
+
+          </div>
+
+          <div class="copy-area">
+
+            <p class="copy-label">
+              紹介名
+            </p>
+
+            <button
+              type="button"
+              class="copy-box"
+              id="copyButton"
+              onclick="copyReferralName()"
+            >
+              <span class="copy-name">
+                yuma
+              </span>
+
+              <span class="copy-help">
+                タップしてコピー
+              </span>
+            </button>
+
+          </div>
+
+          <div class="registration-step">
+
+            <div class="step-number">2</div>
+
+            <div class="step-content">
+              <h3>公式LINEを追加</h3>
+              <p>
+                下のボタンからLINEを追加してください。
+              </p>
+            </div>
+
+          </div>
+
+          <div class="registration-step">
+
+            <div class="step-number">3</div>
+
+            <div class="step-content">
+              <h3>「yumaの紹介」と送信</h3>
+              <p>
+                LINE追加後、最初のメッセージで
+                「yumaの紹介」と送信してください。
+              </p>
+            </div>
+
+          </div>
+
+          <p class="important-text">
+            ⚠ 紹介名が確認できない場合、<br>
+            紹介経由として案内できない場合があります。
+          </p>
+
+          <a
+            href="https://line.me/ti/p/3TpvqaIQYW"
+            class="line-button"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span class="line-icon">LINE</span>
+            LINEを追加して無料登録
+          </a>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- よくある質問 -->
+    <section class="section">
+
+      <div class="section-inner">
+
+        <div class="section-heading">
+
+          <span class="section-en">
+            FAQ
+          </span>
+
+          <h2 class="section-title">
+            よくある質問
+          </h2>
+
+        </div>
+
+        <div class="faq-list">
+
+          <div class="faq-item">
+
+            <p class="faq-question">
+              Q. 登録したらすぐに働かないといけませんか？
+            </p>
+
+            <p class="faq-answer">
+              いいえ。まずは登録だけでも問題ありません。
+              条件や仕事内容を確認してから判断できます。
+            </p>
+
+          </div>
+
+          <div class="faq-item">
+
+            <p class="faq-question">
+              Q. 未経験でも登録できますか？
+            </p>
+
+            <p class="faq-answer">
+              未経験の方でも登録できます。
+              分からないことはLINEから相談できます。
+            </p>
+
+          </div>
+
+          <div class="faq-item">
+
+            <p class="faq-question">
+              Q. スマートフォンだけでもできますか？
+            </p>
+
+            <p class="faq-answer">
+              スマートフォンから始められる働き方もあります。
+              詳しい条件はLINE追加後にご確認ください。
+            </p>
+
+          </div>
+
+          <div class="faq-item">
+
+            <p class="faq-question">
+              Q. 顔出しをしたくありません。
+            </p>
+
+            <p class="faq-answer">
+              顔出しなしを希望する場合も、
+              LINEから働き方について相談できます。
+            </p>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <footer class="footer">
+
+      <div class="footer-logo">
+        NOX
+      </div>
+
+      <p>
+        チャットレディ特集ページ
+      </p>
+
+      <p>
+        © NOX. All Rights Reserved.
+      </p>
+
+    </footer>
+
+  </div>
+
+  <!-- 画面下固定ボタン -->
+  <div class="sticky-cta">
+
+    <a
+      href="https://line.me/ti/p/3TpvqaIQYW"
+      class="sticky-button"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      <span class="line-icon">LINE</span>
+      無料登録だけしておく
+    </a>
+
+  </div>
+
+  <!-- コピー完了表示 -->
+  <div
+    class="toast"
+    id="copyToast"
+  >
+    「yuma」をコピーしました
+  </div>
+
+  <script>
+    async function copyReferralName() {
+      const referralName = "yuma";
+      const toast = document.getElementById("copyToast");
+
+      try {
+        await navigator.clipboard.writeText(referralName);
+        showCopyToast(toast);
+      } catch (error) {
+        const textArea = document.createElement("textarea");
+
+        textArea.value = referralName;
+        textArea.style.position = "fixed";
+        textArea.style.opacity = "0";
+
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+
+        try {
+          document.execCommand("copy");
+          showCopyToast(toast);
+        } catch (copyError) {
+          alert("コピーできませんでした。yumaと入力してください。");
+        }
+
+        document.body.removeChild(textArea);
+      }
+    }
+
+    function showCopyToast(toast) {
+      toast.classList.add("show");
+
+      setTimeout(() => {
+        toast.classList.remove("show");
+      }, 2200);
+    }
+  </script>
+
+</body>
+</html>
