@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
+
   <meta
     name="viewport"
     content="width=device-width, initial-scale=1.0"
@@ -23,6 +24,8 @@
 
     body {
       min-height: 100vh;
+      padding: 25px;
+      color: #fff;
       background:
         radial-gradient(
           circle at top,
@@ -30,8 +33,6 @@
           transparent 32%
         ),
         #050505;
-      color: #fff;
-      padding: 25px;
     }
 
     .page {
@@ -41,32 +42,32 @@
     }
 
     .logo {
+      margin-bottom: 8px;
+      color: #d4af37;
       font-size: 56px;
       font-weight: 900;
       letter-spacing: 4px;
-      color: #d4af37;
-      margin-bottom: 8px;
     }
 
     .sub {
-      color: #999;
       margin-bottom: 30px;
+      color: #999;
       font-size: 18px;
     }
 
     .card {
+      margin-bottom: 28px;
+      padding: 24px;
       background: #141414;
       border: 1px solid #2c2c2c;
       border-radius: 22px;
-      padding: 24px;
-      margin-bottom: 28px;
     }
 
     .section-title {
+      margin-bottom: 20px;
       color: #d4af37;
       font-size: 22px;
       font-weight: bold;
-      margin-bottom: 20px;
     }
 
     label {
@@ -87,13 +88,13 @@
     select,
     textarea {
       width: 100%;
-      background: #080808;
+      padding: 14px;
       color: #fff;
+      background: #080808;
       border: 1px solid #333;
       border-radius: 14px;
-      padding: 14px;
-      font-size: 16px;
       outline: none;
+      font-size: 16px;
     }
 
     input:focus,
@@ -109,9 +110,9 @@
     }
 
     small {
-      color: #888;
       display: block;
       margin-top: 8px;
+      color: #888;
       line-height: 1.7;
     }
 
@@ -125,47 +126,47 @@
     .preview-item {
       position: relative;
       overflow: hidden;
-      border-radius: 12px;
       aspect-ratio: 1 / 1;
       background: #080808;
       border: 1px solid #333;
+      border-radius: 12px;
     }
 
     .preview-item img {
+      display: block;
       width: 100%;
       height: 100%;
       object-fit: cover;
-      display: block;
     }
 
     .preview-number {
       position: absolute;
       top: 6px;
       left: 6px;
-      min-width: 24px;
-      height: 24px;
       display: grid;
       place-items: center;
+      min-width: 24px;
+      height: 24px;
       padding: 0 6px;
-      border-radius: 999px;
       color: #000;
       background: #d4af37;
+      border-radius: 999px;
       font-size: 12px;
       font-weight: bold;
     }
 
     .submit-button {
       width: 100%;
-      background: linear-gradient(135deg, #f0d46a, #b88a16);
+      margin-top: 4px;
+      padding: 18px;
       color: #000;
+      background: linear-gradient(135deg, #f0d46a, #b88a16);
       border: none;
       border-radius: 16px;
-      padding: 18px;
+      box-shadow: 0 10px 30px rgba(212, 175, 55, 0.18);
+      cursor: pointer;
       font-size: 18px;
       font-weight: bold;
-      margin-top: 4px;
-      cursor: pointer;
-      box-shadow: 0 10px 30px rgba(212, 175, 55, 0.18);
     }
 
     .submit-button:active {
@@ -181,11 +182,11 @@
     .application-note {
       margin: 28px 0 50px;
       padding: 24px 16px;
-      border-radius: 18px;
-      text-align: center;
       color: #9d9d9d;
       background: rgba(212, 175, 55, 0.08);
       border: 1px solid rgba(212, 175, 55, 0.25);
+      border-radius: 18px;
+      text-align: center;
       font-size: 14px;
       line-height: 1.9;
     }
@@ -228,7 +229,6 @@
       }
 
       #imagePreview {
-        grid-template-columns: repeat(3, 1fr);
         gap: 7px;
       }
     }
@@ -252,10 +252,11 @@
           店舗名
           <span class="required">必須</span>
         </label>
+
         <input
           id="storeName"
           type="text"
-          placeholder="例：Girls Bar NOX 新宿店"
+          placeholder="例：Girls Bar Spica"
           required
         >
 
@@ -281,42 +282,47 @@
           id="otherBusinessType"
           type="text"
           placeholder="その他の業種を入力"
-          style="display: none; margin-top: 12px;"
+          style="display:none; margin-top:12px;"
         >
 
         <label for="area">
           エリア
           <span class="required">必須</span>
         </label>
+
         <input
           id="area"
           type="text"
-          placeholder="例：東京都新宿区"
+          placeholder="例：千葉県千葉市中央区富士見"
           required
         >
 
         <label for="address">店舗住所</label>
+
         <input
           id="address"
           type="text"
-          placeholder="例：東京都新宿区歌舞伎町1-○-○"
+          placeholder="例：千葉県千葉市中央区富士見2丁目"
         >
 
         <label for="station">最寄駅</label>
+
         <input
           id="station"
           type="text"
-          placeholder="例：JR新宿駅 徒歩5分"
+          placeholder="例：千葉中央駅 徒歩5分"
         >
 
         <label for="businessHours">営業時間</label>
+
         <input
           id="businessHours"
           type="text"
-          placeholder="例：20:00〜LAST"
+          placeholder="例：18:00〜翌5:00"
         >
 
         <label for="closedDay">定休日</label>
+
         <input
           id="closedDay"
           type="text"
@@ -331,39 +337,45 @@
           時給
           <span class="required">必須</span>
         </label>
+
         <input
           id="salary"
           type="text"
-          placeholder="例：時給3,500円〜"
+          placeholder="例：時給4,500円〜"
           required
         >
 
         <label for="back">各種バック</label>
+
         <input
           id="back"
           type="text"
-          placeholder="例：ドリンクバック・ボトルバックあり"
+          placeholder="例：ドリンク・ボトルなど各種バックあり"
         >
 
         <label for="dailyPay">日払い</label>
+
         <select id="dailyPay">
           <option value="あり">あり</option>
           <option value="なし">なし</option>
         </select>
 
         <label for="trial">体験入店</label>
+
         <select id="trial">
           <option value="可能">可能</option>
           <option value="不可">不可</option>
         </select>
 
         <label for="beginner">未経験歓迎</label>
+
         <select id="beginner">
           <option value="はい">はい</option>
           <option value="いいえ">いいえ</option>
         </select>
 
         <label for="age">採用年齢</label>
+
         <input
           id="age"
           type="text"
@@ -371,18 +383,21 @@
         >
 
         <label for="quota">ノルマ</label>
+
         <select id="quota">
           <option value="なし">なし</option>
           <option value="あり">あり</option>
         </select>
 
         <label for="penalty">ペナルティ</label>
+
         <select id="penalty">
           <option value="なし">なし</option>
           <option value="あり">あり</option>
         </select>
 
         <label for="shift">シフト</label>
+
         <input
           id="shift"
           type="text"
@@ -394,32 +409,37 @@
         <div class="section-title">■ お店について</div>
 
         <label for="shopPR">お店のPR</label>
+
         <textarea
           id="shopPR"
-          placeholder="例：未経験者大歓迎！ノルマなし・全額日払いOK・送りあり・アットホームなお店です。"
+          placeholder="お店の魅力や求人の特徴を入力してください"
         ></textarea>
 
         <label for="atmosphere">お店の雰囲気</label>
+
         <textarea
           id="atmosphere"
-          placeholder="例：スタッフ同士の仲が良く、未経験の方でも安心して働ける環境です。"
+          placeholder="例：キャスト・スタッフ同士の仲が良く、明るい雰囲気です"
         ></textarea>
 
         <label for="customerBase">客層</label>
+
         <input
           id="customerBase"
           type="text"
-          placeholder="例：20代〜50代の落ち着いたお客様が中心"
+          placeholder="例：幅広い年代のお客様が来店されます"
         >
 
         <label for="staffCount">在籍人数</label>
+
         <input
           id="staffCount"
           type="text"
-          placeholder="例：20名"
+          placeholder="例：14名"
         >
 
         <label for="ageGroup">キャスト年齢層</label>
+
         <input
           id="ageGroup"
           type="text"
@@ -430,7 +450,9 @@
       <section class="card">
         <div class="section-title">■ 掲載用画像</div>
 
-        <label for="jobImages">店舗写真（最大9枚）</label>
+        <label for="jobImages">
+          店舗写真（最大9枚）
+        </label>
 
         <input
           id="jobImages"
@@ -441,7 +463,8 @@
 
         <small>
           店内・外観・ロゴ・求人画像などを最大9枚まで選択できます。<br>
-          1枚目の画像が求人一覧と詳細ページのメイン画像になります。
+          1枚目の画像が求人一覧と詳細ページのメイン画像になります。<br>
+          画像なしでも申請できます。
         </small>
 
         <div id="imagePreview"></div>
@@ -450,46 +473,56 @@
       <section class="card">
         <div class="section-title">■ SNS・連絡先</div>
 
+        <small>
+          SNSやホームページがない場合は、空欄または「なし」「準備中」と入力できます。
+        </small>
+
         <label for="website">ホームページ</label>
+
         <input
           id="website"
-          type="url"
-          placeholder="例：https://example.com"
+          type="text"
+          placeholder="URL・なし・準備中"
         >
 
         <label for="instagram">Instagram</label>
+
         <input
           id="instagram"
-          type="url"
-          placeholder="例：https://www.instagram.com/nox_shinjuku"
+          type="text"
+          placeholder="URL・なし・準備中"
         >
 
         <label for="tiktok">TikTok</label>
+
         <input
           id="tiktok"
-          type="url"
-          placeholder="例：https://www.tiktok.com/@nox_shinjuku"
+          type="text"
+          placeholder="URL・なし・準備中"
         >
 
         <label for="twitter">X（Twitter）</label>
+
         <input
           id="twitter"
-          type="url"
-          placeholder="例：https://x.com/nox_shinjuku"
+          type="text"
+          placeholder="URL・なし・準備中"
         >
 
         <label for="officialLine">公式LINE</label>
+
         <input
           id="officialLine"
-          type="url"
-          placeholder="例：https://lin.ee/xxxxxxxx"
+          type="text"
+          placeholder="URL・なし・準備中"
         >
 
         <label for="applicationPhone">応募用電話番号</label>
+
         <input
           id="applicationPhone"
           type="tel"
-          placeholder="例：03-1234-5678"
+          placeholder="例：043-123-4567"
         >
       </section>
 
@@ -500,10 +533,11 @@
           ご担当者名
           <span class="required">必須</span>
         </label>
+
         <input
           id="contactName"
           type="text"
-          placeholder="例：山田"
+          placeholder="例：宮本"
           required
         >
 
@@ -511,6 +545,7 @@
           ご連絡先
           <span class="required">必須</span>
         </label>
+
         <input
           id="contactInfo"
           type="text"
@@ -554,18 +589,35 @@
 
     const storage = getStorage(app);
 
-    const form = document.getElementById("jobApplicationForm");
-    const submitButton = document.getElementById("submitButton");
-    const businessType = document.getElementById("businessType");
+    const form =
+      document.getElementById("jobApplicationForm");
+
+    const submitButton =
+      document.getElementById("submitButton");
+
+    const businessType =
+      document.getElementById("businessType");
+
     const otherBusinessType =
       document.getElementById("otherBusinessType");
 
-    const jobImages = document.getElementById("jobImages");
-    const imagePreview = document.getElementById("imagePreview");
-    const formMessage = document.getElementById("formMessage");
+    const jobImages =
+      document.getElementById("jobImages");
+
+    const imagePreview =
+      document.getElementById("imagePreview");
+
+    const formMessage =
+      document.getElementById("formMessage");
 
     function getValue(id) {
-      return document.getElementById(id)?.value.trim() || "";
+      const element = document.getElementById(id);
+
+      if (!element) {
+        return "";
+      }
+
+      return element.value.trim();
     }
 
     function showMessage(message, type) {
@@ -584,7 +636,8 @@
     }
 
     function toggleOtherBusiness() {
-      const isOther = businessType.value === "その他";
+      const isOther =
+        businessType.value === "その他";
 
       otherBusinessType.style.display =
         isOther ? "block" : "none";
@@ -607,7 +660,8 @@
       hideMessage();
       imagePreview.innerHTML = "";
 
-      const files = Array.from(jobImages.files);
+      const files =
+        Array.from(jobImages.files);
 
       if (files.length > 9) {
         jobImages.value = "";
@@ -624,17 +678,26 @@
         const reader = new FileReader();
 
         reader.addEventListener("load", () => {
-          const previewItem = document.createElement("div");
+          const previewItem =
+            document.createElement("div");
+
           previewItem.className = "preview-item";
 
-          const image = document.createElement("img");
+          const image =
+            document.createElement("img");
+
           image.src = reader.result;
           image.alt = `掲載画像 ${index + 1}`;
 
-          const number = document.createElement("span");
+          const number =
+            document.createElement("span");
+
           number.className = "preview-number";
+
           number.textContent =
-            index === 0 ? "メイン" : String(index + 1);
+            index === 0
+              ? "メイン"
+              : String(index + 1);
 
           previewItem.appendChild(image);
           previewItem.appendChild(number);
@@ -646,15 +709,21 @@
     });
 
     function safeFileName(fileName) {
-      return fileName
+      const cleanedName = fileName
         .replace(/\s+/g, "_")
         .replace(/[^\w.\-ぁ-んァ-ヶ一-龠]/g, "");
+
+      return cleanedName || "image.jpg";
     }
 
     async function uploadJobImages(files) {
       const imageUrls = [];
 
-      for (let index = 0; index < files.length; index += 1) {
+      for (
+        let index = 0;
+        index < files.length;
+        index += 1
+      ) {
         const imageFile = files[index];
 
         const uniqueName =
@@ -665,7 +734,10 @@
           `jobs/${uniqueName}`
         );
 
-        await uploadBytes(imageReference, imageFile);
+        await uploadBytes(
+          imageReference,
+          imageFile
+        );
 
         const imageUrl =
           await getDownloadURL(imageReference);
@@ -676,120 +748,140 @@
       return imageUrls;
     }
 
-    form.addEventListener("submit", async (event) => {
-      event.preventDefault();
-      hideMessage();
+    form.addEventListener(
+      "submit",
+      async (event) => {
+        event.preventDefault();
+        hideMessage();
 
-      const files = Array.from(jobImages.files);
+        if (!form.checkValidity()) {
+          form.reportValidity();
+          return;
+        }
 
-      if (files.length > 9) {
-        showMessage(
-          "掲載画像は最大9枚まで選択できます。",
-          "error"
-        );
+        const files =
+          Array.from(jobImages.files);
 
-        return;
+        if (files.length > 9) {
+          showMessage(
+            "掲載画像は最大9枚まで選択できます。",
+            "error"
+          );
+
+          return;
+        }
+
+        if (
+          businessType.value === "その他" &&
+          !otherBusinessType.value.trim()
+        ) {
+          showMessage(
+            "その他の業種名を入力してください。",
+            "error"
+          );
+
+          otherBusinessType.focus();
+          return;
+        }
+
+        submitButton.disabled = true;
+
+        submitButton.textContent =
+          files.length > 0
+            ? "画像をアップロードしています..."
+            : "掲載情報を送信しています...";
+
+        try {
+          const imageUrls =
+            await uploadJobImages(files);
+
+          submitButton.textContent =
+            "掲載情報を送信しています...";
+
+          const selectedBusinessType =
+            businessType.value === "その他"
+              ? otherBusinessType.value.trim()
+              : businessType.value;
+
+          const applicationData = {
+            storeName: getValue("storeName"),
+            businessType: selectedBusinessType,
+
+            area: getValue("area"),
+            address: getValue("address"),
+            station: getValue("station"),
+            businessHours: getValue("businessHours"),
+            closedDay: getValue("closedDay"),
+
+            salary: getValue("salary"),
+            salaryText: getValue("salary"),
+            back: getValue("back"),
+            dailyPay: getValue("dailyPay"),
+            trial: getValue("trial"),
+            beginner: getValue("beginner"),
+            age: getValue("age"),
+            quota: getValue("quota"),
+            penalty: getValue("penalty"),
+            shift: getValue("shift"),
+
+            shopPR: getValue("shopPR"),
+            atmosphere: getValue("atmosphere"),
+            customerBase: getValue("customerBase"),
+            staffCount: getValue("staffCount"),
+            ageGroup: getValue("ageGroup"),
+
+            website: getValue("website"),
+            instagram: getValue("instagram"),
+            tiktok: getValue("tiktok"),
+            twitter: getValue("twitter"),
+            officialLine: getValue("officialLine"),
+            applicationPhone:
+              getValue("applicationPhone"),
+
+            contactName: getValue("contactName"),
+            contactInfo: getValue("contactInfo"),
+
+            images: imageUrls,
+            image: imageUrls[0] || "",
+            mainImage: imageUrls[0] || "",
+            imageUrl: imageUrls[0] || "",
+
+            status: "pending",
+            createdAt: serverTimestamp()
+          };
+
+          await addDoc(
+            collection(db, "jobApplications"),
+            applicationData
+          );
+
+          form.reset();
+          imagePreview.innerHTML = "";
+          toggleOtherBusiness();
+
+          showMessage(
+            "掲載申請を受け付けました。NOX運営で確認後、承認手続きを進めます。",
+            "success"
+          );
+
+        } catch (error) {
+          console.error(
+            "掲載申請エラー:",
+            error
+          );
+
+          showMessage(
+            `掲載申請に失敗しました。${error.message || "時間を置いて再度お試しください。"}`,
+            "error"
+          );
+
+        } finally {
+          submitButton.disabled = false;
+          submitButton.textContent =
+            "📤 掲載申請する";
+        }
       }
-
-      if (
-        businessType.value === "その他" &&
-        !otherBusinessType.value.trim()
-      ) {
-        showMessage(
-          "その他の業種名を入力してください。",
-          "error"
-        );
-
-        otherBusinessType.focus();
-        return;
-      }
-
-      submitButton.disabled = true;
-      submitButton.textContent = "画像をアップロードしています...";
-
-      try {
-        const imageUrls = await uploadJobImages(files);
-
-        submitButton.textContent = "掲載情報を送信しています...";
-
-        const selectedBusinessType =
-          businessType.value === "その他"
-            ? otherBusinessType.value.trim()
-            : businessType.value;
-
-        const applicationData = {
-          storeName: getValue("storeName"),
-          businessType: selectedBusinessType,
-
-          area: getValue("area"),
-          address: getValue("address"),
-          station: getValue("station"),
-          businessHours: getValue("businessHours"),
-          closedDay: getValue("closedDay"),
-
-          salary: getValue("salary"),
-          salaryText: getValue("salary"),
-          back: getValue("back"),
-          dailyPay: getValue("dailyPay"),
-          trial: getValue("trial"),
-          beginner: getValue("beginner"),
-          age: getValue("age"),
-          quota: getValue("quota"),
-          penalty: getValue("penalty"),
-          shift: getValue("shift"),
-
-          shopPR: getValue("shopPR"),
-          atmosphere: getValue("atmosphere"),
-          customerBase: getValue("customerBase"),
-          staffCount: getValue("staffCount"),
-          ageGroup: getValue("ageGroup"),
-
-          website: getValue("website"),
-          instagram: getValue("instagram"),
-          tiktok: getValue("tiktok"),
-          twitter: getValue("twitter"),
-          officialLine: getValue("officialLine"),
-          applicationPhone: getValue("applicationPhone"),
-
-          contactName: getValue("contactName"),
-          contactInfo: getValue("contactInfo"),
-
-          images: imageUrls,
-          image: imageUrls[0] || "",
-          mainImage: imageUrls[0] || "",
-          imageUrl: imageUrls[0] || "",
-
-          status: "pending",
-          createdAt: serverTimestamp()
-        };
-
-        await addDoc(
-          collection(db, "jobApplications"),
-          applicationData
-        );
-
-        form.reset();
-        imagePreview.innerHTML = "";
-        toggleOtherBusiness();
-
-        showMessage(
-          "掲載申請を受け付けました。NOX運営で確認後、承認手続きを進めます。",
-          "success"
-        );
-
-      } catch (error) {
-        console.error("掲載申請エラー:", error);
-
-        showMessage(
-          `掲載申請に失敗しました。${error.message || "時間を置いて再度お試しください。"}`,
-          "error"
-        );
-
-      } finally {
-        submitButton.disabled = false;
-        submitButton.textContent = "📤 掲載申請する";
-      }
-    });
+    );
   </script>
 </body>
 </html>
