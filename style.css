@@ -817,6 +817,7 @@ footer p{
   line-height:1.9;
 }
 
+footer h3,
 footer h4{
   color:var(--gold2);
   margin-bottom:16px;
@@ -830,6 +831,17 @@ footer a{
 
 footer a:hover{
   color:var(--gold2);
+}
+
+.footer-grid{
+  display:contents;
+}
+
+.footer-bottom{
+  grid-column:1 / -1;
+  text-align:center;
+  padding-top:28px;
+  border-top:1px solid rgba(212,175,55,.15);
 }
 
 /* =========================
@@ -1016,62 +1028,107 @@ footer a:hover{
   color:#fff;
 }
 
-/* =========================
-   NOX ローテーション広告
-========================= */
+/* =========================================
+   NOX 広告①〜⑥
+========================================= */
 
 .nox-ad-area{
   position:relative;
-  z-index:3;
-  width:min(94%, 1080px);
-  margin:8px auto 75px;
-  padding-top:0;
+  z-index:10;
+  width:100vw;
+  max-width:none;
+  margin:
+    10px 0
+    75px
+    calc(50% - 50vw);
+  padding:0;
 }
 
 .nox-ad-slider{
   position:relative;
-  min-height:165px;
+  width:100%;
+  max-width:none;
+  aspect-ratio:16 / 9;
+  min-height:0;
   overflow:hidden;
-  border:1px solid rgba(212,175,55,.65);
-  border-radius:20px;
-  background:#090909;
-  transition:.35s;
+  border-top:1px solid rgba(212,175,55,.7);
+  border-bottom:1px solid rgba(212,175,55,.7);
+  border-left:none;
+  border-right:none;
+  border-radius:0;
+  background:#000;
   box-shadow:
-    0 14px 35px rgba(0,0,0,.5),
-    0 0 26px rgba(212,175,55,.12);
-}
-
-.nox-ad-slider:hover{
-  transform:translateY(-3px);
-  box-shadow:
-    0 20px 45px rgba(0,0,0,.6),
-    0 0 32px rgba(212,175,55,.22);
+    0 18px 55px rgba(0,0,0,.72),
+    0 0 32px rgba(212,175,55,.13);
 }
 
 .nox-ad-slide{
   display:none;
+  position:absolute;
+  inset:0;
   width:100%;
-  min-height:165px;
+  height:100%;
+  min-height:0;
+  overflow:hidden;
+  background:#000;
   color:#fff;
   text-decoration:none;
-  background:
-    radial-gradient(circle at top right,rgba(212,175,55,.2),transparent 40%),
-    linear-gradient(135deg,#17120a,#080808 65%);
 }
 
 .nox-ad-slide.active{
-  display:block;
-  animation:noxAdFade .65s ease;
-}
-
-.nox-ad-content{
-  min-height:165px;
   display:flex;
   align-items:center;
-  gap:16px;
-  padding:20px 24px;
-  box-sizing:border-box;
-  flex-wrap:wrap;
+  justify-content:center;
+  animation:noxAdFade .55s ease;
+}
+
+.nox-ad-slide > img{
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  object-position:center;
+  background:#000;
+  transform:none;
+}
+
+.nox-ad-empty{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  height:100%;
+  padding:20px;
+  color:#aaa;
+  text-align:center;
+  background:
+    radial-gradient(
+      circle at 50% 30%,
+      rgba(212,175,55,.15),
+      transparent 45%
+    ),
+    #050505;
+}
+
+/* 通常の文字広告 */
+
+.nox-ad-content{
+  width:min(92%,1000px);
+  min-height:75%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:20px;
+  padding:28px;
+  border:1px solid rgba(212,175,55,.55);
+  border-radius:22px;
+  background:
+    radial-gradient(
+      circle at top right,
+      rgba(212,175,55,.18),
+      transparent 40%
+    ),
+    linear-gradient(135deg,#17120a,#080808 65%);
 }
 
 .nox-ad-badge{
@@ -1086,29 +1143,32 @@ footer a:hover{
 }
 
 .nox-ad-text{
-  flex:1 1 calc(100% - 55px);
+  flex:1;
   min-width:0;
+  text-align:left;
 }
 
 .nox-ad-text strong{
   display:block;
   color:#f5d77b;
-  font-size:20px;
+  font-size:24px;
   line-height:1.45;
 }
 
 .nox-ad-text p{
   margin:7px 0 0;
   color:#ddd;
-  font-size:13px;
+  font-size:14px;
   line-height:1.7;
 }
 
 .nox-ad-button{
-  width:100%;
-  box-sizing:border-box;
-  text-align:center;
-  padding:13px 18px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  flex:0 0 auto;
+  width:auto;
+  padding:13px 24px;
   border-radius:999px;
   background:linear-gradient(135deg,#a97908,#f3d979);
   color:#111;
@@ -1117,48 +1177,156 @@ footer a:hover{
   white-space:nowrap;
 }
 
+/* 広告掲載募集中 */
+
+.nox-ad-recruitment{
+  background:
+    radial-gradient(
+      circle at 75% 20%,
+      rgba(212,175,55,.2),
+      transparent 35%
+    ),
+    radial-gradient(
+      circle at 20% 80%,
+      rgba(212,175,55,.1),
+      transparent 32%
+    ),
+    linear-gradient(
+      135deg,
+      #030303,
+      #100b03 55%,
+      #030303
+    );
+}
+
+.nox-ad-recruitment-inner{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  width:min(92%,900px);
+  height:86%;
+  margin:auto;
+  padding:22px 28px;
+  text-align:center;
+  border:1px solid rgba(212,175,55,.65);
+  border-radius:22px;
+  background:rgba(0,0,0,.42);
+  box-shadow:
+    inset 0 0 30px rgba(212,175,55,.06),
+    0 12px 35px rgba(0,0,0,.45);
+  overflow:hidden;
+}
+
+.nox-ad-recruitment-slot{
+  display:inline-block;
+  margin-bottom:8px;
+  padding:5px 12px;
+  border:1px solid rgba(212,175,55,.5);
+  border-radius:999px;
+  color:#f5d36b;
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:2px;
+}
+
+.nox-ad-recruitment-small{
+  margin:0 0 8px;
+  color:#aaa;
+  font-size:11px;
+  letter-spacing:3px;
+}
+
+.nox-ad-recruitment-inner strong{
+  display:block;
+  margin:0 0 10px;
+  color:#ffe08a;
+  font-size:clamp(20px,3.2vw,38px);
+  line-height:1.35;
+  letter-spacing:2px;
+}
+
+.nox-ad-recruitment-inner > p:not(.nox-ad-recruitment-small){
+  margin:0 0 12px;
+  color:#ddd;
+  font-size:clamp(13px,1.8vw,18px);
+  line-height:1.65;
+}
+
+.nox-ad-recruitment-price{
+  display:block;
+  margin:0 0 14px;
+  color:#f5d36b;
+  font-size:clamp(19px,3vw,34px);
+  font-weight:800;
+  white-space:nowrap;
+}
+
+.nox-ad-recruitment .nox-ad-button{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:auto;
+  max-width:90%;
+  margin:0;
+  padding:12px 28px;
+  border-radius:999px;
+  background:
+    linear-gradient(
+      135deg,
+      #9b6a14,
+      #ffe08a,
+      #b88622
+    );
+  color:#111;
+  font-size:14px;
+  font-weight:800;
+  white-space:nowrap;
+}
+
+/* 広告ドット */
+
 .nox-ad-dots{
   display:flex;
-  justify-content:center;
   align-items:center;
-  gap:8px;
-  margin-top:12px;
+  justify-content:center;
+  gap:9px;
+  margin-top:15px;
 }
 
 .nox-ad-dots button{
-  width:8px;
-  height:8px;
+  width:9px;
+  height:9px;
   padding:0;
   border:0;
   border-radius:50%;
   background:#555;
   cursor:pointer;
+  transition:.25s;
 }
 
 .nox-ad-dots button.active{
-  width:20px;
+  width:26px;
   border-radius:999px;
   background:#d4af37;
 }
 
 .nox-ad-note{
-  margin:8px 0 0;
-  padding:0 6px;
-  text-align:center;
-  color:#888;
+  margin:10px 0 0;
+  padding:0 15px;
+  color:#777;
   font-size:10px;
   line-height:1.6;
+  text-align:center;
 }
 
 @keyframes noxAdFade{
   from{
     opacity:0;
-    transform:translateY(5px);
   }
 
   to{
     opacity:1;
-    transform:translateY(0);
   }
 }
 
@@ -1174,6 +1342,7 @@ footer a:hover{
 }
 
 .top-job-card{
+  position:relative;
   background:#0b0b0b;
   border:1px solid rgba(212,175,55,.25);
   border-radius:18px;
@@ -1193,6 +1362,20 @@ footer a:hover{
   object-fit:cover;
 }
 
+.top-featured-label{
+  position:absolute;
+  top:12px;
+  left:12px;
+  z-index:2;
+  padding:6px 10px;
+  border-radius:999px;
+  background:linear-gradient(135deg,#a97908,#f3d979);
+  color:#111;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:1px;
+}
+
 .top-job-body{
   padding:18px;
 }
@@ -1208,6 +1391,10 @@ footer a:hover{
   margin:6px 0;
 }
 
+.top-job-body .btn{
+  margin-top:14px;
+}
+
 .top-job-pay{
   color:#d4af37;
   font-size:24px;
@@ -1215,7 +1402,10 @@ footer a:hover{
   margin-top:12px;
 }
 
-.jobs-loading{
+.jobs-loading,
+.top-jobs-empty,
+.top-jobs-error{
+  grid-column:1 / -1;
   text-align:center;
   color:#aaa;
   padding:40px;
@@ -1227,8 +1417,45 @@ footer a:hover{
 }
 
 /* =========================
-   Chat Lady Button
+   Chat Lady
 ========================= */
+
+.chatlady-feature{
+  width:min(100%,900px);
+  margin:0 auto 70px;
+  padding:52px 25px;
+  text-align:center;
+  border-top:1px solid rgba(212,175,55,.2);
+  border-bottom:1px solid rgba(212,175,55,.2);
+  background:
+    radial-gradient(circle at 50% 60%,rgba(212,175,55,.12),transparent 50%);
+}
+
+.chatlady-badge{
+  display:inline-block;
+  color:#fff;
+  font-size:18px;
+  margin-bottom:20px;
+}
+
+.chatlady-feature h2{
+  color:#ffe08a;
+  font-size:34px;
+  letter-spacing:4px;
+}
+
+.chatlady-catch{
+  margin-top:20px;
+  color:#fff;
+  font-size:21px;
+}
+
+.chatlady-text{
+  margin-top:10px;
+  color:#ddd;
+  font-size:18px;
+  line-height:1.9;
+}
 
 .chatlady-btn-wrap{
   text-align:center;
@@ -1347,6 +1574,12 @@ footer a:hover{
     grid-template-columns:1fr;
   }
 
+  .footer-grid{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:28px;
+  }
+
   .form-grid{
     grid-template-columns:1fr;
   }
@@ -1376,6 +1609,10 @@ footer a:hover{
 
   .hero{
     padding:65px 14px 65px;
+  }
+
+  .hero-content{
+    max-width:100%;
   }
 
   .hero h1{
@@ -1412,29 +1649,48 @@ footer a:hover{
     font-size:35px;
   }
 
+  /* スマホ広告 */
+
   .nox-ad-area{
-    width:94%;
-    margin:6px auto 68px;
+    width:100vw;
+    margin:
+      8px 0
+      65px
+      calc(50% - 50vw);
   }
 
   .nox-ad-slider{
-    min-height:175px;
-    border-radius:18px;
+    width:100%;
+    aspect-ratio:16 / 9;
+    min-height:0;
+    border-radius:0;
   }
 
-  .nox-ad-slide{
-    min-height:175px;
+  .nox-ad-slide > img{
+    width:100%;
+    height:100%;
+    object-fit:contain;
+    object-position:center;
   }
 
   .nox-ad-content{
-    min-height:175px;
-    gap:11px;
-    padding:16px;
+    width:92%;
+    height:88%;
+    min-height:0;
+    padding:14px;
+    gap:9px;
+    flex-direction:column;
+    border-radius:17px;
   }
 
   .nox-ad-badge{
-    padding:6px 9px;
-    font-size:10px;
+    padding:4px 9px;
+    font-size:9px;
+  }
+
+  .nox-ad-text{
+    flex:0 1 auto;
+    text-align:center;
   }
 
   .nox-ad-text strong{
@@ -1442,17 +1698,84 @@ footer a:hover{
   }
 
   .nox-ad-text p{
-    font-size:12px;
+    font-size:11px;
+    line-height:1.45;
   }
 
-  .nox-ad-button{
-    padding:12px 14px;
-    font-size:13px;
+  .nox-ad-content .nox-ad-button{
+    width:auto;
+    padding:9px 18px;
+    font-size:11px;
+  }
+
+  .nox-ad-recruitment-inner{
+    width:92%;
+    height:88%;
+    padding:10px 13px;
+    border-radius:17px;
+  }
+
+  .nox-ad-recruitment-slot{
+    margin-bottom:4px;
+    padding:3px 8px;
+    font-size:8px;
+    letter-spacing:1px;
+  }
+
+  .nox-ad-recruitment-small{
+    margin-bottom:3px;
+    font-size:7px;
+    letter-spacing:1px;
+  }
+
+  .nox-ad-recruitment-inner strong{
+    margin-bottom:4px;
+    font-size:16px;
+    line-height:1.25;
+    letter-spacing:.5px;
+  }
+
+  .nox-ad-recruitment-inner > p:not(.nox-ad-recruitment-small){
+    margin-bottom:5px;
+    font-size:10px;
+    line-height:1.4;
+  }
+
+  .nox-ad-recruitment-price{
+    margin-bottom:6px;
+    font-size:17px;
+  }
+
+  .nox-ad-recruitment .nox-ad-button{
+    max-width:94%;
+    padding:8px 15px;
+    font-size:10px;
+  }
+
+  .nox-ad-dots{
+    margin-top:13px;
   }
 
   .nox-ad-note{
+    margin-top:8px;
     font-size:9px;
-    margin-top:7px;
+  }
+
+  .chatlady-feature{
+    margin-bottom:50px;
+    padding:42px 18px;
+  }
+
+  .chatlady-feature h2{
+    font-size:27px;
+  }
+
+  .chatlady-catch{
+    font-size:18px;
+  }
+
+  .chatlady-text{
+    font-size:15px;
   }
 
   .rank-item{
@@ -1474,27 +1797,5 @@ footer a:hover{
 
   .footer-brand h2{
     font-size:48px;
-  }
-}
-
-/* =========================
-   PC広告表示
-========================= */
-
-@media(min-width:601px){
-
-  .nox-ad-content{
-    flex-wrap:nowrap;
-  }
-
-  .nox-ad-text{
-    flex:1;
-  }
-
-  .nox-ad-button{
-    width:auto;
-    flex:0 0 auto;
-    padding:14px 22px;
-    font-size:14px;
   }
 }
