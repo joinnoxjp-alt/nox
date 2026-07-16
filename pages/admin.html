@@ -295,16 +295,35 @@ document.querySelectorAll(".approveBtn").forEach((btn) => {
     if (!ok) return;
 
     await updateDoc(
-      doc(db, "jobApplications", jobId),
-      {
-        status: "approved",
-        approvedAt: serverTimestamp()
-      }
-    );
+  doc(db, "jobApplications", jobId),
+  {
+    status: "approved",
+    approvedAt: serverTimestamp()
+  }
+);
 
-    alert("承認しました");
+const approvedSnap = await getDoc(
+  doc(db, "jobApplications", jobId)
+);
 
-    loadJobApplications();
+if (!approvedSnap.exists()) {
+  alert("求人データが見つかりません");
+  return;
+}
+
+const approvedData = approvedSnap.data();
+
+await addDoc(collection(db, "jobs"), {
+  ...approvedData,
+  sourceApplicationId: jobId,
+  status: "approved",
+  approvedAt: serverTimestamp(),
+  createdAt: approvedData.createdAt || serverTimestamp()
+});
+
+alert("承認しました");
+
+loadJobApplications();
 
   });
 
