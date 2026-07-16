@@ -2,174 +2,930 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
   <title>求人承認管理 | NOX</title>
+
   <link rel="stylesheet" href="../style.css">
+
+  <style>
+    .job-admin-wrap {
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .admin-section {
+      margin-top: 34px;
+      padding-top: 24px;
+      border-top: 1px solid rgba(201, 163, 74, 0.3);
+    }
+
+    .admin-section-title {
+      margin-bottom: 8px;
+      color: #f5d36b;
+      font-size: 24px;
+    }
+
+    .admin-section-text {
+      margin-bottom: 20px;
+      color: #aaa;
+      line-height: 1.7;
+    }
+
+    .job-admin-card {
+      margin: 16px 0;
+      padding: 18px;
+      color: #fff;
+      background: #111;
+      border: 1px solid rgba(201, 163, 74, 0.5);
+      border-radius: 18px;
+    }
+
+    .job-admin-card h3 {
+      margin: 0 0 12px;
+      color: #f5d36b;
+      font-size: 22px;
+    }
+
+    .job-admin-card p {
+      margin: 7px 0;
+      line-height: 1.6;
+    }
+
+    .status-badge {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .status-pending {
+      color: #ffe59a;
+      background: rgba(212, 175, 55, 0.15);
+      border: 1px solid rgba(212, 175, 55, 0.4);
+    }
+
+    .status-approved {
+      color: #caffd0;
+      background: rgba(46, 160, 67, 0.16);
+      border: 1px solid rgba(46, 160, 67, 0.45);
+    }
+
+    .status-paused {
+      color: #ddd;
+      background: rgba(150, 150, 150, 0.15);
+      border: 1px solid rgba(150, 150, 150, 0.4);
+    }
+
+    .image-upload {
+      width: 100%;
+      margin: 14px 0;
+      padding: 12px;
+      color: #fff;
+      background: #080808;
+      border: 1px solid #333;
+      border-radius: 12px;
+    }
+
+    .admin-button-group {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .admin-action-button {
+      width: 100%;
+      padding: 13px 14px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: bold;
+    }
+
+    .approve-button,
+    .publish-button {
+      color: #000;
+      background: linear-gradient(135deg, #f5d36b, #b98a19);
+    }
+
+    .pause-button {
+      color: #fff;
+      background: #555;
+    }
+
+    .delete-button {
+      color: #fff;
+      background: #a52222;
+    }
+
+    .admin-action-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .empty-message {
+      margin: 16px 0;
+      padding: 18px;
+      color: #aaa;
+      text-align: center;
+      background: #111;
+      border: 1px solid #292929;
+      border-radius: 14px;
+    }
+
+    .loading-message {
+      padding: 18px;
+      color: #aaa;
+      text-align: center;
+    }
+
+    @media (min-width: 600px) {
+      .admin-button-group {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
 </head>
 
 <body class="register-body">
   <main class="register-page">
     <section class="register-section">
-      <div class="register-card">
+
+      <div class="register-card job-admin-wrap">
 
         <div class="register-step">
           <span>NOX JOB ADMIN</span>
           <h2>求人承認管理</h2>
-          <p>店舗掲載申請の確認・承認</p>
+          <p>店舗掲載申請・掲載中求人の管理</p>
         </div>
 
-        <div id="jobList">
-          <p>読み込み中...</p>
-        </div>
+        <section class="admin-section">
+          <h3 class="admin-section-title">
+            承認待ち申請
+          </h3>
+
+          <p class="admin-section-text">
+            店舗から届いた申請を確認して公開できます。
+          </p>
+
+          <div id="pendingJobList">
+            <p class="loading-message">
+              読み込み中...
+            </p>
+          </div>
+        </section>
+
+        <section class="admin-section">
+          <h3 class="admin-section-title">
+            掲載店舗一覧
+          </h3>
+
+          <p class="admin-section-text">
+            掲載停止・再掲載・完全削除ができます。
+          </p>
+
+          <div id="publishedJobList">
+            <p class="loading-message">
+              読み込み中...
+            </p>
+          </div>
+        </section>
 
         <div class="header-actions">
-          <a href="../index.html" class="btn ghost">トップへ戻る</a>
-          <a href="./admin.html" class="btn ghost">管理者ページ</a>
+          <a href="../index.html" class="btn ghost">
+            トップへ戻る
+          </a>
+
+          <a href="./admin.html" class="btn ghost">
+            管理者ページ
+          </a>
         </div>
 
       </div>
     </section>
   </main>
 
-<script type="module">
-  import { auth } from "../firebase.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  <script type="module">
+    import { auth } from "../firebase.js";
 
-import {
-  getFirestore,
-  collection,
-  getDocs,
-  getDoc,
-  doc,
-  addDoc,
-  updateDoc,
-  serverTimestamp
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import {
-  getStorage,
-  ref,
-  uploadBytes,
-  getDownloadURL
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
-const db = getFirestore();
-const storage = getStorage();
-const jobList = document.getElementById("jobList");
+    import {
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-onAuthStateChanged(auth, async (user) => {
+    import {
+      getFirestore,
+      collection,
+      getDocs,
+      getDoc,
+      doc,
+      addDoc,
+      updateDoc,
+      deleteDoc,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  if (!user) {
-    alert("ログインしてください");
-    location.href = "./login.html";
-    return;
-  }
+    import {
+      getStorage,
+      ref,
+      uploadBytes,
+      getDownloadURL
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
-  const adminRef = doc(db, "users", user.uid);
-  const adminSnap = await getDoc(adminRef);
+    const db = getFirestore();
+    const storage = getStorage();
 
-  if (!adminSnap.exists() || adminSnap.data().role !== "admin") {
-    alert("管理者のみアクセスできます");
-    location.href = "./mypage.html";
-    return;
-  }
+    const pendingJobList =
+      document.getElementById("pendingJobList");
 
-  loadJobs();
+    const publishedJobList =
+      document.getElementById("publishedJobList");
 
-});
-  async function loadJobs() {
-  const snap = await getDocs(collection(db, "jobApplications"));
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
 
-  jobList.innerHTML = "";
-let pendingCount = 0;
-  if (snap.empty) {
-    jobList.innerHTML = "<p>掲載申請はありません。</p>";
-    return;
-  }
+    function getTimestampSeconds(value) {
+      return value?.seconds || 0;
+    }
 
-  snap.forEach((jobDoc) => {
-    const data = jobDoc.data();
-    const id = jobDoc.id;
+    function getJobName(data) {
+      return (
+        data.storeName ||
+        data.shopName ||
+        data.name ||
+        "店舗名未設定"
+      );
+    }
 
-    if (data.status === "approved") return;
-pendingCount++;
-    const card = document.createElement("div");
-    card.style.cssText = `
-      border:1px solid rgba(201,163,74,.5);
-      border-radius:18px;
-      padding:16px;
-      margin:16px 0;
-      background:#111;
-      color:white;
-    `;
+    function getJobArea(data) {
+      return (
+        data.area ||
+        data.location ||
+        data.prefecture ||
+        "-"
+      );
+    }
 
-    card.innerHTML = `
-      <h3 style="color:#f5d36b;margin:0 0 8px;">
-        ${data.storeName || "店舗名未設定"}
-      </h3>
+    function getJobSalary(data) {
+      return (
+        data.salary ||
+        data.salaryText ||
+        data.hourlyWage ||
+        "-"
+      );
+    }
 
-      <p>業種：${data.businessType || "-"}</p>
-      <p>エリア：${data.area || "-"}</p>
-      <p>時給：${data.salary || "-"}</p>
-      <p>状態：${data.status || "pending"}</p>
-      <input type="file"
-class="imageUpload"
-accept="image/*"
-data-id="${id}"
-style="width:100%;margin:12px 0;">
-      <button class="gold-btn approveBtn" data-id="${id}" style="margin-top:12px;">
-        承認して公開
-      </button>
-    `;
+    function getStatusLabel(status) {
+      if (status === "approved") {
+        return "掲載中";
+      }
 
-    jobList.appendChild(card);
-  });
-    if (pendingCount === 0) {
-  jobList.innerHTML = "<p>承認待ちの掲載申請はありません。</p>";
-}
-}
-  document.addEventListener("click", async (e) => {
-  if (!e.target.classList.contains("approveBtn")) return;
+      if (status === "paused") {
+        return "掲載停止中";
+      }
 
-  const id = e.target.dataset.id;
+      return status || "不明";
+    }
 
-  if (!confirm("この求人を承認して公開しますか？")) {
-    return;
-  }
+    function getStatusClass(status) {
+      if (status === "approved") {
+        return "status-approved";
+      }
 
-  const jobRef = doc(db, "jobApplications", id);
-  const jobSnap = await getDoc(jobRef);
+      if (status === "paused") {
+        return "status-paused";
+      }
 
-  if (!jobSnap.exists()) {
-    alert("申請データが見つかりません");
-    return;
-  }
+      return "status-pending";
+    }
 
-  const data = jobSnap.data();
- const file = document.querySelector(`.imageUpload[data-id="${id}"]`).files[0];
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        alert("ログインしてください");
+        location.href = "./login.html";
+        return;
+      }
 
-let imageUrl = "";
+      try {
+        const adminReference =
+          doc(db, "users", user.uid);
 
-if (file) {
-  const imageRef = ref(storage, "job-images/" + Date.now() + "-" + file.name);
+        const adminSnapshot =
+          await getDoc(adminReference);
 
-  await uploadBytes(imageRef, file);
+        if (
+          !adminSnapshot.exists() ||
+          adminSnapshot.data().role !== "admin"
+        ) {
+          alert("管理者のみアクセスできます");
+          location.href = "./mypage.html";
+          return;
+        }
 
-  imageUrl = await getDownloadURL(imageRef);
-}
-  await addDoc(collection(db, "jobs"), {
-  ...data,
-  imageUrl: imageUrl,
-  status: "approved",
-  approvedAt: serverTimestamp()
-});
+        await loadAllJobs();
 
-  await updateDoc(jobRef, {
-    status: "approved"
-  });
+      } catch (error) {
+        console.error("管理者確認エラー:", error);
+        alert("管理者情報の確認に失敗しました");
+      }
+    });
 
-  alert("承認して公開しました！");
-  loadJobs();
-});
+    async function loadAllJobs() {
+      await Promise.all([
+        loadPendingJobs(),
+        loadPublishedJobs()
+      ]);
+    }
+
+    async function loadPendingJobs() {
+      pendingJobList.innerHTML = `
+        <p class="loading-message">
+          読み込み中...
+        </p>
+      `;
+
+      try {
+        const snapshot =
+          await getDocs(
+            collection(db, "jobApplications")
+          );
+
+        const applications = [];
+
+        snapshot.forEach((applicationDocument) => {
+          const data = applicationDocument.data();
+
+          if (data.status === "approved") {
+            return;
+          }
+
+          applications.push({
+            id: applicationDocument.id,
+            ...data
+          });
+        });
+
+        applications.sort((applicationA, applicationB) => {
+          return (
+            getTimestampSeconds(applicationB.createdAt) -
+            getTimestampSeconds(applicationA.createdAt)
+          );
+        });
+
+        if (applications.length === 0) {
+          pendingJobList.innerHTML = `
+            <p class="empty-message">
+              承認待ちの掲載申請はありません。
+            </p>
+          `;
+
+          return;
+        }
+
+        pendingJobList.innerHTML = "";
+
+        applications.forEach((application) => {
+          const card = document.createElement("article");
+          card.className = "job-admin-card";
+
+          card.innerHTML = `
+            <h3>
+              ${escapeHtml(getJobName(application))}
+            </h3>
+
+            <p>
+              業種：
+              ${escapeHtml(application.businessType || "-")}
+            </p>
+
+            <p>
+              エリア：
+              ${escapeHtml(getJobArea(application))}
+            </p>
+
+            <p>
+              時給：
+              ${escapeHtml(getJobSalary(application))}
+            </p>
+
+            <span class="status-badge status-pending">
+              承認待ち
+            </span>
+
+            <input
+              type="file"
+              class="image-upload"
+              accept="image/*"
+              data-application-id="${escapeHtml(application.id)}"
+            >
+
+            <div class="admin-button-group">
+              <button
+                type="button"
+                class="admin-action-button approve-button approve-application-button"
+                data-application-id="${escapeHtml(application.id)}"
+              >
+                承認して公開
+              </button>
+
+              <button
+                type="button"
+                class="admin-action-button delete-button delete-application-button"
+                data-application-id="${escapeHtml(application.id)}"
+              >
+                申請を削除
+              </button>
+            </div>
+          `;
+
+          pendingJobList.appendChild(card);
+        });
+
+      } catch (error) {
+        console.error("申請一覧取得エラー:", error);
+
+        pendingJobList.innerHTML = `
+          <p class="empty-message">
+            申請一覧を読み込めませんでした。
+          </p>
+        `;
+      }
+    }
+
+    async function loadPublishedJobs() {
+      publishedJobList.innerHTML = `
+        <p class="loading-message">
+          読み込み中...
+        </p>
+      `;
+
+      try {
+        const snapshot =
+          await getDocs(collection(db, "jobs"));
+
+        const jobs = [];
+
+        snapshot.forEach((jobDocument) => {
+          const data = jobDocument.data();
+
+          jobs.push({
+            id: jobDocument.id,
+            ...data
+          });
+        });
+
+        jobs.sort((jobA, jobB) => {
+          const timeA =
+            getTimestampSeconds(jobA.approvedAt) ||
+            getTimestampSeconds(jobA.createdAt);
+
+          const timeB =
+            getTimestampSeconds(jobB.approvedAt) ||
+            getTimestampSeconds(jobB.createdAt);
+
+          return timeB - timeA;
+        });
+
+        if (jobs.length === 0) {
+          publishedJobList.innerHTML = `
+            <p class="empty-message">
+              掲載中の店舗はありません。
+            </p>
+          `;
+
+          return;
+        }
+
+        publishedJobList.innerHTML = "";
+
+        jobs.forEach((job) => {
+          const card = document.createElement("article");
+          card.className = "job-admin-card";
+
+          const isApproved =
+            job.status === "approved";
+
+          card.innerHTML = `
+            <h3>
+              ${escapeHtml(getJobName(job))}
+            </h3>
+
+            <p>
+              業種：
+              ${escapeHtml(job.businessType || "-")}
+            </p>
+
+            <p>
+              エリア：
+              ${escapeHtml(getJobArea(job))}
+            </p>
+
+            <p>
+              時給：
+              ${escapeHtml(getJobSalary(job))}
+            </p>
+
+            <span
+              class="status-badge ${getStatusClass(job.status)}"
+            >
+              ${escapeHtml(getStatusLabel(job.status))}
+            </span>
+
+            <div class="admin-button-group">
+
+              ${
+                isApproved
+                  ? `
+                    <button
+                      type="button"
+                      class="admin-action-button pause-button pause-job-button"
+                      data-job-id="${escapeHtml(job.id)}"
+                    >
+                      掲載を停止
+                    </button>
+                  `
+                  : `
+                    <button
+                      type="button"
+                      class="admin-action-button publish-button republish-job-button"
+                      data-job-id="${escapeHtml(job.id)}"
+                    >
+                      再掲載する
+                    </button>
+                  `
+              }
+
+              <button
+                type="button"
+                class="admin-action-button delete-button delete-job-button"
+                data-job-id="${escapeHtml(job.id)}"
+              >
+                完全削除
+              </button>
+
+            </div>
+          `;
+
+          publishedJobList.appendChild(card);
+        });
+
+      } catch (error) {
+        console.error("掲載求人取得エラー:", error);
+
+        publishedJobList.innerHTML = `
+          <p class="empty-message">
+            掲載店舗一覧を読み込めませんでした。
+          </p>
+        `;
+      }
+    }
+
+    document.addEventListener("click", async (event) => {
+      const target = event.target;
+
+      if (
+        target.classList.contains(
+          "approve-application-button"
+        )
+      ) {
+        await approveApplication(target);
+        return;
+      }
+
+      if (
+        target.classList.contains(
+          "delete-application-button"
+        )
+      ) {
+        await deleteApplication(target);
+        return;
+      }
+
+      if (
+        target.classList.contains(
+          "pause-job-button"
+        )
+      ) {
+        await pauseJob(target);
+        return;
+      }
+
+      if (
+        target.classList.contains(
+          "republish-job-button"
+        )
+      ) {
+        await republishJob(target);
+        return;
+      }
+
+      if (
+        target.classList.contains(
+          "delete-job-button"
+        )
+      ) {
+        await deletePublishedJob(target);
+      }
+    });
+
+    async function approveApplication(button) {
+      const applicationId =
+        button.dataset.applicationId;
+
+      if (
+        !confirm(
+          "この申請を承認して求人ページへ公開しますか？"
+        )
+      ) {
+        return;
+      }
+
+      button.disabled = true;
+      button.textContent = "公開処理中...";
+
+      try {
+        const applicationReference =
+          doc(
+            db,
+            "jobApplications",
+            applicationId
+          );
+
+        const applicationSnapshot =
+          await getDoc(applicationReference);
+
+        if (!applicationSnapshot.exists()) {
+          alert("申請データが見つかりません");
+          return;
+        }
+
+        const applicationData =
+          applicationSnapshot.data();
+
+        const fileInput =
+          document.querySelector(
+            `.image-upload[data-application-id="${applicationId}"]`
+          );
+
+        const selectedFile =
+          fileInput?.files?.[0];
+
+        let uploadedImageUrl = "";
+
+        if (selectedFile) {
+          const safeFileName =
+            selectedFile.name
+              .replace(/\s+/g, "_")
+              .replace(/[^\w.\-ぁ-んァ-ヶ一-龠]/g, "");
+
+          const imageReference = ref(
+            storage,
+            `job-images/${Date.now()}_${safeFileName || "image.jpg"}`
+          );
+
+          await uploadBytes(
+            imageReference,
+            selectedFile
+          );
+
+          uploadedImageUrl =
+            await getDownloadURL(imageReference);
+        }
+
+        const existingImages =
+          Array.isArray(applicationData.images)
+            ? applicationData.images.filter(Boolean)
+            : [];
+
+        const mainImage =
+          uploadedImageUrl ||
+          applicationData.mainImage ||
+          applicationData.imageUrl ||
+          applicationData.image ||
+          existingImages[0] ||
+          "";
+
+        await addDoc(collection(db, "jobs"), {
+          ...applicationData,
+
+          sourceApplicationId: applicationId,
+
+          images:
+            existingImages.length > 0
+              ? existingImages
+              : mainImage
+                ? [mainImage]
+                : [],
+
+          image: mainImage,
+          imageUrl: mainImage,
+          mainImage: mainImage,
+
+          status: "approved",
+          approvedAt: serverTimestamp()
+        });
+
+        await updateDoc(applicationReference, {
+          status: "approved",
+          approvedAt: serverTimestamp()
+        });
+
+        alert("承認して公開しました");
+
+        await loadAllJobs();
+
+      } catch (error) {
+        console.error("承認処理エラー:", error);
+
+        alert(
+          `公開に失敗しました：${error.message || error}`
+        );
+
+      } finally {
+        button.disabled = false;
+        button.textContent = "承認して公開";
+      }
+    }
+
+    async function deleteApplication(button) {
+      const applicationId =
+        button.dataset.applicationId;
+
+      if (
+        !confirm(
+          "この承認待ち申請を削除しますか？\n削除後は元に戻せません。"
+        )
+      ) {
+        return;
+      }
+
+      button.disabled = true;
+      button.textContent = "削除中...";
+
+      try {
+        await deleteDoc(
+          doc(
+            db,
+            "jobApplications",
+            applicationId
+          )
+        );
+
+        alert("申請を削除しました");
+
+        await loadPendingJobs();
+
+      } catch (error) {
+        console.error("申請削除エラー:", error);
+
+        alert(
+          `申請を削除できませんでした：${error.message || error}`
+        );
+
+      } finally {
+        button.disabled = false;
+        button.textContent = "申請を削除";
+      }
+    }
+
+    async function pauseJob(button) {
+      const jobId = button.dataset.jobId;
+
+      if (
+        !confirm(
+          "この店舗の掲載を停止しますか？\nホームと求人一覧から非表示になります。"
+        )
+      ) {
+        return;
+      }
+
+      button.disabled = true;
+      button.textContent = "停止中...";
+
+      try {
+        await updateDoc(
+          doc(db, "jobs", jobId),
+          {
+            status: "paused",
+            pausedAt: serverTimestamp()
+          }
+        );
+
+        alert("掲載を停止しました");
+
+        await loadPublishedJobs();
+
+      } catch (error) {
+        console.error("掲載停止エラー:", error);
+
+        alert(
+          `掲載を停止できませんでした：${error.message || error}`
+        );
+
+      } finally {
+        button.disabled = false;
+        button.textContent = "掲載を停止";
+      }
+    }
+
+    async function republishJob(button) {
+      const jobId = button.dataset.jobId;
+
+      if (
+        !confirm(
+          "この店舗を再掲載しますか？"
+        )
+      ) {
+        return;
+      }
+
+      button.disabled = true;
+      button.textContent = "再掲載中...";
+
+      try {
+        await updateDoc(
+          doc(db, "jobs", jobId),
+          {
+            status: "approved",
+            republishedAt: serverTimestamp()
+          }
+        );
+
+        alert("再掲載しました");
+
+        await loadPublishedJobs();
+
+      } catch (error) {
+        console.error("再掲載エラー:", error);
+
+        alert(
+          `再掲載できませんでした：${error.message || error}`
+        );
+
+      } finally {
+        button.disabled = false;
+        button.textContent = "再掲載する";
+      }
+    }
+
+    async function deletePublishedJob(button) {
+      const jobId = button.dataset.jobId;
+
+      if (
+        !confirm(
+          "この掲載店舗を完全削除しますか？\nホーム・求人一覧・詳細ページから消え、元に戻せません。"
+        )
+      ) {
+        return;
+      }
+
+      const secondConfirmation =
+        confirm(
+          "本当に完全削除してよろしいですか？"
+        );
+
+      if (!secondConfirmation) {
+        return;
+      }
+
+      button.disabled = true;
+      button.textContent = "削除中...";
+
+      try {
+        await deleteDoc(
+          doc(db, "jobs", jobId)
+        );
+
+        alert("掲載店舗を完全削除しました");
+
+        await loadPublishedJobs();
+
+      } catch (error) {
+        console.error("掲載求人削除エラー:", error);
+
+        alert(
+          `削除できませんでした：${error.message || error}`
+        );
+
+      } finally {
+        button.disabled = false;
+        button.textContent = "完全削除";
+      }
+    }
   </script>
-
 </body>
 </html>
