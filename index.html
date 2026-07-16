@@ -1,36 +1,131 @@
 <!DOCTYPE html>
 <html lang="ja">
-<!-- NOX Favicon -->
-<link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
-<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-<link rel="shortcut icon" href="/favicon.ico" />
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-<link rel="manifest" href="/site.webmanifest" />
 
-
-<meta charset="UTF-8">
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>NOX | 全国対応の夜職・ナイトワーク求人サイト</title>
-  <meta name="description" content="NOXは全国対応の夜職・ナイトワーク求人プラットフォーム。キャバクラ・ガールズバー・ラウンジ・コンカフェ・メンズエステ・デリヘル・ソープなど幅広い夜職求人を掲載。AI診断であなたに合うお仕事探しをサポートします。" />
-  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
-  <meta name="theme-color" content="#000000" />
-  <link rel="canonical" href="https://joinnox.jp/" />
 
-  <meta property="og:title" content="NOX | 全国対応の夜職・ナイトワーク求人サイト" />
-  <meta property="og:description" content="キャバクラ・ガールズバー・ラウンジ・コンカフェ・メンズエステ・デリヘル・ソープなど全国の夜職求人を探せるNOX。" />
-  <meta property="og:url" content="https://joinnox.jp/" />
-  <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="NOX" />
-  <meta property="og:image" content="https://joinnox.jp/images/ai-match.jpg" />
-  <meta name="twitter:card" content="summary_large_image" />
+  <meta
+    name="description"
+    content="NOXは全国対応の夜職・ナイトワーク求人プラットフォーム。キャバクラ・ガールズバー・ラウンジ・コンカフェ・メンズエステ・デリヘル・ソープなど幅広い夜職求人を掲載。AI診断であなたに合うお仕事探しをサポートします。"
+  >
 
-  <link rel="stylesheet" href="style.css?v=2" />
+  <meta
+    name="robots"
+    content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+  >
+
+  <meta name="theme-color" content="#000000">
+
+  <link rel="canonical" href="https://joinnox.jp/">
+
+  <meta
+    property="og:title"
+    content="NOX | 全国対応の夜職・ナイトワーク求人サイト"
+  >
+
+  <meta
+    property="og:description"
+    content="キャバクラ・ガールズバー・ラウンジ・コンカフェ・メンズエステ・デリヘル・ソープなど全国の夜職求人を探せるNOX。"
+  >
+
+  <meta property="og:url" content="https://joinnox.jp/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="NOX">
+
+  <meta
+    property="og:image"
+    content="https://joinnox.jp/images/ai-match.jpg"
+  >
+
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- NOX Favicon -->
+  <link
+    rel="icon"
+    type="image/png"
+    href="/favicon-96x96.png"
+    sizes="96x96"
+  >
+
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="shortcut icon" href="/favicon.ico">
+
+  <link
+    rel="apple-touch-icon"
+    sizes="180x180"
+    href="/apple-touch-icon.png"
+  >
+
+  <link rel="manifest" href="/site.webmanifest">
+
+  <link rel="stylesheet" href="style.css?v=5">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Noto+Serif+JP:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin
+  >
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Noto+Serif+JP:wght@400;500;700&display=swap"
+    rel="stylesheet"
+  >
+
+  <style>
+    .nox-ad-slider{
+      min-height:unset;
+      aspect-ratio:16 / 7;
+    }
+
+    .nox-ad-slide{
+      display:none;
+      width:100%;
+      height:100%;
+      min-height:unset;
+      overflow:hidden;
+    }
+
+    .nox-ad-slide.active{
+      display:block;
+    }
+
+    .nox-ad-slide img{
+      display:block;
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
+
+    .nox-ad-empty{
+      width:100%;
+      height:100%;
+      min-height:150px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+      text-align:center;
+      color:#aaa;
+      background:
+        radial-gradient(
+          circle at top right,
+          rgba(212,175,55,.18),
+          transparent 38%
+        ),
+        #090909;
+    }
+
+    @media(max-width:600px){
+      .nox-ad-slider{
+        aspect-ratio:16 / 8.5;
+      }
+    }
+  </style>
 </head>
 
 <body>
@@ -41,6 +136,7 @@
   </div>
 
   <header class="site-header">
+
     <a href="#top" class="header-logo">
       <span>NOX</span>
       <small>Night Opens X</small>
@@ -48,7 +144,11 @@
 
     <nav class="header-nav">
       <a href="#top">TOP</a>
-      <a href="pages/girls.html" class="btn gold big">求人を探す</a>
+
+      <a href="pages/girls.html" class="btn gold big">
+        求人を探す
+      </a>
+
       <a href="#ai">AI診断</a>
       <a href="#price">料金</a>
       <a href="#shop">店舗掲載</a>
@@ -56,197 +156,159 @@
     </nav>
 
     <div class="header-actions">
-      <a class="sns-dot" href="https://lin.ee/SbQWdjo" target="_blank" rel="noopener">L</a>
-      <a class="sns-dot" href="https://x.com/joinnoxjp?s=11&t=2j42m-0hw5bxhghxn9nklQ" target="_blank" rel="noopener">X</a>
-      <a class="sns-dot" href="https://www.tiktok.com/@joinnoxjp?_r=1&_t=ZS-97fp9iuUsQX" target="_blank" rel="noopener">♪</a>
-      <a href="pages/login.html" class="btn btn-outline">ログイン</a>
-      <a href="pages/register.html" class="btn btn-primary">無料登録</a>
+
+      <a
+        class="sns-dot"
+        href="https://lin.ee/SbQWdjo"
+        target="_blank"
+        rel="noopener"
+      >
+        L
+      </a>
+
+      <a
+        class="sns-dot"
+        href="https://x.com/joinnoxjp?s=11&t=2j42m-0hw5bxhghxn9nklQ"
+        target="_blank"
+        rel="noopener"
+      >
+        X
+      </a>
+
+      <a
+        class="sns-dot"
+        href="https://www.tiktok.com/@joinnoxjp?_r=1&_t=ZS-97fp9iuUsQX"
+        target="_blank"
+        rel="noopener"
+      >
+        ♪
+      </a>
+
+      <a
+        href="pages/login.html"
+        class="btn btn-outline"
+      >
+        ログイン
+      </a>
+
+      <a
+        href="pages/register.html"
+        class="btn btn-primary"
+      >
+        無料登録
+      </a>
+
     </div>
   </header>
 
   <main>
 
     <section class="hero" id="top">
+
       <div class="hero-bg"></div>
       <div class="hero-overlay"></div>
 
       <div class="hero-content reveal">
-        <!-- ===== NOX ローテーション広告 開始 ===== -->
-<section class="nox-ad-area">
 
-  <div class="nox-ad-slider" id="noxAdSlider">
+        <!-- 管理画面連動広告 -->
+        <section
+          class="nox-ad-area"
+          id="noxAdArea"
+        >
 
-    <!-- 広告1 -->
-    <a href="https://lin.ee/waXmsqX"
-       target="_blank"
-       rel="noopener noreferrer"
-       class="nox-ad-slide active">
+          <div
+            class="nox-ad-slider"
+            id="noxAdSlider"
+          >
+            <div class="nox-ad-empty">
+              広告を読み込んでいます...
+            </div>
+          </div>
 
-      <div class="nox-ad-content">
-        <span class="nox-ad-badge">AD</span>
+          <div
+            class="nox-ad-dots"
+            id="noxAdDots"
+          ></div>
 
-        <div class="nox-ad-text">
-          <strong>📢 広告掲載募集中</strong>
-          <p>あなたの企業・店舗・サービスの広告を掲載できます。</p>
-        </div>
+          <p class="nox-ad-note">
+            ※広告は約5〜6秒ごとに自動で切り替わります。
+          </p>
 
-        <span class="nox-ad-button">掲載はこちら</span>
-      </div>
-    </a>
+        </section>
 
-    <!-- 広告2 -->
-    <a href="https://lin.ee/waXmsqX"
-       target="_blank"
-       rel="noopener noreferrer"
-       class="nox-ad-slide">
+        <!-- チャットレディ特集 -->
+        <section class="chatlady-feature">
 
-      <div class="nox-ad-content">
-        <span class="nox-ad-badge">AD</span>
+          <span class="chatlady-badge">
+            🔥 特集
+          </span>
 
-        <div class="nox-ad-text">
-          <strong>🚀 広告掲載募集中</strong>
-          <p>業種を問わず、法人・店舗・個人事業主様も掲載可能です。</p>
-        </div>
+          <h2>
+            チャットレディ特集
+          </h2>
 
-        <span class="nox-ad-button">お問い合わせ</span>
-      </div>
-    </a>
+          <p class="chatlady-catch">
+            空いてるスキマ時間を収入に。
+          </p>
 
-    <!-- 広告3 -->
-    <a href="https://lin.ee/waXmsqX"
-       target="_blank"
-       rel="noopener noreferrer"
-       class="nox-ad-slide">
+          <p class="chatlady-text">
+            在宅・通勤どちらもOK！<br>
+            スマホ1台で始められる高収入ワーク。
+          </p>
 
-      <div class="nox-ad-content">
-        <span class="nox-ad-badge">AD</span>
+          <div class="chatlady-btn-wrap">
 
-        <div class="nox-ad-text">
-          <strong>⭐ 広告掲載募集中</strong>
-          <p>企業様が指定したバナー画像も、そのまま掲載できます。</p>
-        </div>
+            <a
+              href="/pages/chatlady.html"
+              class="chatlady-btn"
+            >
+              詳細を見る・応募する →
+            </a>
 
-        <span class="nox-ad-button">詳しく見る</span>
-      </div>
-    </a>
+          </div>
 
-    <!-- 広告4 -->
-    <a href="https://lin.ee/waXmsqX"
-       target="_blank"
-       rel="noopener noreferrer"
-       class="nox-ad-slide">
+        </section>
 
-      <div class="nox-ad-content">
-        <span class="nox-ad-badge">AD</span>
+        <!-- 新着求人 -->
+        <section class="section new-jobs-section">
 
-        <div class="nox-ad-text">
-          <strong>💼 広告掲載募集中</strong>
-          <p>あなたの商品やサービスをNOXのユーザーへPRしませんか？</p>
-        </div>
+          <div class="section-head">
+            <p>NEW JOBS</p>
+            <h2>新着求人</h2>
+          </div>
 
-        <span class="nox-ad-button">掲載相談</span>
-      </div>
-    </a>
+          <div
+            id="topNewJobs"
+            class="top-new-jobs"
+          >
+            <p class="jobs-loading">
+              新着求人を読み込んでいます...
+            </p>
+          </div>
 
-    <!-- 広告5 -->
-    <a href="https://lin.ee/waXmsqX"
-       target="_blank"
-       rel="noopener noreferrer"
-       class="nox-ad-slide">
+          <div class="new-jobs-more">
 
-      <div class="nox-ad-content">
-        <span class="nox-ad-badge">AD</span>
+            <a
+              href="pages/girls.html"
+              class="btn ghost"
+            >
+              求人一覧をもっと見る
+            </a>
 
-        <div class="nox-ad-text">
-          <strong>📱 広告掲載募集中</strong>
-          <p>約5〜6秒ごとに他社広告と自動で切り替わります。</p>
-        </div>
+          </div>
 
-        <span class="nox-ad-button">料金相談</span>
-      </div>
-    </a>
+        </section>
 
-    <!-- 広告6 -->
-    <a href="https://lin.ee/waXmsqX"
-       target="_blank"
-       rel="noopener noreferrer"
-       class="nox-ad-slide">
+        <p class="eyebrow">
+          Luxury Nightwork Platform
+        </p>
 
-      <div class="nox-ad-content">
-        <span class="nox-ad-badge">AD</span>
-
-        <div class="nox-ad-text">
-          <strong>🏆 あなたの広告を掲載しませんか？</strong>
-          <p>どのような業種でも掲載可能です。お気軽にご相談ください。</p>
-        </div>
-
-        <span class="nox-ad-button">公式LINE</span>
-      </div>
-    </a>
-
-  </div>
-
-  <div class="nox-ad-dots" id="noxAdDots">
-    <button type="button" class="active" aria-label="広告1"></button>
-    <button type="button" aria-label="広告2"></button>
-    <button type="button" aria-label="広告3"></button>
-    <button type="button" aria-label="広告4"></button>
-    <button type="button" aria-label="広告5"></button>
-    <button type="button" aria-label="広告6"></button>
-  </div>
-
-  <p class="nox-ad-note">
-    ※企業・店舗・個人事業主・各種サービスなど、業種を問わず掲載可能です。<br>
-    広告は約5〜6秒ごとに自動で切り替わり、繰り返し表示されます。
-  </p>
-
-</section>
-<!-- ===== NOX ローテーション広告 終了 ===== -->
-        <!-- ===== チャットレディ特集 ===== -->
-<section class="chatlady-feature">
-
-    <span class="chatlady-badge">🔥 特集</span>
-
-    <h2>チャットレディ特集</h2>
-
-<p class="chatlady-catch">
-    空いてるスキマ時間を収入に。
-</p>
-
-<p class="chatlady-text">
-    在宅・通勤どちらもOK！<br>
-    スマホ1台で始められる高収入ワーク。
-</p>
-
-<div class="chatlady-btn-wrap">
-    <a href="/pages/chatlady.html" class="chatlady-btn">
-        詳細を見る・応募する →
-    </a>
-</div>
-
-</section>
-        <!-- ===== 新着求人 開始 ===== -->
-<section class="section new-jobs-section">
-  <div class="section-head">
-    <p>NEW JOBS</p>
-    <h2>新着求人</h2>
-  </div>
-
-  <div id="topNewJobs" class="top-new-jobs">
-    <p class="jobs-loading">新着求人を読み込んでいます...</p>
-  </div>
-
-  <div class="new-jobs-more">
-    <a href="pages/girls.html" class="btn ghost">
-      求人一覧をもっと見る
-    </a>
-  </div>
-</section>
-<!-- ===== 新着求人 終了 ===== -->
-        <p class="eyebrow">Luxury Nightwork Platform</p>
         <h1>NOX</h1>
         <h2>Night Opens X</h2>
-        <p class="hero-copy">夜が、新しい可能性を開く。</p>
+
+        <p class="hero-copy">
+          夜が、新しい可能性を開く。
+        </p>
 
         <p class="hero-lead">
           全国の夜のお仕事を、もっと安心に。もっとスマートに。<br>
@@ -255,309 +317,1208 @@
         </p>
 
         <div class="job-grid">
-          <div style="text-align:center;color:#ccc;padding:30px;">
-            <p>最新の求人情報はこちらからご確認ください。</p>
-            <a href="pages/girls.html" class="btn gold" style="margin-top:30px;display:inline-block;">求人一覧を見る</a>
+
+          <div
+            style="
+              text-align:center;
+              color:#ccc;
+              padding:30px;
+            "
+          >
+
+            <p>
+              最新の求人情報はこちらからご確認ください。
+            </p>
+
+            <a
+              href="pages/girls.html"
+              class="btn gold"
+              style="
+                margin-top:30px;
+                display:inline-block;
+              "
+            >
+              求人一覧を見る
+            </a>
+
           </div>
+
         </div>
 
         <div class="hero-stats">
-          <div><strong>全国対応</strong><span>AREA</span></div>
-          <div><strong>AI診断</strong><span>MATCH</span></div>
-          <div><strong>水商売・風俗</strong><span>NIGHTWORK</span></div>
+          <div>
+            <strong>全国対応</strong>
+            <span>AREA</span>
+          </div>
+
+          <div>
+            <strong>AI診断</strong>
+            <span>MATCH</span>
+          </div>
+
+          <div>
+            <strong>水商売・風俗</strong>
+            <span>NIGHTWORK</span>
+          </div>
         </div>
+
       </div>
     </section>
+        <section class="section reason-section">
 
-    <section class="section reason-section">
       <div class="section-head reveal">
         <p>WHY NOX</p>
         <h2>NOXが選ばれる理由</h2>
       </div>
 
       <div class="reason-grid">
+
         <article class="reason-card reveal">
           <div class="icon">🛡</div>
           <h3>安心して探せる</h3>
-          <p>希望条件に合わせて、自分に合う夜職求人をスマートに探せます。</p>
+          <p>
+            希望条件に合わせて、自分に合う夜職求人をスマートに探せます。
+          </p>
         </article>
 
         <article class="reason-card reveal">
           <div class="icon">🧠</div>
           <h3>AIおすすめ診断</h3>
-          <p>性格や希望条件から、向いている職種やお店を提案予定。</p>
+          <p>
+            性格や希望条件から、向いている職種やお店を提案します。
+          </p>
         </article>
 
         <article class="reason-card reveal">
           <div class="icon">👑</div>
           <h3>人気店を比較</h3>
-          <p>エリア・時給・待遇・雰囲気を見比べて選べます。</p>
+          <p>
+            エリア・時給・待遇・雰囲気を見比べて選べます。
+          </p>
         </article>
 
         <article class="reason-card reveal">
           <div class="icon">⚡</div>
           <h3>スマホで完結</h3>
-          <p>求人探しから相談まで、スマホだけでスムーズに進められます。</p>
+          <p>
+            求人探しから相談まで、スマホだけでスムーズに進められます。
+          </p>
         </article>
+
       </div>
     </section>
-        <section class="section select-section">
+
+    <section class="section select-section">
+
       <div class="select-grid">
+
         <article class="select-card woman reveal">
+
           <div class="select-text">
             <p>For Cast</p>
+
             <h2>求職者の方</h2>
-            <span>自分に合う夜のお仕事が見つかる。</span>
-            <p>体入・日払い・送りあり・寮ありなど、希望条件から探せます。</p>
-            <a href="pages/girls.html" class="btn gold">求人を探す</a>
+
+            <span>
+              自分に合う夜のお仕事が見つかる。
+            </span>
+
+            <p>
+              体入・日払い・送りあり・寮ありなど、希望条件から探せます。
+            </p>
+
+            <a
+              href="pages/girls.html"
+              class="btn gold"
+            >
+              求人を探す
+            </a>
           </div>
+
         </article>
 
-        <article class="select-card shop reveal" id="shop">
+        <article
+          class="select-card shop reveal"
+          id="shop"
+        >
+
           <div class="select-text">
             <p>For Owner</p>
+
             <h2>店舗の方</h2>
-            <span>採用をもっと効率的に。</span>
-            <p>水商売・風俗求人どちらも掲載相談できます。</p>
-            <a href="owner.html" class="btn ghost">掲載相談する</a>
+
+            <span>
+              採用をもっと効率的に。
+            </span>
+
+            <p>
+              水商売・風俗求人どちらも掲載相談できます。
+            </p>
+
+            <a
+              href="owner.html"
+              class="btn ghost"
+            >
+              掲載相談する
+            </a>
           </div>
+
         </article>
+
       </div>
     </section>
 
-    <section class="section jobs-section" id="jobs">
+    <section
+      class="section jobs-section"
+      id="jobs"
+    >
+
       <div class="section-head reveal">
         <p>NEW JOBS</p>
         <h2>新着求人</h2>
       </div>
 
-      <div class="job-grid" id="homeJobs">
-        <div style="text-align:center;padding:40px;color:#ccc;">
-          <p style="font-size:18px;margin-bottom:20px;">
+      <div
+        class="job-grid"
+        id="homeJobs"
+      >
+
+        <div
+          style="
+            text-align:center;
+            padding:40px;
+            color:#ccc;
+          "
+        >
+
+          <p
+            style="
+              font-size:18px;
+              margin-bottom:20px;
+            "
+          >
             最新の掲載求人は求人一覧ページからご覧いただけます。
           </p>
 
-          <a href="pages/girls.html" class="btn gold">
+          <a
+            href="pages/girls.html"
+            class="btn gold"
+          >
             求人一覧を見る
           </a>
+
         </div>
+
       </div>
     </section>
 
-    <section class="section ai-section" id="ai">
+    <section
+      class="section ai-section"
+      id="ai"
+    >
+
       <div class="section-head reveal">
         <p>AI MATCHING</p>
         <h2>AIおすすめ診断</h2>
       </div>
 
       <div class="ai-premium reveal">
-        <img src="images/ai-match.jpg" alt="NOX AI診断">
+
+        <img
+          src="images/ai-match.jpg"
+          alt="NOX AI診断"
+        >
 
         <div class="ai-premium-text">
-          <p class="eyebrow">EXCLUSIVE FOR NOX</p>
-          <h3>あなたに最適な夜職が見つかる。</h3>
+
+          <p class="eyebrow">
+            EXCLUSIVE FOR NOX
+          </p>
+
+          <h3>
+            あなたに最適な夜職が見つかる。
+          </h3>
+
           <p>
             キャバクラ・ガールズバー・ラウンジ・コンカフェ・メンズエステ・デリヘル・ソープなど、
             性格や希望条件からAIがあなたに合う求人を提案します。
           </p>
 
-          <a href="ai-diagnosis.html" class="btn gold">
+          <a
+            href="ai-diagnosis.html"
+            class="btn gold"
+          >
             AI診断をはじめる
           </a>
+
         </div>
+
       </div>
     </section>
-        <section class="section support-section">
+
+    <section class="section support-section">
+
       <div class="support-grid">
 
         <div class="support-card reveal">
           <strong>全国対応</strong>
-          <p>東京・大阪・名古屋・福岡など全国対応予定。</p>
+          <p>
+            東京・大阪・名古屋・福岡など全国対応予定。
+          </p>
         </div>
 
         <div class="support-card reveal">
           <strong>日払いOK</strong>
-          <p>すぐに稼ぎたい方にも対応。</p>
+          <p>
+            すぐに稼ぎたい方にも対応。
+          </p>
         </div>
 
         <div class="support-card reveal">
           <strong>寮あり</strong>
-          <p>住まいの相談も可能。</p>
+          <p>
+            住まいの相談も可能。
+          </p>
         </div>
 
         <div class="support-card reveal">
           <strong>送りあり</strong>
-          <p>終電後も安心。</p>
+          <p>
+            終電後も安心。
+          </p>
         </div>
 
       </div>
     </section>
 
-    <section class="section sns-section" id="sns">
+    <section
+      class="section sns-section"
+      id="sns"
+    >
+
       <div class="section-head reveal">
         <p>OFFICIAL SNS</p>
         <h2>NOX公式SNS</h2>
       </div>
 
       <div class="sns-grid reveal">
-        <a href="https://lin.ee/SbQWdjo" target="_blank" rel="noopener">公式LINE</a>
-        <a href="https://x.com/joinnoxjp?s=11&t=2j42m-0hw5bxhghxn9nklQ" target="_blank" rel="noopener">Xを見る</a>
-        <a href="https://www.tiktok.com/@joinnoxjp?_r=1&_t=ZS-97fp9iuUsQX" target="_blank" rel="noopener">TikTokを見る</a>
+
+        <a
+          href="https://lin.ee/SbQWdjo"
+          target="_blank"
+          rel="noopener"
+        >
+          公式LINE
+        </a>
+
+        <a
+          href="https://x.com/joinnoxjp?s=11&t=2j42m-0hw5bxhghxn9nklQ"
+          target="_blank"
+          rel="noopener"
+        >
+          Xを見る
+        </a>
+
+        <a
+          href="https://www.tiktok.com/@joinnoxjp?_r=1&_t=ZS-97fp9iuUsQX"
+          target="_blank"
+          rel="noopener"
+        >
+          TikTokを見る
+        </a>
+
       </div>
     </section>
 
     <section class="section seo-section">
+
       <div class="section-head">
         <p>SEO GUIDE</p>
         <h2>全国対応の夜職求人サイト NOX</h2>
       </div>
 
-      <div style="max-width:1000px;margin:auto;line-height:2;color:#ddd;">
+      <div
+        style="
+          max-width:1000px;
+          margin:auto;
+          line-height:2;
+          color:#ddd;
+        "
+      >
+
         <p>
           NOX（Night Opens X）は、全国対応の夜職求人・ナイトワーク求人プラットフォームです。
           キャバクラ求人・ガールズバー求人・ラウンジ求人・スナック求人・コンカフェ求人・メンズコンカフェ求人、
           メンズエステ求人・デリヘル求人・ソープ求人など、幅広い夜職求人を探せるサービスです。
         </p>
 
-        <p>
+        <p style="margin-top:18px;">
           東京（新宿・歌舞伎町・六本木・銀座・池袋・渋谷・上野）、
           神奈川（横浜・川崎）、千葉（船橋・柏・千葉）、
           埼玉（大宮）、愛知（名古屋・錦）、
           大阪（梅田・難波・北新地）、福岡（中洲）など全国対応予定です。
         </p>
+
       </div>
     </section>
 
   </main>
-  <section style="max-width:1000px;margin:0 auto;padding:40px 20px;">
-  <h2 style="color:#FFD700;text-align:center;margin-bottom:10px;">
-    🤝 NOX パートナー・プロジェクト
-  </h2>
 
-  <p style="text-align:center;color:#bbb;margin-bottom:30px;">
-    NOXを応援してくださる皆様へ
-  </p>
+  <section
+    style="
+      max-width:1000px;
+      margin:0 auto;
+      padding:40px 20px;
+    "
+  >
 
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;">
+    <h2
+      style="
+        color:#FFD700;
+        text-align:center;
+        margin-bottom:10px;
+      "
+    >
+      🤝 NOX パートナー・プロジェクト
+    </h2>
 
-    <a href="https://gamma.app/docs/NOX-hx45zfeyqk121f4"
-       target="_blank"
-       style="text-decoration:none;background:#111;border:1px solid rgba(255,215,0,.3);border-radius:16px;padding:24px;display:block;">
+    <p
+      style="
+        text-align:center;
+        color:#bbb;
+        margin-bottom:30px;
+      "
+    >
+      NOXを応援してくださる皆様へ
+    </p>
 
-      <h3 style="color:#FFD700;margin-bottom:10px;">
-        📄 NOX事業資料
-      </h3>
+    <div
+      style="
+        display:grid;
+        grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+        gap:20px;
+      "
+    >
 
-      <p style="color:#ccc;">
-        NOXのビジョン・事業内容・今後の展望をご覧いただけます。
-      </p>
+      <a
+        href="https://gamma.app/docs/NOX-hx45zfeyqk121f4"
+        target="_blank"
+        rel="noopener"
+        style="
+          text-decoration:none;
+          background:#111;
+          border:1px solid rgba(255,215,0,.3);
+          border-radius:16px;
+          padding:24px;
+          display:block;
+        "
+      >
 
-    </a>
+        <h3
+          style="
+            color:#FFD700;
+            margin-bottom:10px;
+          "
+        >
+          📄 NOX事業資料
+        </h3>
 
-    <a href="https://nox-investor-fundrai-19nu.bolt.host"
-       target="_blank"
-       style="text-decoration:none;background:#111;border:1px solid rgba(255,215,0,.3);border-radius:16px;padding:24px;display:block;">
+        <p style="color:#ccc;">
+          NOXのビジョン・事業内容・今後の展望をご覧いただけます。
+        </p>
 
-      <h3 style="color:#FFD700;margin-bottom:10px;">
-        🚀 スポンサー・協業・投資
-      </h3>
+      </a>
 
-      <p style="color:#ccc;">
-        NOXと共に成長していただけるスポンサー・協業企業・創業パートナーを募集しております。
-      </p>
+      <a
+        href="https://nox-investor-fundrai-19nu.bolt.host"
+        target="_blank"
+        rel="noopener"
+        style="
+          text-decoration:none;
+          background:#111;
+          border:1px solid rgba(255,215,0,.3);
+          border-radius:16px;
+          padding:24px;
+          display:block;
+        "
+      >
 
-    </a>
+        <h3
+          style="
+            color:#FFD700;
+            margin-bottom:10px;
+          "
+        >
+          🚀 スポンサー・協業・投資
+        </h3>
 
-  </div>
-</section>
+        <p style="color:#ccc;">
+          NOXと共に成長していただけるスポンサー・協業企業・創業パートナーを募集しております。
+        </p>
 
-<footer class="footer">
+      </a>
 
-<div class="footer-grid">
+    </div>
+  </section>
 
-<div>
+  <footer class="footer">
 
-<h3>NOX</h3>
+    <div class="footer-grid">
 
-<p>Night Opens X</p>
+      <div>
+        <h3>NOX</h3>
+        <p>Night Opens X</p>
+        <p>夜が、新しい可能性を開く。</p>
+      </div>
 
-<p>夜が、新しい可能性を開く。</p>
+      <div>
+        <h3>Service</h3>
 
-</div>
+        <a href="/pages/girls.html">
+          求人を探す
+        </a>
 
-<div>
+        <a href="/ai-diagnosis.html">
+          AI診断
+        </a>
 
-<h3>Service</h3>
+        <a href="/owner.html">
+          店舗掲載
+        </a>
+      </div>
 
-<a href="/pages/girls.html">求人を探す</a>
-<a href="/ai-diagnosis.html">AI診断</a>
-<a href="/owner.html">店舗掲載</a>
+      <div>
+        <h3>Support</h3>
 
-</div>
+        <a href="/pages/contact.html">
+          お問い合わせ
+        </a>
 
-<div>
+        <a href="/pages/terms.html">
+          利用規約
+        </a>
 
-<h3>Support</h3>
+        <a href="/pages/privacy.html">
+          プライバシーポリシー
+        </a>
 
-<a href="/pages/contact.html">お問い合わせ</a>
-<a href="/pages/terms.html">利用規約</a>
-<a href="/pages/privacy.html">プライバシーポリシー</a>
-<a href="/pages/commerce.html">特定商取引法に基づく表記</a>
-<a href="/pages/faq.html">FAQ</a>
+        <a href="/pages/commerce.html">
+          特定商取引法に基づく表記
+        </a>
 
-</div>
+        <a href="/pages/faq.html">
+          FAQ
+        </a>
+      </div>
 
-<div>
+      <div>
+        <h3>Company</h3>
 
-<h3>Company</h3>
+        <a href="/pages/about.html">
+          会社概要
+        </a>
 
-<a href="/pages/about.html">会社概要</a>
-<a href="/pages/guideline.html">掲載ガイドライン</a>
-<a href="/pages/sponsor.html">スポンサー・広告掲載</a>
-<a href="/pages/investor.html">Investor Relations</a>
-<a href="/pages/recruiter.html">リクルーター募集</a>
+        <a href="/pages/guideline.html">
+          掲載ガイドライン
+        </a>
 
-</div>
+        <a href="/pages/sponsor.html">
+          スポンサー・広告掲載
+        </a>
 
-<div>
+        <a href="/pages/investor.html">
+          Investor Relations
+        </a>
 
-<h3>SNS</h3>
+        <a href="/pages/recruiter.html">
+          リクルーター募集
+        </a>
+      </div>
 
-<a href="https://lin.ee/waXmsqX" target="_blank">LINE</a>
+      <div>
+        <h3>SNS</h3>
 
-<a href="https://x.com/joinnoxjp?s=11&t=2j42m-0hw5bxhghxn9nklQ" target="_blank">X</a>
+        <a
+          href="https://lin.ee/waXmsqX"
+          target="_blank"
+          rel="noopener"
+        >
+          LINE
+        </a>
 
-<a href="https://www.tiktok.com/@joinnoxjp?_r=1&_t=ZS-97u3qB7vO7x" target="_blank">TikTok</a>
+        <a
+          href="https://x.com/joinnoxjp?s=11&t=2j42m-0hw5bxhghxn9nklQ"
+          target="_blank"
+          rel="noopener"
+        >
+          X
+        </a>
 
-</div>
+        <a
+          href="https://www.tiktok.com/@joinnoxjp?_r=1&_t=ZS-97u3qB7vO7x"
+          target="_blank"
+          rel="noopener"
+        >
+          TikTok
+        </a>
+      </div>
 
-</div>
+    </div>
 
-<div class="footer-bottom">
+    <div class="footer-bottom">
+      <p>© 2026 NOX - Night Opens X</p>
+    </div>
 
-<p>© 2026 NOX - Night Opens X</p>
+  </footer>
 
-</div>
+  <div
+    class="notice"
+    id="notice"
+  ></div>
+    <!-- =========================
+       管理画面連動 広告①〜⑥
+  ========================== -->
 
-</footer>
+  <script type="module">
 
-<div class="notice" id="notice"></div>
+    /*
+      index.htmlとfirebase.jsは同じ階層なので
+      「./firebase.js」を読み込みます。
+    */
+    import "./firebase.js";
 
-<script>
-setTimeout(() => {
-  const loading = document.getElementById("loading");
+    import {
+      getFirestore,
+      collection,
+      getDocs,
+      doc,
+      updateDoc,
+      increment
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  if (loading) {
-    loading.classList.add("hide");
+    const db = getFirestore();
 
-    setTimeout(() => {
-      loading.style.display = "none";
-    }, 700);
-  }
-}, 1200);
-</script>
+    const noxAdArea =
+      document.getElementById("noxAdArea");
 
-<script type="module" src="script.js?v=4"></script>
+    const noxAdSlider =
+      document.getElementById("noxAdSlider");
+
+    const noxAdDots =
+      document.getElementById("noxAdDots");
+
+    let noxAds = [];
+    let currentAdIndex = 0;
+    let adInterval = null;
+
+    const AD_CHANGE_TIME = 5500;
+
+    /*
+      HTMLへ安全に文字を表示する
+    */
+    function escapeHTML(value = "") {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    /*
+      広告が現在掲載可能か確認
+    */
+    function isAdCurrentlyAvailable(ad) {
+
+      if (ad.enabled !== true) {
+        return false;
+      }
+
+      if (!ad.imageUrl && !ad.title) {
+        return false;
+      }
+
+      const now = new Date();
+
+      if (ad.startDate) {
+
+        const startDate = new Date(
+          `${ad.startDate}T00:00:00`
+        );
+
+        if (
+          !Number.isNaN(startDate.getTime()) &&
+          now < startDate
+        ) {
+          return false;
+        }
+
+      }
+
+      if (ad.endDate) {
+
+        const endDate = new Date(
+          `${ad.endDate}T23:59:59`
+        );
+
+        if (
+          !Number.isNaN(endDate.getTime()) &&
+          now > endDate
+        ) {
+          return false;
+        }
+
+      }
+
+      return true;
+    }
+
+    /*
+      表示回数を加算
+      Firestoreルールで許可されていない場合でも
+      広告表示自体は止まりません。
+    */
+    async function countAdImpression(adId) {
+
+      if (!adId) {
+        return;
+      }
+
+      try {
+
+        await updateDoc(
+          doc(db, "ads", adId),
+          {
+            impressions: increment(1)
+          }
+        );
+
+      } catch (error) {
+
+        console.warn(
+          "広告表示回数を記録できませんでした",
+          error
+        );
+
+      }
+
+    }
+
+    /*
+      クリック数を加算
+    */
+    async function countAdClick(adId) {
+
+      if (!adId) {
+        return;
+      }
+
+      try {
+
+        await updateDoc(
+          doc(db, "ads", adId),
+          {
+            clicks: increment(1)
+          }
+        );
+
+      } catch (error) {
+
+        console.warn(
+          "広告クリック数を記録できませんでした",
+          error
+        );
+
+      }
+
+    }
+
+    /*
+      広告画像形式
+    */
+    function createImageAd(ad, index) {
+
+      const link =
+        document.createElement("a");
+
+      link.className =
+        `nox-ad-slide ${
+          index === 0 ? "active" : ""
+        }`;
+
+      link.href =
+        ad.linkUrl || "#";
+
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+
+      link.dataset.adId = ad.id;
+      link.dataset.index = String(index);
+
+      const image =
+        document.createElement("img");
+
+      image.src = ad.imageUrl;
+
+      image.alt =
+        ad.title ||
+        `NOX 広告${ad.slot || index + 1}`;
+
+      image.loading =
+        index === 0 ? "eager" : "lazy";
+
+      image.addEventListener(
+        "error",
+        () => {
+
+          link.innerHTML = `
+            <div class="nox-ad-empty">
+              広告画像を読み込めませんでした
+            </div>
+          `;
+
+        }
+      );
+
+      link.appendChild(image);
+
+      link.addEventListener(
+        "click",
+        (event) => {
+
+          if (!ad.linkUrl) {
+            event.preventDefault();
+          }
+
+          countAdClick(ad.id);
+
+        }
+      );
+
+      return link;
+    }
+
+    /*
+      画像が未登録の場合の文字広告
+    */
+    function createTextAd(ad, index) {
+
+      const link =
+        document.createElement("a");
+
+      link.className =
+        `nox-ad-slide ${
+          index === 0 ? "active" : ""
+        }`;
+
+      link.href =
+        ad.linkUrl || "#";
+
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+
+      link.dataset.adId = ad.id;
+      link.dataset.index = String(index);
+
+      link.innerHTML = `
+        <div class="nox-ad-content">
+
+          <span class="nox-ad-badge">
+            AD ${escapeHTML(
+              ad.slot || index + 1
+            )}
+          </span>
+
+          <div class="nox-ad-text">
+
+            <strong>
+              ${escapeHTML(
+                ad.title || "広告掲載中"
+              )}
+            </strong>
+
+            <p>
+              ${escapeHTML(
+                ad.description || ""
+              )}
+            </p>
+
+          </div>
+
+          <span class="nox-ad-button">
+            ${escapeHTML(
+              ad.buttonText || "詳しく見る"
+            )}
+          </span>
+
+        </div>
+      `;
+
+      link.addEventListener(
+        "click",
+        (event) => {
+
+          if (!ad.linkUrl) {
+            event.preventDefault();
+          }
+
+          countAdClick(ad.id);
+
+        }
+      );
+
+      return link;
+    }
+
+    /*
+      広告スライドを作る
+    */
+    function createAdSlide(ad, index) {
+
+      if (ad.imageUrl) {
+        return createImageAd(ad, index);
+      }
+
+      return createTextAd(ad, index);
+    }
+
+    /*
+      下の丸い切り替えボタン
+    */
+    function createAdDot(index) {
+
+      const button =
+        document.createElement("button");
+
+      button.type = "button";
+
+      button.className =
+        index === 0 ? "active" : "";
+
+      button.setAttribute(
+        "aria-label",
+        `広告${index + 1}を表示`
+      );
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          showAd(index);
+          restartAdInterval();
+
+        }
+      );
+
+      return button;
+    }
+
+    /*
+      指定した広告を表示
+    */
+    function showAd(index) {
+
+      const slides =
+        noxAdSlider.querySelectorAll(
+          ".nox-ad-slide"
+        );
+
+      const dots =
+        noxAdDots.querySelectorAll("button");
+
+      if (slides.length === 0) {
+        return;
+      }
+
+      if (index >= slides.length) {
+        index = 0;
+      }
+
+      if (index < 0) {
+        index = slides.length - 1;
+      }
+
+      slides.forEach(
+        (slide, slideIndex) => {
+
+          slide.classList.toggle(
+            "active",
+            slideIndex === index
+          );
+
+        }
+      );
+
+      dots.forEach(
+        (dot, dotIndex) => {
+
+          dot.classList.toggle(
+            "active",
+            dotIndex === index
+          );
+
+        }
+      );
+
+      currentAdIndex = index;
+
+      const activeAd =
+        noxAds[currentAdIndex];
+
+      if (activeAd) {
+        countAdImpression(activeAd.id);
+      }
+
+    }
+
+    /*
+      次の広告へ
+    */
+    function showNextAd() {
+
+      if (noxAds.length <= 1) {
+        return;
+      }
+
+      const nextIndex =
+        (currentAdIndex + 1) %
+        noxAds.length;
+
+      showAd(nextIndex);
+
+    }
+
+    /*
+      自動切り替え開始
+    */
+    function startAdInterval() {
+
+      if (noxAds.length <= 1) {
+        return;
+      }
+
+      adInterval = window.setInterval(
+        showNextAd,
+        AD_CHANGE_TIME
+      );
+
+    }
+
+    /*
+      自動切り替えを再スタート
+    */
+    function restartAdInterval() {
+
+      if (adInterval) {
+        window.clearInterval(adInterval);
+      }
+
+      startAdInterval();
+
+    }
+
+    /*
+      広告が0件の場合の初期広告
+    */
+    function showDefaultAdvertisement() {
+
+      noxAdSlider.innerHTML = `
+        <a
+          href="https://lin.ee/waXmsqX"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="nox-ad-slide active"
+        >
+
+          <div class="nox-ad-content">
+
+            <span class="nox-ad-badge">
+              AD
+            </span>
+
+            <div class="nox-ad-text">
+
+              <strong>
+                📢 広告掲載募集中
+              </strong>
+
+              <p>
+                NOXに企業・店舗・サービスの広告を掲載できます。
+              </p>
+
+            </div>
+
+            <span class="nox-ad-button">
+              掲載相談はこちら
+            </span>
+
+          </div>
+
+        </a>
+      `;
+
+      noxAdDots.innerHTML = "";
+
+    }
+
+    /*
+      Firestoreから広告①〜⑥を取得
+    */
+    async function loadNoxAdvertisements() {
+
+      if (
+        !noxAdArea ||
+        !noxAdSlider ||
+        !noxAdDots
+      ) {
+        return;
+      }
+
+      try {
+
+        const snapshot =
+          await getDocs(
+            collection(db, "ads")
+          );
+
+        const loadedAds = [];
+
+        snapshot.forEach(
+          (adDocument) => {
+
+            const data =
+              adDocument.data();
+
+            loadedAds.push({
+              id: adDocument.id,
+              ...data
+            });
+
+          }
+        );
+
+        loadedAds.sort(
+          (a, b) => {
+
+            const slotA =
+              Number(a.slot) || 999;
+
+            const slotB =
+              Number(b.slot) || 999;
+
+            return slotA - slotB;
+
+          }
+        );
+
+        noxAds =
+          loadedAds.filter(
+            isAdCurrentlyAvailable
+          );
+
+        noxAdSlider.innerHTML = "";
+        noxAdDots.innerHTML = "";
+
+        if (noxAds.length === 0) {
+
+          showDefaultAdvertisement();
+          return;
+
+        }
+
+        noxAds.forEach(
+          (ad, index) => {
+
+            const slide =
+              createAdSlide(ad, index);
+
+            const dot =
+              createAdDot(index);
+
+            noxAdSlider.appendChild(slide);
+            noxAdDots.appendChild(dot);
+
+          }
+        );
+
+        currentAdIndex = 0;
+
+        showAd(0);
+        startAdInterval();
+
+      } catch (error) {
+
+        console.error(
+          "広告の読み込みに失敗しました",
+          error
+        );
+
+        showDefaultAdvertisement();
+
+      }
+
+    }
+
+    /*
+      タブを閉じている間は
+      自動切り替えを停止
+    */
+    document.addEventListener(
+      "visibilitychange",
+      () => {
+
+        if (document.hidden) {
+
+          if (adInterval) {
+            window.clearInterval(adInterval);
+          }
+
+        } else {
+
+          restartAdInterval();
+
+        }
+
+      }
+    );
+
+    loadNoxAdvertisements();
+
+  </script>
+
+  <!-- ローディング画面 -->
+  <script>
+
+    window.setTimeout(
+      () => {
+
+        const loading =
+          document.getElementById("loading");
+
+        if (!loading) {
+          return;
+        }
+
+        loading.classList.add("hide");
+
+        window.setTimeout(
+          () => {
+            loading.style.display = "none";
+          },
+          700
+        );
+
+      },
+      1200
+    );
+
+  </script>
+
+  <!-- NOX共通JavaScript -->
+  <script
+    type="module"
+    src="script.js?v=5"
+  ></script>
 
 </body>
 </html>
