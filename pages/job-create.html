@@ -1,426 +1,795 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
-<title>NOX | 求人掲載申請</title>
+  <title>NOX | 求人掲載申請</title>
 
-<style>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Helvetica Neue",
+        sans-serif;
+    }
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;
-}
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(
+          circle at top,
+          rgba(212, 175, 55, 0.12),
+          transparent 32%
+        ),
+        #050505;
+      color: #fff;
+      padding: 25px;
+    }
 
-body{
-    background:#050505;
-    color:white;
-    padding:25px;
-}
+    .page {
+      width: 100%;
+      max-width: 760px;
+      margin: 0 auto;
+    }
 
-.logo{
-    font-size:56px;
-    font-weight:900;
-    color:#d4af37;
-    margin-bottom:8px;
-}
+    .logo {
+      font-size: 56px;
+      font-weight: 900;
+      letter-spacing: 4px;
+      color: #d4af37;
+      margin-bottom: 8px;
+    }
 
-.sub{
-    color:#999;
-    margin-bottom:30px;
-    font-size:18px;
-}
+    .sub {
+      color: #999;
+      margin-bottom: 30px;
+      font-size: 18px;
+    }
 
-.card{
-    background:#141414;
-    border:1px solid #2c2c2c;
-    border-radius:22px;
-    padding:24px;
-    margin-bottom:28px;
-}
+    .card {
+      background: #141414;
+      border: 1px solid #2c2c2c;
+      border-radius: 22px;
+      padding: 24px;
+      margin-bottom: 28px;
+    }
 
-.section-title{
-    color:#d4af37;
-    font-size:22px;
-    font-weight:bold;
-    margin-bottom:20px;
-}
+    .section-title {
+      color: #d4af37;
+      font-size: 22px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
 
-label{
-    display:block;
-    margin-top:18px;
-    margin-bottom:8px;
-    color:#ddd;
-    font-weight:600;
-}
+    label {
+      display: block;
+      margin-top: 18px;
+      margin-bottom: 8px;
+      color: #ddd;
+      font-weight: 600;
+    }
 
-input,
-select,
-textarea{
-    width:100%;
-    background:#080808;
-    color:white;
-    border:1px solid #333;
-    border-radius:14px;
-    padding:14px;
-    font-size:16px;
-}
+    .required {
+      margin-left: 6px;
+      color: #d4af37;
+      font-size: 12px;
+    }
 
-textarea{
-    min-height:130px;
-    resize:vertical;
-}
+    input,
+    select,
+    textarea {
+      width: 100%;
+      background: #080808;
+      color: #fff;
+      border: 1px solid #333;
+      border-radius: 14px;
+      padding: 14px;
+      font-size: 16px;
+      outline: none;
+    }
 
-small{
-    color:#888;
-    display:block;
-    margin-top:6px;
-}
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: #d4af37;
+      box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.1);
+    }
 
-button{
-    width:100%;
-    background:#d4af37;
-    color:#000;
-    border:none;
-    border-radius:16px;
-    padding:18px;
-    font-size:18px;
-    font-weight:bold;
-    margin-top:30px;
-}
+    textarea {
+      min-height: 130px;
+      resize: vertical;
+    }
 
-</style>
+    small {
+      color: #888;
+      display: block;
+      margin-top: 8px;
+      line-height: 1.7;
+    }
 
-<script type="module">
-import { app, db } from "./firebase-db.js";
+    #imagePreview {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 16px;
+    }
 
-import {
-  collection,
-  addDoc,
-  serverTimestamp
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    .preview-item {
+      position: relative;
+      overflow: hidden;
+      border-radius: 12px;
+      aspect-ratio: 1 / 1;
+      background: #080808;
+      border: 1px solid #333;
+    }
 
-import {
-  getStorage,
-  ref,
-  uploadBytes,
-  getDownloadURL
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+    .preview-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
 
-const storage = getStorage(app);
+    .preview-number {
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      min-width: 24px;
+      height: 24px;
+      display: grid;
+      place-items: center;
+      padding: 0 6px;
+      border-radius: 999px;
+      color: #000;
+      background: #d4af37;
+      font-size: 12px;
+      font-weight: bold;
+    }
 
-window.db = db;
-window.storage = storage;
+    .submit-button {
+      width: 100%;
+      background: linear-gradient(135deg, #f0d46a, #b88a16);
+      color: #000;
+      border: none;
+      border-radius: 16px;
+      padding: 18px;
+      font-size: 18px;
+      font-weight: bold;
+      margin-top: 4px;
+      cursor: pointer;
+      box-shadow: 0 10px 30px rgba(212, 175, 55, 0.18);
+    }
 
-window.collection = collection;
-window.addDoc = addDoc;
-window.serverTimestamp = serverTimestamp;
+    .submit-button:active {
+      transform: scale(0.98);
+    }
 
-window.storageRef = ref;
-window.uploadBytes = uploadBytes;
-window.getDownloadURL = getDownloadURL;
-</script>
+    .submit-button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .application-note {
+      margin: 28px 0 50px;
+      padding: 24px 16px;
+      border-radius: 18px;
+      text-align: center;
+      color: #9d9d9d;
+      background: rgba(212, 175, 55, 0.08);
+      border: 1px solid rgba(212, 175, 55, 0.25);
+      font-size: 14px;
+      line-height: 1.9;
+    }
+
+    .message {
+      display: none;
+      margin-bottom: 24px;
+      padding: 16px;
+      border-radius: 14px;
+      line-height: 1.7;
+    }
+
+    .message.show {
+      display: block;
+    }
+
+    .message.success {
+      color: #d9ffd9;
+      background: rgba(67, 160, 71, 0.18);
+      border: 1px solid rgba(67, 160, 71, 0.45);
+    }
+
+    .message.error {
+      color: #ffd4d4;
+      background: rgba(220, 53, 69, 0.16);
+      border: 1px solid rgba(220, 53, 69, 0.45);
+    }
+
+    @media (max-width: 520px) {
+      body {
+        padding: 20px 14px;
+      }
+
+      .logo {
+        font-size: 48px;
+      }
+
+      .card {
+        padding: 20px 16px;
+      }
+
+      #imagePreview {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 7px;
+      }
+    }
+  </style>
 </head>
 
 <body>
+  <main class="page">
 
-<div class="logo">NOX</div>
-<div class="sub">掲載情報入力フォーム</div>
+    <div class="logo">NOX</div>
+    <div class="sub">掲載情報入力フォーム</div>
 
-<div class="card">
+    <div id="formMessage" class="message"></div>
 
-<div class="section-title">
-■ 基本情報
-</div>
+    <form id="jobApplicationForm">
 
-<label>店舗名</label>
-<input id="storeName" type="text" placeholder="例：Girls Bar NOX 新宿店">
+      <section class="card">
+        <div class="section-title">■ 基本情報</div>
 
-<label>業種</label>
+        <label for="storeName">
+          店舗名
+          <span class="required">必須</span>
+        </label>
+        <input
+          id="storeName"
+          type="text"
+          placeholder="例：Girls Bar NOX 新宿店"
+          required
+        >
 
-<select id="businessType" onchange="toggleOtherBusiness()">
-  <option>ガールズバー</option>
-  <option>キャバクラ</option>
-  <option>コンカフェ</option>
-  <option>ラウンジ</option>
-  <option>スナック</option>
-  <option>クラブ</option>
-  <option>メンズコンカフェ</option>
-  <option>ホストクラブ</option>
-  <option>バー</option>
-  <option>その他</option>
-</select>
+        <label for="businessType">
+          業種
+          <span class="required">必須</span>
+        </label>
 
-<input
-  type="text"
-  id="otherBusinessType"
-  placeholder="例：その他の業種を入力"
-  style="display:none;margin-top:12px;"
->
+        <select id="businessType" required>
+          <option value="ガールズバー">ガールズバー</option>
+          <option value="キャバクラ">キャバクラ</option>
+          <option value="コンカフェ">コンカフェ</option>
+          <option value="ラウンジ">ラウンジ</option>
+          <option value="スナック">スナック</option>
+          <option value="クラブ">クラブ</option>
+          <option value="メンズコンカフェ">メンズコンカフェ</option>
+          <option value="ホストクラブ">ホストクラブ</option>
+          <option value="バー">バー</option>
+          <option value="その他">その他</option>
+        </select>
 
-<label>エリア</label>
-<input id="area" type="text" placeholder="例：東京都新宿区">
+        <input
+          id="otherBusinessType"
+          type="text"
+          placeholder="その他の業種を入力"
+          style="display: none; margin-top: 12px;"
+        >
 
-<label>店舗住所</label>
-<input id="address" type="text" placeholder="例：東京都新宿区歌舞伎町1-○-○">
+        <label for="area">
+          エリア
+          <span class="required">必須</span>
+        </label>
+        <input
+          id="area"
+          type="text"
+          placeholder="例：東京都新宿区"
+          required
+        >
 
-<label>最寄駅</label>
-<input id="station" type="text" placeholder="例：JR新宿駅 徒歩5分">
+        <label for="address">店舗住所</label>
+        <input
+          id="address"
+          type="text"
+          placeholder="例：東京都新宿区歌舞伎町1-○-○"
+        >
 
-<label>営業時間</label>
-<input id="businessHours" type="text" placeholder="例：20:00〜LAST">
+        <label for="station">最寄駅</label>
+        <input
+          id="station"
+          type="text"
+          placeholder="例：JR新宿駅 徒歩5分"
+        >
 
-<label>定休日</label>
-<input id="closedDay" type="text" placeholder="例：日曜日">
+        <label for="businessHours">営業時間</label>
+        <input
+          id="businessHours"
+          type="text"
+          placeholder="例：20:00〜LAST"
+        >
 
-</div>
-<div class="card">
+        <label for="closedDay">定休日</label>
+        <input
+          id="closedDay"
+          type="text"
+          placeholder="例：日曜日"
+        >
+      </section>
 
-<div class="section-title">
-■ 求人情報
-</div>
+      <section class="card">
+        <div class="section-title">■ 求人情報</div>
 
-<label>時給</label>
-<input id="salary" type="text" placeholder="例：時給3,500円〜">
+        <label for="salary">
+          時給
+          <span class="required">必須</span>
+        </label>
+        <input
+          id="salary"
+          type="text"
+          placeholder="例：時給3,500円〜"
+          required
+        >
 
-<label>各種バック</label>
-<input id="back" type="text" placeholder="例：ドリンクバック・ボトルバックあり">
+        <label for="back">各種バック</label>
+        <input
+          id="back"
+          type="text"
+          placeholder="例：ドリンクバック・ボトルバックあり"
+        >
 
-<label>日払い</label>
-<select id="dailyPay">
-  <option>あり</option>
-  <option>なし</option>
-</select>
+        <label for="dailyPay">日払い</label>
+        <select id="dailyPay">
+          <option value="あり">あり</option>
+          <option value="なし">なし</option>
+        </select>
 
-<label>体験入店</label>
-<select id="trial">
-  <option>可能</option>
-  <option>不可</option>
-</select>
+        <label for="trial">体験入店</label>
+        <select id="trial">
+          <option value="可能">可能</option>
+          <option value="不可">不可</option>
+        </select>
 
-<label>未経験歓迎</label>
-<select id="beginner">
-  <option>はい</option>
-  <option>いいえ</option>
-</select>
+        <label for="beginner">未経験歓迎</label>
+        <select id="beginner">
+          <option value="はい">はい</option>
+          <option value="いいえ">いいえ</option>
+        </select>
 
-<label>採用年齢</label>
-<input id="age" type="text" placeholder="例：18歳〜35歳">
+        <label for="age">採用年齢</label>
+        <input
+          id="age"
+          type="text"
+          placeholder="例：18歳〜35歳"
+        >
 
-<label>ノルマ</label>
-<select id="quota">
-  <option>なし</option>
-  <option>あり</option>
-</select>
+        <label for="quota">ノルマ</label>
+        <select id="quota">
+          <option value="なし">なし</option>
+          <option value="あり">あり</option>
+        </select>
 
-<label>ペナルティ</label>
-<select id="penalty">
-  <option>なし</option>
-  <option>あり</option>
-</select>
+        <label for="penalty">ペナルティ</label>
+        <select id="penalty">
+          <option value="なし">なし</option>
+          <option value="あり">あり</option>
+        </select>
 
-<label>シフト</label>
-<input id="shift" type="text" placeholder="例：自由シフト・週1日からOK">
+        <label for="shift">シフト</label>
+        <input
+          id="shift"
+          type="text"
+          placeholder="例：自由シフト・週1日からOK"
+        >
+      </section>
 
-</div>
-<div class="card">
+      <section class="card">
+        <div class="section-title">■ お店について</div>
 
-<div class="section-title">
-■ お店について
-</div>
+        <label for="shopPR">お店のPR</label>
+        <textarea
+          id="shopPR"
+          placeholder="例：未経験者大歓迎！ノルマなし・全額日払いOK・送りあり・アットホームなお店です。"
+        ></textarea>
 
-<label>お店のPR</label>
-<textarea placeholder="例：未経験者大歓迎！ノルマなし・全額日払いOK・送りあり・アットホームなお店です。"></textarea>
+        <label for="atmosphere">お店の雰囲気</label>
+        <textarea
+          id="atmosphere"
+          placeholder="例：スタッフ同士の仲が良く、未経験の方でも安心して働ける環境です。"
+        ></textarea>
 
-<label>お店の雰囲気</label>
-<textarea placeholder="例：スタッフ同士の仲が良く、未経験の方でも安心して働ける環境です。"></textarea>
+        <label for="customerBase">客層</label>
+        <input
+          id="customerBase"
+          type="text"
+          placeholder="例：20代〜50代の落ち着いたお客様が中心"
+        >
 
-<label>客層</label>
-<input type="text" placeholder="例：20代〜50代の落ち着いたお客様が中心">
+        <label for="staffCount">在籍人数</label>
+        <input
+          id="staffCount"
+          type="text"
+          placeholder="例：20名"
+        >
 
-<label>在籍人数</label>
-<input type="text" placeholder="例：20名">
+        <label for="ageGroup">キャスト年齢層</label>
+        <input
+          id="ageGroup"
+          type="text"
+          placeholder="例：20歳〜30歳"
+        >
+      </section>
 
-<label>年齢層</label>
-<input type="text" placeholder="例：20歳〜30歳">
+      <section class="card">
+        <div class="section-title">■ 掲載用画像</div>
 
-</div>
+        <label for="jobImages">店舗写真（最大9枚）</label>
 
-<div class="card">
+        <input
+          id="jobImages"
+          type="file"
+          accept="image/*"
+          multiple
+        >
 
-  <div class="section-title">
-    ■ 掲載用画像
-  </div>
+        <small>
+          店内・外観・ロゴ・求人画像などを最大9枚まで選択できます。<br>
+          1枚目の画像が求人一覧と詳細ページのメイン画像になります。
+        </small>
 
-  <label>店舗写真（最大9枚）</label>
+        <div id="imagePreview"></div>
+      </section>
 
-  <input
-    id="jobImages"
-    type="file"
-    accept="image/*"
-    multiple
-  >
+      <section class="card">
+        <div class="section-title">■ SNS・連絡先</div>
 
-  <small>
-    店内・外観・ロゴ・求人画像などを最大9枚まで選択できます。<br>
-    1枚目の画像が求人一覧と詳細ページのメイン画像になります。
-  </small>
+        <label for="website">ホームページ</label>
+        <input
+          id="website"
+          type="url"
+          placeholder="例：https://example.com"
+        >
 
-  <div
-    id="imagePreview"
-    style="
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:10px;
-      margin-top:16px;
-    "
-  ></div>
+        <label for="instagram">Instagram</label>
+        <input
+          id="instagram"
+          type="url"
+          placeholder="例：https://www.instagram.com/nox_shinjuku"
+        >
 
-</div>
-<div class="card">
+        <label for="tiktok">TikTok</label>
+        <input
+          id="tiktok"
+          type="url"
+          placeholder="例：https://www.tiktok.com/@nox_shinjuku"
+        >
 
-<div class="section-title">
-■ SNS・連絡先
-</div>
+        <label for="twitter">X（Twitter）</label>
+        <input
+          id="twitter"
+          type="url"
+          placeholder="例：https://x.com/nox_shinjuku"
+        >
 
-<label>ホームページ</label>
-<input type="url" placeholder="例：https://example.com">
+        <label for="officialLine">公式LINE</label>
+        <input
+          id="officialLine"
+          type="url"
+          placeholder="例：https://lin.ee/xxxxxxxx"
+        >
 
-<label>Instagram</label>
-<input type="url" placeholder="例：https://www.instagram.com/nox_shinjuku">
+        <label for="applicationPhone">応募用電話番号</label>
+        <input
+          id="applicationPhone"
+          type="tel"
+          placeholder="例：03-1234-5678"
+        >
+      </section>
 
-<label>TikTok</label>
-<input type="url" placeholder="例：https://www.tiktok.com/@nox_shinjuku">
+      <section class="card">
+        <div class="section-title">■ 担当者様</div>
 
-<label>X（Twitter）</label>
-<input type="url" placeholder="例：https://x.com/nox_shinjuku">
+        <label for="contactName">
+          ご担当者名
+          <span class="required">必須</span>
+        </label>
+        <input
+          id="contactName"
+          type="text"
+          placeholder="例：山田"
+          required
+        >
 
-<label>公式LINE</label>
-<input type="url" placeholder="例：https://lin.ee/xxxxxxxx">
+        <label for="contactInfo">
+          ご連絡先
+          <span class="required">必須</span>
+        </label>
+        <input
+          id="contactInfo"
+          type="text"
+          placeholder="例：090-1234-5678 または メールアドレス"
+          required
+        >
+      </section>
 
-<label>応募用電話番号</label>
-<input type="tel" placeholder="例：03-1234-5678">
+      <button
+        id="submitButton"
+        class="submit-button"
+        type="submit"
+      >
+        📤 掲載申請する
+      </button>
 
-</div>
+    </form>
 
-<div class="card">
+    <div class="application-note">
+      掲載申請後、NOX運営にて内容を確認し、<br>
+      承認完了後に求人ページへ公開されます。
+    </div>
 
-<div class="section-title">
-■ 担当者様
-</div>
+  </main>
 
-<label>ご担当者名</label>
-<input type="text" placeholder="例：山田">
+  <script type="module">
+    import { app, db } from "./firebase-db.js";
 
-<label>ご連絡先</label>
-<input type="text" placeholder="例：090-1234-5678 または メールアドレス">
+    import {
+      collection,
+      addDoc,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-</div>
+    import {
+      getStorage,
+      ref as storageRef,
+      uploadBytes,
+      getDownloadURL
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
-<button type="button" onclick="submitJob()"
-📤 掲載申請する
-</button>
+    const storage = getStorage(app);
 
-<br><br>
+    const form = document.getElementById("jobApplicationForm");
+    const submitButton = document.getElementById("submitButton");
+    const businessType = document.getElementById("businessType");
+    const otherBusinessType =
+      document.getElementById("otherBusinessType");
 
-<div style="text-align:center;color:#888;font-size:14px;line-height:1.8;">
-掲載申請後、NOX運営にて内容を確認し、<br>
-承認完了後に求人ページへ公開されます。
-</div>
-<script>
-async function submitJob() {
-const imageFiles = document.getElementById("jobImages").files;
+    const jobImages = document.getElementById("jobImages");
+    const imagePreview = document.getElementById("imagePreview");
+    const formMessage = document.getElementById("formMessage");
 
-let imageUrls = [];
+    function getValue(id) {
+      return document.getElementById(id)?.value.trim() || "";
+    }
 
+    function showMessage(message, type) {
+      formMessage.textContent = message;
+      formMessage.className = `message show ${type}`;
 
-    try {
-        for (const imageFile of imageFiles) {
+      formMessage.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+      });
+    }
 
-    const imageRef = storageRef(
-        storage,
-        "jobs/" + Date.now() + "_" + imageFile.name
+    function hideMessage() {
+      formMessage.textContent = "";
+      formMessage.className = "message";
+    }
+
+    function toggleOtherBusiness() {
+      const isOther = businessType.value === "その他";
+
+      otherBusinessType.style.display =
+        isOther ? "block" : "none";
+
+      otherBusinessType.required = isOther;
+
+      if (!isOther) {
+        otherBusinessType.value = "";
+      }
+    }
+
+    businessType.addEventListener(
+      "change",
+      toggleOtherBusiness
     );
 
-    await uploadBytes(imageRef, imageFile);
+    toggleOtherBusiness();
 
-    const url = await getDownloadURL(imageRef);
+    jobImages.addEventListener("change", () => {
+      hideMessage();
+      imagePreview.innerHTML = "";
 
-    imageUrls.push(url);
+      const files = Array.from(jobImages.files);
 
-}
-const data = {
+      if (files.length > 9) {
+        jobImages.value = "";
 
-    storeName: document.getElementById("storeName").value,
-
-    businessType:
-        document.getElementById("businessType").value === "その他"
-        ? document.getElementById("otherBusinessType").value
-        : document.getElementById("businessType").value,
-
-    area: document.getElementById("area").value,
-    address: document.getElementById("address").value,
-    station: document.getElementById("station").value,
-    businessHours: document.getElementById("businessHours").value,
-    closedDay: document.getElementById("closedDay").value,
-
-    salary: document.getElementById("salary").value,
-    back: document.getElementById("back").value,
-    dailyPay: document.getElementById("dailyPay").value,
-    trial: document.getElementById("trial").value,
-    beginner: document.getElementById("beginner").value,
-    age: document.getElementById("age").value,
-    quota: document.getElementById("quota").value,
-    penalty: document.getElementById("penalty").value,
-    shift: document.getElementById("shift").value,
-
-    shopPR: document.querySelectorAll("textarea")[0].value,
-    atmosphere: document.querySelectorAll("textarea")[1].value,
-    customerBase: document.querySelector('input[placeholder*="20代〜50代"]').value,
-    staffCount: document.querySelector('input[placeholder*="20名"]').value,
-    ageGroup: document.querySelector('input[placeholder*="20歳〜30歳"]').value,
-
-    images: imageUrls,
-image: imageUrls[0] || "",
-
-    createdAt: serverTimestamp(),
-    status: "pending"
-};
-        
-        await addDoc(
-    
-            collection(db, "jobApplications"),
-            data
+        showMessage(
+          "掲載画像は最大9枚まで選択できます。",
+          "error"
         );
 
-        alert("掲載申請を受け付けました！");
+        return;
+      }
 
-    } catch (e) {
+      files.forEach((file, index) => {
+        const reader = new FileReader();
 
-        console.error(e);
-alert(e.message || e);
+        reader.addEventListener("load", () => {
+          const previewItem = document.createElement("div");
+          previewItem.className = "preview-item";
 
+          const image = document.createElement("img");
+          image.src = reader.result;
+          image.alt = `掲載画像 ${index + 1}`;
+
+          const number = document.createElement("span");
+          number.className = "preview-number";
+          number.textContent =
+            index === 0 ? "メイン" : String(index + 1);
+
+          previewItem.appendChild(image);
+          previewItem.appendChild(number);
+          imagePreview.appendChild(previewItem);
+        });
+
+        reader.readAsDataURL(file);
+      });
+    });
+
+    function safeFileName(fileName) {
+      return fileName
+        .replace(/\s+/g, "_")
+        .replace(/[^\w.\-ぁ-んァ-ヶ一-龠]/g, "");
     }
 
-}
+    async function uploadJobImages(files) {
+      const imageUrls = [];
 
-function toggleOtherBusiness() {
+      for (let index = 0; index < files.length; index += 1) {
+        const imageFile = files[index];
 
-    const businessType = document.getElementById("businessType").value;
-    const otherInput = document.getElementById("otherBusinessType");
+        const uniqueName =
+          `${Date.now()}_${index}_${safeFileName(imageFile.name)}`;
 
-    if (businessType === "その他") {
-        otherInput.style.display = "block";
-    } else {
-        otherInput.style.display = "none";
-        otherInput.value = "";
+        const imageReference = storageRef(
+          storage,
+          `jobs/${uniqueName}`
+        );
+
+        await uploadBytes(imageReference, imageFile);
+
+        const imageUrl =
+          await getDownloadURL(imageReference);
+
+        imageUrls.push(imageUrl);
+      }
+
+      return imageUrls;
     }
 
-}
-</script>
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      hideMessage();
 
+      const files = Array.from(jobImages.files);
+
+      if (files.length > 9) {
+        showMessage(
+          "掲載画像は最大9枚まで選択できます。",
+          "error"
+        );
+
+        return;
+      }
+
+      if (
+        businessType.value === "その他" &&
+        !otherBusinessType.value.trim()
+      ) {
+        showMessage(
+          "その他の業種名を入力してください。",
+          "error"
+        );
+
+        otherBusinessType.focus();
+        return;
+      }
+
+      submitButton.disabled = true;
+      submitButton.textContent = "画像をアップロードしています...";
+
+      try {
+        const imageUrls = await uploadJobImages(files);
+
+        submitButton.textContent = "掲載情報を送信しています...";
+
+        const selectedBusinessType =
+          businessType.value === "その他"
+            ? otherBusinessType.value.trim()
+            : businessType.value;
+
+        const applicationData = {
+          storeName: getValue("storeName"),
+          businessType: selectedBusinessType,
+
+          area: getValue("area"),
+          address: getValue("address"),
+          station: getValue("station"),
+          businessHours: getValue("businessHours"),
+          closedDay: getValue("closedDay"),
+
+          salary: getValue("salary"),
+          salaryText: getValue("salary"),
+          back: getValue("back"),
+          dailyPay: getValue("dailyPay"),
+          trial: getValue("trial"),
+          beginner: getValue("beginner"),
+          age: getValue("age"),
+          quota: getValue("quota"),
+          penalty: getValue("penalty"),
+          shift: getValue("shift"),
+
+          shopPR: getValue("shopPR"),
+          atmosphere: getValue("atmosphere"),
+          customerBase: getValue("customerBase"),
+          staffCount: getValue("staffCount"),
+          ageGroup: getValue("ageGroup"),
+
+          website: getValue("website"),
+          instagram: getValue("instagram"),
+          tiktok: getValue("tiktok"),
+          twitter: getValue("twitter"),
+          officialLine: getValue("officialLine"),
+          applicationPhone: getValue("applicationPhone"),
+
+          contactName: getValue("contactName"),
+          contactInfo: getValue("contactInfo"),
+
+          images: imageUrls,
+          image: imageUrls[0] || "",
+          mainImage: imageUrls[0] || "",
+          imageUrl: imageUrls[0] || "",
+
+          status: "pending",
+          createdAt: serverTimestamp()
+        };
+
+        await addDoc(
+          collection(db, "jobApplications"),
+          applicationData
+        );
+
+        form.reset();
+        imagePreview.innerHTML = "";
+        toggleOtherBusiness();
+
+        showMessage(
+          "掲載申請を受け付けました。NOX運営で確認後、承認手続きを進めます。",
+          "success"
+        );
+
+      } catch (error) {
+        console.error("掲載申請エラー:", error);
+
+        showMessage(
+          `掲載申請に失敗しました。${error.message || "時間を置いて再度お試しください。"}`,
+          "error"
+        );
+
+      } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = "📤 掲載申請する";
+      }
+    });
+  </script>
 </body>
 </html>
