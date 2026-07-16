@@ -29,7 +29,10 @@ a{
   --glass:rgba(0,0,0,.55);
 }
 
-/* Loading */
+/* =========================
+   Loading
+========================= */
+
 .loading{
   position:fixed;
   inset:0;
@@ -61,7 +64,10 @@ a{
   color:#aaa;
 }
 
-/* Header */
+/* =========================
+   Header
+========================= */
+
 .site-header{
   position:fixed;
   top:0;
@@ -76,6 +82,13 @@ a{
   background:rgba(0,0,0,.55);
   backdrop-filter:blur(16px);
   border-bottom:1px solid rgba(212,175,55,.22);
+  transition:.35s;
+}
+
+.site-header.scrolled{
+  background:rgba(0,0,0,.92);
+  backdrop-filter:blur(18px);
+  box-shadow:0 10px 40px rgba(0,0,0,.45);
 }
 
 .header-logo span{
@@ -121,6 +134,10 @@ a{
   font-size:12px;
 }
 
+/* =========================
+   Button
+========================= */
+
 .btn{
   border:none;
   outline:none;
@@ -151,11 +168,15 @@ a{
 }
 
 .btn:hover{
-  transform:translateY(-3px);
+  transform:translateY(-4px);
   filter:brightness(1.15);
+  box-shadow:0 15px 40px rgba(212,175,55,.35);
 }
 
-/* Hero */
+/* =========================
+   Hero
+========================= */
+
 .hero{
   min-height:100vh;
   position:relative;
@@ -176,7 +197,17 @@ a{
     url("images/hero.jpg");
   background-size:cover;
   background-position:center;
-  transform:scale(1.04);
+  animation:heroZoom 20s ease-in-out infinite alternate;
+}
+
+@keyframes heroZoom{
+  from{
+    transform:scale(1);
+  }
+
+  to{
+    transform:scale(1.08);
+  }
 }
 
 .hero-overlay{
@@ -192,6 +223,7 @@ a{
   position:relative;
   z-index:2;
   max-width:960px;
+  width:100%;
 }
 
 .eyebrow{
@@ -270,11 +302,31 @@ a{
   letter-spacing:2px;
 }
 
-/* Common */
+/* =========================
+   Common
+========================= */
+
 .section{
+  position:relative;
   max-width:1240px;
   margin:auto;
   padding:82px 20px;
+}
+
+.section::before{
+  content:"";
+  position:absolute;
+  top:0;
+  left:50%;
+  width:80%;
+  height:1px;
+  transform:translateX(-50%);
+  background:linear-gradient(
+    to right,
+    transparent,
+    rgba(212,175,55,.35),
+    transparent
+  );
 }
 
 .section-head{
@@ -294,7 +346,29 @@ a{
   letter-spacing:3px;
 }
 
-/* Reasons */
+.gold-line{
+  width:120px;
+  height:2px;
+  margin:25px auto;
+  background:linear-gradient(
+    to right,
+    transparent,
+    #d4af37,
+    transparent
+  );
+}
+
+.glow{
+  text-shadow:
+    0 0 10px #d4af37,
+    0 0 20px #d4af37,
+    0 0 40px #d4af37;
+}
+
+/* =========================
+   Reasons
+========================= */
+
 .reason-grid{
   display:grid;
   grid-template-columns:repeat(4,1fr);
@@ -309,6 +383,12 @@ a{
   border-radius:18px;
   min-height:220px;
   box-shadow:0 0 28px rgba(212,175,55,.08);
+  transition:.35s;
+}
+
+.reason-card:hover{
+  transform:translateY(-8px);
+  border-color:#d4af37;
 }
 
 .reason-card .icon{
@@ -327,7 +407,10 @@ a{
   font-size:14px;
 }
 
-/* Select */
+/* =========================
+   Select
+========================= */
+
 .select-grid{
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -344,6 +427,7 @@ a{
   display:flex;
   align-items:flex-end;
   background:#070707;
+  transition:.4s;
 }
 
 .select-card::before{
@@ -366,6 +450,10 @@ a{
   background-image:
     linear-gradient(90deg,rgba(0,0,0,.95),rgba(0,0,0,.35)),
     url("images/lounge.jpg");
+}
+
+.select-card:hover{
+  transform:scale(1.02);
 }
 
 .select-card:hover::before{
@@ -402,7 +490,10 @@ a{
   margin-bottom:22px;
 }
 
-/* Jobs */
+/* =========================
+   Jobs
+========================= */
+
 .job-grid{
   display:grid;
   grid-template-columns:repeat(4,1fr);
@@ -419,8 +510,8 @@ a{
 }
 
 .job-card:hover{
-  transform:translateY(-8px);
-  box-shadow:0 0 35px rgba(212,175,55,.16);
+  transform:translateY(-10px);
+  box-shadow:0 25px 60px rgba(0,0,0,.55);
 }
 
 .job-image{
@@ -429,10 +520,29 @@ a{
   background-position:center;
 }
 
-.job1{background-image:linear-gradient(rgba(0,0,0,.1),rgba(0,0,0,.35)),url("images/job1.jpg")}
-.job2{background-image:linear-gradient(rgba(0,0,0,.1),rgba(0,0,0,.35)),url("images/job2.jpg")}
-.job3{background-image:linear-gradient(rgba(0,0,0,.1),rgba(0,0,0,.35)),url("images/job3.jpg")}
-.job4{background-image:linear-gradient(rgba(0,0,0,.1),rgba(0,0,0,.35)),url("images/job4.jpg")}
+.job1{
+  background-image:
+    linear-gradient(rgba(0,0,0,.1),rgba(0,0,0,.35)),
+    url("images/job1.jpg");
+}
+
+.job2{
+  background-image:
+    linear-gradient(rgba(0,0,0,.1),rgba(0,0,0,.35)),
+    url("images/job2.jpg");
+}
+
+.job3{
+  background-image:
+    linear-gradient(rgba(0,0,0,.1),rgba(0,0,0,.35)),
+    url("images/job3.jpg");
+}
+
+.job4{
+  background-image:
+    linear-gradient(rgba(0,0,0,.1),rgba(0,0,0,.35)),
+    url("images/job4.jpg");
+}
 
 .job-body{
   padding:20px;
@@ -479,7 +589,10 @@ a{
   color:var(--gold2);
 }
 
-/* AI */
+/* =========================
+   AI
+========================= */
+
 .ai-box{
   display:grid;
   grid-template-columns:180px 1fr;
@@ -516,7 +629,47 @@ a{
   margin-bottom:24px;
 }
 
-/* Ranking */
+/* =========================
+   NOX AI PREMIUM SECTION
+========================= */
+
+.ai-premium{
+  display:grid;
+  grid-template-columns:1.1fr .9fr;
+  gap:34px;
+  align-items:center;
+  border:1px solid rgba(212,175,55,.35);
+  border-radius:26px;
+  padding:24px;
+  background:linear-gradient(145deg,#060606,#130900);
+  box-shadow:0 0 40px rgba(212,175,55,.12);
+}
+
+.ai-premium img{
+  width:100%;
+  border-radius:20px;
+  display:block;
+  border:1px solid rgba(212,175,55,.25);
+  box-shadow:0 0 35px rgba(212,175,55,.18);
+}
+
+.ai-premium-text h3{
+  font-size:34px;
+  line-height:1.5;
+  color:#ffe08a;
+  margin-bottom:16px;
+}
+
+.ai-premium-text p{
+  color:#ddd;
+  line-height:2;
+  margin-bottom:24px;
+}
+
+/* =========================
+   Ranking
+========================= */
+
 .ranking-list{
   border:1px solid var(--line);
   border-radius:22px;
@@ -531,10 +684,15 @@ a{
   align-items:center;
   padding:22px;
   border-bottom:1px solid rgba(212,175,55,.18);
+  transition:.3s;
 }
 
 .rank-item:last-child{
   border-bottom:none;
+}
+
+.rank-item:hover{
+  background:rgba(212,175,55,.08);
 }
 
 .rank-item > span{
@@ -555,9 +713,17 @@ a{
   background-position:center;
 }
 
-.r1{background-image:url("images/job1.jpg")}
-.r2{background-image:url("images/job2.jpg")}
-.r3{background-image:url("images/job3.jpg")}
+.r1{
+  background-image:url("images/job1.jpg");
+}
+
+.r2{
+  background-image:url("images/job2.jpg");
+}
+
+.r3{
+  background-image:url("images/job3.jpg");
+}
 
 .rank-item h3{
   color:#fff;
@@ -568,7 +734,10 @@ a{
   margin-top:4px;
 }
 
-/* Support */
+/* =========================
+   Support
+========================= */
+
 .support-grid{
   display:grid;
   grid-template-columns:repeat(4,1fr);
@@ -594,7 +763,10 @@ a{
   line-height:1.8;
 }
 
-/* SNS */
+/* =========================
+   SNS
+========================= */
+
 .sns-grid{
   display:grid;
   grid-template-columns:repeat(3,1fr);
@@ -610,9 +782,19 @@ a{
   background:linear-gradient(145deg,#080808,#130b02);
   color:var(--gold2);
   font-weight:700;
+  transition:.3s;
 }
 
-/* Footer */
+.sns-grid a:hover{
+  transform:translateY(-5px);
+  background:#d4af37;
+  color:#111;
+}
+
+/* =========================
+   Footer
+========================= */
+
 footer{
   max-width:1240px;
   margin:auto;
@@ -650,7 +832,10 @@ footer a:hover{
   color:var(--gold2);
 }
 
-/* Notice */
+/* =========================
+   Notice
+========================= */
+
 .notice{
   position:fixed;
   left:50%;
@@ -665,6 +850,7 @@ footer a:hover{
   opacity:0;
   pointer-events:none;
   transition:.35s;
+  box-shadow:0 10px 35px rgba(0,0,0,.5);
 }
 
 .notice.show{
@@ -672,7 +858,10 @@ footer a:hover{
   transform:translateX(-50%) translateY(0);
 }
 
-/* Reveal */
+/* =========================
+   Reveal Animation
+========================= */
+
 .reveal{
   opacity:0;
   transform:translateY(36px);
@@ -684,8 +873,395 @@ footer a:hover{
   transform:translateY(0);
 }
 
-/* Mobile */
+.fade-up{
+  opacity:0;
+  transform:translateY(50px);
+  transition:1s;
+}
+
+.fade-up.show{
+  opacity:1;
+  transform:translateY(0);
+}
+
+/* =========================
+   Register Page
+========================= */
+
+.register-body{
+  background:#050505;
+  color:#fff;
+  font-family:"Noto Sans JP",sans-serif;
+}
+
+.register-page{
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:80px 20px;
+}
+
+.register-section{
+  width:100%;
+  max-width:900px;
+}
+
+.register-card{
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(212,175,55,.25);
+  border-radius:28px;
+  backdrop-filter:blur(18px);
+  padding:50px;
+  box-shadow:0 25px 60px rgba(0,0,0,.55);
+}
+
+.register-title{
+  font-size:42px;
+  text-align:center;
+  color:#d4af37;
+  margin-bottom:12px;
+}
+
+.register-sub{
+  text-align:center;
+  color:#aaa;
+  margin-bottom:40px;
+}
+
+.nox-form{
+  display:flex;
+  flex-direction:column;
+  gap:24px;
+}
+
+.form-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+}
+
+.full{
+  grid-column:1/-1;
+}
+
+.nox-form label{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  color:#d4af37;
+  font-weight:600;
+}
+
+.nox-form input,
+.nox-form select,
+.nox-form textarea{
+  width:100%;
+  padding:15px;
+  border-radius:12px;
+  border:1px solid rgba(212,175,55,.3);
+  background:#111;
+  color:#fff;
+  font-size:16px;
+  transition:.3s;
+  outline:none;
+}
+
+.nox-form input:focus,
+.nox-form select:focus,
+.nox-form textarea:focus{
+  border-color:#d4af37;
+  box-shadow:0 0 20px rgba(212,175,55,.35);
+}
+
+.nox-form textarea{
+  resize:vertical;
+  min-height:140px;
+}
+
+.nox-form input[type="file"]{
+  padding:12px;
+  background:#181818;
+}
+
+.register-btn{
+  width:100%;
+  padding:18px;
+  border:none;
+  border-radius:999px;
+  background:linear-gradient(90deg,#b8860b,#ffd86b,#b8860b);
+  color:#111;
+  font-size:18px;
+  font-weight:700;
+  cursor:pointer;
+  transition:.35s;
+  box-shadow:0 0 25px rgba(212,175,55,.35);
+}
+
+.register-btn:hover{
+  transform:translateY(-3px);
+  box-shadow:0 0 40px rgba(212,175,55,.6);
+}
+
+.back-link{
+  display:block;
+  text-align:center;
+  margin-top:25px;
+  color:#d4af37;
+  text-decoration:none;
+  transition:.3s;
+}
+
+.back-link:hover{
+  color:#fff;
+}
+
+/* =========================
+   NOX ローテーション広告
+========================= */
+
+.nox-ad-area{
+  position:relative;
+  z-index:3;
+  width:min(94%, 1080px);
+  margin:8px auto 75px;
+  padding-top:0;
+}
+
+.nox-ad-slider{
+  position:relative;
+  min-height:165px;
+  overflow:hidden;
+  border:1px solid rgba(212,175,55,.65);
+  border-radius:20px;
+  background:#090909;
+  transition:.35s;
+  box-shadow:
+    0 14px 35px rgba(0,0,0,.5),
+    0 0 26px rgba(212,175,55,.12);
+}
+
+.nox-ad-slider:hover{
+  transform:translateY(-3px);
+  box-shadow:
+    0 20px 45px rgba(0,0,0,.6),
+    0 0 32px rgba(212,175,55,.22);
+}
+
+.nox-ad-slide{
+  display:none;
+  width:100%;
+  min-height:165px;
+  color:#fff;
+  text-decoration:none;
+  background:
+    radial-gradient(circle at top right,rgba(212,175,55,.2),transparent 40%),
+    linear-gradient(135deg,#17120a,#080808 65%);
+}
+
+.nox-ad-slide.active{
+  display:block;
+  animation:noxAdFade .65s ease;
+}
+
+.nox-ad-content{
+  min-height:165px;
+  display:flex;
+  align-items:center;
+  gap:16px;
+  padding:20px 24px;
+  box-sizing:border-box;
+  flex-wrap:wrap;
+}
+
+.nox-ad-badge{
+  flex:0 0 auto;
+  padding:7px 11px;
+  border:1px solid #d4af37;
+  border-radius:7px;
+  color:#d4af37;
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.15em;
+}
+
+.nox-ad-text{
+  flex:1 1 calc(100% - 55px);
+  min-width:0;
+}
+
+.nox-ad-text strong{
+  display:block;
+  color:#f5d77b;
+  font-size:20px;
+  line-height:1.45;
+}
+
+.nox-ad-text p{
+  margin:7px 0 0;
+  color:#ddd;
+  font-size:13px;
+  line-height:1.7;
+}
+
+.nox-ad-button{
+  width:100%;
+  box-sizing:border-box;
+  text-align:center;
+  padding:13px 18px;
+  border-radius:999px;
+  background:linear-gradient(135deg,#a97908,#f3d979);
+  color:#111;
+  font-size:14px;
+  font-weight:800;
+  white-space:nowrap;
+}
+
+.nox-ad-dots{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:8px;
+  margin-top:12px;
+}
+
+.nox-ad-dots button{
+  width:8px;
+  height:8px;
+  padding:0;
+  border:0;
+  border-radius:50%;
+  background:#555;
+  cursor:pointer;
+}
+
+.nox-ad-dots button.active{
+  width:20px;
+  border-radius:999px;
+  background:#d4af37;
+}
+
+.nox-ad-note{
+  margin:8px 0 0;
+  padding:0 6px;
+  text-align:center;
+  color:#888;
+  font-size:10px;
+  line-height:1.6;
+}
+
+@keyframes noxAdFade{
+  from{
+    opacity:0;
+    transform:translateY(5px);
+  }
+
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
+
+/* =========================
+   TOP 新着求人
+========================= */
+
+.top-new-jobs{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:24px;
+  margin-top:30px;
+}
+
+.top-job-card{
+  background:#0b0b0b;
+  border:1px solid rgba(212,175,55,.25);
+  border-radius:18px;
+  overflow:hidden;
+  transition:.3s;
+}
+
+.top-job-card:hover{
+  transform:translateY(-6px);
+  border-color:#d4af37;
+  box-shadow:0 15px 35px rgba(212,175,55,.15);
+}
+
+.top-job-card img{
+  width:100%;
+  height:180px;
+  object-fit:cover;
+}
+
+.top-job-body{
+  padding:18px;
+}
+
+.top-job-body h3{
+  color:#ffe08a;
+  font-size:22px;
+  margin-bottom:10px;
+}
+
+.top-job-body p{
+  color:#ccc;
+  margin:6px 0;
+}
+
+.top-job-pay{
+  color:#d4af37;
+  font-size:24px;
+  font-weight:bold;
+  margin-top:12px;
+}
+
+.jobs-loading{
+  text-align:center;
+  color:#aaa;
+  padding:40px;
+}
+
+.new-jobs-more{
+  text-align:center;
+  margin-top:35px;
+}
+
+/* =========================
+   Chat Lady Button
+========================= */
+
+.chatlady-btn-wrap{
+  text-align:center;
+  margin-top:28px;
+}
+
+.chatlady-btn{
+  display:inline-block;
+  padding:14px 34px;
+  background:linear-gradient(135deg,#d4af37,#f5d76e);
+  color:#111;
+  font-weight:700;
+  text-decoration:none;
+  border-radius:999px;
+  transition:.25s;
+  box-shadow:0 8px 25px rgba(212,175,55,.35);
+}
+
+.chatlady-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 12px 30px rgba(212,175,55,.45);
+}
+
+.chatlady-btn:active{
+  transform:scale(.97);
+}
+
+/* =========================
+   Tablet・Mobile
+========================= */
+
 @media(max-width:900px){
+
   .site-header{
     position:relative;
     height:auto;
@@ -732,6 +1308,10 @@ footer a:hover{
     border-bottom:1px solid rgba(212,175,55,.18);
   }
 
+  .hero-stats div:last-child{
+    border-bottom:none;
+  }
+
   .reason-grid,
   .select-grid,
   .job-grid,
@@ -750,6 +1330,14 @@ footer a:hover{
     margin:auto;
   }
 
+  .ai-premium{
+    grid-template-columns:1fr;
+  }
+
+  .ai-premium-text h3{
+    font-size:26px;
+  }
+
   .rank-item{
     grid-template-columns:50px 70px 1fr;
     padding:16px;
@@ -758,593 +1346,155 @@ footer a:hover{
   footer{
     grid-template-columns:1fr;
   }
-  }
-/* ===========================
-   PREMIUM ANIMATION PACK
-=========================== */
 
-.hero-bg{
-    animation: heroZoom 20s ease-in-out infinite alternate;
-}
-
-@keyframes heroZoom{
-    from{
-        transform:scale(1);
-    }
-    to{
-        transform:scale(1.08);
-    }
-}
-
-.site-header{
-    transition:.35s;
-}
-
-.site-header.scrolled{
-    background:rgba(0,0,0,.92);
-    backdrop-filter:blur(18px);
-    box-shadow:0 10px 40px rgba(0,0,0,.45);
-}
-
-.btn{
-    transition:.3s;
-}
-
-.btn:hover{
-    transform:translateY(-4px);
-    box-shadow:0 15px 40px rgba(212,175,55,.35);
-}
-
-.job-card{
-    transition:.35s;
-}
-
-.job-card:hover{
-    transform:translateY(-10px);
-    box-shadow:0 25px 60px rgba(0,0,0,.55);
-}
-
-.reason-card{
-    transition:.35s;
-}
-
-.reason-card:hover{
-    transform:translateY(-8px);
-    border-color:#d4af37;
-}
-
-.select-card{
-    transition:.4s;
-}
-
-.select-card:hover{
-    transform:scale(1.02);
-}
-
-.rank-item{
-    transition:.3s;
-}
-
-.rank-item:hover{
-    background:rgba(212,175,55,.08);
-}
-
-.sns-grid a{
-    transition:.3s;
-}
-
-.sns-grid a:hover{
-    transform:translateY(-5px);
-    background:#d4af37;
-    color:#111;
-}
-
-.notice{
-    box-shadow:0 10px 35px rgba(0,0,0,.5);
-}
-
-.fade-up{
-    opacity:0;
-    transform:translateY(50px);
-    transition:1s;
-}
-
-.fade-up.show{
-    opacity:1;
-    transform:translateY(0);
-}
-
-.gold-line{
-    width:120px;
-    height:2px;
-    margin:25px auto;
-    background:linear-gradient(
-        to right,
-        transparent,
-        #d4af37,
-        transparent
-    );
-}
-
-.glow{
-    text-shadow:
-    0 0 10px #d4af37,
-    0 0 20px #d4af37,
-    0 0 40px #d4af37;
-}
-
-.section{
-    position:relative;
-}
-
-.section::before{
-    content:"";
-    position:absolute;
-    top:0;
-    left:50%;
-    width:80%;
-    height:1px;
-    transform:translateX(-50%);
-    background:linear-gradient(
-        to right,
-        transparent,
-        rgba(212,175,55,.35),
-        transparent
-    );
-}}
-
-/* =========================
-   NOX AI PREMIUM SECTION
-========================= */
-
-.ai-premium{
-  display:grid;
-  grid-template-columns:1.1fr .9fr;
-  gap:34px;
-  align-items:center;
-  border:1px solid rgba(212,175,55,.35);
-  border-radius:26px;
-  padding:24px;
-  background:linear-gradient(145deg,#060606,#130900);
-  box-shadow:0 0 40px rgba(212,175,55,.12);
-}
-
-.ai-premium img{
-  width:100%;
-  border-radius:20px;
-  display:block;
-  border:1px solid rgba(212,175,55,.25);
-  box-shadow:0 0 35px rgba(212,175,55,.18);
-}
-
-.ai-premium-text h3{
-  font-size:34px;
-  line-height:1.5;
-  color:#ffe08a;
-  margin-bottom:16px;
-}
-
-.ai-premium-text p{
-  color:#ddd;
-  line-height:2;
-  margin-bottom:24px;
-}
-
-@media(max-width:900px){
-  .ai-premium{
+  .form-grid{
     grid-template-columns:1fr;
   }
 
-  .ai-premium-text h3{
-    font-size:26px;
+  .register-card{
+    padding:30px 20px;
+  }
+
+  .register-title{
+    font-size:32px;
   }
 }
-/* ==========================
-   NOX REGISTER PAGE
-========================== */
 
-.register-body{
-    background:#050505;
-    color:#fff;
-    font-family:"Noto Sans JP",sans-serif;
-}
+/* =========================
+   Smartphone
+========================= */
 
-.register-page{
-    min-height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    padding:80px 20px;
-}
+@media(max-width:600px){
 
-.register-section{
-    width:100%;
-    max-width:900px;
-}
+  .section{
+    padding:65px 16px;
+  }
 
-.register-card{
-    background:rgba(255,255,255,.03);
-    border:1px solid rgba(212,175,55,.25);
-    border-radius:28px;
-    backdrop-filter:blur(18px);
-    padding:50px;
-    box-shadow:0 25px 60px rgba(0,0,0,.55);
-}
-.register-title{
-    font-size:42px;
-    text-align:center;
-    color:#d4af37;
-    margin-bottom:12px;
-}
+  .section-head h2{
+    font-size:29px;
+  }
 
-.register-sub{
-    text-align:center;
-    color:#aaa;
-    margin-bottom:40px;
-}
+  .hero{
+    padding:65px 14px 65px;
+  }
 
-.nox-form{
-    display:flex;
-    flex-direction:column;
-    gap:24px;
-}
+  .hero h1{
+    font-size:62px;
+    letter-spacing:8px;
+  }
 
-.form-grid{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:20px;
-}
-
-.full{
-    grid-column:1/-1;
-}
-
-.nox-form label{
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-    color:#d4af37;
-    font-weight:600;
-}
-.nox-form input,
-.nox-form select,
-.nox-form textarea{
-    width:100%;
-    padding:15px;
-    border-radius:12px;
-    border:1px solid rgba(212,175,55,.3);
-    background:#111;
-    color:#fff;
-    font-size:16px;
-    transition:.3s;
-    outline:none;
-}
-
-.nox-form input:focus,
-.nox-form select:focus,
-.nox-form textarea:focus{
-    border-color:#d4af37;
-    box-shadow:0 0 20px rgba(212,175,55,.35);
-}
-
-.nox-form textarea{
-    resize:vertical;
-    min-height:140px;
-}
-
-.nox-form input[type=file]{
-    padding:12px;
-    background:#181818;
-}
-.register-btn{
-    width:100%;
-    padding:18px;
-    border:none;
-    border-radius:999px;
-    background:linear-gradient(90deg,#b8860b,#ffd86b,#b8860b);
-    color:#111;
+  .hero h2{
     font-size:18px;
-    font-weight:700;
-    cursor:pointer;
-    transition:.35s;
-    box-shadow:0 0 25px rgba(212,175,55,.35);
-}
-
-.register-btn:hover{
-    transform:translateY(-3px);
-    box-shadow:0 0 40px rgba(212,175,55,.6);
-}
-
-.back-link{
-    display:block;
-    text-align:center;
-    margin-top:25px;
-    color:#d4af37;
-    text-decoration:none;
-    transition:.3s;
-}
-
-.back-link:hover{
-    color:#fff;
-}
-
-@media(max-width:900px){
-    .form-grid{
-        grid-template-columns:1fr;
-    }
-
-    .register-card{
-        padding:30px 20px;
-    }
-
-    .register-title{
-        font-size:32px;
-    }
-}
-/* ==============================
-   NOX ローテーション広告
-============================== */
-
-.nox-ad-area{
-  position:relative;
-  z-index:3;
-  width:min(92%, 980px);
-  margin:18px auto 60px;
-  padding-top:0;
-}
-
-.nox-ad-slider{
-  position:relative;
-  min-height:150px;
-  overflow:hidden;
-  border:1px solid rgba(212,175,55,.6);
-  border-radius:18px;
-  background:#090909;
-  box-shadow:
-    0 14px 35px rgba(0,0,0,.5),
-    0 0 24px rgba(212,175,55,.08);
-}
-
-.nox-ad-slide{
-  display:none;
-  width:100%;
-  min-height:150px;
-  color:#fff;
-  text-decoration:none;
-  background:
-    radial-gradient(circle at top right, rgba(212,175,55,.2), transparent 40%),
-    linear-gradient(135deg, #17120a, #080808 65%);
-}
-
-.nox-ad-slide.active{
-  display:block;
-  animation:noxAdFade .65s ease;
-}
-
-.nox-ad-content{
-  min-height:150px;
-  display:flex;
-  align-items:center;
-  gap:12px;
-  padding:16px;
-  box-sizing:border-box;
-  flex-wrap:wrap;
-}
-
-.nox-ad-badge{
-  flex:0 0 auto;
-  padding:6px 9px;
-  border:1px solid #d4af37;
-  border-radius:7px;
-  color:#d4af37;
-  font-size:11px;
-  font-weight:700;
-  letter-spacing:.15em;
-}
-
-.nox-ad-text{
-  flex:1 1 calc(100% - 55px);
-  min-width:0;
-}
-
-.nox-ad-text strong{
-  display:block;
-  color:#f5d77b;
-  font-size:16px;
-  line-height:1.45;
-}
-
-.nox-ad-text p{
-  margin:6px 0 0;
-  color:#ddd;
-  font-size:12px;
-  line-height:1.65;
-}
-
-.nox-ad-button{
-  width:100%;
-  box-sizing:border-box;
-  text-align:center;
-  padding:11px 14px;
-  border-radius:999px;
-  background:linear-gradient(135deg,#a97908,#f3d979);
-  color:#111;
-  font-size:13px;
-  font-weight:800;
-  white-space:nowrap;
-}
-
-.nox-ad-dots{
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  gap:8px;
-  margin-top:14px;
-}
-
-.nox-ad-dots button{
-  width:8px;
-  height:8px;
-  padding:0;
-  border:0;
-  border-radius:50%;
-  background:#555;
-  cursor:pointer;
-}
-
-.nox-ad-dots button.active{
-  width:20px;
-  border-radius:999px;
-  background:#d4af37;
-}
-
-.nox-ad-note{
-  margin:12px 0 0;
-  padding:0 6px;
-  text-align:center;
-  color:#aaa;
-  font-size:11px;
-  line-height:1.75;
-}
-
-@keyframes noxAdFade{
-  from{
-    opacity:0;
-    transform:translateY(5px);
+    letter-spacing:3px;
   }
 
-  to{
-    opacity:1;
-    transform:translateY(0);
+  .hero-copy{
+    font-size:22px;
+    letter-spacing:2px;
   }
-}
 
-/* PC表示 */
-@media (min-width:601px){
+  .hero-lead{
+    font-size:14px;
+  }
+
+  .btn.big{
+    width:100%;
+    max-width:320px;
+    padding:15px 20px;
+  }
+
+  .select-card{
+    min-height:320px;
+    padding:28px 22px;
+  }
+
+  .select-text h2{
+    font-size:35px;
+  }
 
   .nox-ad-area{
-    width:min(94%, 980px);
-    margin:24px auto 55px;
+    width:94%;
+    margin:6px auto 68px;
   }
 
   .nox-ad-slider{
-    min-height:118px;
+    min-height:175px;
+    border-radius:18px;
   }
 
   .nox-ad-slide{
-    min-height:118px;
+    min-height:175px;
   }
 
   .nox-ad-content{
-    min-height:118px;
+    min-height:175px;
+    gap:11px;
+    padding:16px;
+  }
+
+  .nox-ad-badge{
+    padding:6px 9px;
+    font-size:10px;
+  }
+
+  .nox-ad-text strong{
+    font-size:17px;
+  }
+
+  .nox-ad-text p{
+    font-size:12px;
+  }
+
+  .nox-ad-button{
+    padding:12px 14px;
+    font-size:13px;
+  }
+
+  .nox-ad-note{
+    font-size:9px;
+    margin-top:7px;
+  }
+
+  .rank-item{
+    grid-template-columns:42px 60px 1fr;
+    gap:11px;
+  }
+
+  .rank-thumb{
+    height:55px;
+  }
+
+  .rank-item h3{
+    font-size:15px;
+  }
+
+  .rank-item p{
+    font-size:12px;
+  }
+
+  .footer-brand h2{
+    font-size:48px;
+  }
+}
+
+/* =========================
+   PC広告表示
+========================= */
+
+@media(min-width:601px){
+
+  .nox-ad-content{
     flex-wrap:nowrap;
-    gap:16px;
-    padding:18px 22px;
   }
 
   .nox-ad-text{
     flex:1;
   }
 
-  .nox-ad-text strong{
-    font-size:18px;
-  }
-
-  .nox-ad-text p{
-    font-size:13px;
-  }
-
   .nox-ad-button{
     width:auto;
     flex:0 0 auto;
-    padding:10px 15px;
-    font-size:12px;
+    padding:14px 22px;
+    font-size:14px;
   }
-}
-/* ===== TOP 新着求人 ===== */
-
-.top-new-jobs{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-    gap:24px;
-    margin-top:30px;
-}
-
-.top-job-card{
-    background:#0b0b0b;
-    border:1px solid rgba(212,175,55,.25);
-    border-radius:18px;
-    overflow:hidden;
-    transition:.3s;
-}
-
-.top-job-card:hover{
-    transform:translateY(-6px);
-    border-color:#d4af37;
-    box-shadow:0 15px 35px rgba(212,175,55,.15);
-}
-
-.top-job-card img{
-    width:100%;
-    height:180px;
-    object-fit:cover;
-}
-
-.top-job-body{
-    padding:18px;
-}
-
-.top-job-body h3{
-    color:#ffe08a;
-    font-size:22px;
-    margin-bottom:10px;
-}
-
-.top-job-body p{
-    color:#ccc;
-    margin:6px 0;
-}
-
-.top-job-pay{
-    color:#d4af37;
-    font-size:24px;
-    font-weight:bold;
-    margin-top:12px;
-}
-
-.jobs-loading{
-    text-align:center;
-    color:#aaa;
-    padding:40px;
-}
-
-.new-jobs-more{
-    text-align:center;
-    margin-top:35px;
-}
-
-.chatlady-btn-wrap{
-    text-align:center;
-    margin-top:28px;
-}
-
-.chatlady-btn{
-    display:inline-block;
-    padding:14px 34px;
-    background:linear-gradient(135deg,#d4af37,#f5d76e);
-    color:#111;
-    font-weight:700;
-    text-decoration:none;
-    border-radius:999px;
-    transition:.25s;
-    box-shadow:0 8px 25px rgba(212,175,55,.35);
-}
-
-.chatlady-btn:hover{
-    transform:translateY(-2px);
-    box-shadow:0 12px 30px rgba(212,175,55,.45);
-}
-
-.chatlady-btn:active{
-    transform:scale(.97);
 }
