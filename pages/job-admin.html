@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
   <meta charset="UTF-8">
 
@@ -8,201 +9,341 @@
     content="width=device-width, initial-scale=1.0"
   >
 
-  <title>求人承認管理 | NOX</title>
+  <title>求人・店舗管理 | NOX</title>
 
   <link rel="stylesheet" href="../style.css">
 
   <style>
-    .job-admin-wrap {
-      width: 100%;
-      max-width: 900px;
-      margin: 0 auto;
+    .job-admin-wrap{
+      width:100%;
+      max-width:1000px;
+      margin:0 auto;
     }
 
-    .admin-section {
-      margin-top: 34px;
-      padding-top: 24px;
-      border-top: 1px solid rgba(201, 163, 74, 0.3);
+    .admin-section{
+      margin-top:36px;
+      padding-top:28px;
+      border-top:1px solid rgba(201,163,74,.3);
     }
 
-    .admin-section-title {
-      margin-bottom: 8px;
-      color: #f5d36b;
-      font-size: 24px;
+    .admin-section-title{
+      margin-bottom:8px;
+      color:#f5d36b;
+      font-size:25px;
     }
 
-    .admin-section-text {
-      margin-bottom: 20px;
-      color: #aaa;
-      line-height: 1.7;
+    .admin-section-text{
+      margin-bottom:20px;
+      color:#aaa;
+      line-height:1.7;
     }
 
-    .job-admin-card {
-      margin: 16px 0;
-      padding: 18px;
-      color: #fff;
-      background: #111;
-      border: 1px solid rgba(201, 163, 74, 0.5);
-      border-radius: 18px;
+    .job-admin-card{
+      margin:18px 0;
+      padding:20px;
+      color:#fff;
+      background:#111;
+      border:1px solid rgba(201,163,74,.5);
+      border-radius:18px;
     }
 
-    .job-admin-card h3 {
-      margin: 0 0 12px;
-      color: #f5d36b;
-      font-size: 22px;
+    .job-admin-card h3{
+      margin:0 0 12px;
+      color:#f5d36b;
+      font-size:22px;
     }
 
-    .job-admin-card p {
-      margin: 7px 0;
-      line-height: 1.6;
+    .job-admin-card p{
+      margin:7px 0;
+      color:#ddd;
+      line-height:1.7;
+      overflow-wrap:anywhere;
     }
 
-    .status-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 10px;
+    .job-preview-image{
+      display:block;
+      width:100%;
+      max-height:340px;
+      margin-bottom:16px;
+      object-fit:cover;
+      border:1px solid rgba(212,175,55,.3);
+      border-radius:14px;
+      background:#080808;
     }
 
-    .status-badge {
-      display: inline-block;
-      padding: 5px 10px;
-      border-radius: 999px;
-      font-size: 13px;
-      font-weight: bold;
+    .status-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:12px;
     }
 
-    .status-pending {
-      color: #ffe59a;
-      background: rgba(212, 175, 55, 0.15);
-      border: 1px solid rgba(212, 175, 55, 0.4);
+    .status-badge{
+      display:inline-block;
+      padding:5px 10px;
+      border-radius:999px;
+      font-size:13px;
+      font-weight:bold;
     }
 
-    .status-approved {
-      color: #caffd0;
-      background: rgba(46, 160, 67, 0.16);
-      border: 1px solid rgba(46, 160, 67, 0.45);
+    .status-pending{
+      color:#ffe59a;
+      background:rgba(212,175,55,.15);
+      border:1px solid rgba(212,175,55,.4);
     }
 
-    .status-paused {
-      color: #ddd;
-      background: rgba(150, 150, 150, 0.15);
-      border: 1px solid rgba(150, 150, 150, 0.4);
+    .status-approved{
+      color:#caffd0;
+      background:rgba(46,160,67,.16);
+      border:1px solid rgba(46,160,67,.45);
     }
 
-    .status-top-on {
-      color: #ffeaa5;
-      background: rgba(212, 175, 55, 0.18);
-      border: 1px solid rgba(212, 175, 55, 0.55);
+    .status-paused{
+      color:#ddd;
+      background:rgba(150,150,150,.15);
+      border:1px solid rgba(150,150,150,.4);
     }
 
-    .status-top-off {
-      color: #bbb;
-      background: rgba(100, 100, 100, 0.13);
-      border: 1px solid rgba(130, 130, 130, 0.35);
+    .status-top-on{
+      color:#ffeaa5;
+      background:rgba(212,175,55,.18);
+      border:1px solid rgba(212,175,55,.55);
     }
 
-    .image-upload {
-      width: 100%;
-      margin: 14px 0;
-      padding: 12px;
-      color: #fff;
-      background: #080808;
-      border: 1px solid #333;
-      border-radius: 12px;
+    .status-top-off{
+      color:#bbb;
+      background:rgba(100,100,100,.13);
+      border:1px solid rgba(130,130,130,.35);
     }
 
-    .admin-button-group {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 10px;
-      margin-top: 16px;
+    .image-upload{
+      width:100%;
+      margin:14px 0;
+      padding:12px;
+      color:#fff;
+      background:#080808;
+      border:1px solid #333;
+      border-radius:12px;
     }
 
-    .admin-action-button {
-      width: 100%;
-      padding: 13px 14px;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      font-size: 15px;
-      font-weight: bold;
+    .admin-button-group{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:10px;
+      margin-top:16px;
+    }
+
+    .admin-action-button{
+      width:100%;
+      padding:13px 14px;
+      border:none;
+      border-radius:12px;
+      cursor:pointer;
+      font-size:15px;
+      font-weight:bold;
+      transition:.25s;
+    }
+
+    .admin-action-button:hover{
+      transform:translateY(-2px);
+      filter:brightness(1.08);
     }
 
     .approve-button,
     .publish-button,
-    .top-on-button {
-      color: #000;
-      background: linear-gradient(
+    .top-on-button,
+    .edit-button,
+    .save-button{
+      color:#000;
+      background:linear-gradient(
         135deg,
         #f5d36b,
         #b98a19
       );
     }
 
-    .pause-button {
-      color: #fff;
-      background: #555;
+    .pause-button{
+      color:#fff;
+      background:#555;
     }
 
-    .top-off-button {
-      color: #fff;
-      background: #745d20;
+    .top-off-button,
+    .cancel-button{
+      color:#fff;
+      background:#745d20;
     }
 
-    .delete-button {
-      color: #fff;
-      background: #a52222;
+    .delete-button{
+      color:#fff;
+      background:#a52222;
     }
 
-    .admin-action-button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
+    .admin-action-button:disabled{
+      opacity:.5;
+      cursor:not-allowed;
+      transform:none;
     }
 
-    .empty-message {
-      margin: 16px 0;
-      padding: 18px;
-      color: #aaa;
-      text-align: center;
-      background: #111;
-      border: 1px solid #292929;
-      border-radius: 14px;
+    .empty-message{
+      margin:16px 0;
+      padding:18px;
+      color:#aaa;
+      text-align:center;
+      background:#111;
+      border:1px solid #292929;
+      border-radius:14px;
     }
 
-    .loading-message {
-      padding: 18px;
-      color: #aaa;
-      text-align: center;
+    .loading-message{
+      padding:18px;
+      color:#aaa;
+      text-align:center;
     }
 
-    @media (min-width: 600px) {
-      .admin-button-group {
-        grid-template-columns: repeat(2, 1fr);
+    /* 編集フォーム */
+
+    .job-edit-form{
+      display:none;
+      margin-top:20px;
+      padding-top:20px;
+      border-top:1px solid rgba(212,175,55,.25);
+    }
+
+    .job-edit-form.open{
+      display:block;
+    }
+
+    .edit-form-title{
+      margin-bottom:18px;
+      color:#f5d36b;
+      font-size:20px;
+    }
+
+    .edit-form-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:15px;
+    }
+
+    .edit-form-group{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      min-width:0;
+    }
+
+    .edit-form-group.full{
+      grid-column:1 / -1;
+    }
+
+    .edit-form-group label{
+      color:#f5d36b;
+      font-size:13px;
+      font-weight:bold;
+    }
+
+    .edit-form-group input,
+    .edit-form-group select,
+    .edit-form-group textarea{
+      width:100%;
+      min-width:0;
+      padding:13px;
+      color:#fff;
+      background:#090909;
+      border:1px solid rgba(212,175,55,.3);
+      border-radius:11px;
+      outline:none;
+      font-size:15px;
+    }
+
+    .edit-form-group input:focus,
+    .edit-form-group select:focus,
+    .edit-form-group textarea:focus{
+      border-color:#d4af37;
+      box-shadow:0 0 18px rgba(212,175,55,.18);
+    }
+
+    .edit-form-group textarea{
+      min-height:110px;
+      resize:vertical;
+      line-height:1.7;
+    }
+
+    .edit-image-preview{
+      display:none;
+      width:100%;
+      max-height:320px;
+      margin-top:10px;
+      object-fit:cover;
+      border-radius:13px;
+      border:1px solid rgba(212,175,55,.3);
+    }
+
+    .edit-image-preview.show{
+      display:block;
+    }
+
+    .edit-save-status{
+      min-height:22px;
+      margin-top:12px;
+      text-align:center;
+      color:#aaa;
+      font-size:13px;
+    }
+
+    .edit-save-status.success{
+      color:#9fffb0;
+    }
+
+    .edit-save-status.error{
+      color:#ff9b9b;
+    }
+
+    @media(min-width:600px){
+      .admin-button-group{
+        grid-template-columns:repeat(2,1fr);
+      }
+    }
+
+    @media(max-width:650px){
+      .edit-form-grid{
+        grid-template-columns:1fr;
+      }
+
+      .edit-form-group.full{
+        grid-column:auto;
+      }
+
+      .job-admin-card{
+        padding:17px;
       }
     }
   </style>
 </head>
 
 <body class="register-body">
+
   <main class="register-page">
+
     <section class="register-section">
 
       <div class="register-card job-admin-wrap">
 
         <div class="register-step">
           <span>NOX JOB ADMIN</span>
-          <h2>求人承認管理</h2>
-          <p>店舗掲載申請・掲載中求人の管理</p>
+          <h2>求人・店舗管理</h2>
+          <p>店舗掲載申請・掲載中求人の編集と管理</p>
         </div>
 
+        <!-- 承認待ち -->
         <section class="admin-section">
+
           <h3 class="admin-section-title">
             承認待ち申請
           </h3>
 
           <p class="admin-section-text">
-            店舗から届いた申請を確認して公開できます。
+            店舗から届いた掲載申請を確認して公開できます。
           </p>
 
           <div id="pendingJobList">
@@ -210,15 +351,18 @@
               読み込み中...
             </p>
           </div>
+
         </section>
 
+        <!-- 掲載店舗 -->
         <section class="admin-section">
+
           <h3 class="admin-section-title">
             掲載店舗一覧
           </h3>
 
           <p class="admin-section-text">
-            掲載停止・再掲載・トップ掲載・完全削除ができます。
+            店舗情報の編集・画像変更・掲載停止・トップ掲載・削除ができます。
           </p>
 
           <div id="publishedJobList">
@@ -226,23 +370,35 @@
               読み込み中...
             </p>
           </div>
+
         </section>
 
         <div class="header-actions">
-          <a href="../index.html" class="btn ghost">
+
+          <a
+            href="../index.html"
+            class="btn ghost"
+          >
             トップへ戻る
           </a>
 
-          <a href="./admin.html" class="btn ghost">
+          <a
+            href="./admin.html"
+            class="btn ghost"
+          >
             管理者ページ
           </a>
+
         </div>
 
       </div>
+
     </section>
+
   </main>
 
   <script type="module">
+
     import { auth } from "../firebase.js";
 
     import {
@@ -277,20 +433,26 @@
     const publishedJobList =
       document.getElementById("publishedJobList");
 
-    function escapeHtml(value) {
+    let currentAdminUser = null;
+
+    /* =========================
+       共通関数
+    ========================= */
+
+    function escapeHtml(value){
       return String(value ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
     }
 
-    function getTimestampSeconds(value) {
+    function getTimestampSeconds(value){
       return value?.seconds || 0;
     }
 
-    function getJobName(data) {
+    function getJobName(data){
       return (
         data.storeName ||
         data.shopName ||
@@ -299,7 +461,7 @@
       );
     }
 
-    function getJobArea(data) {
+    function getJobArea(data){
       return (
         data.area ||
         data.location ||
@@ -308,7 +470,7 @@
       );
     }
 
-    function getJobSalary(data) {
+    function getJobSalary(data){
       return (
         data.salary ||
         data.salaryText ||
@@ -317,107 +479,169 @@
       );
     }
 
-    function getStatusLabel(status) {
-      if (status === "approved") {
+    function getJobImage(data){
+      if(data.mainImage) return data.mainImage;
+      if(data.imageUrl) return data.imageUrl;
+      if(data.image) return data.image;
+      if(data.storeImage) return data.storeImage;
+      if(data.logoUrl) return data.logoUrl;
+
+      if(
+        Array.isArray(data.images) &&
+        data.images.length > 0
+      ){
+        return data.images.find(Boolean) || "";
+      }
+
+      return "";
+    }
+
+    function getJobDescription(data){
+      return (
+        data.description ||
+        data.jobDescription ||
+        data.storeDescription ||
+        data.selfPr ||
+        data.pr ||
+        ""
+      );
+    }
+
+    function getStatusLabel(status){
+      if(status === "approved"){
         return "掲載中";
       }
 
-      if (status === "paused") {
+      if(status === "paused"){
         return "掲載停止中";
       }
 
       return status || "不明";
     }
 
-    function getStatusClass(status) {
-      if (status === "approved") {
+    function getStatusClass(status){
+      if(status === "approved"){
         return "status-approved";
       }
 
-      if (status === "paused") {
+      if(status === "paused"){
         return "status-paused";
       }
 
       return "status-pending";
     }
 
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        alert("ログインしてください");
-        location.href = "./login.html";
-        return;
+    function validateUrl(value){
+      if(!value){
+        return true;
       }
 
-      try {
-        const adminReference =
-          doc(db, "users", user.uid);
+      try{
+        const parsedUrl = new URL(value);
 
-        const adminSnapshot =
-          await getDoc(adminReference);
+        return (
+          parsedUrl.protocol === "https:" ||
+          parsedUrl.protocol === "http:"
+        );
+      }catch{
+        return false;
+      }
+    }
 
-        if (
-          !adminSnapshot.exists() ||
-          adminSnapshot.data().role !== "admin"
-        ) {
-          alert("管理者のみアクセスできます");
-          location.href = "./mypage.html";
+    /* =========================
+       管理者確認
+    ========================= */
+
+    onAuthStateChanged(
+      auth,
+      async (user) => {
+
+        if(!user){
+          alert("ログインしてください");
+          location.href = "./login.html";
           return;
         }
 
-        await loadAllJobs();
+        try{
+          const adminReference =
+            doc(db,"users",user.uid);
 
-      } catch (error) {
-        console.error(
-          "管理者確認エラー:",
-          error
-        );
+          const adminSnapshot =
+            await getDoc(adminReference);
 
-        alert(
-          "管理者情報の確認に失敗しました"
-        );
+          if(
+            !adminSnapshot.exists() ||
+            adminSnapshot.data().role !== "admin"
+          ){
+            alert("管理者のみアクセスできます");
+            location.href = "./mypage.html";
+            return;
+          }
+
+          currentAdminUser = user;
+
+          await loadAllJobs();
+
+        }catch(error){
+          console.error(
+            "管理者確認エラー:",
+            error
+          );
+
+          alert(
+            "管理者情報の確認に失敗しました"
+          );
+        }
       }
-    });
+    );
 
-    async function loadAllJobs() {
+    async function loadAllJobs(){
       await Promise.all([
         loadPendingJobs(),
         loadPublishedJobs()
       ]);
     }
 
-    async function loadPendingJobs() {
+    /* =========================
+       承認待ち申請
+    ========================= */
+
+    async function loadPendingJobs(){
+
       pendingJobList.innerHTML = `
         <p class="loading-message">
           読み込み中...
         </p>
       `;
 
-      try {
+      try{
         const snapshot =
           await getDocs(
-            collection(db, "jobApplications")
+            collection(db,"jobApplications")
           );
 
         const applications = [];
 
         snapshot.forEach(
           (applicationDocument) => {
+
             const data =
               applicationDocument.data();
 
-            if (data.status === "approved") {
+            if(data.status === "approved"){
               return;
             }
 
             applications.push({
-              id: applicationDocument.id,
+              id:applicationDocument.id,
               ...data
             });
           }
         );
 
         applications.sort(
-          (applicationA, applicationB) => {
+          (applicationA,applicationB) => {
+
             return (
               getTimestampSeconds(
                 applicationB.createdAt
@@ -429,7 +653,8 @@
           }
         );
 
-        if (applications.length === 0) {
+        if(applications.length === 0){
+
           pendingJobList.innerHTML = `
             <p class="empty-message">
               承認待ちの掲載申請はありません。
@@ -441,84 +666,93 @@
 
         pendingJobList.innerHTML = "";
 
-        applications.forEach((application) => {
-          const card =
-            document.createElement("article");
+        applications.forEach(
+          (application) => {
 
-          card.className = "job-admin-card";
+            const card =
+              document.createElement("article");
 
-          card.innerHTML = `
-            <h3>
-              ${escapeHtml(
-                getJobName(application)
-              )}
-            </h3>
+            card.className =
+              "job-admin-card";
 
-            <p>
-              業種：
-              ${escapeHtml(
-                application.businessType || "-"
-              )}
-            </p>
+            card.innerHTML = `
+              <h3>
+                ${escapeHtml(
+                  getJobName(application)
+                )}
+              </h3>
 
-            <p>
-              エリア：
-              ${escapeHtml(
-                getJobArea(application)
-              )}
-            </p>
+              <p>
+                業種：
+                ${escapeHtml(
+                  application.businessType ||
+                  application.jobType ||
+                  "-"
+                )}
+              </p>
 
-            <p>
-              時給：
-              ${escapeHtml(
-                getJobSalary(application)
-              )}
-            </p>
+              <p>
+                エリア：
+                ${escapeHtml(
+                  getJobArea(application)
+                )}
+              </p>
 
-            <div class="status-row">
-              <span class="status-badge status-pending">
-                承認待ち
-              </span>
-            </div>
+              <p>
+                給与：
+                ${escapeHtml(
+                  getJobSalary(application)
+                )}
+              </p>
 
-            <input
-              type="file"
-              class="image-upload"
-              accept="image/*"
-              data-application-id="${escapeHtml(
-                application.id
-              )}"
-            >
+              <div class="status-row">
 
-            <div class="admin-button-group">
+                <span class="status-badge status-pending">
+                  承認待ち
+                </span>
 
-              <button
-                type="button"
-                class="admin-action-button approve-button approve-application-button"
+              </div>
+
+              <input
+                type="file"
+                class="image-upload"
+                accept="image/jpeg,image/png,image/webp"
                 data-application-id="${escapeHtml(
                   application.id
                 )}"
               >
-                承認して公開
-              </button>
 
-              <button
-                type="button"
-                class="admin-action-button delete-button delete-application-button"
-                data-application-id="${escapeHtml(
-                  application.id
-                )}"
-              >
-                申請を削除
-              </button>
+              <div class="admin-button-group">
 
-            </div>
-          `;
+                <button
+                  type="button"
+                  class="admin-action-button approve-button approve-application-button"
+                  data-application-id="${escapeHtml(
+                    application.id
+                  )}"
+                >
+                  承認して公開
+                </button>
 
-          pendingJobList.appendChild(card);
-        });
+                <button
+                  type="button"
+                  class="admin-action-button delete-button delete-application-button"
+                  data-application-id="${escapeHtml(
+                    application.id
+                  )}"
+                >
+                  申請を削除
+                </button>
 
-      } catch (error) {
+              </div>
+            `;
+
+            pendingJobList.appendChild(card);
+          }
+        );
+
+      }catch(error){
+
         console.error(
           "申請一覧取得エラー:",
           error
@@ -532,51 +766,61 @@
       }
     }
 
-    async function loadPublishedJobs() {
+    /* =========================
+       掲載店舗一覧
+    ========================= */
+
+    async function loadPublishedJobs(){
+
       publishedJobList.innerHTML = `
         <p class="loading-message">
           読み込み中...
         </p>
       `;
 
-      try {
+      try{
         const snapshot =
           await getDocs(
-            collection(db, "jobs")
+            collection(db,"jobs")
           );
 
         const jobs = [];
 
-        snapshot.forEach((jobDocument) => {
-          const data = jobDocument.data();
+        snapshot.forEach(
+          (jobDocument) => {
 
-          jobs.push({
-            id: jobDocument.id,
-            ...data
-          });
-        });
+            jobs.push({
+              id:jobDocument.id,
+              ...jobDocument.data()
+            });
+          }
+        );
 
-        jobs.sort((jobA, jobB) => {
-          const timeA =
-            getTimestampSeconds(
-              jobA.approvedAt
-            ) ||
-            getTimestampSeconds(
-              jobA.createdAt
-            );
+        jobs.sort(
+          (jobA,jobB) => {
 
-          const timeB =
-            getTimestampSeconds(
-              jobB.approvedAt
-            ) ||
-            getTimestampSeconds(
-              jobB.createdAt
-            );
+            const timeA =
+              getTimestampSeconds(
+                jobA.approvedAt
+              ) ||
+              getTimestampSeconds(
+                jobA.createdAt
+              );
 
-          return timeB - timeA;
-        });
+            const timeB =
+              getTimestampSeconds(
+                jobB.approvedAt
+              ) ||
+              getTimestampSeconds(
+                jobB.createdAt
+              );
 
-        if (jobs.length === 0) {
+            return timeB - timeA;
+          }
+        );
+
+        if(jobs.length === 0){
+
           publishedJobList.innerHTML = `
             <p class="empty-message">
               掲載店舗はありません。
@@ -588,145 +832,17 @@
 
         publishedJobList.innerHTML = "";
 
-        jobs.forEach((job) => {
-          const card =
-            document.createElement("article");
+        jobs.forEach(
+          (job) => {
 
-          card.className = "job-admin-card";
+            publishedJobList.appendChild(
+              createPublishedJobCard(job)
+            );
+          }
+        );
 
-          const isApproved =
-            job.status === "approved";
+      }catch(error){
 
-          const isTopFeatured =
-            job.topFeatured === true;
-
-          card.innerHTML = `
-            <h3>
-              ${escapeHtml(
-                getJobName(job)
-              )}
-            </h3>
-
-            <p>
-              業種：
-              ${escapeHtml(
-                job.businessType || "-"
-              )}
-            </p>
-
-            <p>
-              エリア：
-              ${escapeHtml(
-                getJobArea(job)
-              )}
-            </p>
-
-            <p>
-              時給：
-              ${escapeHtml(
-                getJobSalary(job)
-              )}
-            </p>
-
-            <div class="status-row">
-
-              <span
-                class="status-badge ${getStatusClass(
-                  job.status
-                )}"
-              >
-                ${escapeHtml(
-                  getStatusLabel(job.status)
-                )}
-              </span>
-
-              <span
-                class="status-badge ${
-                  isTopFeatured
-                    ? "status-top-on"
-                    : "status-top-off"
-                }"
-              >
-                ${
-                  isTopFeatured
-                    ? "トップ掲載中"
-                    : "トップ掲載OFF"
-                }
-              </span>
-
-            </div>
-
-            <div class="admin-button-group">
-
-              ${
-                isApproved
-                  ? `
-                    <button
-                      type="button"
-                      class="admin-action-button pause-button pause-job-button"
-                      data-job-id="${escapeHtml(
-                        job.id
-                      )}"
-                    >
-                      掲載を停止
-                    </button>
-                  `
-                  : `
-                    <button
-                      type="button"
-                      class="admin-action-button publish-button republish-job-button"
-                      data-job-id="${escapeHtml(
-                        job.id
-                      )}"
-                    >
-                      再掲載する
-                    </button>
-                  `
-              }
-
-              ${
-                isTopFeatured
-                  ? `
-                    <button
-                      type="button"
-                      class="admin-action-button top-off-button"
-                      data-job-id="${escapeHtml(
-                        job.id
-                      )}"
-                    >
-                      トップ掲載OFF
-                    </button>
-                  `
-                  : `
-                    <button
-                      type="button"
-                      class="admin-action-button top-on-button"
-                      data-job-id="${escapeHtml(
-                        job.id
-                      )}"
-                    >
-                      トップ掲載ON
-                    </button>
-                  `
-              }
-
-              <button
-                type="button"
-                class="admin-action-button delete-button delete-job-button"
-                data-job-id="${escapeHtml(
-                  job.id
-                )}"
-              >
-                完全削除
-              </button>
-
-            </div>
-          `;
-
-          publishedJobList.appendChild(card);
-        });
-
-      } catch (error) {
         console.error(
           "掲載求人取得エラー:",
           error
@@ -740,91 +856,912 @@
       }
     }
 
+    function createPublishedJobCard(job){
+
+      const card =
+        document.createElement("article");
+
+      card.className =
+        "job-admin-card";
+
+      card.dataset.jobId =
+        job.id;
+
+      const isApproved =
+        job.status === "approved";
+
+      const isTopFeatured =
+        job.topFeatured === true;
+
+      const imageUrl =
+        getJobImage(job);
+
+      const description =
+        getJobDescription(job);
+
+      card.innerHTML = `
+
+        ${
+          imageUrl
+            ? `
+              <img
+                src="${escapeHtml(imageUrl)}"
+                alt="${escapeHtml(getJobName(job))}"
+                class="job-preview-image"
+              >
+            `
+            : ""
+        }
+
+        <h3>
+          ${escapeHtml(getJobName(job))}
+        </h3>
+
+        <p>
+          業種：
+          ${escapeHtml(
+            job.businessType ||
+            job.jobType ||
+            "-"
+          )}
+        </p>
+
+        <p>
+          エリア：
+          ${escapeHtml(getJobArea(job))}
+        </p>
+
+        <p>
+          給与：
+          ${escapeHtml(getJobSalary(job))}
+        </p>
+
+        <div class="status-row">
+
+          <span
+            class="status-badge ${getStatusClass(
+              job.status
+            )}"
+          >
+            ${escapeHtml(
+              getStatusLabel(job.status)
+            )}
+          </span>
+
+          <span
+            class="status-badge ${
+              isTopFeatured
+                ? "status-top-on"
+                : "status-top-off"
+            }"
+          >
+            ${
+              isTopFeatured
+                ? "トップ掲載中"
+                : "トップ掲載OFF"
+            }
+          </span>
+
+        </div>
+
+        <div class="admin-button-group">
+
+          <button
+            type="button"
+            class="admin-action-button edit-button edit-job-button"
+            data-job-id="${escapeHtml(job.id)}"
+          >
+            ✏️ 店舗情報を編集
+          </button>
+
+          ${
+            isApproved
+              ? `
+                <button
+                  type="button"
+                  class="admin-action-button pause-button pause-job-button"
+                  data-job-id="${escapeHtml(job.id)}"
+                >
+                  掲載を停止
+                </button>
+              `
+              : `
+                <button
+                  type="button"
+                  class="admin-action-button publish-button republish-job-button"
+                  data-job-id="${escapeHtml(job.id)}"
+                >
+                  再掲載する
+                </button>
+              `
+          }
+
+          ${
+            isTopFeatured
+              ? `
+                <button
+                  type="button"
+                  class="admin-action-button top-off-button"
+                  data-job-id="${escapeHtml(job.id)}"
+                >
+                  トップ掲載OFF
+                </button>
+              `
+              : `
+                <button
+                  type="button"
+                  class="admin-action-button top-on-button"
+                  data-job-id="${escapeHtml(job.id)}"
+                >
+                  トップ掲載ON
+                </button>
+              `
+          }
+
+          <button
+            type="button"
+            class="admin-action-button delete-button delete-job-button"
+            data-job-id="${escapeHtml(job.id)}"
+          >
+            完全削除
+          </button>
+
+        </div>
+
+        <!-- 編集フォーム -->
+        <div
+          class="job-edit-form"
+          id="editForm-${escapeHtml(job.id)}"
+        >
+
+          <h4 class="edit-form-title">
+            店舗・求人情報を編集
+          </h4>
+
+          <div class="edit-form-grid">
+
+            <div class="edit-form-group full">
+              <label>
+                店舗名
+              </label>
+
+              <input
+                type="text"
+                id="editStoreName-${escapeHtml(job.id)}"
+                value="${escapeHtml(
+                  getJobName(job) === "店舗名未設定"
+                    ? ""
+                    : getJobName(job)
+                )}"
+              >
+            </div>
+
+            <div class="edit-form-group">
+              <label>
+                業種
+              </label>
+
+              <input
+                type="text"
+                id="editBusinessType-${escapeHtml(job.id)}"
+                value="${escapeHtml(
+                  job.businessType ||
+                  job.jobType ||
+                  ""
+                )}"
+                placeholder="ガールズバー・キャバクラなど"
+              >
+            </div>
+
+            <div class="edit-form-group">
+              <label>
+                エリア
+              </label>
+
+              <input
+                type="text"
+                id="editArea-${escapeHtml(job.id)}"
+                value="${escapeHtml(
+                  getJobArea(job) === "-"
+                    ? ""
+                    : getJobArea(job)
+                )}"
+                placeholder="千葉県千葉市"
+              >
+            </div>
+
+            <div class="edit-form-group">
+              <label>
+                給与・時給
+              </label>
+
+              <input
+                type="text"
+                id="editSalary-${escapeHtml(job.id)}"
+                value="${escapeHtml(
+                  getJobSalary(job) === "-"
+                    ? ""
+                    : getJobSalary(job)
+                )}"
+                placeholder="時給4,500円〜"
+              >
+            </div>
+
+            <div class="edit-form-group">
+              <label>
+                求人タイトル
+              </label>
+
+              <input
+                type="text"
+                id="editTitle-${escapeHtml(job.id)}"
+                value="${escapeHtml(
+                  job.title ||
+                  job.jobTitle ||
+                  ""
+                )}"
+                placeholder="未経験歓迎・高時給"
+              >
+            </div>
+
+            <div class="edit-form-group full">
+              <label>
+                店舗紹介・求人説明
+              </label>
+
+              <textarea
+                id="editDescription-${escapeHtml(job.id)}"
+                placeholder="お店の特徴や求人内容"
+              >${escapeHtml(description)}</textarea>
+            </div>
+
+            <div class="edit-form-group full">
+              <label>
+                勤務時間
+              </label>
+
+              <input
+                type="text"
+                id="editWorkHours-${escapeHtml(job.id)}"
+                value="${escapeHtml(
+                  job.workHours ||
+                  job.workingHours ||
+                  job.shift ||
+                  ""
+                )}"
+                placeholder="20:00〜LAST"
+              >
+            </div>
+
+            <div class="edit-form-group full">
+              <label>
+                応募条件
+              </label>
+
+              <textarea
+                id="editRequirements-${escapeHtml(job.id)}"
+                placeholder="18歳以上・未経験歓迎など"
+              >${escapeHtml(
+                job.requirements ||
+                job.qualification ||
+                job.conditions ||
+                ""
+              )}</textarea>
+            </div>
+
+            <div class="edit-form-group full">
+              <label>
+                待遇・福利厚生
+              </label>
+
+              <textarea
+                id="editBenefits-${escapeHtml(job.id)}"
+                placeholder="日払い・送り・寮ありなど"
+              >${escapeHtml(
+                job.benefits ||
+                job.treatment ||
+                job.features ||
+                ""
+              )}</textarea>
+            </div>
+
+            <div class="edit-form-group full">
+              <label>
+                応募・問い合わせリンク
+              </label>
+
+              <input
+                type="url"
+                id="editApplyUrl-${escapeHtml(job.id)}"
+                value="${escapeHtml(
+                  job.applyUrl ||
+                  job.lineUrl ||
+                  job.contactUrl ||
+                  ""
+                )}"
+                placeholder="https://lin.ee/..."
+              >
+            </div>
+
+            <div class="edit-form-group">
+              <label>
+                トップ掲載順
+              </label>
+
+              <input
+                type="number"
+                id="editTopOrder-${escapeHtml(job.id)}"
+                value="${escapeHtml(
+                  typeof job.topOrder === "number"
+                    ? job.topOrder
+                    : 999
+                )}"
+                min="1"
+                step="1"
+              >
+            </div>
+
+            <div class="edit-form-group">
+              <label>
+                掲載状態
+              </label>
+
+              <select
+                id="editStatus-${escapeHtml(job.id)}"
+              >
+                <option
+                  value="approved"
+                  ${
+                    job.status === "approved"
+                      ? "selected"
+                      : ""
+                  }
+                >
+                  掲載中
+                </option>
+
+                <option
+                  value="paused"
+                  ${
+                    job.status === "paused"
+                      ? "selected"
+                      : ""
+                  }
+                >
+                  掲載停止
+                </option>
+              </select>
+            </div>
+
+            <div class="edit-form-group full">
+              <label>
+                メイン画像を変更
+              </label>
+
+              <input
+                type="file"
+                id="editImage-${escapeHtml(job.id)}"
+                accept="image/jpeg,image/png,image/webp"
+              >
+
+              <img
+                src="${escapeHtml(imageUrl)}"
+                id="editPreview-${escapeHtml(job.id)}"
+                class="edit-image-preview ${
+                  imageUrl ? "show" : ""
+                }"
+                alt="画像プレビュー"
+              >
+            </div>
+
+          </div>
+
+          <div class="admin-button-group">
+
+            <button
+              type="button"
+              class="admin-action-button save-button save-job-button"
+              data-job-id="${escapeHtml(job.id)}"
+            >
+              変更を保存
+            </button>
+
+            <button
+              type="button"
+              class="admin-action-button cancel-button cancel-edit-button"
+              data-job-id="${escapeHtml(job.id)}"
+            >
+              編集を閉じる
+            </button>
+
+          </div>
+
+          <p
+            class="edit-save-status"
+            id="saveStatus-${escapeHtml(job.id)}"
+          ></p>
+
+        </div>
+      `;
+
+      return card;
+    }
+
+    /* =========================
+       クリック処理
+    ========================= */
+
     document.addEventListener(
       "click",
       async (event) => {
+
         const target = event.target;
 
-        if (
+        if(
           target.classList.contains(
             "approve-application-button"
           )
-        ) {
+        ){
           await approveApplication(target);
           return;
         }
 
-        if (
+        if(
           target.classList.contains(
             "delete-application-button"
           )
-        ) {
+        ){
           await deleteApplication(target);
           return;
         }
 
-        if (
+        if(
+          target.classList.contains(
+            "edit-job-button"
+          )
+        ){
+          openEditForm(target.dataset.jobId);
+          return;
+        }
+
+        if(
+          target.classList.contains(
+            "cancel-edit-button"
+          )
+        ){
+          closeEditForm(target.dataset.jobId);
+          return;
+        }
+
+        if(
+          target.classList.contains(
+            "save-job-button"
+          )
+        ){
+          await saveJobChanges(target);
+          return;
+        }
+
+        if(
           target.classList.contains(
             "pause-job-button"
           )
-        ) {
+        ){
           await pauseJob(target);
           return;
         }
 
-        if (
+        if(
           target.classList.contains(
             "republish-job-button"
           )
-        ) {
+        ){
           await republishJob(target);
           return;
         }
 
-        if (
+        if(
           target.classList.contains(
             "top-on-button"
           )
-        ) {
+        ){
           await turnOnTopFeatured(target);
           return;
         }
 
-        if (
+        if(
           target.classList.contains(
             "top-off-button"
           )
-        ) {
+        ){
           await turnOffTopFeatured(target);
           return;
         }
 
-        if (
+        if(
           target.classList.contains(
             "delete-job-button"
           )
-        ) {
+        ){
           await deletePublishedJob(target);
         }
       }
     );
 
-    async function approveApplication(button) {
-      const applicationId =
-        button.dataset.applicationId;
+    document.addEventListener(
+      "change",
+      (event) => {
 
-      if (
-        !confirm(
-          "この申請を承認して求人ページへ公開しますか？"
-        )
-      ) {
+        const target = event.target;
+
+        if(
+          !target.id.startsWith("editImage-")
+        ){
+          return;
+        }
+
+        const jobId =
+          target.id.replace(
+            "editImage-",
+            ""
+          );
+
+        const file =
+          target.files?.[0];
+
+        if(!file){
+          return;
+        }
+
+        if(!file.type.startsWith("image/")){
+          alert(
+            "画像ファイルを選択してください"
+          );
+
+          target.value = "";
+          return;
+        }
+
+        const preview =
+          document.getElementById(
+            `editPreview-${jobId}`
+          );
+
+        preview.src =
+          URL.createObjectURL(file);
+
+        preview.classList.add("show");
+      }
+    );
+
+    function openEditForm(jobId){
+
+      const form =
+        document.getElementById(
+          `editForm-${jobId}`
+        );
+
+      if(!form){
+        return;
+      }
+
+      form.classList.add("open");
+
+      form.scrollIntoView({
+        behavior:"smooth",
+        block:"start"
+      });
+    }
+
+    function closeEditForm(jobId){
+
+      const form =
+        document.getElementById(
+          `editForm-${jobId}`
+        );
+
+      if(form){
+        form.classList.remove("open");
+      }
+    }
+
+    /* =========================
+       店舗情報保存
+    ========================= */
+
+    async function saveJobChanges(button){
+
+      const jobId =
+        button.dataset.jobId;
+
+      const statusElement =
+        document.getElementById(
+          `saveStatus-${jobId}`
+        );
+
+      const storeName =
+        document.getElementById(
+          `editStoreName-${jobId}`
+        ).value.trim();
+
+      const businessType =
+        document.getElementById(
+          `editBusinessType-${jobId}`
+        ).value.trim();
+
+      const area =
+        document.getElementById(
+          `editArea-${jobId}`
+        ).value.trim();
+
+      const salary =
+        document.getElementById(
+          `editSalary-${jobId}`
+        ).value.trim();
+
+      const title =
+        document.getElementById(
+          `editTitle-${jobId}`
+        ).value.trim();
+
+      const description =
+        document.getElementById(
+          `editDescription-${jobId}`
+        ).value.trim();
+
+      const workHours =
+        document.getElementById(
+          `editWorkHours-${jobId}`
+        ).value.trim();
+
+      const requirements =
+        document.getElementById(
+          `editRequirements-${jobId}`
+        ).value.trim();
+
+      const benefits =
+        document.getElementById(
+          `editBenefits-${jobId}`
+        ).value.trim();
+
+      const applyUrl =
+        document.getElementById(
+          `editApplyUrl-${jobId}`
+        ).value.trim();
+
+      const topOrder =
+        Number(
+          document.getElementById(
+            `editTopOrder-${jobId}`
+          ).value
+        ) || 999;
+
+      const status =
+        document.getElementById(
+          `editStatus-${jobId}`
+        ).value;
+
+      const imageInput =
+        document.getElementById(
+          `editImage-${jobId}`
+        );
+
+      if(!storeName){
+        alert(
+          "店舗名を入力してください"
+        );
+        return;
+      }
+
+      if(
+        applyUrl &&
+        !validateUrl(applyUrl)
+      ){
+        alert(
+          "応募リンクを正しく入力してください"
+        );
         return;
       }
 
       button.disabled = true;
-      button.textContent = "公開処理中...";
+      button.textContent = "保存中...";
 
-      try {
+      statusElement.className =
+        "edit-save-status";
+
+      statusElement.textContent =
+        "変更内容を保存しています...";
+
+      try{
+        const jobReference =
+          doc(db,"jobs",jobId);
+
+        const jobSnapshot =
+          await getDoc(jobReference);
+
+        if(!jobSnapshot.exists()){
+          throw new Error(
+            "求人データが見つかりません"
+          );
+        }
+
+        const oldData =
+          jobSnapshot.data();
+
+        let mainImage =
+          getJobImage(oldData);
+
+        const selectedFile =
+          imageInput.files?.[0];
+
+        if(selectedFile){
+
+          if(
+            selectedFile.size >
+            8 * 1024 * 1024
+          ){
+            throw new Error(
+              "画像サイズは8MB以下にしてください"
+            );
+          }
+
+          const extension =
+            selectedFile.name
+              .split(".")
+              .pop()
+              ?.toLowerCase()
+              .replace(
+                /[^a-z0-9]/g,
+                ""
+              ) || "jpg";
+
+          const imageReference =
+            ref(
+              storage,
+              `job-images/${jobId}/${Date.now()}.${extension}`
+            );
+
+          await uploadBytes(
+            imageReference,
+            selectedFile,
+            {
+              contentType:
+                selectedFile.type
+            }
+          );
+
+          mainImage =
+            await getDownloadURL(
+              imageReference
+            );
+        }
+
+        const previousImages =
+          Array.isArray(oldData.images)
+            ? oldData.images.filter(Boolean)
+            : [];
+
+        const updatedImages =
+          mainImage
+            ? [
+                mainImage,
+                ...previousImages.filter(
+                  (image) =>
+                    image !== mainImage
+                )
+              ]
+            : previousImages;
+
+        await updateDoc(
+          jobReference,
+          {
+            storeName,
+            shopName:storeName,
+            name:storeName,
+
+            businessType,
+            jobType:businessType,
+
+            area,
+            location:area,
+
+            salary,
+            salaryText:salary,
+
+            title,
+            jobTitle:title,
+
+            description,
+            jobDescription:description,
+            storeDescription:description,
+            selfPr:description,
+
+            workHours,
+            workingHours:workHours,
+
+            requirements,
+            qualification:requirements,
+
+            benefits,
+            treatment:benefits,
+
+            applyUrl,
+            lineUrl:applyUrl,
+            contactUrl:applyUrl,
+
+            topOrder,
+            status,
+
+            mainImage,
+            imageUrl:mainImage,
+            image:mainImage,
+            images:updatedImages,
+
+            updatedAt:
+              serverTimestamp(),
+
+            updatedBy:
+              currentAdminUser?.uid || ""
+          }
+        );
+
+        statusElement.className =
+          "edit-save-status success";
+
+        statusElement.textContent =
+          "店舗情報を更新しました";
+
+        imageInput.value = "";
+
+        window.setTimeout(
+          async () => {
+            await loadPublishedJobs();
+          },
+          700
+        );
+
+      }catch(error){
+
+        console.error(
+          "店舗編集保存エラー:",
+          error
+        );
+
+        statusElement.className =
+          "edit-save-status error";
+
+        statusElement.textContent =
+          error.message ||
+          "保存に失敗しました";
+
+        button.disabled = false;
+        button.textContent =
+          "変更を保存";
+      }
+    }
+
+    /* =========================
+       申請承認
+    ========================= */
+
+    async function approveApplication(button){
+
+      const applicationId =
+        button.dataset.applicationId;
+
+      if(
+        !confirm(
+          "この申請を承認して求人ページへ公開しますか？"
+        )
+      ){
+        return;
+      }
+
+      button.disabled = true;
+      button.textContent =
+        "公開処理中...";
+
+      try{
         const applicationReference =
           doc(
             db,
@@ -837,7 +1774,7 @@
             applicationReference
           );
 
-        if (!applicationSnapshot.exists()) {
+        if(!applicationSnapshot.exists()){
           alert(
             "申請データが見つかりません"
           );
@@ -858,21 +1795,24 @@
 
         let uploadedImageUrl = "";
 
-        if (selectedFile) {
+        if(selectedFile){
+
           const safeFileName =
             selectedFile.name
-              .replace(/\s+/g, "_")
+              .replace(/\s+/g,"_")
               .replace(
                 /[^\w.\-ぁ-んァ-ヶ一-龠]/g,
                 ""
               );
 
-          const imageReference = ref(
-            storage,
-            `job-images/${Date.now()}_${
-              safeFileName || "image.jpg"
-            }`
-          );
+          const imageReference =
+            ref(
+              storage,
+              `job-images/${Date.now()}_${
+                safeFileName ||
+                "image.jpg"
+              }`
+            );
 
           await uploadBytes(
             imageReference,
@@ -903,7 +1843,7 @@
           "";
 
         await addDoc(
-          collection(db, "jobs"),
+          collection(db,"jobs"),
           {
             ...applicationData,
 
@@ -917,26 +1857,31 @@
                   ? [mainImage]
                   : [],
 
-            image: mainImage,
-            imageUrl: mainImage,
-            mainImage: mainImage,
+            image:mainImage,
+            imageUrl:mainImage,
+            mainImage,
 
-            status: "approved",
-
-            // 承認直後は通常掲載
-            topFeatured: false,
+            status:"approved",
+            topFeatured:false,
+            topOrder:999,
 
             approvedAt:
-              serverTimestamp()
+              serverTimestamp(),
+
+            approvedBy:
+              currentAdminUser?.uid || ""
           }
         );
 
         await updateDoc(
           applicationReference,
           {
-            status: "approved",
+            status:"approved",
             approvedAt:
-              serverTimestamp()
+              serverTimestamp(),
+
+            approvedBy:
+              currentAdminUser?.uid || ""
           }
         );
 
@@ -946,7 +1891,8 @@
 
         await loadAllJobs();
 
-      } catch (error) {
+      }catch(error){
+
         console.error(
           "承認処理エラー:",
           error
@@ -958,31 +1904,32 @@
           }`
         );
 
-      } finally {
+      }finally{
+
         button.disabled = false;
         button.textContent =
           "承認して公開";
       }
     }
 
-    async function deleteApplication(
-      button
-    ) {
+    async function deleteApplication(button){
+
       const applicationId =
         button.dataset.applicationId;
 
-      if (
+      if(
         !confirm(
           "この承認待ち申請を削除しますか？\n削除後は元に戻せません。"
         )
-      ) {
+      ){
         return;
       }
 
       button.disabled = true;
-      button.textContent = "削除中...";
+      button.textContent =
+        "削除中...";
 
-      try {
+      try{
         await deleteDoc(
           doc(
             db,
@@ -997,7 +1944,8 @@
 
         await loadPendingJobs();
 
-      } catch (error) {
+      }catch(error){
+
         console.error(
           "申請削除エラー:",
           error
@@ -1009,33 +1957,40 @@
           }`
         );
 
-      } finally {
+      }finally{
+
         button.disabled = false;
         button.textContent =
           "申請を削除";
       }
     }
 
-    async function pauseJob(button) {
+    /* =========================
+       掲載状態変更
+    ========================= */
+
+    async function pauseJob(button){
+
       const jobId =
         button.dataset.jobId;
 
-      if (
+      if(
         !confirm(
-          "この店舗の掲載を停止しますか？\nトップと求人一覧から非表示になります。"
+          "この店舗の掲載を停止しますか？"
         )
-      ) {
+      ){
         return;
       }
 
       button.disabled = true;
-      button.textContent = "停止中...";
+      button.textContent =
+        "停止中...";
 
-      try {
+      try{
         await updateDoc(
-          doc(db, "jobs", jobId),
+          doc(db,"jobs",jobId),
           {
-            status: "paused",
+            status:"paused",
             pausedAt:
               serverTimestamp()
           }
@@ -1047,45 +2002,44 @@
 
         await loadPublishedJobs();
 
-      } catch (error) {
-        console.error(
-          "掲載停止エラー:",
-          error
-        );
+      }catch(error){
+
+        console.error(error);
 
         alert(
-          `掲載を停止できませんでした：${
-            error.message || error
-          }`
+          "掲載を停止できませんでした"
         );
 
-      } finally {
+      }finally{
+
         button.disabled = false;
         button.textContent =
           "掲載を停止";
       }
     }
 
-    async function republishJob(button) {
+    async function republishJob(button){
+
       const jobId =
         button.dataset.jobId;
 
-      if (
+      if(
         !confirm(
           "この店舗を再掲載しますか？"
         )
-      ) {
+      ){
         return;
       }
 
       button.disabled = true;
-      button.textContent = "再掲載中...";
+      button.textContent =
+        "再掲載中...";
 
-      try {
+      try{
         await updateDoc(
-          doc(db, "jobs", jobId),
+          doc(db,"jobs",jobId),
           {
-            status: "approved",
+            status:"approved",
             republishedAt:
               serverTimestamp()
           }
@@ -1097,47 +2051,44 @@
 
         await loadPublishedJobs();
 
-      } catch (error) {
-        console.error(
-          "再掲載エラー:",
-          error
-        );
+      }catch(error){
+
+        console.error(error);
 
         alert(
-          `再掲載できませんでした：${
-            error.message || error
-          }`
+          "再掲載できませんでした"
         );
 
-      } finally {
+      }finally{
+
         button.disabled = false;
         button.textContent =
           "再掲載する";
       }
     }
 
-    async function turnOnTopFeatured(
-      button
-    ) {
+    async function turnOnTopFeatured(button){
+
       const jobId =
         button.dataset.jobId;
 
-      if (
+      if(
         !confirm(
           "この店舗をトップページへ掲載しますか？"
         )
-      ) {
+      ){
         return;
       }
 
       button.disabled = true;
-      button.textContent = "設定中...";
+      button.textContent =
+        "設定中...";
 
-      try {
+      try{
         await updateDoc(
-          doc(db, "jobs", jobId),
+          doc(db,"jobs",jobId),
           {
-            topFeatured: true,
+            topFeatured:true,
             topFeaturedAt:
               serverTimestamp()
           }
@@ -1149,47 +2100,44 @@
 
         await loadPublishedJobs();
 
-      } catch (error) {
-        console.error(
-          "トップ掲載ONエラー:",
-          error
-        );
+      }catch(error){
+
+        console.error(error);
 
         alert(
-          `トップ掲載を設定できませんでした：${
-            error.message || error
-          }`
+          "トップ掲載を設定できませんでした"
         );
 
-      } finally {
+      }finally{
+
         button.disabled = false;
         button.textContent =
           "トップ掲載ON";
       }
     }
 
-    async function turnOffTopFeatured(
-      button
-    ) {
+    async function turnOffTopFeatured(button){
+
       const jobId =
         button.dataset.jobId;
 
-      if (
+      if(
         !confirm(
-          "この店舗をトップページから外しますか？\n通常の求人一覧には残ります。"
+          "この店舗をトップページから外しますか？"
         )
-      ) {
+      ){
         return;
       }
 
       button.disabled = true;
-      button.textContent = "解除中...";
+      button.textContent =
+        "解除中...";
 
-      try {
+      try{
         await updateDoc(
-          doc(db, "jobs", jobId),
+          doc(db,"jobs",jobId),
           {
-            topFeatured: false,
+            topFeatured:false,
             topFeaturedRemovedAt:
               serverTimestamp()
           }
@@ -1201,53 +2149,54 @@
 
         await loadPublishedJobs();
 
-      } catch (error) {
-        console.error(
-          "トップ掲載OFFエラー:",
-          error
-        );
+      }catch(error){
+
+        console.error(error);
 
         alert(
-          `トップ掲載を解除できませんでした：${
-            error.message || error
-          }`
+          "トップ掲載を解除できませんでした"
         );
 
-      } finally {
+      }finally{
+
         button.disabled = false;
         button.textContent =
           "トップ掲載OFF";
       }
     }
 
-    async function deletePublishedJob(
-      button
-    ) {
+    /* =========================
+       完全削除
+    ========================= */
+
+    async function deletePublishedJob(button){
+
       const jobId =
         button.dataset.jobId;
 
-      if (
+      if(
         !confirm(
-          "この掲載店舗を完全削除しますか？\nトップ・求人一覧・詳細ページから消え、元に戻せません。"
+          "この掲載店舗を完全削除しますか？\n元に戻せません。"
         )
-      ) {
+      ){
         return;
       }
 
-      if (
+      if(
         !confirm(
           "本当に完全削除してよろしいですか？"
         )
-      ) {
+      ){
         return;
       }
 
       button.disabled = true;
-      button.textContent = "削除中...";
+      button.textContent =
+        "削除中...";
 
-      try {
+      try{
         await deleteDoc(
-          doc(db, "jobs", jobId)
+          doc(db,"jobs",jobId)
         );
 
         alert(
@@ -1256,24 +2205,23 @@
 
         await loadPublishedJobs();
 
-      } catch (error) {
-        console.error(
-          "掲載求人削除エラー:",
-          error
-        );
+      }catch(error){
+
+        console.error(error);
 
         alert(
-          `削除できませんでした：${
-            error.message || error
-          }`
+          "削除できませんでした"
         );
 
-      } finally {
+      }finally{
+
         button.disabled = false;
         button.textContent =
           "完全削除";
       }
     }
+
   </script>
+
 </body>
 </html>
