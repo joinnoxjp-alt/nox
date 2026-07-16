@@ -251,28 +251,33 @@ window.getDownloadURL = getDownloadURL;
 
 <div class="card">
 
-<div class="section-title">
-■ 掲載用画像
-</div>
+  <div class="section-title">
+    ■ 掲載用画像
+  </div>
 
-<label>ロゴ（あれば）</label>
-<input type="file" accept="image/*">
+  <label>店舗写真（最大9枚）</label>
 
-<label>店舗外観</label>
-<input type="file" accept="image/*">
-
-<label>店内写真</label>
-<input type="file" accept="image/*" multiple>
-
-<label>求人画像（あれば）</label>
-<input
-    id="jobImage"
+  <input
+    id="jobImages"
     type="file"
-    accept="image/*">
+    accept="image/*"
+    multiple
+  >
 
-<small>
-※現在は画像アップロード機能の準備中です。後ほどFirebase Storageと連携予定です。
-</small>
+  <small>
+    店内・外観・ロゴ・求人画像などを最大9枚まで選択できます。<br>
+    1枚目の画像が求人一覧と詳細ページのメイン画像になります。
+  </small>
+
+  <div
+    id="imagePreview"
+    style="
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:10px;
+      margin-top:16px;
+    "
+  ></div>
 
 </div>
 <div class="card">
@@ -327,12 +332,13 @@ window.getDownloadURL = getDownloadURL;
 </div>
 <script>
 async function submitJob() {
-const imageFile = document.getElementById("jobImage").files[0];
-let imageUrl = "";
+const imageFiles = document.getElementById("jobImages").files;
+
+let imageUrls = [];
 
 
     try {
-        if (imageFile) {
+        for (const imageFile of imageFiles) {
 
     const imageRef = storageRef(
         storage,
@@ -341,8 +347,9 @@ let imageUrl = "";
 
     await uploadBytes(imageRef, imageFile);
 
-    imageUrl = await getDownloadURL(imageRef);
-            
+    const url = await getDownloadURL(imageRef);
+
+    imageUrls.push(url);
 
 }
 const data = {
@@ -376,7 +383,8 @@ const data = {
     staffCount: document.querySelector('input[placeholder*="20名"]').value,
     ageGroup: document.querySelector('input[placeholder*="20歳〜30歳"]').value,
 
-    image: imageUrl,
+    images: imageUrls,
+image: imageUrls[0] || "",
 
     createdAt: serverTimestamp(),
     status: "pending"
