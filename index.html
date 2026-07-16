@@ -543,7 +543,22 @@
 
 <div class="notice" id="notice"></div>
 
+<script>
+setTimeout(() => {
+  const loading = document.getElementById("loading");
+
+  if (loading) {
+    loading.classList.add("hide");
+
+    setTimeout(() => {
+      loading.style.display = "none";
+    }, 700);
+  }
+}, 1200);
+</script>
+
 <script type="module" src="script.js?v=4"></script>
 
 </body>
 </html>
+<script type="module" src="script.js?v=4"></script>
