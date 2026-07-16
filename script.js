@@ -1,5 +1,15 @@
-
 // NOX script.js
+
+import { db } from "./pages/firebase-db.js";
+
+import {
+  collection,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+/* ===========================
+   ページ読み込み
+=========================== */
 
 window.addEventListener("load", () => {
   const loading = document.getElementById("loading");
@@ -12,6 +22,10 @@ window.addEventListener("load", () => {
 
   revealOnScroll();
 });
+
+/* ===========================
+   ヘッダー・スクロール演出
+=========================== */
 
 const header = document.querySelector(".site-header");
 
@@ -29,17 +43,21 @@ window.addEventListener("scroll", () => {
 
 function revealOnScroll() {
   const reveals = document.querySelectorAll(".reveal");
+  const windowHeight = window.innerHeight;
+  const revealPoint = 90;
 
   reveals.forEach((item) => {
-    const windowHeight = window.innerHeight;
     const itemTop = item.getBoundingClientRect().top;
-    const revealPoint = 90;
 
     if (itemTop < windowHeight - revealPoint) {
       item.classList.add("active");
     }
   });
 }
+
+/* ===========================
+   通知表示
+=========================== */
 
 function showNotice(message) {
   const notice = document.getElementById("notice");
@@ -57,25 +75,40 @@ function showNotice(message) {
   }, 2600);
 }
 
-// ボタン押下の高級感演出
-document.querySelectorAll(".btn, .job-card button, .sns-grid a").forEach((el) => {
-  el.addEventListener("click", () => {
-    el.style.transform = "scale(0.96)";
+/* ===========================
+   ボタン押下演出
+=========================== */
 
-    setTimeout(() => {
-      el.style.transform = "";
-    }, 160);
-  });
+document.addEventListener("click", (event) => {
+  const button = event.target.closest(
+    ".btn, .job-card button, .sns-grid a"
+  );
+
+  if (!button) return;
+
+  button.style.transform = "scale(0.96)";
+
+  setTimeout(() => {
+    button.style.transform = "";
+  }, 160);
 });
 
-// 求人カードお気に入り用の土台
-document.querySelectorAll(".job-card").forEach((card) => {
-  card.addEventListener("dblclick", () => {
-    showNotice("お気に入り機能は準備中です");
-  });
+/* ===========================
+   求人カードお気に入り用
+=========================== */
+
+document.addEventListener("dblclick", (event) => {
+  const card = event.target.closest(".job-card");
+
+  if (!card) return;
+
+  showNotice("お気に入り機能は準備中です");
 });
 
-// AI診断データの土台
+/* ===========================
+   AI診断データ
+=========================== */
+
 const noxAiQuestions = [
   "年齢",
   "働きたいエリア",
@@ -90,6 +123,7 @@ const noxAiQuestions = [
 ];
 
 console.log("NOX AI Questions Ready:", noxAiQuestions);
+
 /* ===========================
    NOX 広告ローテーション
 =========================== */
@@ -97,138 +131,210 @@ console.log("NOX AI Questions Ready:", noxAiQuestions);
 const adSlides = document.querySelectorAll(".nox-ad-slide");
 const adDots = document.querySelectorAll(".nox-ad-dots button");
 
-if (adSlides.length) {
-
+if (adSlides.length > 0) {
   let currentAd = 0;
 
-  function showAd(index){
+  function showAd(index) {
+    if (!adSlides[index]) return;
 
-    adSlides.forEach(slide => slide.classList.remove("active"));
+    adSlides.forEach((slide) => {
+      slide.classList.remove("active");
+    });
 
-    adDots.forEach(dot => dot.classList.remove("active"));
+    adDots.forEach((dot) => {
+      dot.classList.remove("active");
+    });
 
     adSlides[index].classList.add("active");
 
-    if(adDots[index]){
+    if (adDots[index]) {
       adDots[index].classList.add("active");
     }
 
     currentAd = index;
   }
 
-  adDots.forEach((dot,index)=>{
-
-    dot.addEventListener("click",()=>{
-
+  adDots.forEach((dot, index) => {
+    dot.addEventListener("click", () => {
       showAd(index);
-
     });
-
   });
 
-  setInterval(()=>{
+  showAd(0);
 
-    currentAd++;
+  if (adSlides.length > 1) {
+    setInterval(() => {
+      currentAd += 1;
 
-    if(currentAd>=adSlides.length){
+      if (currentAd >= adSlides.length) {
+        currentAd = 0;
+      }
 
-      currentAd=0;
-
-    }
-
-    showAd(currentAd);
-
-  },5500);
-
+      showAd(currentAd);
+    }, 5500);
+  }
 }
+
+/* ===========================
+   HTML特殊文字の処理
+=========================== */
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+/* ===========================
+   求人画像取得
+=========================== */
+
+function getJobImage(job) {
+  if (job.mainImage) return job.mainImage;
+  if (job.imageUrl) return job.imageUrl;
+  if (job.logoUrl) return job.logoUrl;
+  if (job.storeImage) return job.storeImage;
+
+  if (Array.isArray(job.images) && job.images.length > 0) {
+    return job.images[0];
+  }
+
+  return "images/line_oa_chat_260708_192846.jpeg";
+}
+
 /* ===========================
    TOP 新着求人
 =========================== */
 
-import { db } from "./pages/firebase-db.js";
-import {
-  collection,
-  getDocs
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
 const topJobs = document.getElementById("topNewJobs");
 
 if (topJobs) {
-
   loadTopJobs();
+}
 
-  async function loadTopJobs() {
+async function loadTopJobs() {
+  try {
+    topJobs.innerHTML = "<p>求人情報を読み込んでいます...</p>";
 
-    const snap = await getDocs(collection(db, "jobs"));
+    const snapshot = await getDocs(collection(db, "jobs"));
+    const jobs = [];
 
-    let jobs = [];
-        snap.forEach((doc) => {
-
+    snapshot.forEach((documentSnapshot) => {
       const job = {
-        id: doc.id,
-        ...doc.data()
+        id: documentSnapshot.id,
+        ...documentSnapshot.data()
       };
 
+      // 承認済み求人のみ表示
       if (job.status !== "approved") return;
 
-      const text =
-        `${job.storeName || ""}
-        ${job.name || ""}
-        ${job.title || ""}
-        ${job.shopName || ""}
-        ${job.storeTitle || ""}`;
+      // テスト求人を非表示
+      const searchText = [
+        job.storeName,
+        job.name,
+        job.title,
+        job.shopName,
+        job.storeTitle
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
 
-      if (text.includes("テスト")) return;
-      if (text.toLowerCase().includes("test")) return;
-      if (text.toLowerCase().includes("dummy")) return;
+      if (searchText.includes("テスト")) return;
+      if (searchText.includes("test")) return;
+      if (searchText.includes("dummy")) return;
 
       jobs.push(job);
-
     });
 
-    jobs.sort((a, b) => {
-      const da = a.createdAt?.seconds || 0;
-      const db = b.createdAt?.seconds || 0;
-      return db - da;
+    jobs.sort((jobA, jobB) => {
+      const timeA =
+        jobA.createdAt?.seconds ??
+        jobA.approvedAt?.seconds ??
+        0;
+
+      const timeB =
+        jobB.createdAt?.seconds ??
+        jobB.approvedAt?.seconds ??
+        0;
+
+      return timeB - timeA;
     });
 
-    jobs = jobs.slice(0, 3);
-        if (jobs.length === 0) {
-      topJobs.innerHTML = "<p>まだ求人がありません。</p>";
+    const latestJobs = jobs.slice(0, 3);
+
+    if (latestJobs.length === 0) {
+      topJobs.innerHTML =
+        '<p class="top-jobs-empty">現在、掲載準備中です。</p>';
       return;
     }
 
-    topJobs.innerHTML = "";
+    topJobs.innerHTML = latestJobs
+      .map((job) => {
+        const storeName =
+          job.storeName ||
+          job.shopName ||
+          job.storeTitle ||
+          job.name ||
+          "店舗名未設定";
 
-    jobs.forEach(job => {
+        const area =
+          job.area ||
+          job.prefecture ||
+          job.location ||
+          "エリア未設定";
 
-      topJobs.innerHTML += `
-      <div class="top-job-card">
+        const salary =
+          job.salary ||
+          job.salaryText ||
+          job.hourlyWage ||
+          job.hourlyPay ||
+          "給与は詳細ページをご確認ください";
 
-        <img
-  src="images/line_oa_chat_260708_192846.jpeg"
-  alt="${job.storeName || job.name || '求人画像'}"
-/>
-/>
+        const imageUrl = getJobImage(job);
 
-        <div class="top-job-body">
+        return `
+          <div class="top-job-card">
 
-          <h3>${job.storeName || job.name || "店舗名未設定"}</h3>
+            <img
+              src="${escapeHtml(imageUrl)}"
+              alt="${escapeHtml(storeName)}の求人画像"
+              loading="lazy"
+              onerror="this.onerror=null; this.src='images/line_oa_chat_260708_192846.jpeg';"
+            >
 
-          <p>📍 ${job.area || "-"}</p>
+            <div class="top-job-body">
 
-          <p>💰 ${job.salary || job.salaryText || "給与未設定"}</p>
+              <h3>${escapeHtml(storeName)}</h3>
 
-          <a href="pages/job-detail.html?id=${job.id}" class="btn gold">
-            詳細を見る
-          </a>
+              <p>📍 ${escapeHtml(area)}</p>
 
-        </div>
+              <p>💰 ${escapeHtml(salary)}</p>
 
-      </div>
-      `;
+              <a
+                href="pages/job-detail.html?id=${encodeURIComponent(job.id)}"
+                class="btn gold"
+              >
+                詳細を見る
+              </a>
 
-    });
-      }
+            </div>
 
+          </div>
+        `;
+      })
+      .join("");
+
+  } catch (error) {
+    console.error("TOP求人の読み込みエラー:", error);
+
+    topJobs.innerHTML = `
+      <p class="top-jobs-error">
+        求人情報を読み込めませんでした。時間を置いて再度お試しください。
+      </p>
+    `;
+  }
 }
