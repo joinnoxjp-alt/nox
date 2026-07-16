@@ -120,21 +120,29 @@ import {
   getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-onAuthStateChanged(auth, async(user)=>{
+document.body.style.visibility = "hidden";
 
-  if(!user){
-    location.href="./login.html";
+onAuthStateChanged(auth, async (user) => {
+
+  if (!user) {
+    location.href = "./login.html";
     return;
   }
 
-  const snap = await getDoc(doc(db,"users",user.uid));
+  const snap = await getDoc(
+    doc(db, "users", user.uid)
+  );
 
-  if(!snap.exists() || snap.data().isAdmin !== true){
+  if (
+    !snap.exists() ||
+    snap.data().role !== "admin"
+  ) {
     alert("管理者のみ閲覧できます");
-    location.href="../index.html";
+    location.href = "./mypage.html";
     return;
   }
 
+  document.body.style.visibility = "visible";
 });
 </script>
 </body>
