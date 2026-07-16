@@ -270,7 +270,31 @@ ${data.sns || "-"}
     jobApplicationList.appendChild(card);
 
   });
+document.querySelectorAll(".approveBtn").forEach((btn) => {
 
+  btn.addEventListener("click", async () => {
+
+    const jobId = btn.dataset.id;
+
+    const ok = confirm("この求人を承認して公開しますか？");
+
+    if (!ok) return;
+
+    await updateDoc(
+      doc(db, "jobApplications", jobId),
+      {
+        status: "approved",
+        approvedAt: serverTimestamp()
+      }
+    );
+
+    alert("承認しました");
+
+    loadJobApplications();
+
+  });
+
+});
 }
   </script>
 
