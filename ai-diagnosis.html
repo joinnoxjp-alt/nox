@@ -1,325 +1,2474 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
   <title>NOX TYPE | 夜の性格診断</title>
-  <meta name="description" content="NOX TYPEは、あなたの夜の才能を診断するNOXオリジナル性格診断です。" />
+
+  <meta
+    name="description"
+    content="NOX TYPEは、40問からあなたの夜の才能を分析するNOXオリジナル性格診断です。"
+  >
+
+  <meta
+    name="theme-color"
+    content="#050505"
+  >
 
   <style>
-    *{box-sizing:border-box}
-    body{
+    *{
+      box-sizing:border-box;
       margin:0;
+      padding:0;
+    }
+
+    html{
+      scroll-behavior:smooth;
+    }
+
+    body{
       min-height:100vh;
+      overflow-x:hidden;
+
       background:
-        radial-gradient(circle at top, rgba(255,215,0,.18), transparent 35%),
-        radial-gradient(circle at bottom, rgba(120,70,255,.18), transparent 35%),
-        #050505;
+        radial-gradient(
+          circle at 50% 0%,
+          rgba(255,215,0,.18),
+          transparent 34%
+        ),
+        radial-gradient(
+          circle at 50% 100%,
+          rgba(120,70,255,.20),
+          transparent 38%
+        ),
+        linear-gradient(
+          180deg,
+          #080808,
+          #020202
+        );
+
       color:#fff;
-      font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;
+
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Hiragino Sans",
+        "Noto Sans JP",
+        sans-serif;
+
+      transition:background .8s ease;
     }
 
-    .app{min-height:100vh}
-    .screen{display:none;min-height:100vh;padding:28px 18px;align-items:center;justify-content:center}
-    .screen.active{display:flex}
+    body.stage-1{
+      background:
+        radial-gradient(
+          circle at top,
+          rgba(75,105,255,.23),
+          transparent 36%
+        ),
+        #03050c;
+    }
 
-    .hero,.quiz-card,.result-card{
+    body.stage-2{
+      background:
+        radial-gradient(
+          circle at top,
+          rgba(255,83,35,.22),
+          transparent 36%
+        ),
+        #0a0202;
+    }
+
+    body.stage-3{
+      background:
+        radial-gradient(
+          circle at top,
+          rgba(42,150,255,.24),
+          transparent 36%
+        ),
+        #020711;
+    }
+
+    body.stage-4{
+      background:
+        radial-gradient(
+          circle at top,
+          rgba(181,74,255,.25),
+          transparent 36%
+        ),
+        #07020d;
+    }
+
+    button,
+    input,
+    textarea,
+    select{
+      font:inherit;
+    }
+
+    button,
+    a{
+      -webkit-tap-highlight-color:transparent;
+    }
+
+    a{
+      color:inherit;
+      text-decoration:none;
+    }
+
+    img{
+      display:block;
+      max-width:100%;
+    }
+
+    .app{
+      position:relative;
+      min-height:100vh;
+      overflow:hidden;
+    }
+
+    .background-effects{
+      position:fixed;
+      inset:0;
+      z-index:-1;
+      overflow:hidden;
+      pointer-events:none;
+    }
+
+    .stars{
+      position:absolute;
+      inset:-80px;
+
+      background-image:
+        radial-gradient(
+          circle,
+          rgba(255,255,255,.75) 0 1px,
+          transparent 1.5px
+        );
+
+      background-size:55px 55px;
+      opacity:.38;
+
+      animation:starsMove 22s linear infinite;
+    }
+
+    @keyframes starsMove{
+      from{
+        transform:translateY(0);
+      }
+
+      to{
+        transform:translateY(55px);
+      }
+    }
+
+    .screen{
+      display:none;
+      min-height:100vh;
+      padding:28px 18px 60px;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .screen.active{
+      display:flex;
+      animation:screenIn .5s ease;
+    }
+
+    @keyframes screenIn{
+      from{
+        opacity:0;
+        transform:translateY(18px);
+      }
+
+      to{
+        opacity:1;
+        transform:translateY(0);
+      }
+    }
+
+    .hero,
+    .quiz-card,
+    .result-card{
+      position:relative;
       width:100%;
-      max-width:460px;
+      max-width:500px;
       margin:auto;
-      text-align:center;
-      background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.035));
-      border:1px solid rgba(255,215,0,.25);
-      border-radius:30px;
+      overflow:hidden;
+
       padding:34px 22px;
-      box-shadow:0 25px 80px rgba(0,0,0,.55);
+
+      border:1px solid rgba(255,215,0,.28);
+      border-radius:30px;
+
+      background:
+        radial-gradient(
+          circle at top right,
+          rgba(255,215,0,.12),
+          transparent 38%
+        ),
+        linear-gradient(
+          180deg,
+          rgba(255,255,255,.10),
+          rgba(255,255,255,.035)
+        );
+
+      box-shadow:
+        0 25px 80px rgba(0,0,0,.60),
+        0 0 35px rgba(255,215,0,.06);
+
+      backdrop-filter:blur(14px);
+      text-align:center;
     }
 
-    .brand{color:#FFD700;letter-spacing:4px;font-size:13px;font-weight:bold}
-    h1{font-size:44px;margin:12px 0;color:#FFD700}
-    .lead{font-size:19px;line-height:1.8;color:#ddd}
-    .lead span{color:#FFD700;font-weight:bold}
+    .result-card{
+      max-width:720px;
+    }
+
+    .hero::before,
+    .quiz-card::before,
+    .result-card::before{
+      content:"";
+      position:absolute;
+      inset:0;
+
+      background:
+        linear-gradient(
+          120deg,
+          transparent,
+          rgba(255,215,0,.06),
+          transparent
+        );
+
+      pointer-events:none;
+    }
+
+    .hero > *,
+    .quiz-card > *,
+    .result-card > *{
+      position:relative;
+      z-index:1;
+    }
+
+    .brand{
+      color:#ffd700;
+      font-size:13px;
+      font-weight:800;
+      letter-spacing:5px;
+    }
+
+    .brand-line{
+      width:105px;
+      height:1px;
+      margin:17px auto;
+
+      background:
+        linear-gradient(
+          90deg,
+          transparent,
+          #ffd700,
+          transparent
+        );
+    }
+
+    .start-moon{
+      display:grid;
+      place-items:center;
+
+      width:118px;
+      height:118px;
+      margin:25px auto 12px;
+
+      border:1px solid rgba(255,215,0,.35);
+      border-radius:50%;
+
+      background:
+        radial-gradient(
+          circle,
+          rgba(255,215,0,.18),
+          rgba(0,0,0,.22)
+        );
+
+      font-size:60px;
+
+      box-shadow:
+        0 0 38px rgba(255,215,0,.16);
+
+      animation:moonFloat 3.2s ease-in-out infinite;
+    }
+
+    @keyframes moonFloat{
+      0%,
+      100%{
+        transform:translateY(0);
+      }
+
+      50%{
+        transform:translateY(-8px);
+      }
+    }
+
+    .hero h1{
+      margin:12px 0 16px;
+      color:#ffd700;
+      font-size:44px;
+      line-height:1.2;
+
+      text-shadow:
+        0 0 24px rgba(255,215,0,.20);
+    }
+
+    .lead{
+      color:#ddd;
+      font-size:18px;
+      line-height:1.9;
+    }
+
+    .lead span{
+      color:#ffd700;
+      font-weight:bold;
+    }
 
     .start-card{
       margin:28px 0;
       padding:22px;
-      border-radius:22px;
-      background:rgba(255,215,0,.08);
+
       border:1px solid rgba(255,215,0,.28);
+      border-radius:22px;
+
+      background:
+        rgba(255,215,0,.07);
     }
 
-    .start-card strong{display:block;font-size:22px;color:#FFD700;margin:8px 0}
-    .start-card small{color:#aaa}
+    .start-card p{
+      color:#ddd;
+    }
 
-    .main-btn,.sub-btn,.option-btn{
+    .start-card strong{
+      display:block;
+      margin:8px 0;
+      color:#ffd700;
+      font-size:22px;
+    }
+
+    .start-card small{
+      color:#aaa;
+    }
+
+    .start-points{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:8px;
+      margin:22px 0;
+    }
+
+    .start-point{
+      padding:12px 7px;
+
+      border:1px solid rgba(255,215,0,.16);
+      border-radius:15px;
+
+      background:
+        rgba(255,255,255,.04);
+
+      color:#ddd;
+      font-size:11px;
+      line-height:1.5;
+    }
+
+    .start-point span{
+      display:block;
+      margin-bottom:5px;
+      font-size:22px;
+    }
+
+    .main-btn,
+    .sub-btn,
+    .option-btn{
       width:100%;
+      margin-top:12px;
+      padding:16px 18px;
+
       border:none;
       border-radius:999px;
-      padding:16px 18px;
+
       font-size:16px;
       font-weight:bold;
-      margin-top:12px;
+
       cursor:pointer;
+
+      transition:
+        transform .2s ease,
+        filter .2s ease,
+        background .2s ease;
     }
 
     .main-btn{
-      background:#FFD700;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+
+      background:
+        linear-gradient(
+          135deg,
+          #b78b17,
+          #ffd700,
+          #fff0a2
+        );
+
       color:#000;
-      box-shadow:0 0 25px rgba(255,215,0,.35);
+
+      box-shadow:
+        0 0 25px rgba(255,215,0,.30);
     }
 
     .sub-btn{
-      background:rgba(255,255,255,.08);
-      color:#FFD700;
       border:1px solid rgba(255,215,0,.25);
+
+      background:
+        rgba(255,255,255,.07);
+
+      color:#ffd700;
     }
 
-    .count{color:#FFD700;letter-spacing:2px}
-    #questionTitle{font-size:24px;line-height:1.6;margin:22px 0}
-    #optionsArea{display:grid;gap:12px}
+    .main-btn:hover,
+    .sub-btn:hover,
+    .option-btn:hover{
+      transform:translateY(-2px);
+      filter:brightness(1.08);
+    }
+
+    .main-btn:active,
+    .sub-btn:active,
+    .option-btn:active{
+      transform:scale(.98);
+    }
+
+    /* 質問画面 */
+
+    .quiz-card{
+      min-height:620px;
+
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+    }
+
+    .quiz-stage-label{
+      margin-bottom:9px;
+      color:#aaa;
+      font-size:10px;
+      letter-spacing:3px;
+    }
+
+    .moon-progress{
+      display:grid;
+      place-items:center;
+
+      width:88px;
+      height:88px;
+      margin:0 auto 15px;
+
+      border:1px solid rgba(255,215,0,.32);
+      border-radius:50%;
+
+      background:
+        radial-gradient(
+          circle,
+          rgba(255,215,0,.15),
+          rgba(0,0,0,.30)
+        );
+
+      font-size:47px;
+
+      box-shadow:
+        0 0 30px rgba(255,215,0,.12);
+
+      transition:
+        transform .35s ease,
+        box-shadow .35s ease;
+    }
+
+    .moon-progress.pulse{
+      transform:scale(1.12);
+
+      box-shadow:
+        0 0 45px rgba(255,215,0,.28);
+    }
+
+    .progress-number{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+
+      gap:12px;
+      margin-bottom:9px;
+
+      color:#aaa;
+      font-size:12px;
+    }
+
+    .progress-number strong{
+      color:#ffd700;
+      font-size:14px;
+    }
+
+    .progress-track{
+      width:100%;
+      height:10px;
+      overflow:hidden;
+
+      border:1px solid rgba(255,215,0,.18);
+      border-radius:999px;
+
+      background:
+        rgba(255,255,255,.06);
+    }
+
+    .progress-fill{
+      width:2.5%;
+      height:100%;
+
+      border-radius:999px;
+
+      background:
+        linear-gradient(
+          90deg,
+          #9b6a14,
+          #ffd700,
+          #fff3ab
+        );
+
+      box-shadow:
+        0 0 18px rgba(255,215,0,.35);
+
+      transition:width .45s ease;
+    }
+
+    .count{
+      margin-top:13px;
+      color:#ffd700;
+      font-size:12px;
+      letter-spacing:2px;
+    }
+
+    .question-category{
+      display:inline-block;
+      margin-top:15px;
+      padding:6px 11px;
+
+      border:1px solid rgba(255,215,0,.20);
+      border-radius:999px;
+
+      background:
+        rgba(255,215,0,.07);
+
+      color:#ffd700;
+      font-size:10px;
+      letter-spacing:1px;
+    }
+
+    #questionTitle{
+      min-height:115px;
+
+      display:flex;
+      align-items:center;
+      justify-content:center;
+
+      margin:18px 0 22px;
+
+      color:#fff;
+      font-size:24px;
+      line-height:1.6;
+    }
+
+    #optionsArea{
+      display:grid;
+      gap:12px;
+    }
 
     .option-btn{
-      background:rgba(255,255,255,.08);
+      position:relative;
+      overflow:hidden;
+
+      margin:0;
+      padding:16px 48px 16px 20px;
+
+      border:1px solid rgba(255,215,0,.20);
+      border-radius:17px;
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(255,255,255,.09),
+          rgba(255,255,255,.04)
+        );
+
       color:#fff;
-      border:1px solid rgba(255,215,0,.2);
       text-align:left;
-      padding-left:22px;
+
+      box-shadow:
+        0 8px 24px rgba(0,0,0,.18);
     }
 
-    .option-btn:hover{background:rgba(255,215,0,.14)}
+    .option-btn::after{
+      content:"›";
+
+      position:absolute;
+      top:50%;
+      right:18px;
+
+      transform:translateY(-50%);
+
+      color:#ffd700;
+      font-size:24px;
+    }
+
+    .option-btn:hover{
+      border-color:rgba(255,215,0,.55);
+      background:rgba(255,215,0,.13);
+    }
+
+    .option-btn.answer-selected{
+      transform:scale(.97);
+
+      border-color:#ffd700;
+      background:rgba(255,215,0,.20);
+    }
+
+    .quiz-message{
+      min-height:24px;
+      margin-top:17px;
+
+      color:#aaa;
+      font-size:12px;
+      line-height:1.7;
+    }
+        /* =========================
+       結果画面
+    ========================= */
+
+    .result-card{
+      max-width:720px;
+    }
 
     .result-visual{
-  width:100%;
-  max-width:420px;
-  margin:20px auto;
-  border-radius:22px;
-  overflow:hidden;
-  border:1px solid rgba(255,215,0,.35);
-  background:rgba(255,255,255,.04);
-}
+      width:100%;
+      max-width:560px;
 
-.result-visual img{
-  width:100%;
-  display:block;
-  object-fit:cover;
-}
+      margin:22px auto;
 
-.emoji{
-  display:none;
-}
+      overflow:hidden;
+
+      border:1px solid rgba(255,215,0,.38);
+      border-radius:24px;
+
+      background:
+        rgba(255,255,255,.04);
+
+      box-shadow:
+        0 18px 50px rgba(0,0,0,.38);
+    }
+
+    .result-visual img{
+      display:block;
+
+      width:100%;
+      height:auto;
+
+      object-fit:contain;
+
+      background:#050505;
+    }
+
+    .emoji{
+      display:none;
+    }
 
     #resultName{
-      font-size:30px;
-      color:#FFD700;
-      margin:12px 0;
+      margin:14px 0 8px;
+
+      color:#ffd700;
+
+      font-size:
+        clamp(34px,8vw,50px);
+
+      line-height:1.2;
     }
 
     #resultTitle{
-      font-size:18px;
-      color:#fff;
       margin:8px 0 18px;
+
+      color:#fff;
+
+      font-size:
+        clamp(18px,4vw,25px);
+
+      line-height:1.5;
     }
 
     .desc{
+      max-width:600px;
+
+      margin:0 auto 22px;
+
       color:#ddd;
-      line-height:1.9;
-      margin-bottom:20px;
+
+      font-size:15px;
+      line-height:2;
     }
 
     .stats{
       display:grid;
+
+      grid-template-columns:
+        repeat(
+          auto-fit,
+          minmax(150px,1fr)
+        );
+
       gap:10px;
-      margin:20px 0;
+
+      margin:22px 0;
     }
 
     .stats div{
-      background:rgba(255,255,255,.07);
+      padding:14px 12px;
+
       border:1px solid rgba(255,215,0,.18);
-      border-radius:14px;
-      padding:12px;
+      border-radius:15px;
+
+      background:
+        rgba(255,255,255,.06);
+
       color:#eee;
+
+      font-size:13px;
+      line-height:1.7;
     }
 
     .tags{
       display:flex;
       flex-wrap:wrap;
       justify-content:center;
+
       gap:8px;
-      margin:18px 0 24px;
+
+      margin:18px 0 25px;
     }
 
     .tags span{
       padding:8px 12px;
+
+      border:1px solid rgba(255,215,0,.24);
       border-radius:999px;
-      background:rgba(255,215,0,.1);
-      border:1px solid rgba(255,215,0,.22);
-      color:#FFD700;
-      font-size:13px;
+
+      background:
+        rgba(255,215,0,.09);
+
+      color:#ffd700;
+
+      font-size:12px;
     }
-    .type-detail{
-    text-align:left;
-    margin-top:40px;
-    line-height:1.9;
-}
 
-.type-detail h2,
-.type-detail h3,
-.type-detail h4,
-.type-detail .catch{
-    text-align:center;
-}
+    /* =========================
+       詳細説明
+    ========================= */
 
-.type-detail ul,
-.type-detail ol{
-    padding-left:24px;
-    margin:18px 0;
-}
-
-.type-detail li{
-    margin:8px 0;
-}
-    .type-detail h4{
-    color:#FFD700;
-    font-size:22px;
-    margin-top:35px;
-    margin-bottom:15px;
-}
-    .type-detail p{
-    margin:18px 0;
-    color:#ddd;
-}
-
-.type-detail h2{
-    font-size:38px;
-    color:#FFD700;
-}
-
-.type-detail h3{
-    font-size:28px;
-    margin-top:10px;
-}
-
-.type-detail .catch{
-    color:#FFD700;
-    font-size:18px;
-    margin-bottom:30px;
-    font-weight:bold;
-}
     #detailArea{
-  margin-top:28px;
-}
+      margin-top:30px;
+    }
 
-.type-detail{
-  background:linear-gradient(180deg,rgba(255,215,0,.08),rgba(255,255,255,.035));
-  border:1px solid rgba(255,215,0,.25);
-  border-radius:24px;
-  padding:28px 20px;
-  box-shadow:0 18px 50px rgba(0,0,0,.35);
-}
+    .type-detail{
+      padding:30px 22px;
 
-.type-detail h4{
-  padding-top:18px;
-  border-top:1px solid rgba(255,215,0,.16);
-}
+      border:1px solid rgba(255,215,0,.25);
+      border-radius:25px;
+
+      background:
+        linear-gradient(
+          180deg,
+          rgba(255,215,0,.075),
+          rgba(255,255,255,.03)
+        );
+
+      box-shadow:
+        0 18px 55px rgba(0,0,0,.35);
+
+      text-align:left;
+      line-height:1.95;
+    }
+
+    .type-detail h2,
+    .type-detail h3,
+    .type-detail h4,
+    .type-detail .catch{
+      text-align:center;
+    }
+
+    .type-detail h2{
+      color:#ffd700;
+
+      font-size:
+        clamp(30px,7vw,42px);
+    }
+
+    .type-detail h3{
+      margin-top:10px;
+
+      font-size:
+        clamp(22px,5vw,30px);
+    }
+
+    .type-detail h4{
+      margin:34px 0 15px;
+      padding-top:20px;
+
+      border-top:
+        1px solid rgba(255,215,0,.17);
+
+      color:#ffd700;
+
+      font-size:21px;
+    }
+
+    .type-detail .catch{
+      margin-bottom:30px;
+
+      color:#ffd700;
+
+      font-size:17px;
+      font-weight:bold;
+    }
+
+    .type-detail p{
+      margin:17px 0;
+
+      color:#ddd;
+    }
+
+    .type-detail ul,
+    .type-detail ol{
+      margin:18px 0;
+      padding-left:24px;
+    }
+
+    .type-detail li{
+      margin:8px 0;
+    }
+
+    /* =========================
+       10問ごとの解析演出
+    ========================= */
+
+    .milestone-overlay{
+      position:fixed;
+      inset:0;
+      z-index:10000;
+
+      display:none;
+      align-items:center;
+      justify-content:center;
+
+      padding:20px;
+
+      background:
+        rgba(0,0,0,.92);
+
+      backdrop-filter:
+        blur(12px);
+    }
+
+    .milestone-overlay.show{
+      display:flex;
+
+      animation:
+        overlayFade .35s ease;
+    }
+
+    @keyframes overlayFade{
+      from{
+        opacity:0;
+      }
+
+      to{
+        opacity:1;
+      }
+    }
+
+    .milestone-card{
+      width:100%;
+      max-width:410px;
+
+      padding:38px 25px;
+
+      border:1px solid rgba(255,215,0,.42);
+      border-radius:28px;
+
+      background:
+        radial-gradient(
+          circle at top,
+          rgba(255,215,0,.15),
+          transparent 42%
+        ),
+        #080808;
+
+      box-shadow:
+        0 0 60px rgba(255,215,0,.13);
+
+      text-align:center;
+    }
+
+    .milestone-icon{
+      margin-bottom:15px;
+
+      font-size:54px;
+    }
+
+    .milestone-card small{
+      color:#aaa;
+
+      font-size:11px;
+      letter-spacing:3px;
+    }
+
+    .milestone-card h2{
+      margin:15px 0;
+
+      color:#ffd700;
+
+      font-size:28px;
+    }
+
+    .milestone-card p{
+      color:#ccc;
+
+      line-height:1.9;
+    }
+
+    .milestone-line{
+      width:100%;
+      height:7px;
+
+      margin-top:24px;
+
+      overflow:hidden;
+
+      border-radius:999px;
+
+      background:
+        rgba(255,255,255,.08);
+    }
+
+    .milestone-line span{
+      display:block;
+
+      width:0;
+      height:100%;
+
+      border-radius:999px;
+
+      background:
+        linear-gradient(
+          90deg,
+          #a46f08,
+          #ffe06b
+        );
+
+      animation:
+        milestoneLoading 1.5s ease forwards;
+    }
+
+    @keyframes milestoneLoading{
+      from{
+        width:0;
+      }
+
+      to{
+        width:100%;
+      }
+    }
+
+    /* =========================
+       最終解析画面
+    ========================= */
+
+    .final-analysis-overlay{
+      position:fixed;
+      inset:0;
+      z-index:10001;
+
+      display:none;
+      align-items:center;
+      justify-content:center;
+
+      padding:20px;
+
+      background:
+        rgba(0,0,0,.95);
+
+      backdrop-filter:
+        blur(14px);
+    }
+
+    .final-analysis-overlay.show{
+      display:flex;
+
+      animation:
+        overlayFade .35s ease;
+    }
+
+    .analysis-card{
+      width:100%;
+      max-width:420px;
+
+      padding:40px 26px;
+
+      border:1px solid rgba(255,215,0,.42);
+      border-radius:28px;
+
+      background:
+        radial-gradient(
+          circle at top,
+          rgba(255,215,0,.16),
+          transparent 40%
+        ),
+        #080808;
+
+      box-shadow:
+        0 0 70px rgba(255,215,0,.14);
+
+      text-align:center;
+    }
+
+    .analysis-spinner{
+      width:76px;
+      height:76px;
+
+      margin:0 auto 24px;
+
+      border:3px solid rgba(255,215,0,.15);
+      border-top-color:#ffd700;
+      border-radius:50%;
+
+      animation:
+        spinnerRotate 1s linear infinite;
+    }
+
+    @keyframes spinnerRotate{
+      to{
+        transform:rotate(360deg);
+      }
+    }
+
+    .analysis-card h2{
+      margin:16px 0;
+
+      color:#ffd700;
+
+      font-size:28px;
+    }
+
+    .analysis-card p{
+      color:#ccc;
+
+      line-height:1.9;
+    }
+
+    .analysis-progress{
+      width:100%;
+      height:9px;
+
+      margin-top:25px;
+
+      overflow:hidden;
+
+      border-radius:999px;
+
+      background:
+        rgba(255,255,255,.08);
+    }
+
+    .analysis-progress span{
+      display:block;
+
+      width:0;
+      height:100%;
+
+      border-radius:999px;
+
+      background:
+        linear-gradient(
+          90deg,
+          #a46f08,
+          #ffe06b,
+          #fff3a8
+        );
+
+      animation:
+        analysisLoading 2.4s ease forwards;
+    }
+
+    @keyframes analysisLoading{
+      from{
+        width:0;
+      }
+
+      to{
+        width:100%;
+      }
+    }
+
+    /* =========================
+       保存専用カード
+       1080 × 1920固定
+    ========================= */
+
+    #shareCard{
+      position:fixed;
+
+      top:0;
+      left:-20000px;
+
+      display:block;
+
+      width:1080px;
+      height:1920px;
+
+      overflow:hidden;
+
+      padding:70px 65px 55px;
+
+      border:5px solid #d4af37;
+
+      background:
+        radial-gradient(
+          circle at 50% 0%,
+          rgba(255,215,0,.19),
+          transparent 32%
+        ),
+        radial-gradient(
+          circle at 50% 100%,
+          rgba(105,55,255,.18),
+          transparent 35%
+        ),
+        #040404;
+
+      color:#fff;
+
+      text-align:center;
+    }
+
+    .share-brand{
+      color:#ffd700;
+
+      font-size:45px;
+      font-weight:800;
+
+      letter-spacing:10px;
+    }
+
+    .share-sub{
+      margin-top:8px;
+
+      color:#aaa;
+
+      font-size:21px;
+
+      letter-spacing:5px;
+    }
+
+    .share-image-wrap{
+      width:880px;
+      height:1120px;
+
+      display:flex;
+      align-items:center;
+      justify-content:center;
+
+      margin:38px auto 25px;
+
+      overflow:hidden;
+
+      border:3px solid rgba(255,215,0,.5);
+      border-radius:30px;
+
+      background:#060606;
+    }
+
+    #shareImage{
+      width:100%;
+      height:100%;
+
+      object-fit:contain;
+
+      background:#050505;
+    }
+
+    #shareName{
+      margin:22px 0 8px;
+
+      color:#ffd700;
+
+      font-size:70px;
+
+      line-height:1.1;
+    }
+
+    #shareTitle{
+      margin-bottom:22px;
+
+      font-size:35px;
+      line-height:1.4;
+    }
+
+    #shareStats{
+      display:grid;
+
+      grid-template-columns:
+        repeat(2,1fr);
+
+      gap:12px;
+
+      font-size:22px;
+      line-height:1.6;
+    }
+
+    #shareStats > div{
+      padding:14px 10px;
+
+      border:1px solid rgba(255,215,0,.24);
+      border-radius:15px;
+
+      background:
+        rgba(255,255,255,.055);
+    }
+
+    .share-footer{
+      position:absolute;
+
+      right:0;
+      bottom:42px;
+      left:0;
+    }
+
+    .share-hashtag{
+      color:#ffd700;
+
+      font-size:25px;
+    }
+
+    .share-url{
+      margin-top:8px;
+
+      color:#ddd;
+
+      font-size:25px;
+
+      letter-spacing:2px;
+    }
+
+    /* =========================
+       スマホ
+    ========================= */
+
+    @media(max-width:600px){
+
+      .screen{
+        padding:18px 12px 42px;
+      }
+
+      .hero,
+      .quiz-card{
+        padding:28px 17px;
+      }
+
+      .result-card{
+        padding:27px 15px 38px;
+      }
+
+      .hero h1{
+        font-size:40px;
+      }
+
+      .lead{
+        font-size:16px;
+      }
+
+      .quiz-card{
+        min-height:calc(100vh - 36px);
+      }
+
+      #questionTitle{
+        min-height:100px;
+
+        font-size:21px;
+      }
+
+      .option-btn{
+        padding:15px 43px 15px 17px;
+
+        font-size:14px;
+      }
+
+      .start-point{
+        padding:11px 4px;
+
+        font-size:9px;
+      }
+
+      .start-point span{
+        font-size:20px;
+      }
+
+      .stats{
+        grid-template-columns:1fr;
+      }
+
+      .type-detail{
+        padding:24px 16px;
+      }
+
+      .type-detail h2{
+        font-size:31px;
+      }
+
+      .type-detail h3{
+        font-size:24px;
+      }
+
+    }
+
   </style>
 </head>
-
 <body>
+
+  <div class="background-effects">
+    <div class="stars"></div>
+  </div>
+
   <main class="app">
 
-    <section id="startScreen" class="screen active">
+    <!-- =========================
+         開始画面
+    ========================== -->
+
+    <section
+      id="startScreen"
+      class="screen active"
+    >
+
       <div class="hero">
-        <p class="brand">NOX TYPE</p>
-        <h1>夜の性格診断</h1>
+
+        <p class="brand">
+          NOX TYPE
+        </p>
+
+        <div class="brand-line"></div>
+
+        <div class="start-moon">
+          🌙
+        </div>
+
+        <h1>
+          夜の性格診断
+        </h1>
+
         <p class="lead">
           40問でわかる、あなたの
-          <span>夜の才能タイプ。</span>
+          <br>
+
+          <span>
+            夜の才能タイプ。
+          </span>
         </p>
 
         <div class="start-card">
-          <p>診断結果は</p>
-          <strong>16タイプ × 5サブタイプ</strong>
-          <small>全80通り</small>
+
+          <p>
+            診断結果は
+          </p>
+
+          <strong>
+            16タイプ × 5サブタイプ
+          </strong>
+
+          <small>
+            全80通り
+          </small>
+
         </div>
 
-        <button class="main-btn" onclick="startQuiz()">診断をはじめる</button>
+        <div class="start-points">
+
+          <div class="start-point">
+            <span>🌙</span>
+            夜職適性を診断
+          </div>
+
+          <div class="start-point">
+            <span>💎</span>
+            隠れた強みを分析
+          </div>
+
+          <div class="start-point">
+            <span>👑</span>
+            向いている仕事を表示
+          </div>
+
+        </div>
+
+        <button
+          type="button"
+          class="main-btn"
+          onclick="startQuiz()"
+        >
+          診断をはじめる
+        </button>
+
       </div>
+
     </section>
 
-    <section id="quizScreen" class="screen">
+    <!-- =========================
+         質問画面
+    ========================== -->
+
+    <section
+      id="quizScreen"
+      class="screen"
+    >
+
       <div class="quiz-card">
-        <p id="questionCount" class="count"></p>
-        <h2 id="questionTitle"></h2>
-        <div id="optionsArea"></div>
-      </div>
-    </section>
 
-    <section id="resultScreen" class="screen">
+        <div class="quiz-top">
+
+          <p class="quiz-stage-label">
+            YOUR NIGHT TYPE IS GROWING
+          </p>
+
+          <div
+            id="moonProgress"
+            class="moon-progress"
+            aria-hidden="true"
+          >
+            🌑
+          </div>
+
+          <div class="progress-number">
+
+            <span>
+              現在
+            </span>
+
+            <strong id="customProgressText">
+              1 / 40
+            </strong>
+
+            <span id="progressPercent">
+              3%
+            </span>
+
+          </div>
+
+          <div class="progress-track">
+
+            <div
+              id="progressFill"
+              class="progress-fill"
+            ></div>
+
+          </div>
+
+          <p
+            id="questionCount"
+            class="count"
+          >
+            1 / 40
+          </p>
+
+        </div>
+
+        <span
+          id="questionCategory"
+          class="question-category"
+        >
+          PERSONALITY
+        </span>
+
+        <h2 id="questionTitle">
+          質問を読み込んでいます...
+        </h2>
+
+        <div id="optionsArea">
+        </div>
+
+        <p
+          id="quizMessage"
+          class="quiz-message"
+        >
+          直感で一番近いものを選んでください
+        </p>
+
+      </div>
+
+    </section>
+        <!-- =========================
+         結果画面
+    ========================== -->
+
+    <section
+      id="resultScreen"
+      class="screen result-delayed"
+    >
+
       <div class="result-card">
-        <p class="brand">NOX TYPE RESULT</p>
+
+        <p class="brand">
+          NOX TYPE RESULT
+        </p>
+
+        <div class="brand-line"></div>
 
         <div class="result-visual">
-          <img id="resultImage" alt="NOX診断タイプ画像">
-          <div id="resultEmoji" class="emoji"></div>
+
+          <img
+            id="resultImage"
+            alt="NOX診断タイプ画像"
+          >
+
+          <div
+            id="resultEmoji"
+            class="emoji"
+          ></div>
+
         </div>
 
         <h2 id="resultName"></h2>
+
         <h3 id="resultTitle"></h3>
-        <p id="resultDesc" class="desc"></p>
 
-        <div id="statsArea" class="stats"></div>
-        <div id="tagArea" class="tags"></div>
+        <p
+          id="resultDesc"
+          class="desc"
+        ></p>
+
+        <div
+          id="statsArea"
+          class="stats"
+        ></div>
+
+        <div
+          id="tagArea"
+          class="tags"
+        ></div>
+
         <div id="detailArea"></div>
-        <div id="shareCard" style="display:none; width:1080px; padding:60px; background:#050505; color:#fff; border:4px solid #FFD700; border-radius:40px; text-align:center;">
 
-  <div style="font-size:28px; letter-spacing:8px; color:#FFD700; margin-bottom:20px;">
-    NOX TYPE
-  </div>
+        <!-- 保存専用画像 -->
 
-  <img id="shareImage"
-       src=""
-       style="width:100%; max-width:900px; border-radius:24px; margin-bottom:30px;">
+        <div id="shareCard">
 
-  <h1 id="shareName"
-      style="font-size:64px; color:#FFD700; margin:20px 0;">
-  </h1>
+          <div class="share-brand">
+            NOX TYPE
+          </div>
 
-  <h2 id="shareTitle"
-      style="font-size:42px; margin-bottom:30px;">
-  </h2>
+          <div class="share-sub">
+            NIGHT OPENS X
+          </div>
 
-  <div id="shareStats"
-       style="font-size:36px; line-height:2;">
-  </div>
+          <div class="share-image-wrap">
 
-  <div style="margin-top:50px;">
-    <div style="font-size:28px; color:#FFD700;">
-      #NOX診断
-    </div>
+            <img
+              id="shareImage"
+              src=""
+              alt=""
+            >
 
-    <div style="font-size:30px; margin-top:12px;">
-      joinnox.jp
-    </div>
-  </div>
+          </div>
 
-</div>
-        <button class="main-btn" onclick="shareResult()">Xでシェア</button>
-        <button class="sub-btn" onclick="copyResult()">結果をコピー</button>
-        <button class="sub-btn" onclick="saveResultImage()">📸 診断結果を画像で保存</button>
-        <a href="index.html" class="main-btn">
-あなたに合う求人を見る
-</a>
-        <button class="sub-btn" onclick="restartQuiz()">もう一度診断</button>
+          <h1 id="shareName"></h1>
+
+          <h2 id="shareTitle"></h2>
+
+          <div id="shareStats"></div>
+
+          <div class="share-footer">
+
+            <div class="share-hashtag">
+              #NOX診断
+            </div>
+
+            <div class="share-url">
+              joinnox.jp
+            </div>
+
+          </div>
+
+        </div>
+
+        <button
+          class="main-btn"
+          onclick="shareResult()"
+        >
+          Xでシェア
+        </button>
+
+        <button
+          class="sub-btn"
+          onclick="copyResult()"
+        >
+          結果をコピー
+        </button>
+
+        <button
+          class="sub-btn"
+          onclick="saveResultImage()"
+        >
+          📸 診断結果を画像で保存
+        </button>
+
+        <a
+          href="index.html"
+          class="main-btn"
+        >
+          あなたに合う求人を見る
+        </a>
+
+        <button
+          class="sub-btn"
+          onclick="restartQuiz()"
+        >
+          もう一度診断
+        </button>
+
       </div>
+
     </section>
+      </main>
 
-  </main>
+  <!-- =========================
+       10問ごとの解析演出
+  ========================== -->
 
- <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-<script src="types.js"></script>
-<script src="detail.js"></script>
-<script src="diagnosis.js"></script>
+  <div
+    id="milestoneOverlay"
+    class="milestone-overlay"
+  >
+
+    <div class="milestone-card">
+
+      <div
+        id="milestoneIcon"
+        class="milestone-icon"
+      >
+        🌒
+      </div>
+
+      <small>
+        NOX TYPE ANALYSIS
+      </small>
+
+      <h2 id="milestoneTitle">
+        25%解析完了
+      </h2>
+
+      <p id="milestoneText">
+        あなたの魅力の輪郭が、
+        少しずつ見えてきました。
+      </p>
+
+      <div class="milestone-line">
+        <span></span>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- =========================
+       最終解析演出
+  ========================== -->
+
+  <div
+    id="finalAnalysisOverlay"
+    class="final-analysis-overlay"
+  >
+
+    <div class="analysis-card">
+
+      <div class="analysis-spinner"></div>
+
+      <p class="brand">
+        NOX TYPE
+      </p>
+
+      <h2>
+        あなたの才能を解析中
+      </h2>
+
+      <p>
+        40個の回答から、
+        あなたに最も近い夜のタイプを導き出しています。
+      </p>
+
+      <div class="analysis-progress">
+        <span></span>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- 画像保存 -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+  <!-- 診断データ -->
+  <script src="types.js?v=3"></script>
+  <script src="detail.js?v=3"></script>
+  <script src="diagnosis.js?v=3"></script>
+
+  <!-- =========================
+       追加演出
+  ========================== -->
+
+  <script>
+    const TOTAL_QUESTIONS = 40;
+
+    const moonStages = [
+      "🌑",
+      "🌒",
+      "🌓",
+      "🌔",
+      "🌕"
+    ];
+
+    const stageMessages = [
+      "あなたの第一印象を分析中…",
+      "内側にある魅力を読み取っています…",
+      "接客スタイルの傾向が見えてきました…",
+      "あなたの強みが形になってきました…",
+      "もうすぐ夜の才能タイプが完成します…"
+    ];
+
+    const stageCategories = [
+      "PERSONALITY",
+      "COMMUNICATION",
+      "CHARM",
+      "NIGHTWORK",
+      "FINAL ANALYSIS"
+    ];
+
+    let previousQuestionNumber = 0;
+    let shownMilestones = new Set();
+    let finalAnalysisShown = false;
+
+    function extractQuestionNumber(text){
+      const numbers =
+        String(text || "").match(/\d+/g);
+
+      if(
+        !numbers ||
+        numbers.length === 0
+      ){
+        return 1;
+      }
+
+      const number =
+        Number(numbers[0]);
+
+      if(
+        Number.isNaN(number) ||
+        number < 1
+      ){
+        return 1;
+      }
+
+      return Math.min(
+        number,
+        TOTAL_QUESTIONS
+      );
+    }
+
+    function getStageIndex(questionNumber){
+      if(questionNumber <= 8){
+        return 0;
+      }
+
+      if(questionNumber <= 16){
+        return 1;
+      }
+
+      if(questionNumber <= 24){
+        return 2;
+      }
+
+      if(questionNumber <= 32){
+        return 3;
+      }
+
+      return 4;
+    }
+
+    function updateQuestionVisuals(){
+      const questionCount =
+        document.getElementById(
+          "questionCount"
+        );
+
+      const progressFill =
+        document.getElementById(
+          "progressFill"
+        );
+
+      const customProgressText =
+        document.getElementById(
+          "customProgressText"
+        );
+
+      const progressPercent =
+        document.getElementById(
+          "progressPercent"
+        );
+
+      const moonProgress =
+        document.getElementById(
+          "moonProgress"
+        );
+
+      const quizMessage =
+        document.getElementById(
+          "quizMessage"
+        );
+
+      const questionCategory =
+        document.getElementById(
+          "questionCategory"
+        );
+
+      if(!questionCount){
+        return;
+      }
+
+      const questionNumber =
+        extractQuestionNumber(
+          questionCount.textContent
+        );
+
+      const percent =
+        Math.max(
+          3,
+          Math.min(
+            100,
+            Math.round(
+              questionNumber /
+              TOTAL_QUESTIONS *
+              100
+            )
+          )
+        );
+
+      const stageIndex =
+        getStageIndex(
+          questionNumber
+        );
+
+      if(customProgressText){
+        customProgressText.textContent =
+          `${questionNumber} / ${TOTAL_QUESTIONS}`;
+      }
+
+      if(progressPercent){
+        progressPercent.textContent =
+          `${percent}%`;
+      }
+
+      if(progressFill){
+        progressFill.style.width =
+          `${percent}%`;
+      }
+
+      if(moonProgress){
+
+        const nextMoon =
+          moonStages[stageIndex];
+
+        if(
+          moonProgress.textContent !==
+          nextMoon
+        ){
+          moonProgress.textContent =
+            nextMoon;
+
+          moonProgress.classList.add(
+            "pulse"
+          );
+
+          window.setTimeout(
+            () => {
+              moonProgress.classList.remove(
+                "pulse"
+              );
+            },
+            350
+          );
+        }
+
+      }
+
+      if(quizMessage){
+        quizMessage.textContent =
+          stageMessages[stageIndex];
+      }
+
+      if(questionCategory){
+        questionCategory.textContent =
+          stageCategories[stageIndex];
+      }
+
+      document.body.classList.remove(
+        "stage-1",
+        "stage-2",
+        "stage-3",
+        "stage-4"
+      );
+
+      if(questionNumber <= 10){
+        document.body.classList.add(
+          "stage-1"
+        );
+      }else if(questionNumber <= 20){
+        document.body.classList.add(
+          "stage-2"
+        );
+      }else if(questionNumber <= 30){
+        document.body.classList.add(
+          "stage-3"
+        );
+      }else{
+        document.body.classList.add(
+          "stage-4"
+        );
+      }
+
+      checkMilestone(
+        previousQuestionNumber,
+        questionNumber
+      );
+
+      previousQuestionNumber =
+        questionNumber;
+    }
+
+    function checkMilestone(
+      previousNumber,
+      currentNumber
+    ){
+      const milestones = [
+        {
+          trigger:11,
+          key:10,
+          icon:"🌒",
+          title:"25%解析完了",
+          text:
+            "あなたの性格とコミュニケーション傾向が見えてきました。"
+        },
+        {
+          trigger:21,
+          key:20,
+          icon:"🌓",
+          title:"50%解析完了",
+          text:
+            "あなたが人を惹きつける魅力をさらに分析しています。"
+        },
+        {
+          trigger:31,
+          key:30,
+          icon:"🌔",
+          title:"75%解析完了",
+          text:
+            "あなたに向いている夜職タイプがかなり絞られてきました。"
+        }
+      ];
+
+      const milestone =
+        milestones.find(
+          (item) =>
+            previousNumber <
+              item.trigger &&
+            currentNumber >=
+              item.trigger
+        );
+
+      if(
+        !milestone ||
+        shownMilestones.has(
+          milestone.key
+        )
+      ){
+        return;
+      }
+
+      shownMilestones.add(
+        milestone.key
+      );
+
+      showMilestone(
+        milestone
+      );
+    }
+
+    function showMilestone(
+      milestone
+    ){
+      const overlay =
+        document.getElementById(
+          "milestoneOverlay"
+        );
+
+      const icon =
+        document.getElementById(
+          "milestoneIcon"
+        );
+
+      const title =
+        document.getElementById(
+          "milestoneTitle"
+        );
+
+      const text =
+        document.getElementById(
+          "milestoneText"
+        );
+
+      if(
+        !overlay ||
+        !icon ||
+        !title ||
+        !text
+      ){
+        return;
+      }
+
+      icon.textContent =
+        milestone.icon;
+
+      title.textContent =
+        milestone.title;
+
+      text.textContent =
+        milestone.text;
+
+      overlay.classList.add(
+        "show"
+      );
+
+      window.setTimeout(
+        () => {
+          overlay.classList.remove(
+            "show"
+          );
+        },
+        1800
+      );
+    }
+
+    function addAnswerButtonEffects(){
+      const optionsArea =
+        document.getElementById(
+          "optionsArea"
+        );
+
+      if(!optionsArea){
+        return;
+      }
+
+      optionsArea.addEventListener(
+        "click",
+        (event) => {
+
+          const button =
+            event.target.closest(
+              ".option-btn"
+            );
+
+          if(!button){
+            return;
+          }
+
+          button.classList.add(
+            "answer-selected"
+          );
+
+          optionsArea
+            .querySelectorAll(
+              ".option-btn"
+            )
+            .forEach(
+              (otherButton) => {
+                otherButton.disabled = true;
+              }
+            );
+
+        }
+      );
+    }
+
+    function setupProgressObserver(){
+      const questionCount =
+        document.getElementById(
+          "questionCount"
+        );
+
+      if(!questionCount){
+        return;
+      }
+
+      const observer =
+        new MutationObserver(
+          () => {
+            updateQuestionVisuals();
+          }
+        );
+
+      observer.observe(
+        questionCount,
+        {
+          childList:true,
+          characterData:true,
+          subtree:true
+        }
+      );
+
+      updateQuestionVisuals();
+    }
+
+    function setupFinalAnalysis(){
+      const resultScreen =
+        document.getElementById(
+          "resultScreen"
+        );
+
+      const finalOverlay =
+        document.getElementById(
+          "finalAnalysisOverlay"
+        );
+
+      if(
+        !resultScreen ||
+        !finalOverlay
+      ){
+        return;
+      }
+
+      const observer =
+        new MutationObserver(
+          () => {
+
+            const isActive =
+              resultScreen.classList.contains(
+                "active"
+              );
+
+            if(
+              !isActive ||
+              finalAnalysisShown
+            ){
+              return;
+            }
+
+            finalAnalysisShown = true;
+
+            resultScreen.classList.add(
+              "result-delayed"
+            );
+
+            finalOverlay.classList.add(
+              "show"
+            );
+
+            window.setTimeout(
+              () => {
+
+                finalOverlay.classList.remove(
+                  "show"
+                );
+
+                resultScreen.classList.remove(
+                  "result-delayed"
+                );
+
+                document.body.classList.remove(
+                  "stage-1",
+                  "stage-2",
+                  "stage-3",
+                  "stage-4"
+                );
+
+                window.scrollTo({
+                  top:0,
+                  behavior:"smooth"
+                });
+
+              },
+              2500
+            );
+
+          }
+        );
+
+      observer.observe(
+        resultScreen,
+        {
+          attributes:true,
+          attributeFilter:[
+            "class"
+          ]
+        }
+      );
+    }
+
+    function waitForImageLoad(
+      imageElement
+    ){
+      return new Promise(
+        (resolve,reject) => {
+
+          if(
+            imageElement.complete &&
+            imageElement.naturalWidth > 0
+          ){
+            resolve();
+            return;
+          }
+
+          imageElement.onload =
+            () => resolve();
+
+          imageElement.onerror =
+            () => reject(
+              new Error(
+                "画像の読み込みに失敗しました"
+              )
+            );
+
+        }
+      );
+    }
+
+    window.saveResultImage =
+      async function(){
+
+        const resultImage =
+          document.getElementById(
+            "resultImage"
+          );
+
+        const resultName =
+          document.getElementById(
+            "resultName"
+          );
+
+        const resultTitle =
+          document.getElementById(
+            "resultTitle"
+          );
+
+        const statsArea =
+          document.getElementById(
+            "statsArea"
+          );
+
+        const shareImage =
+          document.getElementById(
+            "shareImage"
+          );
+
+        const shareName =
+          document.getElementById(
+            "shareName"
+          );
+
+        const shareTitle =
+          document.getElementById(
+            "shareTitle"
+          );
+
+        const shareStats =
+          document.getElementById(
+            "shareStats"
+          );
+
+        const shareCard =
+          document.getElementById(
+            "shareCard"
+          );
+
+        if(
+          !resultImage ||
+          !resultImage.src
+        ){
+          alert(
+            "診断結果画像を読み込めませんでした。"
+          );
+
+          return;
+        }
+
+        shareImage.src =
+          resultImage.src;
+
+        shareName.textContent =
+          resultName?.textContent ||
+          "NOX TYPE";
+
+        shareTitle.textContent =
+          resultTitle?.textContent ||
+          "";
+
+        shareStats.innerHTML =
+          statsArea?.innerHTML ||
+          "";
+
+        try{
+          await waitForImageLoad(
+            shareImage
+          );
+
+          const canvas =
+            await html2canvas(
+              shareCard,
+              {
+                backgroundColor:
+                  "#040404",
+
+                scale:1,
+
+                width:1080,
+                height:1920,
+
+                windowWidth:1080,
+                windowHeight:1920,
+
+                useCORS:true,
+                allowTaint:false,
+                logging:false
+              }
+            );
+
+          const imageUrl =
+            canvas.toDataURL(
+              "image/png",
+              1
+            );
+
+          const safeName =
+            (
+              shareName.textContent ||
+              "NOX-TYPE"
+            )
+              .replace(
+                /[\\/:*?"<>|]/g,
+                "-"
+              )
+              .replace(
+                /\s+/g,
+                "-"
+              );
+
+          const downloadLink =
+            document.createElement(
+              "a"
+            );
+
+          downloadLink.href =
+            imageUrl;
+
+          downloadLink.download =
+            `NOX-TYPE-${safeName}.png`;
+
+          document.body.appendChild(
+            downloadLink
+          );
+
+          downloadLink.click();
+          downloadLink.remove();
+
+        }catch(error){
+
+          console.error(
+            "画像保存エラー:",
+            error
+          );
+
+          alert(
+            "画像を保存できませんでした。少し時間を空けてもう一度お試しください。"
+          );
+
+        }
+      };
+
+    window.addEventListener(
+      "DOMContentLoaded",
+      () => {
+        setupProgressObserver();
+        addAnswerButtonEffects();
+        setupFinalAnalysis();
+      }
+    );
+
+    const originalStartQuiz =
+      window.startQuiz;
+
+    if(
+      typeof originalStartQuiz ===
+      "function"
+    ){
+      window.startQuiz =
+        function(){
+
+          previousQuestionNumber = 0;
+          shownMilestones = new Set();
+          finalAnalysisShown = false;
+
+          originalStartQuiz();
+
+          window.setTimeout(
+            updateQuestionVisuals,
+            100
+          );
+        };
+    }
+
+    const originalRestartQuiz =
+      window.restartQuiz;
+
+    if(
+      typeof originalRestartQuiz ===
+      "function"
+    ){
+      window.restartQuiz =
+        function(){
+
+          previousQuestionNumber = 0;
+          shownMilestones = new Set();
+          finalAnalysisShown = false;
+
+          originalRestartQuiz();
+
+          window.setTimeout(
+            updateQuestionVisuals,
+            100
+          );
+        };
+    }
+  </script>
 
 </body>
 </html>
