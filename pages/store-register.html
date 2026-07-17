@@ -500,10 +500,19 @@ from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 import {
 doc,
+getDoc,
 setDoc,
+updateDoc,
 serverTimestamp
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  const params =
+  new URLSearchParams(location.search);
+
+const inviteCode =
+  params.get("invite");
+
+let inviteData = null;
   const form =
 document.getElementById("registerForm");
 
@@ -529,7 +538,98 @@ document.getElementById("togglePassword").textContent="表示";
 }
 
 };
+async function checkInvite() {
 
+  if (!inviteCode) {
+
+    message.className = "message error show";
+    message.textContent =
+      "店舗登録用の招待URLが必要です。";
+
+    submitBtn.disabled = true;
+    return;
+  }
+
+  try {
+
+    const inviteRef =
+      doc(
+        db,
+        "storeInvites",
+        inviteCode
+      );
+
+    const inviteSnap =
+      await getDoc(inviteRef);
+
+    if (!inviteSnap.exists()) {
+
+      message.className = "message error show";
+      message.textContent =
+        "この招待URLは無効です。";
+
+      submitBtn.disabled = true;
+      return;
+    }
+
+    inviteData =
+      inviteSnap.data();
+
+    if (inviteData.used === true) {
+
+      message.className = "message error show";
+      message.textContent =
+        "この招待URLはすでに使用されています。";
+
+      submitBtn.disabled = true;
+      return;
+    }
+
+    document
+      .getElementById("storeName")
+      .value =
+        inviteData.storeName || "";
+
+    document
+      .getElementById("storeName")
+      .readOnly = true;
+
+    if (inviteData.email) {
+
+      document
+        .getElementById("email")
+        .value =
+          inviteData.email;
+
+      document
+        .getElementById("email")
+        .readOnly = true;
+    }
+
+    message.className =
+      "message success show";
+
+    message.textContent =
+      "招待情報を確認しました。店舗アカウントを登録できます。";
+
+  } catch (error) {
+
+    console.error(
+      "招待確認エラー:",
+      error
+    );
+
+    message.className =
+      "message error show";
+
+    message.textContent =
+      "招待情報を確認できませんでした。";
+
+    submitBtn.disabled = true;
+  }
+}
+
+checkInvite();
 form.addEventListener(
 "submit",
 async(e)=>{
@@ -543,7 +643,9 @@ submitBtn.disabled=true;
 submitBtn.textContent="登録中...";
 
 try{
-
+if (!inviteData || inviteData.used === true) {
+  throw new Error("招待URLが無効です");
+}
 const email=
 document.getElementById("email").value.trim();
 
@@ -602,7 +704,18 @@ updatedAt:serverTimestamp()
 },
 {merge:true}
 );
-
+await updateDoc(
+  doc(
+    db,
+    "storeInvites",
+    inviteCode
+  ),
+  {
+    used: true,
+    registeredUid: result.user.uid,
+    registeredAt: serverTimestamp()
+  }
+);
 message.className="message success";
 message.textContent=
 "登録が完了しました。3秒後に店舗ダッシュボードへ移動します。";
