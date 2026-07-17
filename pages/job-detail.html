@@ -344,6 +344,8 @@ import {
   getDoc,
   collection,
   addDoc,
+  setDoc,
+  increment,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -359,6 +361,162 @@ function value(v){
     : "未設定";
 }
 
+/* =========================
+   日本時間の日付を取得
+========================= */
+
+function getJapanDateKey(){
+
+  const parts =
+    new Intl.DateTimeFormat(
+      "ja-JP",
+      {
+        timeZone:"Asia/Tokyo",
+        year:"numeric",
+        month:"2-digit",
+        day:"2-digit"
+      }
+    )
+    .formatToParts(new Date());
+
+  const year =
+    parts.find(
+      item=>item.type==="year"
+    )?.value;
+
+  const month =
+    parts.find(
+      item=>item.type==="month"
+    )?.value;
+
+  const day =
+    parts.find(
+      item=>item.type==="day"
+    )?.value;
+
+  return `${year}-${month}-${day}`;
+
+}
+
+/* =========================
+   求人閲覧数を記録
+========================= */
+
+async function recordJobView(jobData){
+
+  if(!id){
+    return;
+  }
+
+  const dateKey =
+    getJapanDateKey();
+
+  const storageKey =
+    `nox_job_view_${id}_${dateKey}`;
+
+  /*
+    同じ端末・同じ求人は
+    1日1回だけカウント
+  */
+
+  if(
+    localStorage.getItem(storageKey)
+  ){
+    return;
+  }
+
+  const storeId =
+    jobData.storeId ||
+    jobData.ownerId ||
+    jobData.userId ||
+    "";
+
+  const storeName =
+    jobData.storeName ||
+    jobData.name ||
+    "";
+
+  try{
+
+    /*
+      求人ごと・日ごとの閲覧数
+    */
+
+    const dailyJobViewRef =
+      doc(
+        db,
+        "jobViewStats",
+        `${id}_${dateKey}`
+      );
+
+    await setDoc(
+      dailyJobViewRef,
+      {
+        jobId:id,
+        storeId:storeId,
+        storeName:storeName,
+        dateKey:dateKey,
+        count:increment(1),
+        updatedAt:serverTimestamp()
+      },
+      {
+        merge:true
+      }
+    );
+
+    /*
+      店舗全体の日ごとの閲覧数
+    */
+
+    if(storeId){
+
+      const dailyStoreViewRef =
+        doc(
+          db,
+          "storeViewStats",
+          `${storeId}_${dateKey}`
+        );
+
+      await setDoc(
+        dailyStoreViewRef,
+        {
+          storeId:storeId,
+          storeName:storeName,
+          dateKey:dateKey,
+          count:increment(1),
+          updatedAt:serverTimestamp()
+        },
+        {
+          merge:true
+        }
+      );
+
+    }
+
+    /*
+      カウント成功後に保存
+    */
+
+    localStorage.setItem(
+      storageKey,
+      "viewed"
+    );
+
+  }catch(error){
+
+    console.error(
+      "閲覧数の記録に失敗しました:",
+      error
+    );
+
+  }
+
+}
+
+/* =========================
+   求人詳細を読み込む
+========================= */
+
 async function loadJob(){
 
   if(!id){
@@ -372,61 +530,91 @@ async function loadJob(){
     return;
   }
 
-  const snap =
-    await getDoc(
-      doc(db,"jobs",id)
-    );
+  try{
 
-  if(!snap.exists()){
+    const snap =
+      await getDoc(
+        doc(
+          db,
+          "jobs",
+          id
+        )
+      );
+
+    if(!snap.exists()){
+
+      jobDetail.innerHTML=`
+        <div class="section">
+          <h2>求人情報がありません</h2>
+        </div>
+      `;
+
+      return;
+    }
+
+    const data =
+      snap.data();
+
+    /*
+      求人を読み込めたら閲覧数を記録
+    */
+
+    await recordJobView(data);
+
+    let images=[];
+
+    if(
+      Array.isArray(data.images)
+    ){
+
+      images =
+        data.images.filter(Boolean);
+
+    }else if(data.imageUrl){
+
+      images=[
+        data.imageUrl
+      ];
+
+    }
+
+    if(images.length===0){
+
+      images=[
+        "../images/nox.jpg"
+      ];
+
+    }
+
+    let gallery="";
+
+    images.forEach((img)=>{
+
+      gallery+=`
+        <img
+          src="${img}"
+          loading="lazy"
+          alt="${value(
+            data.storeName ||
+            data.name
+          )} 店舗画像"
+        >
+      `;
+
+    });
+
+    jobDetail.className="";
 
     jobDetail.innerHTML=`
-      <div class="section">
-        <h2>求人情報がありません</h2>
-      </div>
-    `;
-
-    return;
-  }
-
-  const data = snap.data();
-
-  let images=[];
-
-  if(Array.isArray(data.images)){
-    images=data.images;
-  }else if(data.imageUrl){
-    images=[data.imageUrl];
-  }
-
-  if(images.length===0){
-
-    images=[
-      "../images/nox.jpg"
-    ];
-
-  }
-
-  let gallery="";
-
-  images.forEach((img)=>{
-
-    gallery+=`
-      <img
-        src="${img}"
-        loading="lazy"
-      >
-    `;
-
-  });
-
-  jobDetail.className="";
-
-  jobDetail.innerHTML=`
 
 <section class="hero">
 
 <img
-src="${images[0]}"
+  src="${images[0]}"
+  alt="${value(
+    data.storeName ||
+    data.name
+  )}"
 >
 
 <p class="kicker">
@@ -434,13 +622,20 @@ NOX JOB DETAIL
 </p>
 
 <h1>
-${value(data.storeName||data.name)}
+${value(
+  data.storeName ||
+  data.name
+)}
 </h1>
 
 <p>
 ${value(data.area)}
 ／
-${value(data.genre||data.type||data.businessType)}
+${value(
+  data.genre ||
+  data.type ||
+  data.businessType
+)}
 </p>
 
 <div class="salary">
@@ -448,7 +643,10 @@ ${value(data.genre||data.type||data.businessType)}
 <small>時給</small>
 
 <strong>
-${value(data.salary||data.salaryText)}
+${value(
+  data.salary ||
+  data.salaryText
+)}
 </strong>
 
 </div>
@@ -479,32 +677,49 @@ ${gallery}
 
 <div class="info-card">
 <span>エリア</span>
-<strong>${value(data.area)}</strong>
+<strong>
+${value(data.area)}
+</strong>
 </div>
 
 <div class="info-card">
 <span>業種</span>
-<strong>${value(data.businessType||data.genre||data.type||data.jobType)}</strong>
+<strong>
+${value(
+  data.businessType ||
+  data.genre ||
+  data.type ||
+  data.jobType
+)}
+</strong>
 </div>
 
 <div class="info-card">
 <span>住所</span>
-<strong>${value(data.address)}</strong>
+<strong>
+${value(data.address)}
+</strong>
 </div>
 
 <div class="info-card">
 <span>最寄駅</span>
-<strong>${value(data.station)}</strong>
+<strong>
+${value(data.station)}
+</strong>
 </div>
 
 <div class="info-card">
 <span>営業時間</span>
-<strong>${value(data.businessHours)}</strong>
+<strong>
+${value(data.businessHours)}
+</strong>
 </div>
 
 <div class="info-card">
 <span>定休日</span>
-<strong>${value(data.closedDay)}</strong>
+<strong>
+${value(data.closedDay)}
+</strong>
 </div>
 
 </div>
@@ -521,32 +736,44 @@ ${gallery}
 
 <div class="info-card">
 <span>各種バック</span>
-<strong>${value(data.back)}</strong>
+<strong>
+${value(data.back)}
+</strong>
 </div>
 
 <div class="info-card">
 <span>日払い</span>
-<strong>${value(data.dailyPay)}</strong>
+<strong>
+${value(data.dailyPay)}
+</strong>
 </div>
 
 <div class="info-card">
 <span>体験入店</span>
-<strong>${value(data.trial)}</strong>
+<strong>
+${value(data.trial)}
+</strong>
 </div>
 
 <div class="info-card">
 <span>未経験歓迎</span>
-<strong>${value(data.beginner)}</strong>
+<strong>
+${value(data.beginner)}
+</strong>
 </div>
 
 <div class="info-card">
 <span>採用年齢</span>
-<strong>${value(data.age)}</strong>
+<strong>
+${value(data.age)}
+</strong>
 </div>
 
 <div class="info-card">
 <span>シフト</span>
-<strong>${value(data.shift)}</strong>
+<strong>
+${value(data.shift)}
+</strong>
 </div>
 
 </div>
@@ -560,16 +787,17 @@ ${gallery}
 </h2>
 
 <div class="pr">
-${value(data.pr||data.description)}
+${value(
+  data.pr ||
+  data.description
+)}
 </div>
 
 </section>
-`;
-  jobDetail.innerHTML += `
 
 <section
-class="apply-box"
-id="applyForm"
+  class="apply-box"
+  id="applyForm"
 >
 
 <h2>
@@ -577,25 +805,27 @@ id="applyForm"
 </h2>
 
 <input
-id="entryName"
-type="text"
-placeholder="お名前"
+  id="entryName"
+  type="text"
+  placeholder="お名前"
+  autocomplete="name"
 >
 
 <input
-id="entryPhone"
-type="tel"
-placeholder="電話番号"
+  id="entryPhone"
+  type="tel"
+  placeholder="電話番号"
+  autocomplete="tel"
 >
 
 <textarea
-id="entryMessage"
-placeholder="質問や希望条件があれば入力してください"
+  id="entryMessage"
+  placeholder="質問や希望条件があれば入力してください"
 ></textarea>
 
 <button
-id="applyBtn"
-class="line-btn"
+  id="applyBtn"
+  class="line-btn"
 >
 応募する
 </button>
@@ -603,73 +833,145 @@ class="line-btn"
 </section>
 `;
 
-document
-.getElementById("applyBtn")
-.addEventListener(
-"click",
-async()=>{
+    const applyBtn =
+      document.getElementById(
+        "applyBtn"
+      );
 
-const name=
-document
-.getElementById("entryName")
-.value
-.trim();
+    applyBtn.addEventListener(
+      "click",
+      async()=>{
 
-const phone=
-document
-.getElementById("entryPhone")
-.value
-.trim();
+        const name =
+          document
+          .getElementById(
+            "entryName"
+          )
+          .value
+          .trim();
 
-const message=
-document
-.getElementById("entryMessage")
-.value
-.trim();
+        const phone =
+          document
+          .getElementById(
+            "entryPhone"
+          )
+          .value
+          .trim();
 
-if(!name||!phone){
+        const message =
+          document
+          .getElementById(
+            "entryMessage"
+          )
+          .value
+          .trim();
 
-alert(
-"お名前と電話番号を入力してください。"
-);
+        if(!name||!phone){
 
-return;
+          alert(
+            "お名前と電話番号を入力してください。"
+          );
 
-}
+          return;
 
-await addDoc(
-collection(
-db,
-"applications"
-),
-{
-jobId:id,
-storeId:
-data.storeId||
-"",
-storeName:
-data.storeName||
-data.name||
-"",
-applicantName:name,
-applicantPhone:phone,
-message:message,
-status:"new",
-createdAt:
-serverTimestamp()
-}
-);
+        }
 
-alert(
-"応募が完了しました！店舗からの連絡をお待ちください。"
-);
+        applyBtn.disabled=true;
+        applyBtn.textContent=
+          "送信中...";
 
-document.getElementById("entryName").value="";
-document.getElementById("entryPhone").value="";
-document.getElementById("entryMessage").value="";
+        try{
 
-}
-);
+          await addDoc(
+            collection(
+              db,
+              "applications"
+            ),
+            {
+              jobId:id,
+
+              storeId:
+                data.storeId ||
+                data.ownerId ||
+                data.userId ||
+                "",
+
+              storeName:
+                data.storeName ||
+                data.name ||
+                "",
+
+              applicantName:name,
+              applicantPhone:phone,
+              message:message,
+              status:"new",
+
+              createdAt:
+                serverTimestamp()
+            }
+          );
+
+          alert(
+            "応募が完了しました！店舗からの連絡をお待ちください。"
+          );
+
+          document
+          .getElementById(
+            "entryName"
+          )
+          .value="";
+
+          document
+          .getElementById(
+            "entryPhone"
+          )
+          .value="";
+
+          document
+          .getElementById(
+            "entryMessage"
+          )
+          .value="";
+
+        }catch(error){
+
+          console.error(
+            "応募送信エラー:",
+            error
+          );
+
+          alert(
+            "応募の送信に失敗しました。時間を空けて再度お試しください。"
+          );
+
+        }finally{
+
+          applyBtn.disabled=false;
+          applyBtn.textContent=
+            "応募する";
+
+        }
+
+      }
+    );
+
+  }catch(error){
+
+    console.error(
+      "求人読み込みエラー:",
+      error
+    );
+
+    jobDetail.innerHTML=`
+      <div class="section">
+        <h2>読み込みに失敗しました</h2>
+        <p>
+          時間を空けて再度お試しください。
+        </p>
+      </div>
+    `;
+
+  }
 
 }
 
