@@ -193,7 +193,8 @@ table{font-size:12px}
 </div>
 
 <script type="module">
-  import { auth, db } from "./firebase.js";
+
+import { auth, db } from "./firebase.js";
 
 import {
   onAuthStateChanged,
@@ -205,17 +206,71 @@ import {
   getDoc,
   setDoc,
   collection,
-  addDoc,
   getDocs,
   query,
   where,
-  updateDoc,
-  serverTimestamp
+  updateDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 let currentUser = null;
+let currentStoreName = "";
+let currentJobIds = [];
 
-onAuthStateChanged(auth, async (user) => {
+/* =========================
+   共通処理
+========================= */
+
+function escapeHtml(value = "") {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function getJapanDateKey() {
+  const parts = new Intl.DateTimeFormat(
+    "ja-JP",
+    {
+      timeZone: "Asia/Tokyo",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit"
+    }
+  ).formatToParts(new Date());
+
+  const year = parts.find(item => item.type === "year")?.value;
+  const month = parts.find(item => item.type === "month")?.value;
+  const day = parts.find(item => item.type === "day")?.value;
+
+  return `${year}-${month}-${day}`;
+}
+
+function isCurrentMonth(timestamp) {
+  if (!timestamp || typeof timestamp.toDate !== "function") {
+    return false;
+  }
+
+  const date = timestamp.toDate();
+
+  const formatter = new Intl.DateTimeFormat(
+    "ja-JP",
+    {
+      timeZone: "Asia/Tokyo",
+      year: "numeric",
+      month: "2-digit"
+    }
+  );
+
+  return formatter.format(date) === formatter.format(new Date());
+}
+
+/* =========================
+   ログイン確認
+========================= */
+
+onAuthStateChanged(auth, async user => {
 
   if (!user) {
     location.href = "login.html";
@@ -225,97 +280,513 @@ onAuthStateChanged(auth, async (user) => {
   currentUser = user;
 
   await loadStoreInfo();
-  await loadJobs();
-  await loadApplications();
+
+  const jobs = await loadJobs();
+
+  currentJobIds = jobs.map(job => job.id);
+
+  await loadTodayViews(currentJobIds);
+  await loadApplications(currentJobIds);
 
 });
 
-window.showPage = function(id, btn){
+/* =========================
+   ページ切り替え
+========================= */
 
-  const pages = ["dashboard","jobs","apps","store","pay","support"];
+window.showPage = function(id, btn) {
 
-  pages.forEach(page=>{
-    document.getElementById(page).classList.add("hidden");
+  const pages = [
+    "dashboard",
+    "jobs",
+    "apps",
+    "store",
+    "pay",
+    "support"
+  ];
+
+  pages.forEach(page => {
+    document
+      .getElementById(page)
+      .classList
+      .add("hidden");
   });
 
-  document.getElementById(id).classList.remove("hidden");
+  document
+    .getElementById(id)
+    .classList
+    .remove("hidden");
 
-  document.querySelectorAll(".menu button").forEach(b=>{
-    b.classList.remove("active");
-  });
+  document
+    .querySelectorAll(".menu button")
+    .forEach(button => {
+      button.classList.remove("active");
+    });
 
   btn.classList.add("active");
 };
-  async function loadJobs() {
 
-  const q = query(
+/* =========================
+   店舗情報
+========================= */
+
+async function loadStoreInfo() {
+
+  const storeRef =
+    doc(db, "stores", currentUser.uid);
+
+  const storeSnap =
+    await getDoc(storeRef);
+
+  if (storeSnap.exists()) {
+
+    const data = storeSnap.data();
+
+    currentStoreName =
+      data.storeName || "";
+
+    document
+      .getElementById("storeName")
+      .value = data.storeName || "";
+
+    document
+      .getElementById("storeArea")
+      .value = data.area || "";
+
+    document
+      .getElementById("storePhone")
+      .value = data.phone || "";
+
+    document
+      .getElementById("storeLine")
+      .value = data.line || "";
+
+    document
+      .getElementById("storeInstagram")
+      .value = data.instagram || "";
+
+    document
+      .getElementById("storeDescription")
+      .value = data.description || "";
+
+    return;
+  }
+
+  /*
+    storesにデータがない場合、
+    usersから店舗名を探す
+  */
+
+  const userSnap =
+    await getDoc(
+      doc(db, "users", currentUser.uid)
+    );
+
+  if (userSnap.exists()) {
+
+    const userData = userSnap.data();
+
+    currentStoreName =
+      userData.storeName ||
+      userData.name ||
+      "";
+
+  }
+
+}
+
+window.saveStoreInfo = async function() {
+
+  const storeName =
+    document
+      .getElementById("storeName")
+      .value
+      .trim();
+
+  await setDoc(
+    doc(db, "stores", currentUser.uid),
+    {
+      ownerId: currentUser.uid,
+      storeName,
+      area:
+        document
+          .getElementById("storeArea")
+          .value
+          .trim(),
+
+      phone:
+        document
+          .getElementById("storePhone")
+          .value
+          .trim(),
+
+      line:
+        document
+          .getElementById("storeLine")
+          .value
+          .trim(),
+
+      instagram:
+        document
+          .getElementById("storeInstagram")
+          .value
+          .trim(),
+
+      description:
+        document
+          .getElementById("storeDescription")
+          .value
+          .trim()
+    },
+    {
+      merge: true
+    }
+  );
+
+  currentStoreName = storeName;
+
+  alert("店舗情報を保存しました");
+
+  const jobs = await loadJobs();
+
+  currentJobIds = jobs.map(job => job.id);
+
+  await loadTodayViews(currentJobIds);
+  await loadApplications(currentJobIds);
+
+};
+
+/* =========================
+   求人一覧
+========================= */
+
+async function loadJobs() {
+
+  const list =
+    document.getElementById("jobList");
+
+  list.innerHTML = `
+    <tr>
+      <td colspan="3"
+          style="text-align:center;color:#888;">
+        読み込み中...
+      </td>
+    </tr>
+  `;
+
+  let jobDocs = [];
+
+  /*
+    まずownerIdで検索
+  */
+
+  const ownerQuery = query(
     collection(db, "jobs"),
     where("ownerId", "==", currentUser.uid)
   );
 
-  const snap = await getDocs(q);
+  const ownerSnap =
+    await getDocs(ownerQuery);
 
-  const list = document.getElementById("jobList");
+  ownerSnap.forEach(jobDoc => {
+    jobDocs.push(jobDoc);
+  });
+
+  /*
+    ownerIdがない旧求人は
+    店舗名で検索
+  */
+
+  if (
+    jobDocs.length === 0 &&
+    currentStoreName
+  ) {
+
+    const nameQuery = query(
+      collection(db, "jobs"),
+      where(
+        "storeName",
+        "==",
+        currentStoreName
+      )
+    );
+
+    const nameSnap =
+      await getDocs(nameQuery);
+
+    nameSnap.forEach(jobDoc => {
+      jobDocs.push(jobDoc);
+    });
+
+  }
+
+  document
+    .getElementById("jobCount")
+    .textContent = jobDocs.length;
 
   list.innerHTML = "";
 
-  document.getElementById("jobCount").textContent = snap.size;
+  if (jobDocs.length === 0) {
 
-  if (snap.empty) {
     list.innerHTML = `
       <tr>
-        <td colspan="3" style="text-align:center;color:#888;">
+        <td colspan="3"
+            style="text-align:center;color:#888;">
           求人はまだありません
         </td>
       </tr>
     `;
-    return;
+
+    return [];
   }
 
-  snap.forEach((jobDoc) => {
+  const jobs = [];
+
+  jobDocs.forEach(jobDoc => {
 
     const data = jobDoc.data();
 
+    jobs.push({
+      id: jobDoc.id,
+      ...data
+    });
+
     list.innerHTML += `
       <tr>
-        <td>${data.storeName || data.title || "-"}</td>
-        <td>${data.salary || data.pay || "-"}</td>
-        <td><span class="tag">公開中</span></td>
+        <td>
+          ${escapeHtml(
+            data.storeName ||
+            data.title ||
+            "-"
+          )}
+        </td>
+
+        <td>
+          ${escapeHtml(
+            data.salary ||
+            data.pay ||
+            data.salaryText ||
+            "-"
+          )}
+        </td>
+
+        <td>
+          <span class="tag">
+            公開中
+          </span>
+        </td>
       </tr>
     `;
 
   });
 
+  return jobs;
 }
 
-async function loadApplications() {
+/* =========================
+   今日の閲覧数
+========================= */
 
-  const storeSnap = await getDoc(doc(db, "stores", currentUser.uid));
+async function loadTodayViews(jobIds) {
 
-  let storeName = "";
+  const viewElement =
+    document.getElementById("viewCount");
 
-  if (storeSnap.exists()) {
-    storeName = storeSnap.data().storeName || "";
+  viewElement.textContent = "0";
+
+  if (!jobIds.length) {
+    return;
   }
 
-  const q = query(
-    collection(db, "jobEntries"),
-    where("storeName", "==", storeName)
-  );
+  const dateKey =
+    getJapanDateKey();
 
-  const snap = await getDocs(q);
+  let totalViews = 0;
 
-  const list = document.getElementById("applicationList");
+  /*
+    jobViewStatsのドキュメントIDは
+    求人ID_日付になっているため
+    直接読み込める
+  */
 
-  document.getElementById("applyCount").textContent = snap.size;
+  for (const jobId of jobIds) {
+
+    const statRef =
+      doc(
+        db,
+        "jobViewStats",
+        `${jobId}_${dateKey}`
+      );
+
+    const statSnap =
+      await getDoc(statRef);
+
+    if (statSnap.exists()) {
+
+      const count =
+        Number(
+          statSnap.data().count || 0
+        );
+
+      totalViews += count;
+    }
+
+  }
+
+  viewElement.textContent =
+    totalViews;
+}
+
+/* =========================
+   応募一覧
+========================= */
+
+async function loadApplications(jobIds) {
+
+  const list =
+    document.getElementById(
+      "applicationList"
+    );
+
+  list.innerHTML = `
+    <tr>
+      <td colspan="5"
+          style="text-align:center;color:#888;">
+        読み込み中...
+      </td>
+    </tr>
+  `;
+
+  const applications = [];
+  const foundIds = new Set();
+
+  /*
+    現在の応募フォームが保存している
+    applicationsコレクションを読む
+  */
+
+  for (const jobId of jobIds) {
+
+    const applicationQuery = query(
+      collection(db, "applications"),
+      where("jobId", "==", jobId)
+    );
+
+    const snap =
+      await getDocs(applicationQuery);
+
+    snap.forEach(applicationDoc => {
+
+      if (foundIds.has(applicationDoc.id)) {
+        return;
+      }
+
+      foundIds.add(applicationDoc.id);
+
+      applications.push({
+        id: applicationDoc.id,
+        collectionName: "applications",
+        ...applicationDoc.data()
+      });
+
+    });
+
+  }
+
+  /*
+    求人IDが取得できない旧データ用
+  */
+
+  if (
+    applications.length === 0 &&
+    currentStoreName
+  ) {
+
+    const storeQuery = query(
+      collection(db, "applications"),
+      where(
+        "storeName",
+        "==",
+        currentStoreName
+      )
+    );
+
+    const storeSnap =
+      await getDocs(storeQuery);
+
+    storeSnap.forEach(applicationDoc => {
+
+      if (foundIds.has(applicationDoc.id)) {
+        return;
+      }
+
+      foundIds.add(applicationDoc.id);
+
+      applications.push({
+        id: applicationDoc.id,
+        collectionName: "applications",
+        ...applicationDoc.data()
+      });
+
+    });
+
+  }
+
+  /*
+    過去にjobEntriesへ保存した応募も表示
+  */
+
+  if (currentStoreName) {
+
+    const oldQuery = query(
+      collection(db, "jobEntries"),
+      where(
+        "storeName",
+        "==",
+        currentStoreName
+      )
+    );
+
+    const oldSnap =
+      await getDocs(oldQuery);
+
+    oldSnap.forEach(entryDoc => {
+
+      if (foundIds.has(entryDoc.id)) {
+        return;
+      }
+
+      foundIds.add(entryDoc.id);
+
+      applications.push({
+        id: entryDoc.id,
+        collectionName: "jobEntries",
+        ...entryDoc.data()
+      });
+
+    });
+
+  }
+
+  const currentMonthCount =
+    applications.filter(application =>
+      isCurrentMonth(
+        application.createdAt
+      )
+    ).length;
+
+  document
+    .getElementById("applyCount")
+    .textContent = currentMonthCount;
 
   list.innerHTML = "";
 
-  if (snap.empty) {
+  if (applications.length === 0) {
 
     list.innerHTML = `
       <tr>
-        <td colspan="5" style="text-align:center;color:#888;">
+        <td colspan="5"
+            style="text-align:center;color:#888;">
           まだ応募はありません
         </td>
       </tr>
@@ -324,89 +795,144 @@ async function loadApplications() {
     return;
   }
 
-  snap.forEach((entryDoc) => {
+  applications.sort((a, b) => {
 
-    const data = entryDoc.data();
+    const aTime =
+      a.createdAt?.toMillis?.() || 0;
+
+    const bTime =
+      b.createdAt?.toMillis?.() || 0;
+
+    return bTime - aTime;
+
+  });
+
+  applications.forEach(application => {
+
+    const status =
+      application.status || "new";
 
     list.innerHTML += `
       <tr>
-        <td>${data.applicantName || "-"}</td>
-        <td>${data.applicantPhone || "-"}</td>
-        <td>${data.storeName || "-"}</td>
 
         <td>
-          <select onchange="changeStatus('${entryDoc.id}', this.value)">
-            <option value="new">未対応</option>
-            <option value="progress">対応中</option>
-            <option value="hired">採用</option>
-            <option value="ng">不採用</option>
+          ${escapeHtml(
+            application.applicantName ||
+            "-"
+          )}
+        </td>
+
+        <td>
+          ${escapeHtml(
+            application.applicantPhone ||
+            "-"
+          )}
+        </td>
+
+        <td>
+          ${escapeHtml(
+            application.storeName ||
+            application.jobName ||
+            "-"
+          )}
+        </td>
+
+        <td>
+          <select
+            data-id="${application.id}"
+            data-collection="${application.collectionName}"
+            onchange="changeStatus(
+              this.dataset.id,
+              this.value,
+              this.dataset.collection
+            )"
+          >
+            <option value="new"
+              ${status === "new" ? "selected" : ""}>
+              未対応
+            </option>
+
+            <option value="progress"
+              ${status === "progress" ? "selected" : ""}>
+              対応中
+            </option>
+
+            <option value="hired"
+              ${status === "hired" ? "selected" : ""}>
+              採用
+            </option>
+
+            <option value="ng"
+              ${status === "ng" ? "selected" : ""}>
+              不採用
+            </option>
           </select>
         </td>
 
         <td class="actionBtns">
-          <a class="btn" href="tel:${data.applicantPhone}">
-            電話
-          </a>
 
-          <a class="btn gray"
-             href="https://line.me/R/ti/p/~${data.applicantPhone}">
-            LINE
-          </a>
+          ${
+            application.applicantPhone
+              ? `
+                <a
+                  class="btn"
+                  href="tel:${escapeHtml(
+                    application.applicantPhone
+                  )}"
+                >
+                  電話
+                </a>
+              `
+              : ""
+          }
+
         </td>
+
       </tr>
     `;
 
   });
 
 }
-  async function loadStoreInfo() {
 
-  const ref = doc(db, "stores", currentUser.uid);
-  const snap = await getDoc(ref);
+/* =========================
+   応募状態変更
+========================= */
 
-  if (!snap.exists()) return;
+window.changeStatus =
+async function(
+  id,
+  status,
+  collectionName = "applications"
+) {
 
-  const data = snap.data();
-
-  document.getElementById("storeName").value = data.storeName || "";
-  document.getElementById("storeArea").value = data.area || "";
-  document.getElementById("storePhone").value = data.phone || "";
-  document.getElementById("storeLine").value = data.line || "";
-  document.getElementById("storeInstagram").value = data.instagram || "";
-  document.getElementById("storeDescription").value = data.description || "";
-}
-
-window.saveStoreInfo = async function() {
-
-  await setDoc(doc(db, "stores", currentUser.uid), {
-    ownerId: currentUser.uid,
-    storeName: document.getElementById("storeName").value,
-    area: document.getElementById("storeArea").value,
-    phone: document.getElementById("storePhone").value,
-    line: document.getElementById("storeLine").value,
-    instagram: document.getElementById("storeInstagram").value,
-    description: document.getElementById("storeDescription").value
-  }, { merge: true });
-
-  alert("店舗情報を保存しました");
-
-  await loadApplications();
-};
-
-window.changeStatus = async function(id, status) {
-
-  await updateDoc(doc(db, "jobEntries", id), {
-    status: status
-  });
+  await updateDoc(
+    doc(
+      db,
+      collectionName,
+      id
+    ),
+    {
+      status
+    }
+  );
 
   alert("状態を更新しました");
 };
 
+/* =========================
+   ログアウト
+========================= */
+
 window.logout = async function() {
-  if (confirm("ログアウトしますか？")) {
-    await signOut(auth);
-    location.href = "login.html";
+
+  if (!confirm("ログアウトしますか？")) {
+    return;
   }
+
+  await signOut(auth);
+
+  location.href = "login.html";
 };
 
 </script>
