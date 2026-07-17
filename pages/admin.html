@@ -2073,9 +2073,56 @@ ${data.sns || "-"}
                   );
                 }
 
-                alert(
-                  "求人を承認して公開しました"
-                );
+              const inviteCode =
+  crypto
+    .randomUUID()
+    .replaceAll("-", "");
+
+const storeName =
+  approvedData.storeName ||
+  "店舗名未設定";
+
+const storeEmail =
+  approvedData.email ||
+  approvedData.contactEmail ||
+  approvedData.ownerEmail ||
+  "";
+
+const inviteUrl =
+  `https://joinnox.jp/pages/store-register.html?invite=${inviteCode}`;
+
+await setDoc(
+  doc(
+    db,
+    "storeInvites",
+    inviteCode
+  ),
+  {
+    storeName: storeName,
+    email: storeEmail,
+    sourceApplicationId: jobId,
+    used: false,
+    registeredUid: "",
+    createdAt: serverTimestamp(),
+    createdBy:
+      currentAdminUser?.uid || ""
+  }
+);
+
+await updateDoc(
+  applicationRef,
+  {
+    inviteCode: inviteCode,
+    inviteUrl: inviteUrl,
+    inviteCreatedAt:
+      serverTimestamp()
+  }
+);
+
+prompt(
+  "求人を承認しました。\n店舗へこの登録URLを送ってください。",
+  inviteUrl
+);
 
                 loadJobApplications();
 
