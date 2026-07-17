@@ -451,7 +451,7 @@ window.saveStoreInfo = async function() {
 
   currentJobIds = jobs.map(job => job.id);
 
-  await loadTodayViews(currentJobIds);
+  await loadTodayViews();
   await loadApplications(currentJobIds);
 
 };
@@ -587,54 +587,39 @@ async function loadJobs() {
    今日の閲覧数
 ========================= */
 
-async function loadTodayViews(jobIds) {
+async function loadTodayViews() {
 
   const viewElement =
     document.getElementById("viewCount");
 
   viewElement.textContent = "0";
 
-  if (!jobIds.length) {
-    return;
+  const dateKey = getJapanDateKey();
+
+  let storeName =
+    currentStoreName ||
+    document.getElementById("storeName").value.trim();
+
+  if (!storeName) {
+    storeName = "Spica";
   }
 
-  const dateKey =
-    getJapanDateKey();
+  const q = query(
+    collection(db, "jobViewStats"),
+    where("storeName", "==", storeName),
+    where("dateKey", "==", dateKey)
+  );
+
+  const snap = await getDocs(q);
 
   let totalViews = 0;
 
-  /*
-    jobViewStatsのドキュメントIDは
-    求人ID_日付になっているため
-    直接読み込める
-  */
+  snap.forEach(doc => {
+    totalViews += Number(doc.data().count || 0);
+  });
 
-  for (const jobId of jobIds) {
+  viewElement.textContent = totalViews;
 
-    const statRef =
-      doc(
-        db,
-        "jobViewStats",
-        `${jobId}_${dateKey}`
-      );
-
-    const statSnap =
-      await getDoc(statRef);
-
-    if (statSnap.exists()) {
-
-      const count =
-        Number(
-          statSnap.data().count || 0
-        );
-
-      totalViews += count;
-    }
-
-  }
-
-  viewElement.textContent =
-    totalViews;
 }
 
 /* =========================
