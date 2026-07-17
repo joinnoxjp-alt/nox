@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>店舗アカウント登録 | NOX</title>
+
+  <meta
+    name="description"
+    content="NOX店舗管理画面を利用するための店舗アカウント登録ページです。"
+  >
+
+  <meta
+    name="theme-color"
+    content="#050505"
+  >
+
+  <style>
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+    }
+
+    html{
+      scroll-behavior:smooth;
+    }
+
+    body{
+      min-height:100vh;
+      overflow-x:hidden;
+      background:
+        radial-gradient(
+          circle at top,
+          rgba(214,168,79,.18),
+          transparent 36%
+        ),
+        linear-gradient(
+          180deg,
+          #080808,
+          #000
+        );
+      color:#fff;
+      font-family:
+        Arial,
+        "Hiragino Kaku Gothic ProN",
+        Meiryo,
+        sans-serif;
+    }
+
+    a{
+      color:inherit;
+      text-decoration:none;
+    }
+
+    button,
+    input{
+      font:inherit;
+    }
+
+    .page{
+      width:100%;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:34px 18px;
+    }
+
+    .register-card{
+      width:100%;
+      max-width:560px;
+      border:1px solid rgba(214,168,79,.38);
+      border-radius:28px;
+      padding:34px;
+      background:
+        radial-gradient(
+          circle at top right,
+          rgba(214,168,79,.13),
+          transparent 34%
+        ),
+        linear-gradient(
+          160deg,
+          rgba(255,255,255,.075),
+          rgba(255,255,255,.025)
+        );
+      box-shadow:
+        0 25px 70px rgba(0,0,0,.62);
+      backdrop-filter:blur(12px);
+    }
+
+    .brand{
+      text-align:center;
+      margin-bottom:30px;
+    }
+
+    .brand-logo{
+      display:inline-block;
+      color:#d6a84f;
+      font-size:44px;
+      font-weight:900;
+      letter-spacing:6px;
+      line-height:1;
+    }
+
+    .brand-logo small{
+      display:block;
+      margin-top:9px;
+      color:#999;
+      font-size:10px;
+      letter-spacing:5px;
+    }
+
+    .register-header{
+      text-align:center;
+      margin-bottom:28px;
+    }
+
+    .register-header span{
+      display:block;
+      margin-bottom:10px;
+      color:#d6a84f;
+      font-size:12px;
+      font-weight:800;
+      letter-spacing:4px;
+    }
+
+    .register-header h1{
+      margin-bottom:12px;
+      color:#fff;
+      font-size:30px;
+      line-height:1.35;
+    }
+
+    .register-header p{
+      color:#aaa;
+      font-size:14px;
+      line-height:1.8;
+    }
+
+    .notice{
+      margin-bottom:24px;
+      padding:16px;
+      border:1px solid rgba(214,168,79,.2);
+      border-radius:15px;
+      background:rgba(214,168,79,.07);
+      color:#ddd;
+      font-size:13px;
+      line-height:1.75;
+    }
+
+    .form-group{
+      margin-bottom:17px;
+    }
+
+    .form-group label{
+      display:block;
+      margin-bottom:8px;
+      color:#d6a84f;
+      font-size:13px;
+      font-weight:800;
+    }
+
+    .form-group input{
+      width:100%;
+      min-height:54px;
+      border:1px solid #353535;
+      border-radius:14px;
+      padding:0 16px;
+      outline:none;
+      background:#090909;
+      color:#fff;
+      font-size:16px;
+      transition:.2s;
+    }
+
+    .form-group input::placeholder{
+      color:#666;
+    }
+
+    .form-group input:focus{
+      border-color:#d6a84f;
+      box-shadow:
+        0 0 0 3px rgba(214,168,79,.11);
+    }
+
+    .password-wrap{
+      position:relative;
+    }
+
+    .password-wrap input{
+      padding-right:76px;
+    }
+
+    .password-toggle{
+      position:absolute;
+      top:50%;
+      right:10px;
+      transform:translateY(-50%);
+      border:0;
+      border-radius:10px;
+      padding:8px 10px;
+      background:#1b1b1b;
+      color:#d6a84f;
+      font-size:12px;
+      font-weight:800;
+      cursor:pointer;
+    }
+
+    .hint{
+      margin-top:7px;
+      color:#777;
+      font-size:12px;
+      line-height:1.6;
+    }
+
+    .agreement{
+      display:flex;
+      align-items:flex-start;
+      gap:10px;
+      margin:20px 0;
+      color:#aaa;
+      font-size:13px;
+      line-height:1.7;
+    }
+
+    .agreement input{
+      width:18px;
+      height:18px;
+      margin-top:2px;
+      accent-color:#d6a84f;
+      flex:0 0 auto;
+    }
+
+    .agreement a{
+      color:#d6a84f;
+      text-decoration:underline;
+    }
+
+    .submit-button{
+      width:100%;
+      min-height:58px;
+      border:0;
+      border-radius:16px;
+      background:
+        linear-gradient(
+          135deg,
+          #b98625,
+          #f2cf6a
+        );
+      color:#090909;
+      font-size:16px;
+      font-weight:900;
+      cursor:pointer;
+      transition:.25s;
+    }
+
+    .submit-button:hover{
+      transform:translateY(-2px);
+      filter:brightness(1.05);
+    }
+
+    .submit-button:disabled{
+      opacity:.55;
+      cursor:not-allowed;
+      transform:none;
+    }
+
+    .message{
+      display:none;
+      margin-top:18px;
+      border-radius:14px;
+      padding:14px;
+      text-align:center;
+      font-size:13px;
+      line-height:1.7;
+    }
+
+    .message.show{
+      display:block;
+    }
+
+    .message.error{
+      border:1px solid rgba(255,92,92,.42);
+      background:rgba(120,0,0,.22);
+      color:#ffadad;
+    }
+
+    .message.success{
+      border:1px solid rgba(95,214,127,.42);
+      background:rgba(0,100,38,.2);
+      color:#a8efb9;
+    }
+
+    .bottom-links{
+      display:flex;
+      justify-content:center;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top:25px;
+    }
+
+    .bottom-link{
+      border:1px solid #333;
+      border-radius:999px;
+      padding:11px 17px;
+      color:#bbb;
+      font-size:13px;
+      transition:.2s;
+    }
+
+    .bottom-link:hover{
+      border-color:#d6a84f;
+      color:#d6a84f;
+    }
+
+    @media(max-width:600px){
+      .page{
+        align-items:flex-start;
+        padding:20px 14px 44px;
+      }
+
+      .register-card{
+        padding:27px 20px;
+        border-radius:23px;
+      }
+
+      .brand-logo{
+        font-size:38px;
+      }
+
+      .register-header h1{
+        font-size:26px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page">
+
+<div class="register-card">
+
+<div class="brand">
+<div class="brand-logo">
+NOX
+<small>STORE ACCOUNT</small>
+</div>
+</div>
+
+<div class="register-header">
+<span>STORE REGISTER</span>
+<h1>店舗アカウント登録</h1>
+
+<p>
+店舗掲載申請後に届く店舗名とメールアドレスで、
+店舗専用ダッシュボードをご利用いただけます。
+</p>
+</div>
+
+<div class="notice">
+店舗掲載が承認された店舗様のみ登録できます。<br>
+登録後は店舗ダッシュボードへログインできるようになります。
+</div>
+
+<form id="registerForm">
+
+<div class="form-group">
+<label>店舗名</label>
+
+<input
+type="text"
+id="storeName"
+placeholder="例：Spica"
+required
+>
+</div>
+
+<div class="form-group">
+<label>担当者名</label>
+
+<input
+type="text"
+id="ownerName"
+placeholder="例：山田 太郎"
+required
+>
+</div>
+
+<div class="form-group">
+<label>メールアドレス</label>
+
+<input
+type="email"
+id="email"
+placeholder="example@gmail.com"
+required
+>
+</div>
+
+<div class="form-group">
+
+<label>パスワード</label>
+
+<div class="password-wrap">
+
+<input
+type="password"
+id="password"
+placeholder="8文字以上"
+required
+>
+
+<button
+type="button"
+class="password-toggle"
+id="togglePassword"
+>
+表示
+</button>
+
+</div>
+
+<div class="hint">
+英数字8文字以上がおすすめです。
+</div>
+
+</div>
+
+<div class="agreement">
+
+<input
+type="checkbox"
+id="agree"
+required
+>
+
+<label for="agree">
+利用規約・プライバシーポリシーに同意します。
+</label>
+
+</div>
+
+<button
+class="submit-button"
+id="submitBtn"
+type="submit"
+>
+
+店舗アカウントを作成
+
+</button>
+
+<div
+id="message"
+class="message"
+></div>
+
+</form>
+
+<div class="bottom-links">
+
+<a
+class="bottom-link"
+href="./login.html"
+>
+
+ログイン
+
+</a>
+
+<a
+class="bottom-link"
+href="../index.html"
+>
+
+トップへ戻る
+
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+<script type="module">
+import { auth, db } from "./firebase.js";
+
+import {
+createUserWithEmailAndPassword
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
+doc,
+setDoc,
+serverTimestamp
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  const form =
+document.getElementById("registerForm");
+
+const message =
+document.getElementById("message");
+
+const submitBtn =
+document.getElementById("submitBtn");
+
+document
+.getElementById("togglePassword")
+.onclick = () => {
+
+const input =
+document.getElementById("password");
+
+if(input.type==="password"){
+input.type="text";
+document.getElementById("togglePassword").textContent="非表示";
+}else{
+input.type="password";
+document.getElementById("togglePassword").textContent="表示";
+}
+
+};
+
+form.addEventListener(
+"submit",
+async(e)=>{
+
+e.preventDefault();
+
+message.className="message";
+message.textContent="";
+
+submitBtn.disabled=true;
+submitBtn.textContent="登録中...";
+
+try{
+
+const email=
+document.getElementById("email").value.trim();
+
+const password=
+document.getElementById("password").value;
+
+const storeName=
+document.getElementById("storeName").value.trim();
+
+const ownerName=
+document.getElementById("ownerName").value.trim();
+
+const result=
+await createUserWithEmailAndPassword(
+auth,
+email,
+password
+);
+
+await setDoc(
+doc(db,"users",result.user.uid),
+{
+
+name:ownerName,
+email:email,
+storeName:storeName,
+
+role:"store",
+
+status:"active",
+
+createdAt:serverTimestamp(),
+
+updatedAt:serverTimestamp()
+
+},
+{merge:true}
+);
+
+await setDoc(
+doc(db,"stores",result.user.uid),
+{
+
+ownerId:result.user.uid,
+
+storeName:storeName,
+
+ownerName:ownerName,
+
+email:email,
+
+createdAt:serverTimestamp(),
+
+updatedAt:serverTimestamp()
+
+},
+{merge:true}
+);
+
+message.className="message success";
+message.textContent=
+"登録が完了しました。3秒後に店舗ダッシュボードへ移動します。";
+
+setTimeout(()=>{
+
+location.href="./store-dashboard.html";
+
+},3000);
+
+}catch(error){
+
+console.error(error);
+
+message.className="message error";
+
+switch(error.code){
+
+case "auth/email-already-in-use":
+message.textContent="このメールアドレスは既に登録されています。";
+break;
+
+case "auth/weak-password":
+message.textContent="パスワードは6文字以上にしてください。";
+break;
+
+default:
+message.textContent="登録できませんでした。";
+}
+
+submitBtn.disabled=false;
+submitBtn.textContent="店舗アカウントを作成";
+
+}
+
+});
+</script>
+</body>
+</html>
