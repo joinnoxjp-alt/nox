@@ -44,7 +44,7 @@
         ),
         radial-gradient(
           circle at 50% 100%,
-          rgba(120,70,255,.20),
+          rgba(120,70,255,.2),
           transparent 38%
         ),
         linear-gradient(
@@ -62,7 +62,8 @@
         "Noto Sans JP",
         sans-serif;
 
-      transition:background .8s ease;
+      transition:
+        background .8s ease;
     }
 
     body.stage-1{
@@ -114,7 +115,12 @@
 
     button,
     a{
-      -webkit-tap-highlight-color:transparent;
+      -webkit-tap-highlight-color:
+        transparent;
+    }
+
+    button:disabled{
+      opacity:1;
     }
 
     a{
@@ -145,6 +151,8 @@
       position:absolute;
       inset:-80px;
 
+      opacity:.38;
+
       background-image:
         radial-gradient(
           circle,
@@ -152,10 +160,11 @@
           transparent 1.5px
         );
 
-      background-size:55px 55px;
-      opacity:.38;
+      background-size:
+        55px 55px;
 
-      animation:starsMove 22s linear infinite;
+      animation:
+        starsMove 22s linear infinite;
     }
 
     @keyframes starsMove{
@@ -178,7 +187,13 @@
 
     .screen.active{
       display:flex;
-      animation:screenIn .5s ease;
+
+      animation:
+        screenIn .5s ease;
+    }
+
+    .screen.result-delayed{
+      visibility:hidden;
     }
 
     @keyframes screenIn{
@@ -197,14 +212,18 @@
     .quiz-card,
     .result-card{
       position:relative;
+
       width:100%;
       max-width:500px;
+
       margin:auto;
       overflow:hidden;
 
       padding:34px 22px;
 
-      border:1px solid rgba(255,215,0,.28);
+      border:
+        1px solid rgba(255,215,0,.28);
+
       border-radius:30px;
 
       background:
@@ -215,15 +234,17 @@
         ),
         linear-gradient(
           180deg,
-          rgba(255,255,255,.10),
+          rgba(255,255,255,.1),
           rgba(255,255,255,.035)
         );
 
       box-shadow:
-        0 25px 80px rgba(0,0,0,.60),
+        0 25px 80px rgba(0,0,0,.6),
         0 0 35px rgba(255,215,0,.06);
 
-      backdrop-filter:blur(14px);
+      backdrop-filter:
+        blur(14px);
+
       text-align:center;
     }
 
@@ -235,6 +256,7 @@
     .quiz-card::before,
     .result-card::before{
       content:"";
+
       position:absolute;
       inset:0;
 
@@ -258,14 +280,17 @@
 
     .brand{
       color:#ffd700;
+
       font-size:13px;
       font-weight:800;
+
       letter-spacing:5px;
     }
 
     .brand-line{
       width:105px;
       height:1px;
+
       margin:17px auto;
 
       background:
@@ -277,15 +302,22 @@
         );
     }
 
+    /* =========================
+       開始画面
+    ========================= */
+
     .start-moon{
       display:grid;
       place-items:center;
 
       width:118px;
       height:118px;
+
       margin:25px auto 12px;
 
-      border:1px solid rgba(255,215,0,.35);
+      border:
+        1px solid rgba(255,215,0,.35);
+
       border-radius:50%;
 
       background:
@@ -300,7 +332,8 @@
       box-shadow:
         0 0 38px rgba(255,215,0,.16);
 
-      animation:moonFloat 3.2s ease-in-out infinite;
+      animation:
+        moonFloat 3.2s ease-in-out infinite;
     }
 
     @keyframes moonFloat{
@@ -316,16 +349,19 @@
 
     .hero h1{
       margin:12px 0 16px;
+
       color:#ffd700;
+
       font-size:44px;
       line-height:1.2;
 
       text-shadow:
-        0 0 24px rgba(255,215,0,.20);
+        0 0 24px rgba(255,215,0,.2);
     }
 
     .lead{
       color:#ddd;
+
       font-size:18px;
       line-height:1.9;
     }
@@ -339,7 +375,9 @@
       margin:28px 0;
       padding:22px;
 
-      border:1px solid rgba(255,215,0,.28);
+      border:
+        1px solid rgba(255,215,0,.28);
+
       border-radius:22px;
 
       background:
@@ -352,8 +390,11 @@
 
     .start-card strong{
       display:block;
+
       margin:8px 0;
+
       color:#ffd700;
+
       font-size:22px;
     }
 
@@ -363,35 +404,49 @@
 
     .start-points{
       display:grid;
-      grid-template-columns:repeat(3,1fr);
+
+      grid-template-columns:
+        repeat(3,1fr);
+
       gap:8px;
+
       margin:22px 0;
     }
 
     .start-point{
       padding:12px 7px;
 
-      border:1px solid rgba(255,215,0,.16);
+      border:
+        1px solid rgba(255,215,0,.16);
+
       border-radius:15px;
 
       background:
         rgba(255,255,255,.04);
 
       color:#ddd;
+
       font-size:11px;
       line-height:1.5;
     }
 
     .start-point span{
       display:block;
+
       margin-bottom:5px;
+
       font-size:22px;
     }
+
+    /* =========================
+       ボタン
+    ========================= */
 
     .main-btn,
     .sub-btn,
     .option-btn{
       width:100%;
+
       margin-top:12px;
       padding:16px 18px;
 
@@ -425,11 +480,12 @@
       color:#000;
 
       box-shadow:
-        0 0 25px rgba(255,215,0,.30);
+        0 0 25px rgba(255,215,0,.3);
     }
 
     .sub-btn{
-      border:1px solid rgba(255,215,0,.25);
+      border:
+        1px solid rgba(255,215,0,.25);
 
       background:
         rgba(255,255,255,.07);
@@ -450,7 +506,9 @@
       transform:scale(.98);
     }
 
-    /* 質問画面 */
+    /* =========================
+       質問画面
+    ========================= */
 
     .quiz-card{
       min-height:620px;
@@ -462,8 +520,11 @@
 
     .quiz-stage-label{
       margin-bottom:9px;
+
       color:#aaa;
+
       font-size:10px;
+
       letter-spacing:3px;
     }
 
@@ -473,16 +534,19 @@
 
       width:88px;
       height:88px;
+
       margin:0 auto 15px;
 
-      border:1px solid rgba(255,215,0,.32);
+      border:
+        1px solid rgba(255,215,0,.32);
+
       border-radius:50%;
 
       background:
         radial-gradient(
           circle,
           rgba(255,215,0,.15),
-          rgba(0,0,0,.30)
+          rgba(0,0,0,.3)
         );
 
       font-size:47px;
@@ -508,9 +572,11 @@
       align-items:center;
 
       gap:12px;
+
       margin-bottom:9px;
 
       color:#aaa;
+
       font-size:12px;
     }
 
@@ -522,9 +588,12 @@
     .progress-track{
       width:100%;
       height:10px;
+
       overflow:hidden;
 
-      border:1px solid rgba(255,215,0,.18);
+      border:
+        1px solid rgba(255,215,0,.18);
+
       border-radius:999px;
 
       background:
@@ -548,29 +617,38 @@
       box-shadow:
         0 0 18px rgba(255,215,0,.35);
 
-      transition:width .45s ease;
+      transition:
+        width .45s ease;
     }
 
     .count{
       margin-top:13px;
+
       color:#ffd700;
+
       font-size:12px;
+
       letter-spacing:2px;
     }
 
     .question-category{
       display:inline-block;
+
       margin-top:15px;
       padding:6px 11px;
 
-      border:1px solid rgba(255,215,0,.20);
+      border:
+        1px solid rgba(255,215,0,.2);
+
       border-radius:999px;
 
       background:
         rgba(255,215,0,.07);
 
       color:#ffd700;
+
       font-size:10px;
+
       letter-spacing:1px;
     }
 
@@ -584,6 +662,7 @@
       margin:18px 0 22px;
 
       color:#fff;
+
       font-size:24px;
       line-height:1.6;
     }
@@ -600,7 +679,9 @@
       margin:0;
       padding:16px 48px 16px 20px;
 
-      border:1px solid rgba(255,215,0,.20);
+      border:
+        1px solid rgba(255,215,0,.2);
+
       border-radius:17px;
 
       background:
@@ -611,6 +692,7 @@
         );
 
       color:#fff;
+
       text-align:left;
 
       box-shadow:
@@ -624,39 +706,44 @@
       top:50%;
       right:18px;
 
-      transform:translateY(-50%);
+      transform:
+        translateY(-50%);
 
       color:#ffd700;
+
       font-size:24px;
     }
 
     .option-btn:hover{
-      border-color:rgba(255,215,0,.55);
-      background:rgba(255,215,0,.13);
+      border-color:
+        rgba(255,215,0,.55);
+
+      background:
+        rgba(255,215,0,.13);
     }
 
     .option-btn.answer-selected{
       transform:scale(.97);
 
       border-color:#ffd700;
-      background:rgba(255,215,0,.20);
+
+      background:
+        rgba(255,215,0,.2);
     }
 
     .quiz-message{
       min-height:24px;
+
       margin-top:17px;
 
       color:#aaa;
+
       font-size:12px;
       line-height:1.7;
     }
         /* =========================
        結果画面
     ========================= */
-
-    .result-card{
-      max-width:720px;
-    }
 
     .result-visual{
       width:100%;
@@ -666,7 +753,9 @@
 
       overflow:hidden;
 
-      border:1px solid rgba(255,215,0,.38);
+      border:
+        1px solid rgba(255,215,0,.38);
+
       border-radius:24px;
 
       background:
@@ -677,8 +766,6 @@
     }
 
     .result-visual img{
-      display:block;
-
       width:100%;
       height:auto;
 
@@ -716,7 +803,8 @@
     .desc{
       max-width:600px;
 
-      margin:0 auto 22px;
+      margin:
+        0 auto 22px;
 
       color:#ddd;
 
@@ -741,7 +829,9 @@
     .stats div{
       padding:14px 12px;
 
-      border:1px solid rgba(255,215,0,.18);
+      border:
+        1px solid rgba(255,215,0,.18);
+
       border-radius:15px;
 
       background:
@@ -766,7 +856,9 @@
     .tags span{
       padding:8px 12px;
 
-      border:1px solid rgba(255,215,0,.24);
+      border:
+        1px solid rgba(255,215,0,.24);
+
       border-radius:999px;
 
       background:
@@ -777,10 +869,6 @@
       font-size:12px;
     }
 
-    /* =========================
-       詳細説明
-    ========================= */
-
     #detailArea{
       margin-top:30px;
     }
@@ -788,7 +876,9 @@
     .type-detail{
       padding:30px 22px;
 
-      border:1px solid rgba(255,215,0,.25);
+      border:
+        1px solid rgba(255,215,0,.25);
+
       border-radius:25px;
 
       background:
@@ -864,10 +954,11 @@
     }
 
     /* =========================
-       10問ごとの解析演出
+       途中解析・最終解析
     ========================= */
 
-    .milestone-overlay{
+    .milestone-overlay,
+    .final-analysis-overlay{
       position:fixed;
       inset:0;
       z-index:10000;
@@ -879,13 +970,18 @@
       padding:20px;
 
       background:
-        rgba(0,0,0,.92);
+        rgba(0,0,0,.93);
 
       backdrop-filter:
         blur(12px);
     }
 
-    .milestone-overlay.show{
+    .final-analysis-overlay{
+      z-index:10001;
+    }
+
+    .milestone-overlay.show,
+    .final-analysis-overlay.show{
       display:flex;
 
       animation:
@@ -902,135 +998,16 @@
       }
     }
 
-    .milestone-card{
-      width:100%;
-      max-width:410px;
-
-      padding:38px 25px;
-
-      border:1px solid rgba(255,215,0,.42);
-      border-radius:28px;
-
-      background:
-        radial-gradient(
-          circle at top,
-          rgba(255,215,0,.15),
-          transparent 42%
-        ),
-        #080808;
-
-      box-shadow:
-        0 0 60px rgba(255,215,0,.13);
-
-      text-align:center;
-    }
-
-    .milestone-icon{
-      margin-bottom:15px;
-
-      font-size:54px;
-    }
-
-    .milestone-card small{
-      color:#aaa;
-
-      font-size:11px;
-      letter-spacing:3px;
-    }
-
-    .milestone-card h2{
-      margin:15px 0;
-
-      color:#ffd700;
-
-      font-size:28px;
-    }
-
-    .milestone-card p{
-      color:#ccc;
-
-      line-height:1.9;
-    }
-
-    .milestone-line{
-      width:100%;
-      height:7px;
-
-      margin-top:24px;
-
-      overflow:hidden;
-
-      border-radius:999px;
-
-      background:
-        rgba(255,255,255,.08);
-    }
-
-    .milestone-line span{
-      display:block;
-
-      width:0;
-      height:100%;
-
-      border-radius:999px;
-
-      background:
-        linear-gradient(
-          90deg,
-          #a46f08,
-          #ffe06b
-        );
-
-      animation:
-        milestoneLoading 1.5s ease forwards;
-    }
-
-    @keyframes milestoneLoading{
-      from{
-        width:0;
-      }
-
-      to{
-        width:100%;
-      }
-    }
-
-    /* =========================
-       最終解析画面
-    ========================= */
-
-    .final-analysis-overlay{
-      position:fixed;
-      inset:0;
-      z-index:10001;
-
-      display:none;
-      align-items:center;
-      justify-content:center;
-
-      padding:20px;
-
-      background:
-        rgba(0,0,0,.95);
-
-      backdrop-filter:
-        blur(14px);
-    }
-
-    .final-analysis-overlay.show{
-      display:flex;
-
-      animation:
-        overlayFade .35s ease;
-    }
-
+    .milestone-card,
     .analysis-card{
       width:100%;
       max-width:420px;
 
       padding:40px 26px;
 
-      border:1px solid rgba(255,215,0,.42);
+      border:
+        1px solid rgba(255,215,0,.42);
+
       border-radius:28px;
 
       background:
@@ -1047,26 +1024,21 @@
       text-align:center;
     }
 
-    .analysis-spinner{
-      width:76px;
-      height:76px;
+    .milestone-icon{
+      margin-bottom:15px;
 
-      margin:0 auto 24px;
-
-      border:3px solid rgba(255,215,0,.15);
-      border-top-color:#ffd700;
-      border-radius:50%;
-
-      animation:
-        spinnerRotate 1s linear infinite;
+      font-size:54px;
     }
 
-    @keyframes spinnerRotate{
-      to{
-        transform:rotate(360deg);
-      }
+    .milestone-card small{
+      color:#aaa;
+
+      font-size:11px;
+
+      letter-spacing:3px;
     }
 
+    .milestone-card h2,
     .analysis-card h2{
       margin:16px 0;
 
@@ -1075,12 +1047,14 @@
       font-size:28px;
     }
 
+    .milestone-card p,
     .analysis-card p{
       color:#ccc;
 
       line-height:1.9;
     }
 
+    .milestone-line,
     .analysis-progress{
       width:100%;
       height:9px;
@@ -1095,6 +1069,7 @@
         rgba(255,255,255,.08);
     }
 
+    .milestone-line span,
     .analysis-progress span{
       display:block;
 
@@ -1112,7 +1087,11 @@
         );
 
       animation:
-        analysisLoading 2.4s ease forwards;
+        analysisLoading 1.7s ease forwards;
+    }
+
+    .analysis-progress span{
+      animation-duration:2.4s;
     }
 
     @keyframes analysisLoading{
@@ -1125,9 +1104,31 @@
       }
     }
 
+    .analysis-spinner{
+      width:76px;
+      height:76px;
+
+      margin:
+        0 auto 24px;
+
+      border:
+        3px solid rgba(255,215,0,.15);
+
+      border-top-color:#ffd700;
+      border-radius:50%;
+
+      animation:
+        spinnerRotate 1s linear infinite;
+    }
+
+    @keyframes spinnerRotate{
+      to{
+        transform:rotate(360deg);
+      }
+    }
+
     /* =========================
-       保存専用カード
-       1080 × 1920固定
+       保存画像 1080×1920
     ========================= */
 
     #shareCard{
@@ -1145,7 +1146,8 @@
 
       padding:70px 65px 55px;
 
-      border:5px solid #d4af37;
+      border:
+        5px solid #d4af37;
 
       background:
         radial-gradient(
@@ -1192,11 +1194,14 @@
       align-items:center;
       justify-content:center;
 
-      margin:38px auto 25px;
+      margin:
+        38px auto 25px;
 
       overflow:hidden;
 
-      border:3px solid rgba(255,215,0,.5);
+      border:
+        3px solid rgba(255,215,0,.5);
+
       border-radius:30px;
 
       background:#060606;
@@ -1243,7 +1248,9 @@
     #shareStats > div{
       padding:14px 10px;
 
-      border:1px solid rgba(255,215,0,.24);
+      border:
+        1px solid rgba(255,215,0,.24);
+
       border-radius:15px;
 
       background:
@@ -1281,16 +1288,19 @@
     @media(max-width:600px){
 
       .screen{
-        padding:18px 12px 42px;
+        padding:
+          18px 12px 42px;
       }
 
       .hero,
       .quiz-card{
-        padding:28px 17px;
+        padding:
+          28px 17px;
       }
 
       .result-card{
-        padding:27px 15px 38px;
+        padding:
+          27px 15px 38px;
       }
 
       .hero h1{
@@ -1302,7 +1312,8 @@
       }
 
       .quiz-card{
-        min-height:calc(100vh - 36px);
+        min-height:
+          calc(100vh - 36px);
       }
 
       #questionTitle{
@@ -1312,7 +1323,8 @@
       }
 
       .option-btn{
-        padding:15px 43px 15px 17px;
+        padding:
+          15px 43px 15px 17px;
 
         font-size:14px;
       }
@@ -1347,6 +1359,7 @@
 
   </style>
 </head>
+
 <body>
 
   <div class="background-effects">
@@ -1355,9 +1368,7 @@
 
   <main class="app">
 
-    <!-- =========================
-         開始画面
-    ========================== -->
+    <!-- 開始画面 -->
 
     <section
       id="startScreen"
@@ -1419,7 +1430,7 @@
 
           <div class="start-point">
             <span>👑</span>
-            向いている仕事を表示
+            向いている仕事
           </div>
 
         </div>
@@ -1436,9 +1447,7 @@
 
     </section>
 
-    <!-- =========================
-         質問画面
-    ========================== -->
+    <!-- 質問画面 -->
 
     <section
       id="quizScreen"
@@ -1447,53 +1456,48 @@
 
       <div class="quiz-card">
 
-        <div class="quiz-top">
+        <p class="quiz-stage-label">
+          YOUR NIGHT TYPE IS GROWING
+        </p>
 
-          <p class="quiz-stage-label">
-            YOUR NIGHT TYPE IS GROWING
-          </p>
+        <div
+          id="moonProgress"
+          class="moon-progress"
+        >
+          🌑
+        </div>
 
-          <div
-            id="moonProgress"
-            class="moon-progress"
-            aria-hidden="true"
-          >
-            🌑
-          </div>
+        <div class="progress-number">
 
-          <div class="progress-number">
+          <span>
+            現在
+          </span>
 
-            <span>
-              現在
-            </span>
-
-            <strong id="customProgressText">
-              1 / 40
-            </strong>
-
-            <span id="progressPercent">
-              3%
-            </span>
-
-          </div>
-
-          <div class="progress-track">
-
-            <div
-              id="progressFill"
-              class="progress-fill"
-            ></div>
-
-          </div>
-
-          <p
-            id="questionCount"
-            class="count"
-          >
+          <strong id="customProgressText">
             1 / 40
-          </p>
+          </strong>
+
+          <span id="progressPercent">
+            3%
+          </span>
 
         </div>
+
+        <div class="progress-track">
+
+          <div
+            id="progressFill"
+            class="progress-fill"
+          ></div>
+
+        </div>
+
+        <p
+          id="questionCount"
+          class="count"
+        >
+          1 / 40
+        </p>
 
         <span
           id="questionCategory"
@@ -1506,8 +1510,7 @@
           質問を読み込んでいます...
         </h2>
 
-        <div id="optionsArea">
-        </div>
+        <div id="optionsArea"></div>
 
         <p
           id="quizMessage"
@@ -1519,9 +1522,7 @@
       </div>
 
     </section>
-        <!-- =========================
-         結果画面
-    ========================== -->
+        <!-- 結果画面 -->
 
     <section
       id="resultScreen"
@@ -1540,6 +1541,7 @@
 
           <img
             id="resultImage"
+            src=""
             alt="NOX診断タイプ画像"
           >
 
@@ -1571,7 +1573,7 @@
 
         <div id="detailArea"></div>
 
-        <!-- 保存専用画像 -->
+        <!-- 保存専用カード -->
 
         <div id="shareCard">
 
@@ -1588,7 +1590,7 @@
             <img
               id="shareImage"
               src=""
-              alt=""
+              alt="NOX TYPE 診断結果"
             >
 
           </div>
@@ -1614,6 +1616,7 @@
         </div>
 
         <button
+          type="button"
           class="main-btn"
           onclick="shareResult()"
         >
@@ -1621,6 +1624,7 @@
         </button>
 
         <button
+          type="button"
           class="sub-btn"
           onclick="copyResult()"
         >
@@ -1628,6 +1632,7 @@
         </button>
 
         <button
+          type="button"
           class="sub-btn"
           onclick="saveResultImage()"
         >
@@ -1635,27 +1640,39 @@
         </button>
 
         <a
-          href="index.html"
+          href="pages/girls.html"
           class="main-btn"
         >
           あなたに合う求人を見る
         </a>
 
         <button
+          type="button"
           class="sub-btn"
           onclick="restartQuiz()"
         >
           もう一度診断
         </button>
 
+        <a
+          href="index.html"
+          class="sub-btn"
+          style="
+            display:flex;
+            align-items:center;
+            justify-content:center;
+          "
+        >
+          NOXトップへ戻る
+        </a>
+
       </div>
 
     </section>
-      </main>
 
-  <!-- =========================
-       10問ごとの解析演出
-  ========================== -->
+  </main>
+
+  <!-- 10問ごとの解析演出 -->
 
   <div
     id="milestoneOverlay"
@@ -1692,9 +1709,7 @@
 
   </div>
 
-  <!-- =========================
-       最終解析演出
-  ========================== -->
+  <!-- 最終解析演出 -->
 
   <div
     id="finalAnalysisOverlay"
@@ -1726,17 +1741,17 @@
 
   </div>
 
-  <!-- 画像保存 -->
+  <!-- 画像保存ライブラリ -->
+
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
   <!-- 診断データ -->
-  <script src="types.js?v=3"></script>
-  <script src="detail.js?v=3"></script>
-  <script src="diagnosis.js?v=3"></script>
 
-  <!-- =========================
-       追加演出
-  ========================== -->
+  <script src="types.js?v=7"></script>
+  <script src="detail.js?v=7"></script>
+  <script src="diagnosis.js?v=7"></script>
+
+  <!-- 追加演出 -->
 
   <script>
     const TOTAL_QUESTIONS = 40;
@@ -1770,8 +1785,10 @@
     let finalAnalysisShown = false;
 
     function extractQuestionNumber(text){
+
       const numbers =
-        String(text || "").match(/\d+/g);
+        String(text || "")
+          .match(/\d+/g);
 
       if(
         !numbers ||
@@ -1780,23 +1797,26 @@
         return 1;
       }
 
-      const number =
+      const questionNumber =
         Number(numbers[0]);
 
       if(
-        Number.isNaN(number) ||
-        number < 1
+        Number.isNaN(questionNumber) ||
+        questionNumber < 1
       ){
         return 1;
       }
 
       return Math.min(
-        number,
+        questionNumber,
         TOTAL_QUESTIONS
       );
     }
 
-    function getStageIndex(questionNumber){
+    function getStageIndex(
+      questionNumber
+    ){
+
       if(questionNumber <= 8){
         return 0;
       }
@@ -1817,6 +1837,7 @@
     }
 
     function updateQuestionVisuals(){
+
       const questionCount =
         document.getElementById(
           "questionCount"
@@ -1940,21 +1961,29 @@
       );
 
       if(questionNumber <= 10){
+
         document.body.classList.add(
           "stage-1"
         );
+
       }else if(questionNumber <= 20){
+
         document.body.classList.add(
           "stage-2"
         );
+
       }else if(questionNumber <= 30){
+
         document.body.classList.add(
           "stage-3"
         );
+
       }else{
+
         document.body.classList.add(
           "stage-4"
         );
+
       }
 
       checkMilestone(
@@ -1965,11 +1994,11 @@
       previousQuestionNumber =
         questionNumber;
     }
-
-    function checkMilestone(
+        function checkMilestone(
       previousNumber,
       currentNumber
     ){
+
       const milestones = [
         {
           trigger:11,
@@ -1979,6 +2008,7 @@
           text:
             "あなたの性格とコミュニケーション傾向が見えてきました。"
         },
+
         {
           trigger:21,
           key:20,
@@ -1987,6 +2017,7 @@
           text:
             "あなたが人を惹きつける魅力をさらに分析しています。"
         },
+
         {
           trigger:31,
           key:30,
@@ -2027,6 +2058,7 @@
     function showMilestone(
       milestone
     ){
+
       const overlay =
         document.getElementById(
           "milestoneOverlay"
@@ -2071,15 +2103,26 @@
 
       window.setTimeout(
         () => {
+
           overlay.classList.remove(
             "show"
           );
+
         },
         1800
       );
     }
 
+    /*
+      回答ボタンの演出
+
+      以前のように全ボタンをdisabledにすると、
+      次の質問のボタンまで押せなくなるため、
+      選んだボタンに一瞬だけ演出を付けます。
+    */
+
     function addAnswerButtonEffects(){
+
       const optionsArea =
         document.getElementById(
           "optionsArea"
@@ -2106,21 +2149,29 @@
             "answer-selected"
           );
 
-          optionsArea
-            .querySelectorAll(
-              ".option-btn"
-            )
-            .forEach(
-              (otherButton) => {
-                otherButton.disabled = true;
-              }
-            );
+          window.setTimeout(
+            () => {
+
+              button.classList.remove(
+                "answer-selected"
+              );
+
+            },
+            250
+          );
 
         }
       );
     }
 
+    /*
+      diagnosis.jsが
+      questionCountを書き換えた時に、
+      進捗バー・月・背景を更新します。
+    */
+
     function setupProgressObserver(){
+
       const questionCount =
         document.getElementById(
           "questionCount"
@@ -2133,7 +2184,9 @@
       const observer =
         new MutationObserver(
           () => {
+
             updateQuestionVisuals();
+
           }
         );
 
@@ -2149,7 +2202,14 @@
       updateQuestionVisuals();
     }
 
+    /*
+      40問終了後、
+      結果画面がactiveになった時に
+      最終解析演出を表示します。
+    */
+
     function setupFinalAnalysis(){
+
       const resultScreen =
         document.getElementById(
           "resultScreen"
@@ -2233,10 +2293,14 @@
         }
       );
     }
+        /*
+      保存画像に使う画像の読み込み待ち
+    */
 
     function waitForImageLoad(
       imageElement
     ){
+
       return new Promise(
         (resolve,reject) => {
 
@@ -2261,6 +2325,11 @@
         }
       );
     }
+
+    /*
+      診断結果を
+      1080×1920で保存
+    */
 
     window.saveResultImage =
       async function(){
@@ -2321,6 +2390,20 @@
           return;
         }
 
+        if(
+          !shareImage ||
+          !shareName ||
+          !shareTitle ||
+          !shareStats ||
+          !shareCard
+        ){
+          alert(
+            "保存用データを準備できませんでした。"
+          );
+
+          return;
+        }
+
         shareImage.src =
           resultImage.src;
 
@@ -2337,6 +2420,7 @@
           "";
 
         try{
+
           await waitForImageLoad(
             shareImage
           );
@@ -2414,14 +2498,28 @@
         }
       };
 
+    /*
+      ページ読み込み後に
+      進捗・回答演出・最終解析を開始
+    */
+
     window.addEventListener(
       "DOMContentLoaded",
       () => {
+
         setupProgressObserver();
+
         addAnswerButtonEffects();
+
         setupFinalAnalysis();
+
       }
     );
+
+    /*
+      診断開始時に
+      演出データをリセット
+    */
 
     const originalStartQuiz =
       window.startQuiz;
@@ -2430,11 +2528,15 @@
       typeof originalStartQuiz ===
       "function"
     ){
+
       window.startQuiz =
         function(){
 
           previousQuestionNumber = 0;
-          shownMilestones = new Set();
+
+          shownMilestones =
+            new Set();
+
           finalAnalysisShown = false;
 
           originalStartQuiz();
@@ -2443,8 +2545,15 @@
             updateQuestionVisuals,
             100
           );
+
         };
+
     }
+
+    /*
+      再診断時にも
+      演出データをリセット
+    */
 
     const originalRestartQuiz =
       window.restartQuiz;
@@ -2453,11 +2562,15 @@
       typeof originalRestartQuiz ===
       "function"
     ){
+
       window.restartQuiz =
         function(){
 
           previousQuestionNumber = 0;
-          shownMilestones = new Set();
+
+          shownMilestones =
+            new Set();
+
           finalAnalysisShown = false;
 
           originalRestartQuiz();
@@ -2466,8 +2579,11 @@
             updateQuestionVisuals,
             100
           );
+
         };
+
     }
+
   </script>
 
 </body>
