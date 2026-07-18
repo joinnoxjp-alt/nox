@@ -601,8 +601,8 @@ async function loadTodayViews() {
     document.getElementById("storeName").value.trim();
 
   if (!storeName) {
-    storeName = "Spica";
-  }
+  return;
+}
 
   const q = query(
     collection(db, "jobViewStats"),
