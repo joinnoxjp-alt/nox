@@ -2119,10 +2119,30 @@ await updateDoc(
   }
 );
 
-prompt(
-  "求人を承認しました。\n店舗へこの登録URLを送ってください。",
-  inviteUrl
-);
+try {
+
+  await navigator.clipboard.writeText(inviteUrl);
+
+  alert(
+    "求人を承認しました。\n\n" +
+    "店舗登録URLをコピーしました。\n" +
+    "そのままLINEで店舗へ送れます。\n\n" +
+    inviteUrl
+  );
+
+} catch (copyError) {
+
+  console.warn(
+    "URLコピーエラー",
+    copyError
+  );
+
+  prompt(
+    "求人を承認しました。\n下のURLをコピーしてください。",
+    inviteUrl
+  );
+
+}
 
                 loadJobApplications();
 
