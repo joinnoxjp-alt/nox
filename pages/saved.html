@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>保存した求人 | NOX</title>
+
+  <link
+    rel="stylesheet"
+    href="../style.css?v=12"
+  >
+
+</head>
+
+<body class="register-body">
+
+  <main class="register-page">
+
+    <section class="register-section">
+
+      <div class="register-card">
+
+        <h1 class="register-title">
+          ❤️ 保存した求人
+        </h1>
+
+        <p class="register-sub">
+          あなたがお気に入り登録した求人一覧です。
+        </p>
+
+        <div
+          id="savedJobsList"
+          style="
+            display:grid;
+            gap:18px;
+            margin-top:30px;
+          "
+        >
+
+          <p
+            id="savedEmpty"
+            style="
+              text-align:center;
+              color:#999;
+              padding:40px 0;
+            "
+          >
+            保存した求人はありません。
+          </p>
+
+        </div>
+
+        <a
+          href="../index.html"
+          class="back-link"
+        >
+          ← トップへ戻る
+        </a>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <script type="module">
+
+    const savedJobs =
+      JSON.parse(localStorage.getItem("savedJobs") || "[]");
+
+    const list =
+      document.getElementById("savedJobsList");
+
+    const empty =
+      document.getElementById("savedEmpty");
+
+    if(savedJobs.length){
+
+      empty.remove();
+
+      savedJobs.forEach(job=>{
+
+        const card=document.createElement("div");
+
+        card.className="member-lounge-card";
+
+        card.innerHTML=`
+          <strong>${job.storeName || job.shopName || "店舗名"}</strong>
+          <small>${job.area || ""}</small>
+          <small>${job.salary || ""}</small>
+          <br><br>
+          <a
+            href="job-detail.html?id=${job.id}"
+            class="btn gold"
+          >
+            詳細を見る
+          </a>
+        `;
+
+        list.appendChild(card);
+
+      });
+
+    }
+
+  </script>
+
+</body>
+
+</html>
