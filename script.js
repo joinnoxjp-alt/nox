@@ -1097,3 +1097,91 @@ if(pickupMaleButton){
 =========================== */
 
 loadNoxAdvertisements();
+/* ==========================
+   MEMBER LOUNGE
+========================== */
+
+import {
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
+  doc,
+  getDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+import {
+  auth
+} from "./firebase.js";
+
+const memberLoungeSection =
+  document.getElementById(
+    "memberLoungeSection"
+  );
+
+const memberWelcomeTitle =
+  document.getElementById(
+    "memberWelcomeTitle"
+  );
+
+onAuthStateChanged(
+  auth,
+  async (user) => {
+
+    if(!memberLoungeSection){
+      return;
+    }
+
+    if(!user){
+
+      memberLoungeSection.style.display =
+        "none";
+
+      return;
+    }
+
+    memberLoungeSection.style.display =
+      "block";
+
+    let displayName =
+      user.displayName ||
+      "会員";
+
+    try{
+
+      const userSnapshot =
+        await getDoc(
+          doc(
+            db,
+            "users",
+            user.uid
+          )
+        );
+
+      if(userSnapshot.exists()){
+
+        const userData =
+          userSnapshot.data();
+
+        displayName =
+          userData.displayName ||
+          userData.name ||
+          userData.nickname ||
+          displayName;
+      }
+
+    }catch(error){
+
+      console.error(
+        "会員情報読み込みエラー:",
+        error
+      );
+    }
+
+    if(memberWelcomeTitle){
+
+      memberWelcomeTitle.textContent =
+        `${displayName}さん、おかえりなさい`;
+    }
+  }
+);
