@@ -1057,160 +1057,223 @@
   </section>
 
 </main>
-
-<script type="module">
-import { auth, db } from "../firebase.js";
-
-import {
-  createUserWithEmailAndPassword
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-import {
-  doc,
-  setDoc,
-  serverTimestamp
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
+<script>
 const APPS_SCRIPT_URL =
   "https://script.google.com/macros/s/AKfycbwL3eobetCqOiS4IiPwjzuhH5Uag5zuIAtlxksn10S84WYQKKnZTribYTK43khJprIE/exec";
 
 const form = document.getElementById("registerForm");
 const completeBox = document.getElementById("completeBox");
 const errorBox = document.getElementById("errorBox");
-const submitButton = form.querySelector('button[type="submit"]');
 
-function value(id) {
-  return document.getElementById(id)?.value?.trim() || "";
+function getValue(id) {
+  const element = document.getElementById(id);
+  return element ? element.value.trim() : "";
 }
 
 function showError(message) {
-  errorBox.textContent = message;
-  errorBox.classList.add("show");
-  errorBox.scrollIntoView({
-    behavior: "smooth",
-    block: "center"
-  });
-}
-
-form.addEventListener("submit", async (event) => {
-  event.preventDefault();
-
-  errorBox.textContent = "";
-  errorBox.classList.remove("show");
-
-  submitButton.disabled = true;
-  submitButton.textContent = "登録処理中...";
-
-  const nickname = value("nickname");
-  const birthDate = value("birthDate");
-  const email = value("email");
-  const phone = value("phone");
-  const password = document.getElementById("password").value;
-  const area = value("area");
-  const jobType = value("jobType");
-  const salary = value("salary");
-  const experience = value("experience");
-  const height = value("height");
-  const bodyType = value("bodyType");
-  const alcohol = value("alcohol");
-  const workDays = value("workDays");
-  const selfPr = value("selfPr");
-  const sns = value("sns");
-
-  try {
-    const credential =
-      await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-
-    const uid = credential.user.uid;
-
-    await setDoc(doc(db, "users", uid), {
-      uid,
-      nickname,
-      birthDate,
-      email,
-      phone,
-      area,
-      jobType,
-      salary,
-      experience,
-      height,
-      bodyType,
-      alcohol,
-      workDays,
-      selfPr,
-      sns,
-      status: "pending",
-      role: "user",
-      createdAt: serverTimestamp()
-    });
-
-    const notifyData = {
-      type: "user_register",
-      uid,
-      name: nickname || "未入力",
-      email: email || "未入力",
-      phone: phone || "未入力",
-      birthDate: birthDate || "未入力",
-      area: area || "未入力",
-      jobType: jobType || "未入力",
-      salary: salary || "未入力",
-      experience: experience || "未入力",
-      workDays: workDays || "未入力",
-      createdAt: new Date().toLocaleString("ja-JP", {
-        timeZone: "Asia/Tokyo"
-      })
-    };
-
-    try {
-      await fetch(APPS_SCRIPT_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: {
-          "Content-Type": "text/plain;charset=UTF-8"
-        },
-        body: JSON.stringify(notifyData)
-      });
-    } catch (notifyError) {
-      console.error("Discord通知失敗:", notifyError);
-    }
-
-    form.style.display = "none";
-    completeBox.classList.add("show");
-
-    completeBox.scrollIntoView({
+  if (errorBox) {
+    errorBox.textContent = message;
+    errorBox.classList.add("show");
+    errorBox.scrollIntoView({
       behavior: "smooth",
       block: "center"
     });
+  } else {
+    alert(message);
+  }
+}
 
-  } catch (error) {
-    console.error(error);
+if (!form) {
+  alert("登録フォームが見つかりません。");
+} else {
+  form.addEventListener("submit", async function (event) {
+    event.preventDefault();
 
-    let message =
-      "登録に失敗しました：" +
-      (error.message || "原因不明");
+    const submitButton =
+      form.querySelector('button[type="submit"]');
 
-    if (error.code === "auth/email-already-in-use") {
-      message =
-        "このメールアドレスはすでに登録されています。";
-    } else if (error.code === "auth/weak-password") {
-      message =
-        "パスワードは6文字以上で設定してください。";
-    } else if (error.code === "auth/invalid-email") {
-      message =
-        "メールアドレスの形式を確認してください。";
+    submitButton.disabled = true;
+    submitButton.textContent = "登録処理中...";
+
+    if (errorBox) {
+      errorBox.textContent = "";
+      errorBox.classList.remove("show");
     }
 
-    showError(message);
+    const nickname = getValue("nickname");
+    const birthDate = getValue("birthDate");
+    const email = getValue("email");
+    const phone = getValue("phone");
+    const password =
+      document.getElementById("password")?.value || "";
 
-    submitButton.disabled = false;
-    submitButton.textContent = "無料で登録する";
-  }
-});
+    const area = getValue("area");
+    const jobType = getValue("jobType");
+    const salary = getValue("salary");
+    const experience = getValue("experience");
+    const height = getValue("height");
+    const bodyType = getValue("bodyType");
+    const alcohol = getValue("alcohol");
+    const workDays = getValue("workDays");
+    const selfPr = getValue("selfPr");
+    const sns = getValue("sns");
+
+    try {
+      const firebaseFile =
+        await import("../firebase.js");
+
+      const authModule =
+        await import(
+          "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"
+        );
+
+      const firestoreModule =
+        await import(
+          "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"
+        );
+
+      const auth = firebaseFile.auth;
+      const db = firebaseFile.db;
+
+      if (!auth || !db) {
+        throw new Error(
+          "Firebaseの読み込みに失敗しました。"
+        );
+      }
+
+      const userCredential =
+        await authModule.createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+
+      const uid = userCredential.user.uid;
+
+      await firestoreModule.setDoc(
+        firestoreModule.doc(
+          db,
+          "users",
+          uid
+        ),
+        {
+          uid,
+          nickname,
+          birthDate,
+          email,
+          phone,
+          area,
+          jobType,
+          salary,
+          experience,
+          height,
+          bodyType,
+          alcohol,
+          workDays,
+          selfPr,
+          sns,
+          status: "pending",
+          role: "user",
+          createdAt:
+            firestoreModule.serverTimestamp()
+        }
+      );
+
+      const notifyData = {
+        type: "user_register",
+        uid,
+        name: nickname || "未入力",
+        email: email || "未入力",
+        phone: phone || "未入力",
+        birthDate: birthDate || "未入力",
+        area: area || "未入力",
+        jobType: jobType || "未入力",
+        salary: salary || "未入力",
+        experience: experience || "未入力",
+        workDays: workDays || "未入力",
+        createdAt:
+          new Date().toLocaleString(
+            "ja-JP",
+            {
+              timeZone: "Asia/Tokyo"
+            }
+          )
+      };
+
+      try {
+        await fetch(
+          APPS_SCRIPT_URL,
+          {
+            method: "POST",
+            mode: "no-cors",
+            headers: {
+              "Content-Type":
+                "text/plain;charset=UTF-8"
+            },
+            body:
+              JSON.stringify(notifyData)
+          }
+        );
+      } catch (notifyError) {
+        console.error(
+          "Discord通知エラー:",
+          notifyError
+        );
+      }
+
+      form.style.display = "none";
+
+      if (completeBox) {
+        completeBox.classList.add("show");
+
+        completeBox.scrollIntoView({
+          behavior: "smooth",
+          block: "center"
+        });
+      } else {
+        alert(
+          "登録が完了しました！"
+        );
+      }
+
+    } catch (error) {
+      console.error(
+        "会員登録エラー:",
+        error
+      );
+
+      let message =
+        "登録に失敗しました：" +
+        (error.message || "原因不明");
+
+      if (
+        error.code ===
+        "auth/email-already-in-use"
+      ) {
+        message =
+          "このメールアドレスは既に登録されています。";
+      } else if (
+        error.code ===
+        "auth/weak-password"
+      ) {
+        message =
+          "パスワードは6文字以上で設定してください。";
+      } else if (
+        error.code ===
+        "auth/invalid-email"
+      ) {
+        message =
+          "メールアドレスの形式を確認してください。";
+      }
+
+      showError(message);
+
+      submitButton.disabled = false;
+      submitButton.textContent =
+        "無料で登録する";
+    }
+  });
+}
 </script>
-
 </body>
 </html>
