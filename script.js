@@ -1112,7 +1112,20 @@ const memberWelcomeTitle =
   document.getElementById(
     "memberWelcomeTitle"
   );
+const savedJobsCount =
+  document.getElementById(
+    "savedJobsCount"
+  );
 
+const offersCount =
+  document.getElementById(
+    "offersCount"
+  );
+
+const applicationsCount =
+  document.getElementById(
+    "applicationsCount"
+  );
 onAuthStateChanged(
   auth,
   async (user) => {
@@ -1146,11 +1159,25 @@ onAuthStateChanged(
             user.uid
           )
         );
+const userData =
+  userSnapshot.exists()
+    ? userSnapshot.data()
+    : {};
 
+const savedJobIds =
+  Array.isArray(
+    userData.savedJobIds
+  )
+    ? userData.savedJobIds
+    : [];
+
+if(savedJobsCount){
+
+  savedJobsCount.textContent =
+    `${savedJobIds.length}件`;
+
+}
       if(userSnapshot.exists()){
-
-        const userData =
-          userSnapshot.data();
 
         displayName =
           userData.displayName ||
