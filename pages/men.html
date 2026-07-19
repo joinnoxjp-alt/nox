@@ -1,0 +1,1508 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>NOX MEN | 男性向けナイトワーク求人</title>
+
+  <meta
+    name="description"
+    content="NOX MENは全国対応の男性向けナイトワーク求人ページです。ホスト・ボーイズバー・メンズコンカフェ・黒服・内勤・ドライバーなどの求人を検索できます。"
+  >
+
+  <meta
+    name="theme-color"
+    content="#050505"
+  >
+
+  <style>
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+    }
+
+    html{
+      scroll-behavior:smooth;
+    }
+
+    body{
+      min-height:100vh;
+      background:
+        radial-gradient(
+          circle at top,
+          rgba(255,215,0,.2),
+          transparent 34%
+        ),
+        linear-gradient(
+          180deg,
+          #070707,
+          #000
+        );
+      color:#fff;
+      font-family:
+        "Hiragino Mincho ProN",
+        "Yu Mincho",
+        serif;
+    }
+
+    a{
+      color:inherit;
+      text-decoration:none;
+    }
+
+    button,
+    input,
+    select{
+      font:inherit;
+    }
+
+    .page{
+      width:min(1120px,100%);
+      margin:0 auto;
+      padding:32px 18px 80px;
+    }
+
+    .header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:16px;
+      margin-bottom:36px;
+    }
+
+    .logo{
+      color:#ffd700;
+      font-size:34px;
+      font-weight:900;
+      letter-spacing:3px;
+      line-height:1.1;
+    }
+
+    .logo span{
+      color:#fff;
+    }
+
+    .logo small{
+      display:block;
+      margin-top:7px;
+      color:#aaa;
+      font-size:10px;
+      letter-spacing:4px;
+    }
+
+    .nav{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+    }
+
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:48px;
+      padding:13px 22px;
+      border:1px solid rgba(255,215,0,.35);
+      border-radius:999px;
+      background:rgba(255,255,255,.04);
+      color:#ffd700;
+      font-weight:bold;
+      cursor:pointer;
+      transition:.25s;
+    }
+
+    .btn:hover{
+      transform:translateY(-2px);
+      background:rgba(255,215,0,.1);
+    }
+
+    .btn.gold{
+      border-color:#ffd700;
+      background:#ffd700;
+      color:#000;
+    }
+
+    .hero{
+      position:relative;
+      overflow:hidden;
+      margin-bottom:30px;
+      padding:46px 30px;
+      border:1px solid rgba(255,215,0,.38);
+      border-radius:32px;
+      background:
+        radial-gradient(
+          circle at top right,
+          rgba(255,215,0,.2),
+          transparent 38%
+        ),
+        linear-gradient(
+          145deg,
+          rgba(255,255,255,.09),
+          rgba(255,255,255,.025)
+        );
+      box-shadow:0 25px 70px rgba(0,0,0,.65);
+    }
+
+    .hero::after{
+      content:"MEN";
+      position:absolute;
+      right:-15px;
+      bottom:-28px;
+      color:rgba(255,215,0,.055);
+      font-size:150px;
+      font-weight:900;
+      letter-spacing:5px;
+      pointer-events:none;
+    }
+
+    .hero > *{
+      position:relative;
+      z-index:1;
+    }
+
+    .kicker{
+      margin-bottom:14px;
+      color:#ffd700;
+      font-size:13px;
+      letter-spacing:5px;
+    }
+
+    .hero h1{
+      margin-bottom:16px;
+      color:#ffd700;
+      font-size:clamp(44px,8vw,78px);
+      line-height:1.05;
+    }
+
+    .hero h1 span{
+      color:#fff;
+    }
+
+    .hero p{
+      max-width:720px;
+      color:#ddd;
+      font-size:16px;
+      line-height:1.9;
+    }
+
+    .hero-tags{
+      display:flex;
+      flex-wrap:wrap;
+      gap:9px;
+      margin-top:22px;
+    }
+
+    .hero-tags span{
+      padding:7px 12px;
+      border:1px solid rgba(255,215,0,.28);
+      border-radius:999px;
+      background:rgba(255,215,0,.07);
+      color:#f5f5f5;
+      font-size:12px;
+    }
+
+    .category-section{
+      margin:30px 0;
+    }
+
+    .category-title{
+      margin-bottom:17px;
+      color:#ffd700;
+      font-size:22px;
+      text-align:center;
+    }
+
+    .category-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:18px;
+    }
+
+    .category-button{
+      position:relative;
+      min-height:190px;
+      overflow:hidden;
+      padding:24px;
+      border:1px solid rgba(255,215,0,.38);
+      border-radius:26px;
+      background:
+        radial-gradient(
+          circle at top right,
+          rgba(255,215,0,.18),
+          transparent 40%
+        ),
+        linear-gradient(
+          145deg,
+          #131313,
+          #050505
+        );
+      color:#fff;
+      text-align:left;
+      cursor:pointer;
+      transition:.3s;
+    }
+
+    .category-button:hover{
+      transform:translateY(-5px);
+      border-color:#ffd700;
+      box-shadow:
+        0 18px 50px rgba(0,0,0,.55),
+        0 0 25px rgba(255,215,0,.12);
+    }
+
+    .category-button.active{
+      border-color:#ffd700;
+      box-shadow:
+        0 0 0 2px rgba(255,215,0,.14),
+        0 18px 50px rgba(0,0,0,.55);
+    }
+
+    .category-icon{
+      display:block;
+      margin-bottom:12px;
+      font-size:40px;
+    }
+
+    .category-button strong{
+      display:block;
+      margin-bottom:10px;
+      color:#ffd700;
+      font-size:27px;
+    }
+
+    .category-button p{
+      color:#ccc;
+      font-size:14px;
+      line-height:1.8;
+    }
+
+    .category-count{
+      display:inline-block;
+      margin-top:15px;
+      padding:6px 11px;
+      border:1px solid rgba(255,215,0,.3);
+      border-radius:999px;
+      color:#ffd700;
+      font-size:12px;
+    }
+
+    .all-button-wrap{
+      margin-top:15px;
+      text-align:center;
+    }
+
+    .all-category-button{
+      min-width:190px;
+    }
+
+    .all-category-button.active{
+      background:#ffd700;
+      color:#000;
+    }
+
+    .filter-box{
+      display:grid;
+      grid-template-columns:
+        repeat(
+          auto-fit,
+          minmax(170px,1fr)
+        );
+      gap:12px;
+      margin:28px 0;
+    }
+
+    .filter-box input,
+    .filter-box select{
+      width:100%;
+      padding:14px 15px;
+      border:1px solid rgba(255,215,0,.25);
+      border-radius:14px;
+      outline:none;
+      background:#080808;
+      color:#fff;
+      font-size:15px;
+    }
+
+    .filter-box input:focus,
+    .filter-box select:focus{
+      border-color:rgba(255,215,0,.75);
+      box-shadow:
+        0 0 0 3px
+        rgba(255,215,0,.08);
+    }
+
+    .status{
+      margin:18px 0;
+      color:#bbb;
+      line-height:1.8;
+    }
+
+    .job-grid{
+      display:grid;
+      grid-template-columns:
+        repeat(
+          auto-fit,
+          minmax(280px,1fr)
+        );
+      gap:22px;
+    }
+
+    .job-card{
+      position:relative;
+      overflow:hidden;
+      padding:24px;
+      border:1px solid rgba(255,215,0,.34);
+      border-radius:28px;
+      background:
+        radial-gradient(
+          circle at top right,
+          rgba(255,215,0,.14),
+          transparent 38%
+        ),
+        linear-gradient(
+          180deg,
+          rgba(255,255,255,.08),
+          rgba(255,255,255,.025)
+        );
+      box-shadow:
+        0 22px 60px
+        rgba(0,0,0,.55);
+    }
+
+    .job-card::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        linear-gradient(
+          120deg,
+          transparent,
+          rgba(255,215,0,.075),
+          transparent
+        );
+      pointer-events:none;
+    }
+
+    .job-card > *{
+      position:relative;
+      z-index:1;
+    }
+
+    .badge{
+      display:inline-block;
+      margin-bottom:14px;
+      padding:7px 12px;
+      border-radius:999px;
+      background:#ffd700;
+      color:#000;
+      font-size:12px;
+      font-weight:bold;
+    }
+
+    .category-badge{
+      display:inline-block;
+      margin-left:6px;
+      margin-bottom:14px;
+      padding:7px 12px;
+      border:1px solid rgba(255,215,0,.35);
+      border-radius:999px;
+      color:#ffd700;
+      font-size:12px;
+      font-weight:bold;
+    }
+
+    .job-card h2{
+      margin-bottom:16px;
+      color:#ffd700;
+      font-size:27px;
+      line-height:1.35;
+    }
+
+    .info{
+      margin-bottom:18px;
+      color:#eee;
+      font-size:16px;
+      line-height:2;
+    }
+
+    .salary{
+      margin:14px 0;
+      color:#ffd700;
+      font-size:25px;
+      font-weight:bold;
+    }
+
+    .tags{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin:16px 0 22px;
+    }
+
+    .tags span{
+      padding:7px 10px;
+      border:1px solid rgba(255,215,0,.25);
+      border-radius:999px;
+      background:rgba(255,215,0,.07);
+      color:#eee;
+      font-size:12px;
+    }
+
+    .empty{
+      grid-column:1 / -1;
+      padding:50px 20px;
+      border:1px solid rgba(255,215,0,.25);
+      border-radius:28px;
+      color:#ccc;
+      text-align:center;
+    }
+
+    .empty h2{
+      margin-bottom:15px;
+      color:#ffd700;
+    }
+
+    .footer-actions{
+      display:flex;
+      justify-content:center;
+      flex-wrap:wrap;
+      gap:14px;
+      margin-top:42px;
+    }
+
+    @media(max-width:760px){
+
+      .header{
+        align-items:flex-start;
+        flex-direction:column;
+      }
+
+      .hero{
+        padding:34px 22px;
+      }
+
+      .hero::after{
+        right:-10px;
+        bottom:-12px;
+        font-size:90px;
+      }
+
+      .category-grid{
+        grid-template-columns:1fr;
+      }
+
+      .category-button{
+        min-height:165px;
+      }
+
+      .category-button strong{
+        font-size:25px;
+      }
+
+      .job-card h2{
+        font-size:25px;
+      }
+
+      .btn{
+        padding:12px 18px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="page">
+
+    <header class="header">
+
+      <a
+        href="../index.html"
+        class="logo"
+      >
+        NOX <span>MEN</span>
+
+        <small>
+          Night Opens X
+        </small>
+      </a>
+
+      <nav class="nav">
+
+        <a
+          href="../index.html"
+          class="btn"
+        >
+          TOP
+        </a>
+
+        <a
+          href="./girls.html"
+          class="btn"
+        >
+          女性求人
+        </a>
+
+        <a
+          href="../owner.html"
+          class="btn"
+        >
+          店舗掲載
+        </a>
+
+        <a
+          href="./mypage.html"
+          class="btn gold"
+        >
+          マイページ
+        </a>
+
+      </nav>
+
+    </header>
+
+    <section class="hero">
+
+      <p class="kicker">
+        NOX MEN JOBS
+      </p>
+
+      <h1>
+        男性向け<span>求人</span>
+      </h1>
+
+      <p>
+        ホスト・ボーイズバー・メンズコンカフェ・黒服・内勤・ドライバーなど、男性向けのナイトワーク求人を探せます。
+      </p>
+
+      <div class="hero-tags">
+        <span>未経験歓迎</span>
+        <span>高収入求人</span>
+        <span>日払い対応</span>
+        <span>全国対応</span>
+      </div>
+
+    </section>
+
+    <section class="category-section">
+
+      <h2 class="category-title">
+        求人カテゴリを選択
+      </h2>
+
+      <div class="category-grid">
+
+        <button
+          type="button"
+          class="category-button"
+          id="frontButton"
+          data-category="front"
+        >
+          <span class="category-icon">
+            👑
+          </span>
+
+          <strong>
+            接客・店舗系
+          </strong>
+
+          <p>
+            ホスト・ボーイズバー・メンズコンカフェ・黒服・ホールスタッフなど
+          </p>
+
+          <span
+            class="category-count"
+            id="frontCount"
+          >
+            0件
+          </span>
+        </button>
+
+        <button
+          type="button"
+          class="category-button"
+          id="backOfficeButton"
+          data-category="back"
+        >
+          <span class="category-icon">
+            💼
+          </span>
+
+          <strong>
+            裏方・運営系
+          </strong>
+
+          <p>
+            内勤・店長候補・幹部候補・ドライバー・事務・Web担当など
+          </p>
+
+          <span
+            class="category-count"
+            id="backOfficeCount"
+          >
+            0件
+          </span>
+        </button>
+
+      </div>
+
+      <div class="all-button-wrap">
+
+        <button
+          type="button"
+          class="btn all-category-button active"
+          id="allCategoryButton"
+        >
+          すべての男性求人
+        </button>
+
+      </div>
+
+    </section>
+
+    <div class="filter-box">
+
+      <input
+        type="text"
+        id="keywordInput"
+        placeholder="店舗名・職種・エリアで検索"
+      >
+
+      <select id="areaSelect">
+        <option value="">
+          エリアすべて
+        </option>
+      </select>
+
+      <select id="typeSelect">
+        <option value="">
+          職種すべて
+        </option>
+      </select>
+
+      <select id="sortSelect">
+
+        <option value="new">
+          新着順
+        </option>
+
+        <option value="salary">
+          給与が高い順
+        </option>
+
+      </select>
+
+    </div>
+
+    <p
+      class="status"
+      id="statusText"
+    >
+      男性求人を読み込み中です...
+    </p>
+
+    <div
+      class="job-grid"
+      id="jobsList"
+    ></div>
+
+    <div class="footer-actions">
+
+      <a
+        href="../index.html"
+        class="btn"
+      >
+        TOPへ戻る
+      </a>
+
+      <a
+        href="./girls.html"
+        class="btn"
+      >
+        女性向け求人
+      </a>
+
+      <a
+        href="../owner.html"
+        class="btn gold"
+      >
+        店舗掲載はこちら
+      </a>
+
+    </div>
+
+  </div>
+
+  <script type="module">
+
+    import { db } from "./firebase-db.js";
+
+    import {
+      collection,
+      getDocs
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const jobsList =
+      document.getElementById("jobsList");
+
+    const statusText =
+      document.getElementById("statusText");
+
+    const keywordInput =
+      document.getElementById("keywordInput");
+
+    const areaSelect =
+      document.getElementById("areaSelect");
+
+    const typeSelect =
+      document.getElementById("typeSelect");
+
+    const sortSelect =
+      document.getElementById("sortSelect");
+
+    const frontButton =
+      document.getElementById("frontButton");
+
+    const backOfficeButton =
+      document.getElementById("backOfficeButton");
+
+    const allCategoryButton =
+      document.getElementById("allCategoryButton");
+
+    const frontCount =
+      document.getElementById("frontCount");
+
+    const backOfficeCount =
+      document.getElementById("backOfficeCount");
+
+    let jobs = [];
+    let selectedCategory = "all";
+
+    const FRONT_TYPES = [
+      "ホスト",
+      "ホストクラブ",
+      "ボーイズバー",
+      "メンズコンカフェ",
+      "メンコン",
+      "黒服",
+      "ホール",
+      "ホールスタッフ",
+      "ウェイター",
+      "バーテンダー",
+      "接客スタッフ",
+      "店舗スタッフ"
+    ];
+
+    const BACK_OFFICE_TYPES = [
+      "内勤",
+      "店舗運営",
+      "店長",
+      "店長候補",
+      "幹部",
+      "幹部候補",
+      "マネージャー",
+      "ドライバー",
+      "送迎",
+      "事務",
+      "受付",
+      "Web担当",
+      "WEB担当",
+      "SNS担当",
+      "カメラマン",
+      "ヘアメイク",
+      "運営スタッフ"
+    ];
+
+    const MALE_JOB_TYPES = [
+      ...FRONT_TYPES,
+      ...BACK_OFFICE_TYPES
+    ];
+
+    function escapeHtml(value){
+      return String(value ?? "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    function getJobType(job){
+      return (
+        job.businessType ||
+        job.jobType ||
+        job.position ||
+        job.genre ||
+        job.type ||
+        ""
+      );
+    }
+
+    function isMaleJob(job){
+
+      const targetValue =
+        String(
+          job.targetGender ||
+          job.gender ||
+          job.jobAudience ||
+          job.audience ||
+          job.target ||
+          ""
+        ).toLowerCase();
+
+      if(
+        targetValue === "male" ||
+        targetValue === "men" ||
+        targetValue === "man" ||
+        targetValue === "男性" ||
+        targetValue === "男性向け"
+      ){
+        return true;
+      }
+
+      if(
+        targetValue === "female" ||
+        targetValue === "women" ||
+        targetValue === "woman" ||
+        targetValue === "女性" ||
+        targetValue === "女性向け"
+      ){
+        return false;
+      }
+
+      const searchText = `
+        ${getJobType(job)}
+        ${job.title || ""}
+        ${job.description || ""}
+        ${job.pr || ""}
+        ${job.storeName || ""}
+        ${job.name || ""}
+      `.toLowerCase();
+
+      return MALE_JOB_TYPES.some(
+        (keyword) =>
+          searchText.includes(
+            keyword.toLowerCase()
+          )
+      );
+    }
+
+    function getJobCategory(job){
+
+      const explicitCategory =
+        String(
+          job.menCategory ||
+          job.jobCategory ||
+          job.category ||
+          ""
+        ).toLowerCase();
+
+      if(
+        explicitCategory === "front" ||
+        explicitCategory === "接客" ||
+        explicitCategory === "店舗"
+      ){
+        return "front";
+      }
+
+      if(
+        explicitCategory === "back" ||
+        explicitCategory === "裏方" ||
+        explicitCategory === "運営"
+      ){
+        return "back";
+      }
+
+      const searchText = `
+        ${getJobType(job)}
+        ${job.title || ""}
+        ${job.description || ""}
+        ${job.pr || ""}
+      `.toLowerCase();
+
+      const isBackOffice =
+        BACK_OFFICE_TYPES.some(
+          (keyword) =>
+            searchText.includes(
+              keyword.toLowerCase()
+            )
+        );
+
+      if(isBackOffice){
+        return "back";
+      }
+
+      return "front";
+    }
+
+    function getSalaryNumber(job){
+
+      const salaryText =
+        String(
+          job.salary ||
+          job.salaryText ||
+          ""
+        );
+
+      const numbers =
+        salaryText.match(/\d[\d,]*/g);
+
+      if(
+        !numbers ||
+        numbers.length === 0
+      ){
+        return 0;
+      }
+
+      return Math.max(
+        ...numbers.map(
+          (number) =>
+            Number(
+              number.replaceAll(",","")
+            )
+        )
+      );
+    }
+
+    function getCreatedSeconds(job){
+
+      if(
+        job.createdAt &&
+        typeof job.createdAt.seconds === "number"
+      ){
+        return job.createdAt.seconds;
+      }
+
+      if(
+        job.approvedAt &&
+        typeof job.approvedAt.seconds === "number"
+      ){
+        return job.approvedAt.seconds;
+      }
+
+      return 0;
+    }
+
+    async function loadJobs(){
+
+      statusText.textContent =
+        "男性求人を読み込み中です...";
+
+      jobsList.innerHTML = "";
+
+      try{
+
+        const snapshot =
+          await getDocs(
+            collection(db,"jobs")
+          );
+
+        jobs = [];
+
+        snapshot.forEach(
+          (jobDocument) => {
+
+            const job = {
+              id:jobDocument.id,
+              ...jobDocument.data()
+            };
+
+            if(job.status !== "approved"){
+              return;
+            }
+
+            const textCheck = `
+              ${job.storeName || ""}
+              ${job.name || ""}
+              ${job.title || ""}
+              ${job.shopName || ""}
+              ${job.storeTitle || ""}
+            `.toLowerCase();
+
+            if(
+              textCheck.includes("テスト") ||
+              textCheck.includes("test") ||
+              textCheck.includes("dummy")
+            ){
+              return;
+            }
+
+            if(
+              job.isTest === true ||
+              job.isDummy === true
+            ){
+              return;
+            }
+
+            if(!isMaleJob(job)){
+              return;
+            }
+
+            jobs.push({
+              ...job,
+              resolvedCategory:
+                getJobCategory(job)
+            });
+          }
+        );
+
+        updateCategoryCounts();
+        createFilterOptions();
+        applyCategoryFromUrl();
+        renderJobs();
+
+      }catch(error){
+
+        console.error(
+          "男性求人読み込みエラー:",
+          error
+        );
+
+        statusText.textContent =
+          "男性求人の読み込みに失敗しました。";
+
+        jobsList.innerHTML = `
+          <div class="empty">
+
+            <h2>
+              求人を読み込めませんでした
+            </h2>
+
+            <p>
+              時間を空けて、
+              もう一度お試しください。
+            </p>
+
+          </div>
+        `;
+      }
+    }
+
+    function updateCategoryCounts(){
+
+      const frontJobCount =
+        jobs.filter(
+          (job) =>
+            job.resolvedCategory === "front"
+        ).length;
+
+      const backJobCount =
+        jobs.filter(
+          (job) =>
+            job.resolvedCategory === "back"
+        ).length;
+
+      frontCount.textContent =
+        `${frontJobCount}件`;
+
+      backOfficeCount.textContent =
+        `${backJobCount}件`;
+    }
+
+    function createFilterOptions(){
+
+      const categoryJobs =
+        selectedCategory === "all"
+          ? jobs
+          : jobs.filter(
+              (job) =>
+                job.resolvedCategory === selectedCategory
+            );
+
+      const currentArea =
+        areaSelect.value;
+
+      const currentType =
+        typeSelect.value;
+
+      const areas = [
+        ...new Set(
+          categoryJobs
+            .map(
+              (job) =>
+                job.area ||
+                job.location ||
+                job.prefecture
+            )
+            .filter(Boolean)
+        )
+      ].sort();
+
+      const types = [
+        ...new Set(
+          categoryJobs
+            .map(getJobType)
+            .filter(Boolean)
+        )
+      ].sort();
+
+      areaSelect.innerHTML = `
+        <option value="">
+          エリアすべて
+        </option>
+      `;
+
+      typeSelect.innerHTML = `
+        <option value="">
+          職種すべて
+        </option>
+      `;
+
+      areas.forEach((area) => {
+
+        const option =
+          document.createElement("option");
+
+        option.value = area;
+        option.textContent = area;
+
+        areaSelect.appendChild(option);
+      });
+
+      types.forEach((type) => {
+
+        const option =
+          document.createElement("option");
+
+        option.value = type;
+        option.textContent = type;
+
+        typeSelect.appendChild(option);
+      });
+
+      if(areas.includes(currentArea)){
+        areaSelect.value = currentArea;
+      }
+
+      if(types.includes(currentType)){
+        typeSelect.value = currentType;
+      }
+    }
+
+    function setCategory(category){
+
+      selectedCategory = category;
+
+      frontButton.classList.toggle(
+        "active",
+        category === "front"
+      );
+
+      backOfficeButton.classList.toggle(
+        "active",
+        category === "back"
+      );
+
+      allCategoryButton.classList.toggle(
+        "active",
+        category === "all"
+      );
+
+      areaSelect.value = "";
+      typeSelect.value = "";
+
+      createFilterOptions();
+      renderJobs();
+
+      const url =
+        new URL(location.href);
+
+      if(category === "all"){
+        url.searchParams.delete("category");
+      }else{
+        url.searchParams.set(
+          "category",
+          category
+        );
+      }
+
+      history.replaceState(
+        {},
+        "",
+        url
+      );
+    }
+
+    function applyCategoryFromUrl(){
+
+      const params =
+        new URLSearchParams(
+          location.search
+        );
+
+      const category =
+        params.get("category");
+
+      if(
+        category === "front" ||
+        category === "back"
+      ){
+        selectedCategory = category;
+      }
+
+      frontButton.classList.toggle(
+        "active",
+        selectedCategory === "front"
+      );
+
+      backOfficeButton.classList.toggle(
+        "active",
+        selectedCategory === "back"
+      );
+
+      allCategoryButton.classList.toggle(
+        "active",
+        selectedCategory === "all"
+      );
+
+      createFilterOptions();
+    }
+
+    function renderJobs(){
+
+      const keyword =
+        keywordInput.value
+          .trim()
+          .toLowerCase();
+
+      const selectedArea =
+        areaSelect.value;
+
+      const selectedType =
+        typeSelect.value;
+
+      const selectedSort =
+        sortSelect.value;
+
+      let filteredJobs =
+        jobs.filter((job) => {
+
+          const storeName =
+            job.storeName ||
+            job.name ||
+            job.shopName ||
+            job.storeTitle ||
+            "";
+
+          const area =
+            job.area ||
+            job.location ||
+            job.prefecture ||
+            "";
+
+          const type =
+            getJobType(job);
+
+          const searchText = `
+            ${storeName}
+            ${area}
+            ${type}
+            ${job.title || ""}
+            ${job.description || ""}
+            ${job.pr || ""}
+          `.toLowerCase();
+
+          const categoryMatch =
+            selectedCategory === "all" ||
+            job.resolvedCategory === selectedCategory;
+
+          const keywordMatch =
+            !keyword ||
+            searchText.includes(keyword);
+
+          const areaMatch =
+            !selectedArea ||
+            area === selectedArea;
+
+          const typeMatch =
+            !selectedType ||
+            type === selectedType;
+
+          return (
+            categoryMatch &&
+            keywordMatch &&
+            areaMatch &&
+            typeMatch
+          );
+        });
+
+      filteredJobs.sort((a,b) => {
+
+        if(selectedSort === "salary"){
+          return (
+            getSalaryNumber(b) -
+            getSalaryNumber(a)
+          );
+        }
+
+        return (
+          getCreatedSeconds(b) -
+          getCreatedSeconds(a)
+        );
+      });
+
+      const categoryName =
+        selectedCategory === "front"
+          ? "接客・店舗系"
+          : selectedCategory === "back"
+            ? "裏方・運営系"
+            : "男性向け求人";
+
+      statusText.textContent =
+        `${categoryName} ${filteredJobs.length}件`;
+
+      jobsList.innerHTML = "";
+
+      if(filteredJobs.length === 0){
+
+        jobsList.innerHTML = `
+          <div class="empty">
+
+            <h2>
+              現在、条件に合う男性求人はありません
+            </h2>
+
+            <p>
+              検索条件を変更するか、
+              新しい求人の掲載をお待ちください。
+            </p>
+
+          </div>
+        `;
+
+        return;
+      }
+
+      filteredJobs.forEach((job) => {
+
+        const storeName =
+          job.storeName ||
+          job.name ||
+          job.shopName ||
+          job.storeTitle ||
+          "店舗名未設定";
+
+        const area =
+          job.area ||
+          job.location ||
+          job.prefecture ||
+          "-";
+
+        const type =
+          getJobType(job) ||
+          "職種未設定";
+
+        const salary =
+          job.salary ||
+          job.salaryText ||
+          "給与未設定";
+
+        const employment =
+          job.employment ||
+          job.employmentType ||
+          "求人掲載中";
+
+        const categoryLabel =
+          job.resolvedCategory === "back"
+            ? "裏方・運営系"
+            : "接客・店舗系";
+
+        const card =
+          document.createElement("article");
+
+        card.className = "job-card";
+
+        card.innerHTML = `
+          <div class="badge">
+            NEW
+          </div>
+
+          <div class="category-badge">
+            ${escapeHtml(categoryLabel)}
+          </div>
+
+          <h2>
+            ${escapeHtml(storeName)}
+          </h2>
+
+          <div class="info">
+            📍 ${escapeHtml(area)}<br>
+            🏷 ${escapeHtml(type)}
+          </div>
+
+          <div class="salary">
+            ${escapeHtml(salary)}
+          </div>
+
+          <div class="tags">
+            <span>
+              ${escapeHtml(employment)}
+            </span>
+          </div>
+
+          <a
+            href="./job-detail.html?id=${encodeURIComponent(job.id)}"
+            class="btn gold"
+          >
+            求人詳細を見る
+          </a>
+        `;
+
+        jobsList.appendChild(card);
+      });
+    }
+
+    frontButton.addEventListener(
+      "click",
+      () => {
+        setCategory("front");
+      }
+    );
+
+    backOfficeButton.addEventListener(
+      "click",
+      () => {
+        setCategory("back");
+      }
+    );
+
+    allCategoryButton.addEventListener(
+      "click",
+      () => {
+        setCategory("all");
+      }
+    );
+
+    keywordInput.addEventListener(
+      "input",
+      renderJobs
+    );
+
+    areaSelect.addEventListener(
+      "change",
+      renderJobs
+    );
+
+    typeSelect.addEventListener(
+      "change",
+      renderJobs
+    );
+
+    sortSelect.addEventListener(
+      "change",
+      renderJobs
+    );
+
+    loadJobs();
+
+  </script>
+
+</body>
+</html>
