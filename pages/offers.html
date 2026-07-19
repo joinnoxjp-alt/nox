@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>店舗からのオファー | NOX</title>
+
+  <link
+    rel="stylesheet"
+    href="../style.css?v=12"
+  >
+
+</head>
+
+<body class="register-body">
+
+  <main class="register-page">
+
+    <section class="register-section">
+
+      <div class="register-card">
+
+        <h1 class="register-title">
+          📩 店舗からのオファー
+        </h1>
+
+        <p class="register-sub">
+          あなたに届いた店舗からのオファーを確認できます。
+        </p>
+
+        <div
+          id="offersList"
+          style="
+            display:grid;
+            gap:18px;
+            margin-top:30px;
+          "
+        >
+
+          <p
+            id="offersEmpty"
+            style="
+              text-align:center;
+              color:#999;
+              padding:40px 0;
+            "
+          >
+            現在、届いているオファーはありません。
+          </p>
+
+        </div>
+
+        <a
+          href="../index.html"
+          class="back-link"
+        >
+          ← トップへ戻る
+        </a>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <script type="module">
+
+    const offers =
+      JSON.parse(
+        localStorage.getItem("noxOffers") || "[]"
+      );
+
+    const offersList =
+      document.getElementById("offersList");
+
+    const offersEmpty =
+      document.getElementById("offersEmpty");
+
+    if(offers.length > 0){
+
+      offersEmpty.remove();
+
+      offers.forEach((offer) => {
+
+        const card =
+          document.createElement("div");
+
+        card.className =
+          "member-lounge-card";
+
+        card.innerHTML = `
+          <span>📩</span>
+
+          <strong>
+            ${offer.storeName || "店舗名"}
+          </strong>
+
+          <small>
+            ${offer.message || "店舗からオファーが届いています。"}
+          </small>
+
+          <small style="margin-top:8px;">
+            ${offer.createdAt || ""}
+          </small>
+
+          ${
+            offer.jobId
+              ? `
+                <a
+                  href="job-detail.html?id=${encodeURIComponent(offer.jobId)}"
+                  class="btn gold"
+                  style="margin-top:16px;"
+                >
+                  求人を見る
+                </a>
+              `
+              : ""
+          }
+        `;
+
+        offersList.appendChild(card);
+
+      });
+
+    }
+
+  </script>
+
+</body>
+
+</html>
