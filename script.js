@@ -699,41 +699,166 @@ function getJobImage(job) {
   return "images/line_oa_chat_260708_192846.jpeg";
 }
 
-/* ===========================
+/* ==========================
    TOP 注目求人
-=========================== */
+========================== */
 
 const topJobs =
   document.getElementById("topNewJobs");
 
-if (topJobs) {
+const pickupFemaleButton =
+  document.getElementById(
+    "pickupFemaleButton"
+  );
+
+const pickupMaleButton =
+  document.getElementById(
+    "pickupMaleButton"
+  );
+
+let allTopFeaturedJobs = [];
+let selectedPickupGender = "female";
+
+if(topJobs){
   loadTopJobs();
 }
 
-async function loadTopJobs() {
-  try {
-    topJobs.innerHTML =
-      "<p>注目求人を読み込んでいます...</p>";
+function getPickupGender(job){
+
+  const targetGender =
+    String(
+      job.targetGender ||
+      job.jobAudience ||
+      job.gender ||
+      job.audience ||
+      ""
+    ).toLowerCase();
+
+  if(
+    targetGender === "male" ||
+    targetGender === "men" ||
+    targetGender === "男性" ||
+    targetGender === "男性向け"
+  ){
+    return "male";
+  }
+
+  if(
+    targetGender === "female" ||
+    targetGender === "women" ||
+    targetGender === "女性" ||
+    targetGender === "女性向け"
+  ){
+    return "female";
+  }
+
+  const maleSearchText = [
+    job.businessType,
+    job.jobType,
+    job.position,
+    job.title,
+    job.storeName,
+    job.shopName
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+
+  const maleKeywords = [
+    "ホスト",
+    "ボーイズバー",
+    "メンズコンカフェ",
+    "メンコン",
+    "黒服",
+    "内勤",
+    "幹部候補",
+    "店長候補",
+    "ドライバー"
+  ];
+
+  const isMaleJob =
+    maleKeywords.some(
+      (keyword) =>
+        maleSearchText.includes(
+          keyword.toLowerCase()
+        )
+    );
+
+  return isMaleJob
+    ? "male"
+    : "female";
+}
+
+function setPickupGender(gender){
+
+  selectedPickupGender = gender;
+
+  if(pickupFemaleButton){
+
+    pickupFemaleButton.classList.toggle(
+      "gold",
+      gender === "female"
+    );
+
+    pickupFemaleButton.classList.toggle(
+      "ghost",
+      gender !== "female"
+    );
+  }
+
+  if(pickupMaleButton){
+
+    pickupMaleButton.classList.toggle(
+      "gold",
+      gender === "male"
+    );
+
+    pickupMaleButton.classList.toggle(
+      "ghost",
+      gender !== "male"
+    );
+  }
+
+  renderTopJobs();
+
+  if(topJobs){
+    topJobs.scrollTo({
+      left:0,
+      behavior:"smooth"
+    });
+  }
+}
+
+async function loadTopJobs(){
+
+  try{
+
+    topJobs.innerHTML = `
+      <p class="jobs-loading">
+        注目求人を読み込んでいます...
+      </p>
+    `;
 
     const snapshot =
       await getDocs(
-        collection(db, "jobs")
+        collection(db,"jobs")
       );
 
     const jobs = [];
 
     snapshot.forEach(
       (documentSnapshot) => {
+
         const job = {
-          id: documentSnapshot.id,
+          id:documentSnapshot.id,
           ...documentSnapshot.data()
         };
 
-        if (job.status !== "approved") {
+        if(job.status !== "approved"){
           return;
         }
 
-        if (job.topFeatured !== true) {
+        if(job.topFeatured !== true){
           return;
         }
 
@@ -748,17 +873,36 @@ async function loadTopJobs() {
           .join(" ")
           .toLowerCase();
 
-        if (searchText.includes("テスト")) return;
-        if (searchText.includes("test")) return;
-        if (searchText.includes("dummy")) return;
-        if (searchText.includes("nox店舗")) return;
-        if (searchText.includes("nox確認店")) return;
+        if(searchText.includes("テスト")){
+          return;
+        }
 
-        jobs.push(job);
+        if(searchText.includes("test")){
+          return;
+        }
+
+        if(searchText.includes("dummy")){
+          return;
+        }
+
+        if(searchText.includes("nox店舗")){
+          return;
+        }
+
+        if(searchText.includes("nox確認店")){
+          return;
+        }
+
+        jobs.push({
+          ...job,
+          resolvedPickupGender:
+            getPickupGender(job)
+        });
       }
     );
 
-    jobs.sort((jobA, jobB) => {
+    jobs.sort((jobA,jobB) => {
+
       const orderA =
         typeof jobA.topOrder === "number"
           ? jobA.topOrder
@@ -769,7 +913,7 @@ async function loadTopJobs() {
           ? jobB.topOrder
           : 9999;
 
-      if (orderA !== orderB) {
+      if(orderA !== orderB){
         return orderA - orderB;
       }
 
@@ -788,87 +932,12 @@ async function loadTopJobs() {
       return timeB - timeA;
     });
 
-    const featuredJobs = jobs.slice(0, 3);
+    allTopFeaturedJobs = jobs;
 
-    if (featuredJobs.length === 0) {
-      topJobs.innerHTML = `
-        <p class="top-jobs-empty">
-          現在、注目求人を準備中です。
-        </p>
-      `;
+    renderTopJobs();
 
-      return;
-    }
+  }catch(error){
 
-    topJobs.innerHTML =
-      featuredJobs
-        .map((job) => {
-          const storeName =
-            job.storeName ||
-            job.shopName ||
-            job.storeTitle ||
-            job.name ||
-            "店舗名未設定";
-
-          const area =
-            job.area ||
-            job.prefecture ||
-            job.location ||
-            "エリア未設定";
-
-          const salary =
-            job.salary ||
-            job.salaryText ||
-            job.hourlyWage ||
-            job.hourlyPay ||
-            "給与は詳細ページをご確認ください";
-
-          const imageUrl =
-            getJobImage(job);
-
-          return `
-            <div class="top-job-card">
-
-              <div class="top-featured-label">
-                PICK UP
-              </div>
-
-              <img
-                src="${escapeHtml(imageUrl)}"
-                alt="${escapeHtml(storeName)}の求人画像"
-                loading="lazy"
-                onerror="this.onerror=null;this.src='images/line_oa_chat_260708_192846.jpeg';"
-              >
-
-              <div class="top-job-body">
-
-                <h3>
-                  ${escapeHtml(storeName)}
-                </h3>
-
-                <p>
-                  📍 ${escapeHtml(area)}
-                </p>
-
-                <p>
-                  💰 ${escapeHtml(salary)}
-                </p>
-
-                <a
-                  href="pages/job-detail.html?id=${encodeURIComponent(job.id)}"
-                  class="btn gold"
-                >
-                  詳細を見る
-                </a>
-
-              </div>
-
-            </div>
-          `;
-        })
-        .join("");
-
-  } catch (error) {
     console.error(
       "TOP注目求人の読み込みエラー:",
       error
@@ -880,6 +949,147 @@ async function loadTopJobs() {
       </p>
     `;
   }
+}
+
+function renderTopJobs(){
+
+  if(!topJobs){
+    return;
+  }
+
+  const featuredJobs =
+    allTopFeaturedJobs
+      .filter(
+        (job) =>
+          job.resolvedPickupGender ===
+          selectedPickupGender
+      )
+      .slice(0,6);
+
+  if(featuredJobs.length === 0){
+
+    const genderLabel =
+      selectedPickupGender === "male"
+        ? "男性向け"
+        : "女性向け";
+
+    topJobs.innerHTML = `
+      <div
+        class="top-jobs-empty"
+        style="
+          flex:0 0 100%;
+          text-align:center;
+          padding:50px 18px;
+        "
+      >
+        <p>
+          現在、${genderLabel}の注目求人を準備中です。
+        </p>
+      </div>
+    `;
+
+    return;
+  }
+
+  topJobs.innerHTML =
+    featuredJobs
+      .map((job) => {
+
+        const storeName =
+          job.storeName ||
+          job.shopName ||
+          job.storeTitle ||
+          job.name ||
+          "店舗名未設定";
+
+        const area =
+          job.area ||
+          job.prefecture ||
+          job.location ||
+          "エリア未設定";
+
+        const salary =
+          job.salary ||
+          job.salaryText ||
+          job.hourlyWage ||
+          job.hourlyPay ||
+          "給与は詳細ページをご確認ください";
+
+        const imageUrl =
+          getJobImage(job);
+
+        const genderLabel =
+          job.resolvedPickupGender === "male"
+            ? "MEN'S PICK UP"
+            : "PICK UP";
+
+        return `
+          <div
+            class="top-job-card"
+            style="
+              flex:0 0 min(86vw,420px);
+              scroll-snap-align:start;
+            "
+          >
+
+            <div class="top-featured-label">
+              ${escapeHtml(genderLabel)}
+            </div>
+
+            <img
+              src="${escapeHtml(imageUrl)}"
+              alt="${escapeHtml(storeName)}の求人画像"
+              loading="lazy"
+              onerror="this.onerror=null;this.src='images/line_oa_chat_260708_192846.jpeg';"
+            >
+
+            <div class="top-job-body">
+
+              <h3>
+                ${escapeHtml(storeName)}
+              </h3>
+
+              <p>
+                📍 ${escapeHtml(area)}
+              </p>
+
+              <p>
+                💰 ${escapeHtml(salary)}
+              </p>
+
+              <a
+                href="pages/job-detail.html?id=${encodeURIComponent(job.id)}"
+                class="btn gold"
+              >
+                詳細を見る
+              </a>
+
+            </div>
+
+          </div>
+        `;
+      })
+      .join("");
+}
+
+if(pickupFemaleButton){
+
+  pickupFemaleButton.addEventListener(
+    "click",
+    () => {
+      setPickupGender("female");
+    }
+  );
+}
+
+if(pickupMaleButton){
+
+  pickupMaleButton.addEventListener(
+    "click",
+    () => {
+      setPickupGender("male");
+    }
+  );
 }
 
 /* ===========================
