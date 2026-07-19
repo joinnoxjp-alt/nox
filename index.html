@@ -311,42 +311,95 @@
 
         </section>
 
-        <!-- 注目求人 -->
-        <section class="section new-jobs-section">
+  <!-- 注目求人 -->
+<section class="section new-jobs-section">
 
-          <div class="section-head">
+  <div class="section-head">
 
-            <p>
-              PICK UP JOBS
-            </p>
+    <p>
+      PICK UP JOBS
+    </p>
 
-            <h2>
-              注目求人
-            </h2>
+    <h2>
+      注目求人
+    </h2>
 
-          </div>
+  </div>
 
-          <div
-            id="topNewJobs"
-            class="top-new-jobs"
-          >
-            <p class="jobs-loading">
-              注目求人を読み込んでいます...
-            </p>
-          </div>
+  <div
+    style="
+      display:flex;
+      justify-content:center;
+      gap:12px;
+      margin:0 0 24px;
+    "
+  >
 
-          <div class="new-jobs-more">
+    <button
+      type="button"
+      id="pickupFemaleButton"
+      class="btn gold"
+    >
+      👠 女性向け
+    </button>
 
-            <a
-              href="pages/girls.html"
-              class="btn ghost"
-            >
-              求人一覧をもっと見る
-            </a>
+    <button
+      type="button"
+      id="pickupMaleButton"
+      class="btn ghost"
+    >
+      👑 男性向け
+    </button>
 
-          </div>
+  </div>
 
-        </section>
+  <div
+    id="topNewJobs"
+    class="top-new-jobs"
+    style="
+      display:flex;
+      gap:18px;
+      overflow-x:auto;
+      scroll-snap-type:x mandatory;
+      padding:4px 18px 20px;
+      margin:0 -18px;
+      -webkit-overflow-scrolling:touch;
+      scrollbar-width:none;
+    "
+  >
+    <p class="jobs-loading">
+      注目求人を読み込んでいます...
+    </p>
+  </div>
+
+  <div
+    id="pickupMoreLinks"
+    class="new-jobs-more"
+    style="
+      display:flex;
+      justify-content:center;
+      flex-wrap:wrap;
+      gap:12px;
+    "
+  >
+
+    <a
+      href="pages/girls.html"
+      class="btn gold"
+    >
+      女性求人をもっと見る
+    </a>
+
+    <a
+      href="pages/men.html"
+      class="btn ghost"
+    >
+      男性求人をもっと見る
+    </a>
+
+  </div>
+
+</section>
 
         <!-- Hero Main -->
         <p class="eyebrow">
