@@ -450,6 +450,126 @@
   </div>
 
 </section>
+        /* ==========================
+   MEMBER LOUNGE
+========================== */
+
+const memberLoungeSection =
+  document.getElementById(
+    "memberLoungeSection"
+  );
+
+const memberWelcomeTitle =
+  document.getElementById(
+    "memberWelcomeTitle"
+  );
+
+const savedJobsCount =
+  document.getElementById(
+    "savedJobsCount"
+  );
+
+const offersCount =
+  document.getElementById(
+    "offersCount"
+  );
+
+const applicationsCount =
+  document.getElementById(
+    "applicationsCount"
+  );
+
+onAuthStateChanged(
+  auth,
+  async (user) => {
+
+    if(!memberLoungeSection){
+      return;
+    }
+
+    if(!user){
+
+      memberLoungeSection.style.display =
+        "none";
+
+      return;
+    }
+
+    memberLoungeSection.style.display =
+      "block";
+
+    let displayName =
+      user.displayName ||
+      "会員";
+
+    try{
+
+      const userSnapshot =
+        await getDoc(
+          doc(
+            db,
+            "users",
+            user.uid
+          )
+        );
+
+      if(userSnapshot.exists()){
+
+        const userData =
+          userSnapshot.data();
+
+        displayName =
+          userData.displayName ||
+          userData.name ||
+          userData.nickname ||
+          displayName;
+
+        const savedJobIds =
+          Array.isArray(userData.savedJobIds)
+            ? userData.savedJobIds
+            : [];
+
+        const offers =
+          Array.isArray(userData.offers)
+            ? userData.offers
+            : [];
+
+        const applications =
+          Array.isArray(userData.applications)
+            ? userData.applications
+            : [];
+
+        if(savedJobsCount){
+          savedJobsCount.textContent =
+            `${savedJobIds.length}件`;
+        }
+
+        if(offersCount){
+          offersCount.textContent =
+            `${offers.length}件`;
+        }
+
+        if(applicationsCount){
+          applicationsCount.textContent =
+            `${applications.length}件`;
+        }
+      }
+
+    }catch(error){
+
+      console.error(
+        "MEMBER LOUNGE読み込みエラー:",
+        error
+      );
+    }
+
+    if(memberWelcomeTitle){
+
+      memberWelcomeTitle.textContent =
+        `${displayName}さん、おかえりなさい`;
+    }
+  }
+);
   <!-- 注目求人 -->
 <section class="section new-jobs-section">
 
