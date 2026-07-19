@@ -259,24 +259,53 @@
           placeholder="例：店舗名"
           required
         >
+       <label for="targetGender">
+  求人対象
+  <span class="required">必須</span>
+</label>
 
+<select id="targetGender" required>
+  <option value="female">
+    女性向け求人
+  </option>
+
+  <option value="male">
+    男性向け求人
+  </option>
+</select>
         <label for="businessType">
           業種
           <span class="required">必須</span>
         </label>
 
-        <select id="businessType" required>
-          <option value="ガールズバー">ガールズバー</option>
-          <option value="キャバクラ">キャバクラ</option>
-          <option value="コンカフェ">コンカフェ</option>
-          <option value="ラウンジ">ラウンジ</option>
-          <option value="スナック">スナック</option>
-          <option value="クラブ">クラブ</option>
-          <option value="メンズコンカフェ">メンズコンカフェ</option>
-          <option value="ホストクラブ">ホストクラブ</option>
-          <option value="バー">バー</option>
-          <option value="その他">その他</option>
-        </select>
+       <select id="businessType" required>
+
+  <optgroup label="女性向け・水商売">
+    <option value="ガールズバー">ガールズバー</option>
+    <option value="キャバクラ">キャバクラ</option>
+    <option value="コンカフェ">コンカフェ</option>
+    <option value="ラウンジ">ラウンジ</option>
+    <option value="スナック">スナック</option>
+    <option value="クラブ">クラブ</option>
+  </optgroup>
+
+  <optgroup label="女性向け・その他">
+    <option value="メンズエステ">メンズエステ</option>
+    <option value="デリヘル">デリヘル</option>
+    <option value="ソープ">ソープ</option>
+    <option value="チャットレディ">チャットレディ</option>
+  </optgroup>
+
+  <optgroup label="男性向け">
+    <option value="ホストクラブ">ホストクラブ</option>
+    <option value="ボーイズバー">ボーイズバー</option>
+    <option value="メンズコンカフェ">メンズコンカフェ</option>
+    <option value="バー">バー</option>
+  </optgroup>
+
+  <option value="その他">その他</option>
+
+</select>
 
         <input
           id="otherBusinessType"
@@ -284,7 +313,48 @@
           placeholder="例：その他の業種名"
           style="display:none; margin-top:12px;"
         >
+       <label for="jobPosition">
+  募集職種
+  <span class="required">必須</span>
+</label>
 
+<select id="jobPosition" required>
+
+  <option value="キャスト">キャスト</option>
+
+  <option value="ホスト">ホスト</option>
+
+  <option value="ボーイズバースタッフ">
+    ボーイズバースタッフ
+  </option>
+
+  <option value="メンズコンカフェキャスト">
+    メンズコンカフェキャスト
+  </option>
+
+  <option value="黒服">黒服</option>
+
+  <option value="ホールスタッフ">
+    ホールスタッフ
+  </option>
+
+  <option value="内勤">内勤</option>
+
+  <option value="店長候補">店長候補</option>
+
+  <option value="幹部候補">幹部候補</option>
+
+  <option value="ドライバー">ドライバー</option>
+
+  <option value="受付・事務">受付・事務</option>
+
+  <option value="Web・SNS担当">
+    Web・SNS担当
+  </option>
+
+  <option value="その他">その他</option>
+
+</select>
         <label for="area">
           エリア
           <span class="required">必須</span>
@@ -806,7 +876,16 @@
           const applicationData = {
             storeName: getValue("storeName"),
             businessType: selectedBusinessType,
+           targetGender: getValue("targetGender"),
 
+jobAudience:
+  getValue("targetGender") === "male"
+    ? "men"
+    : "women",
+
+jobType: getValue("jobPosition"),
+
+position: getValue("jobPosition"),
             area: getValue("area"),
             address: getValue("address"),
             station: getValue("station"),
