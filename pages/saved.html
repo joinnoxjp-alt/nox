@@ -72,45 +72,240 @@
 
   <script type="module">
 
-    const savedJobs =
-      JSON.parse(localStorage.getItem("savedJobs") || "[]");
+import { auth } from "./firebase.js";
+import { db } from "./firebase-db.js";
 
-    const list =
-      document.getElementById("savedJobsList");
+import {
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-    const empty =
-      document.getElementById("savedEmpty");
+import {
+  doc,
+  getDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    if(savedJobs.length){
+const list =
+  document.getElementById(
+    "savedJobsList"
+  );
 
-      empty.remove();
+const empty =
+  document.getElementById(
+    "savedEmpty"
+  );
 
-      savedJobs.forEach(job=>{
+function escapeHtml(value){
+  return String(value ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
 
-        const card=document.createElement("div");
+function getJobImage(job){
 
-        card.className="member-lounge-card";
+  if(job.mainImage){
+    return job.mainImage;
+  }
 
-        card.innerHTML=`
-          <strong>${job.storeName || job.shopName || "店舗名"}</strong>
-          <small>${job.area || ""}</small>
-          <small>${job.salary || ""}</small>
-          <br><br>
-          <a
-            href="job-detail.html?id=${job.id}"
-            class="btn gold"
-          >
-            詳細を見る
-          </a>
-        `;
+  if(job.imageUrl){
+    return job.imageUrl;
+  }
 
-        list.appendChild(card);
+  if(
+    Array.isArray(job.images) &&
+    job.images.length > 0
+  ){
+    return job.images[0];
+  }
 
-      });
+  return "../images/nox.jpg";
+}
 
+onAuthStateChanged(
+  auth,
+  async(user)=>{
+
+    if(!user){
+
+      location.href =
+        "./login.html";
+
+      return;
     }
 
-  </script>
+    try{
+
+      const userSnapshot =
+        await getDoc(
+          doc(
+            db,
+            "users",
+            user.uid
+          )
+        );
+
+      const userData =
+        userSnapshot.exists()
+          ? userSnapshot.data()
+          : {};
+
+      const savedJobIds =
+        Array.isArray(
+          userData.savedJobIds
+        )
+          ? userData.savedJobIds
+          : [];
+
+      if(savedJobIds.length === 0){
+
+        list.innerHTML = "";
+
+        if(empty){
+          empty.style.display =
+            "block";
+        }
+
+        return;
+      }
+
+      if(empty){
+        empty.style.display =
+          "none";
+      }
+
+      list.innerHTML = `
+        <p style="color:#aaa;text-align:center;">
+          保存した求人を読み込んでいます...
+        </p>
+      `;
+
+      const savedJobs = [];
+
+      for(const jobId of savedJobIds){
+
+        const jobSnapshot =
+          await getDoc(
+            doc(
+              db,
+              "jobs",
+              jobId
+            )
+          );
+
+        if(jobSnapshot.exists()){
+
+          savedJobs.push({
+            id:jobSnapshot.id,
+            ...jobSnapshot.data()
+          });
+        }
+      }
+
+      if(savedJobs.length === 0){
+
+        list.innerHTML = "";
+
+        if(empty){
+          empty.style.display =
+            "block";
+        }
+
+        return;
+      }
+
+      list.innerHTML =
+        savedJobs
+          .map((job)=>{
+
+            const storeName =
+              job.storeName ||
+              job.shopName ||
+              job.name ||
+              "店舗名未設定";
+
+            const area =
+              job.area ||
+              job.prefecture ||
+              job.location ||
+              "エリア未設定";
+
+            const salary =
+              job.salary ||
+              job.salaryText ||
+              job.hourlyWage ||
+              "給与は詳細をご確認ください";
+
+            const imageUrl =
+              getJobImage(job);
+
+            return `
+              <div class="member-lounge-card">
+
+                <img
+                  src="${escapeHtml(imageUrl)}"
+                  alt="${escapeHtml(storeName)}"
+                  style="
+                    width:100%;
+                    height:180px;
+                    object-fit:cover;
+                    border-radius:14px;
+                    margin-bottom:16px;
+                  "
+                >
+
+                <strong>
+                  ${escapeHtml(storeName)}
+                </strong>
+
+                <small>
+                  📍 ${escapeHtml(area)}
+                </small>
+
+                <small
+                  style="
+                    margin-top:6px;
+                    color:#d4af37;
+                    font-size:18px;
+                  "
+                >
+                  💰 ${escapeHtml(salary)}
+                </small>
+
+                <a
+                  href="job-detail.html?id=${encodeURIComponent(job.id)}"
+                  class="btn gold"
+                  style="
+                    margin-top:16px;
+                    display:inline-flex;
+                  "
+                >
+                  詳細を見る
+                </a>
+
+              </div>
+            `;
+          })
+          .join("");
+
+    }catch(error){
+
+      console.error(
+        "保存求人読み込みエラー:",
+        error
+      );
+
+      list.innerHTML = `
+        <p style="color:#aaa;text-align:center;">
+          保存した求人を読み込めませんでした。
+        </p>
+      `;
+    }
+  }
+);
+
+</script>
 
 </body>
 
