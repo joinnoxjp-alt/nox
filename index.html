@@ -310,7 +310,146 @@
           </div>
 
         </section>
+<!-- 会員限定エリア -->
+<section
+  id="memberLoungeSection"
+  style="
+    display:none;
+    padding:70px 20px;
+    border-top:1px solid rgba(255,215,0,.18);
+    border-bottom:1px solid rgba(255,215,0,.18);
+    background:
+      radial-gradient(
+        circle at top right,
+        rgba(255,215,0,.16),
+        transparent 40%
+      ),
+      linear-gradient(
+        180deg,
+        rgba(10,10,10,.96),
+        rgba(0,0,0,.98)
+      );
+  "
+>
 
+  <div
+    style="
+      max-width:1000px;
+      margin:0 auto;
+    "
+  >
+
+    <div
+      style="
+        margin-bottom:28px;
+        text-align:center;
+      "
+    >
+
+      <p
+        style="
+          margin-bottom:12px;
+          color:#d4af37;
+          font-size:14px;
+          letter-spacing:5px;
+        "
+      >
+        MEMBER LOUNGE
+      </p>
+
+      <h2
+        id="memberWelcomeTitle"
+        style="
+          margin-bottom:12px;
+          color:#fff;
+          font-size:clamp(30px,7vw,48px);
+        "
+      >
+        おかえりなさい
+      </h2>
+
+      <p
+        style="
+          color:#aaa;
+          line-height:1.9;
+        "
+      >
+        会員限定のおすすめ求人や保存情報を確認できます。
+      </p>
+
+    </div>
+
+    <div
+      style="
+        display:grid;
+        grid-template-columns:
+          repeat(
+            auto-fit,
+            minmax(220px,1fr)
+          );
+        gap:14px;
+      "
+    >
+
+      <a
+        href="pages/matches.html"
+        class="member-lounge-card"
+      >
+        <span>🎯</span>
+        <strong>AIおすすめ求人</strong>
+        <small>相性の高い求人を見る</small>
+      </a>
+
+      <a
+        href="pages/saved.html"
+        class="member-lounge-card"
+      >
+        <span>❤️</span>
+        <strong>保存した求人</strong>
+        <small id="savedJobsCount">0件</small>
+      </a>
+
+      <a
+        href="pages/offers.html"
+        class="member-lounge-card"
+      >
+        <span>📩</span>
+        <strong>店舗からのオファー</strong>
+        <small id="offersCount">0件</small>
+      </a>
+
+      <a
+        href="pages/applications.html"
+        class="member-lounge-card"
+      >
+        <span>📄</span>
+        <strong>応募履歴</strong>
+        <small id="applicationsCount">0件</small>
+      </a>
+
+      <a
+        href="pages/matching-profile.html"
+        class="member-lounge-card"
+      >
+        <span>⚙️</span>
+        <strong>希望条件を登録</strong>
+        <small>マッチング精度を上げる</small>
+      </a>
+
+      <a
+        href="pages/mypage.html"
+        class="member-lounge-card"
+      >
+        <span>👤</span>
+        <strong>マイページ</strong>
+        <small>会員情報を確認する</small>
+      </a>
+
+    </div>
+
+  </div>
+
+</section>
   <!-- 注目求人 -->
 <section class="section new-jobs-section">
 
