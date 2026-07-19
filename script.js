@@ -1040,7 +1040,7 @@ function renderTopJobs(){
               src="${escapeHtml(imageUrl)}"
               alt="${escapeHtml(storeName)}の求人画像"
               loading="lazy"
-              onerror="this.onerror=null;this.src='images/line_oa_chat_260708_192846.jpeg';"
+              onerror="this.onerror=null;this.style.display='none';"
             >
 
             <div class="top-job-body">
