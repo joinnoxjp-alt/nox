@@ -1,5 +1,1069 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+  >
+
+  <title>無料会員登録 | NOX</title>
+
+  <meta
+    name="description"
+    content="NOXの無料会員登録ページです。希望エリアや希望業種を登録して、自分に合った夜職求人を探せます。"
+  >
+
+  <meta name="theme-color" content="#070707">
+
+  <link
+    rel="stylesheet"
+    href="../style.css"
+  >
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body.register-body {
+      min-height: 100vh;
+      margin: 0;
+
+      background:
+        radial-gradient(
+          circle at 50% 0%,
+          rgba(218, 175, 55, 0.15),
+          transparent 32%
+        ),
+        linear-gradient(
+          180deg,
+          #080808 0%,
+          #11100d 50%,
+          #070707 100%
+        );
+
+      color: #ffffff;
+
+      font-family:
+        "Hiragino Kaku Gothic ProN",
+        "Yu Gothic",
+        "Meiryo",
+        sans-serif;
+    }
+
+    .site-header {
+      width: 100%;
+      min-height: 76px;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      gap: 20px;
+
+      padding:
+        max(16px, env(safe-area-inset-top))
+        22px
+        14px;
+
+      border-bottom:
+        1px solid
+        rgba(218, 175, 55, 0.14);
+
+      background:
+        rgba(7, 7, 7, 0.88);
+
+      backdrop-filter:
+        blur(14px);
+
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .header-logo {
+      display: flex;
+      flex-direction: column;
+
+      color: #e2ba4b;
+      text-decoration: none;
+
+      font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+      letter-spacing: 0.18em;
+    }
+
+    .header-logo span {
+      font-size: 25px;
+      font-weight: 900;
+    }
+
+    .header-logo small {
+      margin-top: 2px;
+
+      color: #8d877b;
+
+      font-family:
+        "Hiragino Kaku Gothic ProN",
+        "Yu Gothic",
+        sans-serif;
+
+      font-size: 9px;
+
+      letter-spacing: 0.14em;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+
+      gap: 10px;
+    }
+
+    .btn {
+      min-height: 42px;
+
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      padding: 10px 17px;
+
+      border-radius: 999px;
+
+      font-size: 13px;
+      font-weight: 800;
+
+      text-decoration: none;
+
+      transition:
+        transform 0.2s ease,
+        opacity 0.2s ease;
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+    }
+
+    .btn.ghost {
+      border:
+        1px solid
+        rgba(218, 175, 55, 0.38);
+
+      background:
+        rgba(255, 255, 255, 0.025);
+
+      color: #efd473;
+    }
+
+    .register-page {
+      width: 100%;
+
+      padding:
+        54px
+        18px
+        90px;
+    }
+
+    .register-section {
+      width:
+        min(
+          860px,
+          100%
+        );
+
+      margin: 0 auto;
+    }
+
+    .register-card {
+      position: relative;
+
+      overflow: hidden;
+
+      padding:
+        38px
+        32px;
+
+      border:
+        1px solid
+        rgba(224, 183, 68, 0.36);
+
+      border-radius: 28px;
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(255, 255, 255, 0.055),
+          rgba(255, 255, 255, 0.015)
+        );
+
+      box-shadow:
+        0 30px 90px
+        rgba(0, 0, 0, 0.48),
+        inset 0 1px 0
+        rgba(255, 255, 255, 0.05);
+
+      backdrop-filter:
+        blur(14px);
+    }
+
+    .register-card::before {
+      content: "";
+
+      position: absolute;
+
+      top: -130px;
+      left: -110px;
+
+      width: 260px;
+      height: 260px;
+
+      border-radius: 50%;
+
+      background:
+        rgba(215, 170, 45, 0.13);
+
+      filter:
+        blur(38px);
+
+      pointer-events: none;
+    }
+
+    .register-step {
+      position: relative;
+
+      margin-bottom: 28px;
+
+      text-align: center;
+    }
+
+    .register-step span {
+      display: inline-flex;
+
+      margin-bottom: 10px;
+      padding: 7px 12px;
+
+      border:
+        1px solid
+        rgba(224, 183, 68, 0.35);
+
+      border-radius: 999px;
+
+      background:
+        rgba(224, 183, 68, 0.08);
+
+      color: #d8ad42;
+
+      font-size: 11px;
+      font-weight: 900;
+
+      letter-spacing: 0.18em;
+    }
+
+    .register-step h2 {
+      margin:
+        0
+        0
+        9px;
+
+      color: #f4df9c;
+
+      font-family:
+        "Yu Mincho",
+        "Hiragino Mincho ProN",
+        serif;
+
+      font-size:
+        clamp(
+          28px,
+          5vw,
+          42px
+        );
+
+      line-height: 1.4;
+
+      letter-spacing: 0.08em;
+    }
+
+    .register-step p {
+      margin: 0;
+
+      color: #aaa59b;
+
+      font-size: 14px;
+
+      line-height: 1.8;
+    }
+
+    .profile-step {
+      margin:
+        35px
+        0
+        24px;
+
+      padding-top: 32px;
+
+      border-top:
+        1px solid
+        rgba(255, 255, 255, 0.07);
+    }
+
+    .nox-form {
+      position: relative;
+    }
+
+    .nox-form > label,
+    .form-grid label {
+      display: flex;
+      flex-direction: column;
+
+      gap: 9px;
+
+      margin-bottom: 18px;
+
+      color: #e6dfd2;
+
+      font-size: 13px;
+      font-weight: 800;
+
+      line-height: 1.5;
+    }
+
+    .nox-form input,
+    .nox-form select,
+    .nox-form textarea {
+      width: 100%;
+
+      border:
+        1px solid
+        rgba(218, 175, 55, 0.22);
+
+      border-radius: 14px;
+
+      outline: none;
+
+      background:
+        rgba(255, 255, 255, 0.035);
+
+      color: #ffffff;
+
+      font-size: 16px;
+
+      transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+    }
+
+    .nox-form input,
+    .nox-form select {
+      min-height: 54px;
+
+      padding:
+        0
+        15px;
+    }
+
+    .nox-form textarea {
+      min-height: 130px;
+
+      padding:
+        15px;
+
+      resize: vertical;
+
+      line-height: 1.7;
+    }
+
+    .nox-form input::placeholder,
+    .nox-form textarea::placeholder {
+      color: #726e66;
+    }
+
+    .nox-form input:focus,
+    .nox-form select:focus,
+    .nox-form textarea:focus {
+      border-color:
+        rgba(233, 194, 82, 0.72);
+
+      background:
+        rgba(255, 255, 255, 0.055);
+
+      box-shadow:
+        0 0 0 3px
+        rgba(218, 175, 55, 0.09);
+    }
+
+    .nox-form select option {
+      background: #111111;
+      color: #ffffff;
+    }
+
+    .form-grid {
+      display: grid;
+
+      grid-template-columns:
+        repeat(
+          2,
+          minmax(
+            0,
+            1fr
+          )
+        );
+
+      gap:
+        0
+        16px;
+    }
+
+    .form-grid .full {
+      grid-column:
+        1
+        /
+        -1;
+    }
+
+    .gold-btn {
+      width: 100%;
+      min-height: 60px;
+
+      border: none;
+      border-radius: 999px;
+
+      background:
+        linear-gradient(
+          90deg,
+          #b98518,
+          #f0d26d,
+          #c59425
+        );
+
+      color: #151008;
+
+      font-size: 17px;
+      font-weight: 900;
+
+      letter-spacing: 0.04em;
+
+      cursor: pointer;
+
+      box-shadow:
+        0 13px 30px
+        rgba(218, 175, 55, 0.22),
+        inset 0 1px 0
+        rgba(255, 255, 255, 0.36);
+
+      transition:
+        transform 0.2s ease,
+        opacity 0.2s ease;
+    }
+
+    .gold-btn:active {
+      transform: scale(0.98);
+    }
+
+    .gold-btn:disabled {
+      cursor: wait;
+      opacity: 0.62;
+    }
+
+    .complete-box {
+      display: none;
+
+      margin-top: 25px;
+      padding: 28px 20px;
+
+      border:
+        1px solid
+        rgba(224, 183, 68, 0.55);
+
+      border-radius: 20px;
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(218, 175, 55, 0.14),
+          rgba(255, 255, 255, 0.02)
+        );
+
+      text-align: center;
+
+      box-shadow:
+        0 20px 50px
+        rgba(0, 0, 0, 0.35);
+    }
+
+    .complete-box.show {
+      display: block;
+    }
+
+    .complete-box h3 {
+      margin:
+        0
+        0
+        9px;
+
+      color: #efd16a;
+
+      font-family:
+        "Yu Mincho",
+        "Hiragino Mincho ProN",
+        serif;
+
+      font-size: 27px;
+    }
+
+    .complete-box p {
+      margin:
+        0
+        0
+        20px;
+
+      color: #c4beb3;
+
+      font-size: 14px;
+
+      line-height: 1.8;
+    }
+
+    .complete-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      min-height: 50px;
+
+      padding:
+        12px
+        24px;
+
+      border-radius: 999px;
+
+      background:
+        linear-gradient(
+          90deg,
+          #b98518,
+          #f0d26d
+        );
+
+      color: #151008;
+
+      font-size: 14px;
+      font-weight: 900;
+
+      text-decoration: none;
+    }
+
+    .error-box {
+      display: none;
+
+      margin-bottom: 20px;
+      padding: 14px 16px;
+
+      border:
+        1px solid
+        rgba(255, 97, 97, 0.42);
+
+      border-radius: 14px;
+
+      background:
+        rgba(180, 30, 30, 0.12);
+
+      color: #ffb3b3;
+
+      font-size: 13px;
+
+      line-height: 1.7;
+    }
+
+    .error-box.show {
+      display: block;
+    }
+
+    @media (
+      max-width: 650px
+    ) {
+      .site-header {
+        padding-left: 15px;
+        padding-right: 15px;
+      }
+
+      .register-page {
+        padding:
+          34px
+          13px
+          70px;
+      }
+
+      .register-card {
+        padding:
+          28px
+          17px;
+
+        border-radius: 22px;
+      }
+
+      .form-grid {
+        grid-template-columns:
+          1fr;
+
+        gap: 0;
+      }
+
+      .form-grid .full {
+        grid-column: auto;
+      }
+
+      .register-step h2 {
+        font-size: 30px;
+      }
+    }
+  </style>
+</head>
+
+<body class="register-body">
+
+<header class="site-header">
+
+  <a
+    href="../index.html"
+    class="header-logo"
+  >
+    <span>NOX</span>
+    <small>Night Opens X</small>
+  </a>
+
+  <div class="header-actions">
+
+    <a
+      href="../index.html"
+      class="btn ghost"
+    >
+      トップへ戻る
+    </a>
+
+  </div>
+
+</header>
+
+<main class="register-page">
+
+  <section class="register-section">
+
+    <div class="register-card">
+
+      <div class="register-step">
+
+        <span>STEP 01</span>
+
+        <h2>
+          無料会員登録
+        </h2>
+
+        <p>
+          必要情報を入力してください。
+        </p>
+
+      </div>
+
+      <div
+        id="errorBox"
+        class="error-box"
+      ></div>
+
+      <form
+        id="registerForm"
+        class="nox-form"
+      >
+
+        <label>
+          ニックネーム
+
+          <input
+            id="nickname"
+            type="text"
+            placeholder="例：あい"
+            autocomplete="nickname"
+            required
+          >
+        </label>
+
+        <label>
+          生年月日
+
+          <input
+            id="birthDate"
+            type="date"
+            required
+          >
+        </label>
+
+        <label>
+          メールアドレス
+
+          <input
+            id="email"
+            type="email"
+            placeholder="example@nox.jp"
+            autocomplete="email"
+            required
+          >
+        </label>
+
+        <label>
+          電話番号
+
+          <input
+            id="phone"
+            type="tel"
+            placeholder="09012345678"
+            autocomplete="tel"
+            required
+          >
+        </label>
+
+        <label>
+          パスワード
+
+          <input
+            id="password"
+            type="password"
+            placeholder="6文字以上"
+            minlength="6"
+            autocomplete="new-password"
+            required
+          >
+        </label>
+                <div class="register-step profile-step">
+
+          <span>STEP 02</span>
+
+          <h2>
+            プロフィール
+          </h2>
+
+          <p>
+            店舗側が参考にできる情報です。
+          </p>
+
+        </div>
+
+        <div class="form-grid">
+
+          <label>
+            希望エリア
+
+            <select id="area">
+
+              <option value="">
+                選択してください
+              </option>
+
+              <option value="新宿・歌舞伎町">
+                新宿・歌舞伎町
+              </option>
+
+              <option value="六本木">
+                六本木
+              </option>
+
+              <option value="銀座">
+                銀座
+              </option>
+
+              <option value="池袋">
+                池袋
+              </option>
+
+              <option value="渋谷">
+                渋谷
+              </option>
+
+              <option value="全国対応">
+                全国対応
+              </option>
+
+            </select>
+          </label>
+
+          <label>
+            希望業種
+
+            <select id="jobType">
+
+              <option value="">
+                選択してください
+              </option>
+
+              <option value="キャバクラ">
+                キャバクラ
+              </option>
+
+              <option value="ラウンジ">
+                ラウンジ
+              </option>
+
+              <option value="ガールズバー">
+                ガールズバー
+              </option>
+
+              <option value="コンカフェ">
+                コンカフェ
+              </option>
+
+              <option value="高級クラブ">
+                高級クラブ
+              </option>
+
+            </select>
+          </label>
+
+          <label>
+            希望時給
+
+            <select id="salary">
+
+              <option value="">
+                選択してください
+              </option>
+
+              <option value="3,000円〜">
+                3,000円〜
+              </option>
+
+              <option value="5,000円〜">
+                5,000円〜
+              </option>
+
+              <option value="7,000円〜">
+                7,000円〜
+              </option>
+
+              <option value="10,000円〜">
+                10,000円〜
+              </option>
+
+              <option value="相談したい">
+                相談したい
+              </option>
+
+            </select>
+          </label>
+
+          <label>
+            経験
+
+            <select id="experience">
+
+              <option value="">
+                選択してください
+              </option>
+
+              <option value="未経験">
+                未経験
+              </option>
+
+              <option value="経験者">
+                経験者
+              </option>
+
+              <option value="ブランクあり">
+                ブランクあり
+              </option>
+
+            </select>
+          </label>
+
+          <label>
+            身長
+
+            <input
+              id="height"
+              type="number"
+              inputmode="numeric"
+              placeholder="例：160"
+              min="120"
+              max="220"
+            >
+          </label>
+
+          <label>
+            体型
+
+            <select id="bodyType">
+
+              <option value="">
+                選択してください
+              </option>
+
+              <option value="スリム">
+                スリム
+              </option>
+
+              <option value="普通">
+                普通
+              </option>
+
+              <option value="グラマー">
+                グラマー
+              </option>
+
+              <option value="小柄">
+                小柄
+              </option>
+
+              <option value="高身長">
+                高身長
+              </option>
+
+            </select>
+          </label>
+
+          <label>
+            お酒
+
+            <select id="alcohol">
+
+              <option value="">
+                選択してください
+              </option>
+
+              <option value="飲める">
+                飲める
+              </option>
+
+              <option value="少しなら飲める">
+                少しなら飲める
+              </option>
+
+              <option value="飲めない">
+                飲めない
+              </option>
+
+            </select>
+          </label>
+
+          <label>
+            出勤希望
+
+            <select id="workDays">
+
+              <option value="">
+                選択してください
+              </option>
+
+              <option value="週1〜2日">
+                週1〜2日
+              </option>
+
+              <option value="週3〜4日">
+                週3〜4日
+              </option>
+
+              <option value="週5日以上">
+                週5日以上
+              </option>
+
+              <option value="短期・単発">
+                短期・単発
+              </option>
+
+              <option value="相談したい">
+                相談したい
+              </option>
+
+            </select>
+          </label>
+
+          <label class="full">
+            顔写真（任意）
+
+            <input
+              id="facePhoto"
+              type="file"
+              accept="image/*"
+            >
+          </label>
+
+          <label class="full">
+            自己紹介
+
+            <textarea
+              id="selfPr"
+              rows="5"
+              placeholder="自己PR・接客経験・希望条件など"
+            ></textarea>
+          </label>
+
+          <label class="full">
+            SNS（任意）
+
+            <input
+              id="sns"
+              type="text"
+              placeholder="@username または URL"
+            >
+          </label>
+
+          <div class="full">
+
+            <button
+              type="submit"
+              class="gold-btn"
+            >
+              無料で登録する
+            </button>
+
+          </div>
+
+        </div>
+
+      </form>
+
+      <div
+        id="completeBox"
+        class="complete-box"
+      >
+
+        <h3>
+          登録が完了しました！
+        </h3>
+
+        <p>
+          NOXへの会員登録ありがとうございます。<br>
+          登録内容を確認後、サービスをご利用いただけます。
+        </p>
+
+        <a
+          href="../index.html"
+          class="complete-button"
+        >
+          トップページへ戻る
+        </a>
+
+      </div>
+
+    </div>
+
+  </section>
+
+</main>
+
 <script type="module">
-import { auth, db } from "../firebase.js";
+
+import {
+  auth,
+  db
+} from "../firebase.js";
 
 import {
   createUserWithEmailAndPassword
@@ -11,232 +1075,483 @@ import {
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-const form = document.getElementById("registerForm");
-
 const DISCORD_NOTIFY_URL =
   "https://script.google.com/macros/s/AKfycbwL3eobetCqOiS4IiPwjzuhH5Uag5zuIAtlxksn10S84WYQKKnZTribYTK43khJprIE/exec";
 
-form.addEventListener("submit", async (event) => {
-  event.preventDefault();
+const form =
+  document.getElementById(
+    "registerForm"
+  );
 
-  const submitButton =
-    form.querySelector('button[type="submit"]');
+const completeBox =
+  document.getElementById(
+    "completeBox"
+  );
 
-  submitButton.disabled = true;
-  submitButton.textContent = "登録処理中...";
+const errorBox =
+  document.getElementById(
+    "errorBox"
+  );
+  function showError(message) {
 
-  const nickname =
-    document.getElementById("nickname").value.trim();
+  errorBox.textContent =
+    message;
 
-  const birthDate =
-    document.getElementById("birthDate").value;
+  errorBox.classList.add(
+    "show"
+  );
 
-  const email =
-    document.getElementById("email").value.trim();
+  errorBox.scrollIntoView({
+    behavior: "smooth",
+    block: "center"
+  });
+}
 
-  const phone =
-    document.getElementById("phone").value.trim();
+function hideError() {
 
-  const password =
-    document.getElementById("password").value;
+  errorBox.textContent = "";
 
-  const area =
-    document.getElementById("area").value;
+  errorBox.classList.remove(
+    "show"
+  );
+}
 
-  const jobType =
-    document.getElementById("jobType").value;
+function getInputValue(id) {
 
-  const salary =
-    document.getElementById("salary").value;
+  const element =
+    document.getElementById(id);
 
-  const experience =
-    document.getElementById("experience").value;
+  if (!element) {
+    return "";
+  }
 
-  const height =
-    document.getElementById("height").value;
+  return element.value.trim();
+}
 
-  const bodyType =
-    document.getElementById("bodyType").value;
+form.addEventListener(
+  "submit",
+  async (event) => {
 
-  const alcohol =
-    document.getElementById("alcohol").value;
+    event.preventDefault();
 
-  const workDays =
-    document.getElementById("workDays").value;
+    hideError();
 
-  const selfPr =
-    document.getElementById("selfPr").value.trim();
-
-  const sns =
-    document.getElementById("sns").value.trim();
-
-  try {
-    const userCredential =
-      await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
+    const submitButton =
+      form.querySelector(
+        'button[type="submit"]'
       );
 
-    const uid =
-      userCredential.user.uid;
-
-    await setDoc(
-      doc(db, "users", uid),
-      {
-        uid,
-        nickname,
-        birthDate,
-        email,
-        phone,
-        area,
-        jobType,
-        salary,
-        experience,
-        height,
-        bodyType,
-        alcohol,
-        workDays,
-        selfPr,
-        sns,
-        status: "pending",
-        role: "user",
-        createdAt: serverTimestamp()
-      }
-    );
-
-    const notifyData = {
-      type: "user_register",
-      uid,
-      name: nickname || "未入力",
-      email: email || "未入力",
-      phone: phone || "未入力",
-      birthDate: birthDate || "未入力",
-      area: area || "未入力",
-      jobType: jobType || "未入力",
-      salary: salary || "未入力",
-      experience: experience || "未入力",
-      workDays: workDays || "未入力",
-      createdAt: new Date().toLocaleString(
-        "ja-JP",
-        {
-          timeZone: "Asia/Tokyo"
-        }
-      )
-    };
-
-    try {
-      await fetch(
-        DISCORD_NOTIFY_URL,
-        {
-          method: "POST",
-          mode: "no-cors",
-          headers: {
-            "Content-Type":
-              "text/plain;charset=UTF-8"
-          },
-          body: JSON.stringify(notifyData)
-        }
-      );
-    } catch (notifyError) {
-      console.error(
-        "Discord通知エラー:",
-        notifyError
-      );
-    }
-
-    submitButton.textContent = "登録完了";
     submitButton.disabled = true;
 
-    form.reset();
+    submitButton.textContent =
+      "登録処理中...";
 
-    const completeBox =
-      document.createElement("div");
+    const nickname =
+      getInputValue(
+        "nickname"
+      );
 
-    completeBox.style.marginTop = "24px";
-    completeBox.style.padding = "20px";
-    completeBox.style.border =
-      "1px solid #d4af37";
-    completeBox.style.borderRadius = "14px";
-    completeBox.style.background =
-      "rgba(212, 175, 55, 0.1)";
-    completeBox.style.color = "#ffffff";
-    completeBox.style.textAlign = "center";
-    completeBox.style.lineHeight = "1.8";
+    const birthDate =
+      getInputValue(
+        "birthDate"
+      );
 
-    completeBox.innerHTML = `
-      <strong style="color:#d4af37;font-size:20px;">
-        登録が完了しました！
-      </strong>
-      <br>
-      NOXへの会員登録ありがとうございます。
-      <br><br>
-      <a
-        href="../index.html"
-        style="
-          display:inline-block;
-          padding:12px 24px;
-          border-radius:999px;
-          background:#d4af37;
-          color:#111111;
-          font-weight:bold;
-          text-decoration:none;
-        "
-      >
-        トップページへ戻る
-      </a>
-    `;
+    const email =
+      getInputValue(
+        "email"
+      );
 
-    form.insertAdjacentElement(
-      "afterend",
-      completeBox
-    );
+    const phone =
+      getInputValue(
+        "phone"
+      );
 
-    completeBox.scrollIntoView({
-      behavior: "smooth",
-      block: "center"
-    });
+    const password =
+      document.getElementById(
+        "password"
+      ).value;
 
-  } catch (error) {
-    console.error(
-      "会員登録エラー:",
-      error
-    );
+    const area =
+      getInputValue(
+        "area"
+      );
 
-    let message =
-      "登録に失敗しました。入力内容をご確認ください。";
+    const jobType =
+      getInputValue(
+        "jobType"
+      );
+
+    const salary =
+      getInputValue(
+        "salary"
+      );
+
+    const experience =
+      getInputValue(
+        "experience"
+      );
+
+    const height =
+      getInputValue(
+        "height"
+      );
+
+    const bodyType =
+      getInputValue(
+        "bodyType"
+      );
+
+    const alcohol =
+      getInputValue(
+        "alcohol"
+      );
+
+    const workDays =
+      getInputValue(
+        "workDays"
+      );
+
+    const selfPr =
+      getInputValue(
+        "selfPr"
+      );
+
+    const sns =
+      getInputValue(
+        "sns"
+      );
 
     if (
-      error.code ===
-      "auth/email-already-in-use"
+      !nickname ||
+      !birthDate ||
+      !email ||
+      !phone ||
+      !password
     ) {
-      message =
-        "このメールアドレスは既に登録されています。";
-    } else if (
-      error.code ===
-      "auth/weak-password"
-    ) {
-      message =
-        "パスワードは6文字以上で設定してください。";
-    } else if (
-      error.code ===
-      "auth/invalid-email"
-    ) {
-      message =
-        "メールアドレスの形式を確認してください。";
-    } else if (
-      error.code ===
-      "auth/network-request-failed"
-    ) {
-      message =
-        "通信に失敗しました。電波状況を確認してください。";
+
+      showError(
+        "必須項目をすべて入力してください。"
+      );
+
+      submitButton.disabled =
+        false;
+
+      submitButton.textContent =
+        "無料で登録する";
+
+      return;
     }
 
-    alert(message);
+    if (
+      password.length < 6
+    ) {
 
-    submitButton.disabled = false;
-    submitButton.textContent =
-      "無料で登録する";
+      showError(
+        "パスワードは6文字以上で入力してください。"
+      );
+
+      submitButton.disabled =
+        false;
+
+      submitButton.textContent =
+        "無料で登録する";
+
+      return;
+    }
+
+    try {
+
+      const userCredential =
+        await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+
+      const user =
+        userCredential.user;
+
+      const uid =
+        user.uid;
+
+      await setDoc(
+        doc(
+          db,
+          "users",
+          uid
+        ),
+        {
+          uid,
+          nickname,
+          birthDate,
+          email,
+          phone,
+          area,
+          jobType,
+          salary,
+          experience,
+          height,
+          bodyType,
+          alcohol,
+          workDays,
+          selfPr,
+          sns,
+          status: "pending",
+          role: "user",
+          createdAt:
+            serverTimestamp()
+        }
+      );
+            const notifyData = {
+        type: "user_register",
+
+        uid: uid,
+
+        name:
+          nickname ||
+          "未入力",
+
+        email:
+          email ||
+          "未入力",
+
+        phone:
+          phone ||
+          "未入力",
+
+        birthDate:
+          birthDate ||
+          "未入力",
+
+        area:
+          area ||
+          "未入力",
+
+        jobType:
+          jobType ||
+          "未入力",
+
+        salary:
+          salary ||
+          "未入力",
+
+        experience:
+          experience ||
+          "未入力",
+
+        height:
+          height ||
+          "未入力",
+
+        bodyType:
+          bodyType ||
+          "未入力",
+
+        alcohol:
+          alcohol ||
+          "未入力",
+
+        workDays:
+          workDays ||
+          "未入力",
+
+        sns:
+          sns ||
+          "未入力",
+
+        createdAt:
+          new Date().toLocaleString(
+            "ja-JP",
+            {
+              timeZone:
+                "Asia/Tokyo"
+            }
+          )
+      };
+
+      try {
+
+        await fetch(
+          DISCORD_NOTIFY_URL,
+          {
+            method: "POST",
+
+            mode: "no-cors",
+
+            headers: {
+              "Content-Type":
+                "text/plain;charset=UTF-8"
+            },
+
+            body:
+              JSON.stringify(
+                notifyData
+              )
+          }
+        );
+
+      } catch (
+        notifyError
+      ) {
+
+        console.error(
+          "Discord通知エラー:",
+          notifyError
+        );
+      }
+
+      form.style.display =
+        "none";
+
+      completeBox.classList.add(
+        "show"
+      );
+
+      completeBox.scrollIntoView({
+        behavior:
+          "smooth",
+
+        block:
+          "center"
+      });
+
+    } catch (error) {
+
+      console.error(
+        "会員登録エラー:",
+        error
+      );
+
+      let message =
+        "登録に失敗しました。入力内容をご確認ください。";
+
+      if (
+        error.code ===
+        "auth/email-already-in-use"
+      ) {
+
+        message =
+          "このメールアドレスは既に登録されています。";
+
+      } else if (
+        error.code ===
+        "auth/weak-password"
+      ) {
+
+        message =
+          "パスワードは6文字以上で設定してください。";
+
+      } else if (
+        error.code ===
+        "auth/invalid-email"
+      ) {
+
+        message =
+          "メールアドレスの形式を確認してください。";
+
+      } else if (
+        error.code ===
+        "auth/network-request-failed"
+      ) {
+
+        message =
+          "通信に失敗しました。電波状況を確認してください。";
+
+      } else if (
+        error.code ===
+        "permission-denied"
+      ) {
+
+        message =
+          "会員情報を保存する権限がありません。Firestoreルールをご確認ください。";
+      }
+
+      showError(
+        message
+      );
+
+      submitButton.disabled =
+        false;
+
+      submitButton.textContent =
+        "無料で登録する";
+    }
   }
-});
-</script>
+);
+  window.addEventListener(
+  "error",
+  (event) => {
+
+    console.error(
+      "ページエラー:",
+      event.error ||
+      event.message
+    );
+
+    if (
+      errorBox &&
+      !completeBox.classList.contains(
+        "show"
+      )
+    ) {
+      showError(
+        "ページの読み込み中にエラーが発生しました。ページを再読み込みしてください。"
+      );
+    }
+  }
+);
+
+window.addEventListener(
+  "unhandledrejection",
+  (event) => {
+
+    console.error(
+      "未処理エラー:",
+      event.reason
+    );
+  }
+);
+
+const requiredElements = [
+  form,
+  completeBox,
+  errorBox,
+  document.getElementById(
+    "nickname"
+  ),
+  document.getElementById(
+    "birthDate"
+  ),
+  document.getElementById(
+    "email"
+  ),
+  document.getElementById(
+    "phone"
+  ),
+  document.getElementById(
+    "password"
+  )
+];
+
+const hasMissingElement =
+  requiredElements.some(
+    (element) =>
+      !element
+  );
+
+if (hasMissingElement) {
+
+  console.error(
+    "登録ページに必要な要素がありません。"
+  );
+
+  if (errorBox) {
+    showError(
+      "登録ページの読み込みに失敗しました。管理者へお問い合わせください。"
+    );
+  }
+}
+  </script>
+
+</body>
+</html>
