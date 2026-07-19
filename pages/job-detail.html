@@ -338,13 +338,16 @@ TOP
 <script type="module">
 
 import { db } from "./firebase-db.js";
-
+import { auth } from "./firebase.js";
 import {
   doc,
   getDoc,
   collection,
   addDoc,
   setDoc,
+  updateDoc,
+  arrayUnion,
+  arrayRemove,
   increment,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -650,7 +653,22 @@ ${value(
 </strong>
 
 </div>
-
+<div
+  style="
+    margin-top:20px;
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+  "
+>
+  <button
+    id="saveJobBtn"
+    type="button"
+    class="btn"
+  >
+    ♡ 求人を保存
+  </button>
+</div>
 </section>
 
 <section class="section">
@@ -954,7 +972,148 @@ ${value(
 
       }
     );
+const saveBtn =
+  document.getElementById(
+    "saveJobBtn"
+  );
 
+if(saveBtn){
+
+  const user =
+    auth.currentUser;
+
+  if(user){
+
+    const userRef =
+      doc(
+        db,
+        "users",
+        user.uid
+      );
+
+    const userSnap =
+      await getDoc(userRef);
+
+    const savedJobIds =
+      userSnap.exists() &&
+      Array.isArray(
+        userSnap.data().savedJobIds
+      )
+        ? userSnap.data().savedJobIds
+        : [];
+
+    if(savedJobIds.includes(id)){
+
+      saveBtn.textContent =
+        "♥ 保存済み";
+
+      saveBtn.classList.add("gold");
+    }
+  }
+
+  saveBtn.addEventListener(
+    "click",
+    async()=>{
+
+      const currentUser =
+        auth.currentUser;
+
+      if(!currentUser){
+
+        alert(
+          "求人を保存するにはログインが必要です。"
+        );
+
+        location.href =
+          "./login.html";
+
+        return;
+      }
+
+      saveBtn.disabled = true;
+
+      try{
+
+        const userRef =
+          doc(
+            db,
+            "users",
+            currentUser.uid
+          );
+
+        const userSnap =
+          await getDoc(userRef);
+
+        const savedJobIds =
+          userSnap.exists() &&
+          Array.isArray(
+            userSnap.data().savedJobIds
+          )
+            ? userSnap.data().savedJobIds
+            : [];
+
+        const isSaved =
+          savedJobIds.includes(id);
+
+        await setDoc(
+          userRef,
+          {
+            savedJobIds:isSaved
+              ? arrayRemove(id)
+              : arrayUnion(id),
+            updatedAt:
+              serverTimestamp()
+          },
+          {
+            merge:true
+          }
+        );
+
+        if(isSaved){
+
+          saveBtn.textContent =
+            "♡ 求人を保存";
+
+          saveBtn.classList.remove(
+            "gold"
+          );
+
+          alert(
+            "保存を解除しました。"
+          );
+
+        }else{
+
+          saveBtn.textContent =
+            "♥ 保存済み";
+
+          saveBtn.classList.add(
+            "gold"
+          );
+
+          alert(
+            "求人を保存しました。"
+          );
+        }
+
+      }catch(error){
+
+        console.error(
+          "求人保存エラー:",
+          error
+        );
+
+        alert(
+          "求人の保存に失敗しました。"
+        );
+
+      }finally{
+
+        saveBtn.disabled = false;
+      }
+    }
+  );
+}
   }catch(error){
 
     console.error(
