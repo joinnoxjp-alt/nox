@@ -1,28 +1,23 @@
 <script type="module">
-import { auth } from "../firebase.js";
+import { auth, db } from "../firebase.js";
 
 import {
   createUserWithEmailAndPassword
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 import {
-  getFirestore,
   doc,
-  setDoc
+  setDoc,
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-const db = getFirestore(auth.app);
 
 const form = document.getElementById("registerForm");
 
-/*
-  https://script.google.com/macros/s/AKfycbwL3eobetCqOiS4IiPwjzuhH5Uag5zuIAtlxksn10S84WYQKKnZTribYTK43khJprIE/exec
-*/
 const DISCORD_NOTIFY_URL =
   "https://script.google.com/macros/s/AKfycbwL3eobetCqOiS4IiPwjzuhH5Uag5zuIAtlxksn10S84WYQKKnZTribYTK43khJprIE/exec";
 
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
+form.addEventListener("submit", async (event) => {
+  event.preventDefault();
 
   const submitButton =
     form.querySelector('button[type="submit"]');
@@ -75,13 +70,7 @@ form.addEventListener("submit", async (e) => {
   const sns =
     document.getElementById("sns").value.trim();
 
-  const createdAt =
-    new Date().toISOString();
-
   try {
-    /*
-      Firebase Authenticationへ会員登録
-    */
     const userCredential =
       await createUserWithEmailAndPassword(
         auth,
@@ -92,9 +81,6 @@ form.addEventListener("submit", async (e) => {
     const uid =
       userCredential.user.uid;
 
-    /*
-      Firestoreへ会員情報を保存
-    */
     await setDoc(
       doc(db, "users", uid),
       {
@@ -115,16 +101,13 @@ form.addEventListener("submit", async (e) => {
         sns,
         status: "pending",
         role: "user",
-        createdAt
+        createdAt: serverTimestamp()
       }
     );
 
-    /*
-      Discord通知用データ
-    */
     const notifyData = {
       type: "user_register",
-      uid: uid,
+      uid,
       name: nickname || "未入力",
       email: email || "未入力",
       phone: phone || "未入力",
@@ -134,18 +117,14 @@ form.addEventListener("submit", async (e) => {
       salary: salary || "未入力",
       experience: experience || "未入力",
       workDays: workDays || "未入力",
-      createdAt:
-        new Date().toLocaleString(
-          "ja-JP",
-          {
-            timeZone: "Asia/Tokyo"
-          }
-        )
+      createdAt: new Date().toLocaleString(
+        "ja-JP",
+        {
+          timeZone: "Asia/Tokyo"
+        }
+      )
     };
 
-    /*
-      Apps Script経由でDiscordへ通知
-    */
     try {
       await fetch(
         DISCORD_NOTIFY_URL,
@@ -156,19 +135,9 @@ form.addEventListener("submit", async (e) => {
             "Content-Type":
               "text/plain;charset=UTF-8"
           },
-          body: JSON.stringify(
-            notifyData
-          )
+          body: JSON.stringify(notifyData)
         }
       );
-
-      /*
-        ページ移動前に通信時間を確保
-      */
-      await new Promise((resolve) => {
-        setTimeout(resolve, 1500);
-      });
-
     } catch (notifyError) {
       console.error(
         "Discord通知エラー:",
@@ -176,9 +145,57 @@ form.addEventListener("submit", async (e) => {
       );
     }
 
-    alert("登録完了！NOXへようこそ。");
+    submitButton.textContent = "登録完了";
+    submitButton.disabled = true;
 
-location.href = "https://joinnox.jp/";
+    form.reset();
+
+    const completeBox =
+      document.createElement("div");
+
+    completeBox.style.marginTop = "24px";
+    completeBox.style.padding = "20px";
+    completeBox.style.border =
+      "1px solid #d4af37";
+    completeBox.style.borderRadius = "14px";
+    completeBox.style.background =
+      "rgba(212, 175, 55, 0.1)";
+    completeBox.style.color = "#ffffff";
+    completeBox.style.textAlign = "center";
+    completeBox.style.lineHeight = "1.8";
+
+    completeBox.innerHTML = `
+      <strong style="color:#d4af37;font-size:20px;">
+        登録が完了しました！
+      </strong>
+      <br>
+      NOXへの会員登録ありがとうございます。
+      <br><br>
+      <a
+        href="../index.html"
+        style="
+          display:inline-block;
+          padding:12px 24px;
+          border-radius:999px;
+          background:#d4af37;
+          color:#111111;
+          font-weight:bold;
+          text-decoration:none;
+        "
+      >
+        トップページへ戻る
+      </a>
+    `;
+
+    form.insertAdjacentElement(
+      "afterend",
+      completeBox
+    );
+
+    completeBox.scrollIntoView({
+      behavior: "smooth",
+      block: "center"
+    });
 
   } catch (error) {
     console.error(
@@ -195,22 +212,24 @@ location.href = "https://joinnox.jp/";
     ) {
       message =
         "このメールアドレスは既に登録されています。";
-    }
-
-    if (
+    } else if (
       error.code ===
       "auth/weak-password"
     ) {
       message =
         "パスワードは6文字以上で設定してください。";
-    }
-
-    if (
+    } else if (
       error.code ===
       "auth/invalid-email"
     ) {
       message =
         "メールアドレスの形式を確認してください。";
+    } else if (
+      error.code ===
+      "auth/network-request-failed"
+    ) {
+      message =
+        "通信に失敗しました。電波状況を確認してください。";
     }
 
     alert(message);
