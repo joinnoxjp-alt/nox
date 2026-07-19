@@ -1102,18 +1102,6 @@ loadNoxAdvertisements();
    MEMBER LOUNGE
 ========================== */
 
-import {
-  onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-import {
-  doc,
-  getDoc
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-import {
-  auth
-} from "./firebase.js";
 
 const memberLoungeSection =
   document.getElementById(
