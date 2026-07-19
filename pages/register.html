@@ -161,58 +161,191 @@
 
 <script type="module">
 import { auth } from "../firebase.js";
-import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+import {
+  createUserWithEmailAndPassword
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
+  getFirestore,
+  doc,
+  setDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const db = getFirestore(auth.app);
-const form = document.getElementById("registerForm");
+
+const form =
+  document.getElementById("registerForm");
+
+const DISCORD_NOTIFY_URL =
+  "https://script.google.com/macros/s/AKfycbxXdAjSYAcO3wSsixhQLMu2m1Ep3NaJ4-qtaOfj1fH2UhRfbawVfUrLhNIyqiLglqBWJg/exec";
 
 form.addEventListener("submit", async (e) => {
+
   e.preventDefault();
 
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+  const submitButton =
+    form.querySelector('button[type="submit"]');
+
+  submitButton.disabled = true;
+  submitButton.textContent = "登録処理中...";
+
+  const nickname =
+    document.getElementById("nickname").value.trim();
+
+  const birthDate =
+    document.getElementById("birthDate").value;
+
+  const email =
+    document.getElementById("email").value.trim();
+
+  const phone =
+    document.getElementById("phone").value.trim();
+
+  const password =
+    document.getElementById("password").value;
+
+  const area =
+    document.getElementById("area").value;
+
+  const jobType =
+    document.getElementById("jobType").value;
+
+  const salary =
+    document.getElementById("salary").value;
+
+  const experience =
+    document.getElementById("experience").value;
+
+  const height =
+    document.getElementById("height").value;
+
+  const bodyType =
+    document.getElementById("bodyType").value;
+
+  const alcohol =
+    document.getElementById("alcohol").value;
+
+  const workDays =
+    document.getElementById("workDays").value;
+
+  const selfPr =
+    document.getElementById("selfPr").value.trim();
+
+  const sns =
+    document.getElementById("sns").value.trim();
+
+  const createdAt =
+    new Date().toISOString();
 
   try {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const uid = userCredential.user.uid;
 
-    await setDoc(doc(db, "users", uid), {
-      uid,
-      nickname: document.getElementById("nickname").value,
-      birthDate: document.getElementById("birthDate").value,
-      email,
-      phone: document.getElementById("phone").value,
-      area: document.getElementById("area").value,
-      jobType: document.getElementById("jobType").value,
-      salary: document.getElementById("salary").value,
-      experience: document.getElementById("experience").value,
-      height: document.getElementById("height").value,
-      bodyType: document.getElementById("bodyType").value,
-      alcohol: document.getElementById("alcohol").value,
-      workDays: document.getElementById("workDays").value,
-      selfPr: document.getElementById("selfPr").value,
-      sns: document.getElementById("sns").value,
-      status: "pending",
-      role: "user",
-      createdAt: new Date().toISOString()
-    });
+    const userCredential =
+      await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+    const uid =
+      userCredential.user.uid;
+
+    await setDoc(
+      doc(db, "users", uid),
+      {
+        uid,
+        nickname,
+        birthDate,
+        email,
+        phone,
+        area,
+        jobType,
+        salary,
+        experience,
+        height,
+        bodyType,
+        alcohol,
+        workDays,
+        selfPr,
+        sns,
+        status: "pending",
+        role: "user",
+        createdAt
+      }
+    );
+
     try {
-  await fetch("https://script.google.com/macros/s/AKfycbxXdAjSYAcO3wSsixhQLMu2m1Ep3NaJ4-qtaOfj1fH2UhRfbawVfUrLhNIyqiLglqBWJg/exec", {
-    method: "POST",
-    mode: "no-cors",
-    body: JSON.stringify({
-      name: document.getElementById("nickname").value,
-      email: email
-    })
-  });
-} catch (notifyError) {
-  console.log("通知エラー:", notifyError);
-}
-    alert("登録完了！NOXへようこそ。");
-    location.href = "./mypage.html";
+
+      await fetch(
+        DISCORD_NOTIFY_URL,
+        {
+          method: "POST",
+          mode: "no-cors",
+          body: JSON.stringify({
+            type: "user_register",
+            name: nickname || "未入力",
+            email: email || "未入力",
+            phone: phone || "未入力",
+            area: area || "未入力",
+            jobType: jobType || "未入力",
+            createdAt:
+              new Date().toLocaleString("ja-JP")
+          })
+        }
+      );
+
+    } catch (notifyError) {
+
+      console.log(
+        "Discord通知エラー:",
+        notifyError
+      );
+
+    }
+
+    alert(
+      "登録完了！NOXへようこそ。"
+    );
+
+    location.href =
+      "./mypage.html";
+
   } catch (error) {
-    alert("エラー: " + error.message);
+
+    console.error(error);
+
+    let message =
+      "登録に失敗しました。";
+
+    if (
+      error.code ===
+      "auth/email-already-in-use"
+    ) {
+      message =
+        "このメールアドレスは既に登録されています。";
+    }
+
+    if (
+      error.code ===
+      "auth/weak-password"
+    ) {
+      message =
+        "パスワードは6文字以上で設定してください。";
+    }
+
+    if (
+      error.code ===
+      "auth/invalid-email"
+    ) {
+      message =
+        "メールアドレスの形式を確認してください。";
+    }
+
+    alert(message);
+
+    submitButton.disabled = false;
+    submitButton.textContent =
+      "無料で登録する";
   }
 });
 </script>
