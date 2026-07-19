@@ -696,7 +696,7 @@ function getJobImage(job) {
     }
   }
 
-  return "images/line_oa_chat_260708_192846.jpeg";
+  return "images/7240C21C-E2E7-47E1-9F48-6ECC3468406D.png";
 }
 
 /* ==========================
