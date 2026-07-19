@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0"
+>
+
+<title>希望条件登録 | NOX</title>
+
+<link
+rel="stylesheet"
+href="../style.css?v=12"
+>
+
+</head>
+
+<body class="register-body">
+
+<main class="register-page">
+
+<section class="register-section">
+
+<div class="register-card">
+
+<h1 class="register-title">
+⚙️ 希望条件登録
+</h1>
+
+<p class="register-sub">
+AIマッチング精度を高めるため、希望条件を登録してください。
+</p>
+
+<form
+id="matchingForm"
+class="nox-form"
+>
+
+<label>
+
+希望エリア
+
+<input
+type="text"
+id="area"
+placeholder="例：新宿"
+>
+
+</label>
+
+<label>
+
+希望業種
+
+<select id="jobType">
+
+<option value="">
+選択してください
+</option>
+
+<option>
+キャバクラ
+</option>
+
+<option>
+ガールズバー
+</option>
+
+<option>
+ラウンジ
+</option>
+
+<option>
+コンカフェ
+</option>
+
+<option>
+メンズエステ
+</option>
+
+<option>
+デリヘル
+</option>
+
+<option>
+ソープ
+</option>
+
+</select>
+
+</label>
+
+<label>
+
+希望時給
+
+<input
+type="text"
+id="salary"
+placeholder="例：5000円以上"
+>
+
+</label>
+
+<label>
+
+その他希望
+
+<textarea
+id="memo"
+placeholder="例：日払い・送りあり・未経験歓迎"
+></textarea>
+
+</label>
+
+<button
+type="submit"
+class="register-btn"
+>
+
+保存する
+
+</button>
+
+</form>
+
+<a
+href="../index.html"
+class="back-link"
+>
+
+← トップへ戻る
+
+</a>
+
+</div>
+
+</section>
+
+</main>
+
+<script>
+
+const form =
+document.getElementById("matchingForm");
+
+const saved =
+JSON.parse(
+localStorage.getItem("matchingProfile") || "{}"
+);
+
+area.value=saved.area||"";
+jobType.value=saved.jobType||"";
+salary.value=saved.salary||"";
+memo.value=saved.memo||"";
+
+form.addEventListener("submit",(e)=>{
+
+e.preventDefault();
+
+const data={
+
+area:area.value,
+
+jobType:jobType.value,
+
+salary:salary.value,
+
+memo:memo.value
+
+};
+
+localStorage.setItem(
+"matchingProfile",
+JSON.stringify(data)
+);
+
+alert("保存しました！");
+
+});
+
+</script>
+
+</body>
+
+</html>
