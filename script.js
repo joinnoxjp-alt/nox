@@ -1,6 +1,7 @@
 // NOX script.js
 
-import { db, auth } from "./pages/firebase-db.js";
+import { db } from "./pages/firebase-db.js";
+import { auth } from "./firebase.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
   collection,
