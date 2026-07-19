@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>応募履歴 | NOX</title>
+
+  <link
+    rel="stylesheet"
+    href="../style.css?v=12"
+  >
+
+</head>
+
+<body class="register-body">
+
+  <main class="register-page">
+
+    <section class="register-section">
+
+      <div class="register-card">
+
+        <h1 class="register-title">
+          📄 応募履歴
+        </h1>
+
+        <p class="register-sub">
+          これまでに応募した求人を確認できます。
+        </p>
+
+        <div
+          id="applicationsList"
+          style="
+            display:grid;
+            gap:18px;
+            margin-top:30px;
+          "
+        >
+
+          <p
+            id="applicationsEmpty"
+            style="
+              text-align:center;
+              color:#999;
+              padding:40px 0;
+            "
+          >
+            まだ応募履歴はありません。
+          </p>
+
+        </div>
+
+        <a
+          href="../index.html"
+          class="back-link"
+        >
+          ← トップへ戻る
+        </a>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <script type="module">
+
+    const applications =
+      JSON.parse(
+        localStorage.getItem("noxApplications") || "[]"
+      );
+
+    const applicationsList =
+      document.getElementById("applicationsList");
+
+    const applicationsEmpty =
+      document.getElementById("applicationsEmpty");
+
+    if(applications.length > 0){
+
+      applicationsEmpty.remove();
+
+      applications.forEach((application) => {
+
+        const card =
+          document.createElement("div");
+
+        card.className =
+          "member-lounge-card";
+
+        card.innerHTML = `
+          <span>📄</span>
+
+          <strong>
+            ${application.storeName || "店舗名"}
+          </strong>
+
+          <small>
+            ${application.area || ""}
+          </small>
+
+          <small style="margin-top:8px;">
+            応募日：${application.appliedAt || "未設定"}
+          </small>
+
+          <small style="margin-top:8px;">
+            状況：${application.status || "応募済み"}
+          </small>
+
+          ${
+            application.jobId
+              ? `
+                <a
+                  href="job-detail.html?id=${encodeURIComponent(application.jobId)}"
+                  class="btn gold"
+                  style="margin-top:16px;"
+                >
+                  求人を見る
+                </a>
+              `
+              : ""
+          }
+        `;
+
+        applicationsList.appendChild(card);
+
+      });
+
+    }
+
+  </script>
+
+</body>
+
+</html>
