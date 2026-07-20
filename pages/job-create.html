@@ -642,6 +642,10 @@
   </main>
 
   <script type="module">
+
+    const WEBHOOK_URL =
+  "https://script.google.com/macros/s/AKfycbwL3eobetCqOiS4IiPwjzuhH5Uag5zuIAtlxksn10S84WYQKKnZTribYTK43khJprIE/exec";
+    
     import { app, db } from "./firebase-db.js";
 
     import {
@@ -929,11 +933,56 @@ position: getValue("jobPosition"),
             createdAt: serverTimestamp()
           };
 
-          await addDoc(
-            collection(db, "jobApplications"),
-            applicationData
-          );
-
+          const applicationRef = await addDoc(
+  collection(db, "jobApplications"),
+  applicationData
+);
+const notifyData = {
+  type: "store_application",
+  applicationId: applicationRef.id,
+  storeName: applicationData.storeName || "未入力",
+  category: applicationData.businessType || "未入力",
+  targetGender:
+    applicationData.targetGender === "male"
+      ? "男性向け求人"
+      : "女性向け求人",
+  position: applicationData.position || "未入力",
+  area: applicationData.area || "未入力",
+  address: applicationData.address || "未入力",
+  station: applicationData.station || "未入力",
+  businessHours: applicationData.businessHours || "未入力",
+  salary: applicationData.salary || "未入力",
+  trial: applicationData.trial || "未入力",
+  beginner: applicationData.beginner || "未入力",
+  contactName: applicationData.contactName || "未入力",
+  contactInfo: applicationData.contactInfo || "未入力",
+  applicationPhone:
+    applicationData.applicationPhone || "未入力",
+  website: applicationData.website || "未入力",
+  instagram: applicationData.instagram || "未入力",
+  imageCount:
+    Array.isArray(applicationData.images)
+      ? applicationData.images.length
+      : 0,
+  createdAt: new Date().toLocaleString(
+    "ja-JP",
+    {
+      timeZone: "Asia/Tokyo"
+    }
+  )
+};
+          try {
+  await fetch(WEBHOOK_URL, {
+    method: "POST",
+    mode: "no-cors",
+    body: JSON.stringify(notifyData)
+  });
+} catch (notifyError) {
+  console.error(
+    "店舗掲載申請通知エラー:",
+    notifyError
+  );
+}
           form.reset();
           imagePreview.innerHTML = "";
           toggleOtherBusiness();
