@@ -1058,8 +1058,8 @@
 
 </main>
 <script>
-const APPS_SCRIPT_URL =
-  "https://script.google.com/macros/s/AKfycbwL3eobetCqOiS4IiPwjzuhH5Uag5zuIAtlxksn10S84WYQKKnZTribYTK43khJprIE/exec";
+const WEBHOOK_URL =
+  "https://hook.eu1.make.com/2bnrj33a4q6j086m6evcwgg8iw4bd6ol";
 
 const form = document.getElementById("registerForm");
 const completeBox = document.getElementById("completeBox");
@@ -1201,36 +1201,15 @@ if (!form) {
       };
 
       try {
-  const iframe = document.createElement("iframe");
-  iframe.name = "noxDiscordNotifyFrame";
-  iframe.style.display = "none";
-  document.body.appendChild(iframe);
 
-  const notifyForm = document.createElement("form");
-  notifyForm.method = "POST";
-  notifyForm.action = APPS_SCRIPT_URL;
-  notifyForm.target = "noxDiscordNotifyFrame";
-  notifyForm.style.display = "none";
-
-  const payloadInput = document.createElement("input");
-  payloadInput.type = "hidden";
-  payloadInput.name = "payload";
-  payloadInput.value = JSON.stringify(notifyData);
-
-  notifyForm.appendChild(payloadInput);
-  document.body.appendChild(notifyForm);
-
-  notifyForm.submit();
-
-  await new Promise((resolve) => {
-    setTimeout(resolve, 1200);
-  });
-
-  notifyForm.remove();
-
-  setTimeout(() => {
-    iframe.remove();
-  }, 3000);
+await fetch(WEBHOOK_URL, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify(notifyData)
+});
+  
 
 } catch (notifyError) {
   console.error(
