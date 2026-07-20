@@ -1201,25 +1201,43 @@ if (!form) {
       };
 
       try {
-        await fetch(
-          APPS_SCRIPT_URL,
-          {
-            method: "POST",
-            mode: "no-cors",
-            headers: {
-              "Content-Type":
-                "text/plain;charset=UTF-8"
-            },
-            body:
-              JSON.stringify(notifyData)
-          }
-        );
-      } catch (notifyError) {
-        console.error(
-          "Discord通知エラー:",
-          notifyError
-        );
-      }
+  const iframe = document.createElement("iframe");
+  iframe.name = "noxDiscordNotifyFrame";
+  iframe.style.display = "none";
+  document.body.appendChild(iframe);
+
+  const notifyForm = document.createElement("form");
+  notifyForm.method = "POST";
+  notifyForm.action = APPS_SCRIPT_URL;
+  notifyForm.target = "noxDiscordNotifyFrame";
+  notifyForm.style.display = "none";
+
+  const payloadInput = document.createElement("input");
+  payloadInput.type = "hidden";
+  payloadInput.name = "payload";
+  payloadInput.value = JSON.stringify(notifyData);
+
+  notifyForm.appendChild(payloadInput);
+  document.body.appendChild(notifyForm);
+
+  notifyForm.submit();
+
+  await new Promise((resolve) => {
+    setTimeout(resolve, 1200);
+  });
+
+  notifyForm.remove();
+
+  setTimeout(() => {
+    iframe.remove();
+  }, 3000);
+
+} catch (notifyError) {
+  console.error(
+    "Discord通知エラー:",
+    notifyError
+  );
+}
 
       form.style.display = "none";
 
