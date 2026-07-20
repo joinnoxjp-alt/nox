@@ -1180,25 +1180,29 @@ if (!form) {
       );
 
       const notifyData = {
-        type: "user_register",
-        uid,
-        name: nickname || "未入力",
-        email: email || "未入力",
-        phone: phone || "未入力",
-        birthDate: birthDate || "未入力",
-        area: area || "未入力",
-        jobType: jobType || "未入力",
-        salary: salary || "未入力",
-        experience: experience || "未入力",
-        workDays: workDays || "未入力",
-        createdAt:
-          new Date().toLocaleString(
-            "ja-JP",
-            {
-              timeZone: "Asia/Tokyo"
-            }
-          )
-      };
+  type: "user_register",
+  uid,
+  name: nickname || "未入力",
+  email: email || "未入力",
+  phone: phone || "未入力",
+  birthDate: birthDate || "未入力",
+  area: area || "未入力",
+  jobType: jobType || "未入力",
+  salary: salary || "未入力",
+  experience: experience || "未入力",
+  height: height || "未入力",
+  bodyType: bodyType || "未入力",
+  alcohol: alcohol || "未入力",
+  workDays: workDays || "未入力",
+  selfPr: selfPr || "未入力",
+  sns: sns || "未入力",
+  createdAt: new Date().toLocaleString(
+    "ja-JP",
+    {
+      timeZone: "Asia/Tokyo"
+    }
+  )
+};
 
       try {
 
