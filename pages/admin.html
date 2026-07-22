@@ -4453,6 +4453,29 @@ if (
                   data-id="${escapeHTML(cast.id)}"
                 >
                   削除
+                  </button>
+                  <button
+  type="button"
+  class="admin-button"
+  onclick="window.open('./cast-detail.html?id=${encodeURIComponent(cast.id)}','_blank')"
+>
+  👁 プレビュー
+</button>
+
+<button
+  type="button"
+  class="admin-button"
+  onclick="window.open('${cast.storeUrl || "./owner.html"}','_blank')"
+>
+  🏪 在籍店舗を見る
+</button>
+
+<button
+  type="button"
+  class="admin-button"
+  data-id="${escapeHTML(cast.id)}"
+>
+  📅 出勤予定
                 </button>
 
               </div>
