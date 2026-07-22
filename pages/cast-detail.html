@@ -1,0 +1,1395 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+  >
+
+  <title>キャスト詳細 | NOX</title>
+
+  <meta
+    name="description"
+    content="NOXに掲載中のキャストプロフィール、写真、インタビュー、SNS、在籍・提携先をご紹介します。"
+  >
+
+  <meta
+    name="theme-color"
+    content="#050505"
+  >
+
+  <style>
+    :root{
+      --bg:#050505;
+      --card:#101010;
+      --card-soft:#171717;
+      --gold:#d4af37;
+      --gold-light:#f5d36b;
+      --text:#f5f5f5;
+      --muted:#a8a8a8;
+      --line:rgba(212,175,55,.28);
+      --female:#ff5aa6;
+      --male:#4f9fff;
+      --shadow:0 22px 60px rgba(0,0,0,.48);
+    }
+
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+    }
+
+    html{
+      scroll-behavior:smooth;
+    }
+
+    body{
+      min-height:100vh;
+      overflow-x:hidden;
+
+      background:
+        radial-gradient(
+          circle at 50% 0%,
+          rgba(212,175,55,.15),
+          transparent 31%
+        ),
+        linear-gradient(
+          180deg,
+          #080706,
+          #000
+        );
+
+      color:var(--text);
+
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        "Hiragino Kaku Gothic ProN",
+        "Yu Gothic",
+        sans-serif;
+    }
+
+    a{
+      color:inherit;
+      text-decoration:none;
+    }
+
+    button{
+      font:inherit;
+    }
+
+    img,
+    video{
+      display:block;
+      max-width:100%;
+    }
+
+    .page{
+      width:min(1080px,100%);
+      margin:0 auto;
+
+      padding:
+        calc(22px + env(safe-area-inset-top))
+        14px
+        calc(80px + env(safe-area-inset-bottom));
+    }
+
+    .header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+
+      gap:14px;
+
+      margin-bottom:24px;
+    }
+
+    .logo{
+      color:var(--gold-light);
+
+      font-family:Georgia,serif;
+      font-size:36px;
+      font-weight:900;
+
+      letter-spacing:4px;
+      line-height:1;
+    }
+
+    .logo small{
+      display:block;
+
+      margin-top:6px;
+
+      color:#888;
+
+      font-family:inherit;
+      font-size:9px;
+
+      letter-spacing:4px;
+    }
+
+    .header-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .header-button{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+
+      min-height:44px;
+      padding:11px 16px;
+
+      border:
+        1px solid
+        rgba(212,175,55,.34);
+
+      border-radius:999px;
+
+      background:#0a0a0a;
+      color:var(--gold-light);
+
+      font-size:13px;
+      font-weight:900;
+
+      cursor:pointer;
+    }
+
+    .header-button.gold{
+      background:
+        linear-gradient(
+          135deg,
+          #9f7217,
+          #f4d777
+        );
+
+      color:#111;
+    }
+
+    .hero{
+      position:relative;
+
+      min-height:520px;
+
+      overflow:hidden;
+
+      border:
+        1px solid
+        rgba(212,175,55,.42);
+
+      border-radius:28px;
+
+      background:#0b0b0b;
+
+      box-shadow:var(--shadow);
+    }
+
+    .hero-image{
+      width:100%;
+      height:min(72vh,680px);
+      min-height:520px;
+
+      object-fit:cover;
+      background:#111;
+    }
+
+    .hero-empty{
+      min-height:520px;
+
+      display:flex;
+      align-items:center;
+      justify-content:center;
+
+      color:#777;
+
+      font-size:22px;
+      letter-spacing:3px;
+    }
+
+    .hero-overlay{
+      position:absolute;
+      inset:0;
+
+      background:
+        linear-gradient(
+          180deg,
+          rgba(0,0,0,.04),
+          rgba(0,0,0,.08) 45%,
+          rgba(0,0,0,.9) 100%
+        );
+
+      pointer-events:none;
+    }
+
+    .hero-badges{
+      position:absolute;
+
+      top:16px;
+      left:16px;
+      right:16px;
+
+      display:flex;
+      flex-wrap:wrap;
+
+      gap:8px;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+
+      min-height:31px;
+      padding:7px 11px;
+
+      border-radius:999px;
+
+      background:
+        linear-gradient(
+          135deg,
+          #9f7217,
+          #f4d777
+        );
+
+      color:#111;
+
+      font-size:11px;
+      font-weight:900;
+
+      box-shadow:
+        0 6px 18px
+        rgba(0,0,0,.3);
+    }
+
+    .badge.female{
+      background:var(--female);
+      color:#fff;
+    }
+
+    .badge.male{
+      background:var(--male);
+      color:#fff;
+    }
+
+    .badge.verified{
+      border:1px solid #6cb8e8;
+      background:#142b3a;
+      color:#dff5ff;
+    }
+
+    .hero-bottom{
+      position:absolute;
+
+      left:0;
+      right:0;
+      bottom:0;
+
+      padding:28px 22px 22px;
+    }
+
+    .hero-store{
+      margin-bottom:8px;
+
+      color:#e5d5a5;
+
+      font-size:13px;
+      font-weight:800;
+    }
+
+    .hero-name{
+      color:var(--gold-light);
+
+      font-family:Georgia,serif;
+      font-size:clamp(42px,8vw,74px);
+
+      line-height:1;
+
+      text-shadow:
+        0 5px 18px
+        rgba(0,0,0,.55);
+    }
+
+    .gallery{
+      display:flex;
+
+      gap:10px;
+
+      overflow-x:auto;
+
+      margin-top:14px;
+      padding:2px 2px 8px;
+
+      scrollbar-width:none;
+    }
+
+    .gallery::-webkit-scrollbar{
+      display:none;
+    }
+
+    .gallery-button{
+      width:78px;
+      height:92px;
+
+      flex:0 0 auto;
+
+      overflow:hidden;
+
+      padding:0;
+
+      border:
+        1px solid
+        rgba(212,175,55,.3);
+
+      border-radius:13px;
+
+      background:#111;
+
+      cursor:pointer;
+    }
+
+    .gallery-button.active{
+      border-color:var(--gold-light);
+
+      box-shadow:
+        0 0 0 2px
+        rgba(212,175,55,.16);
+    }
+
+    .gallery-button img{
+      width:100%;
+      height:100%;
+
+      object-fit:cover;
+    }
+
+    .section-card{
+      margin-top:18px;
+      padding:23px;
+
+      border:
+        1px solid
+        rgba(212,175,55,.34);
+
+      border-radius:24px;
+
+      background:
+        radial-gradient(
+          circle at top right,
+          rgba(212,175,55,.09),
+          transparent 35%
+        ),
+        linear-gradient(
+          145deg,
+          #111,
+          #070707
+        );
+
+      box-shadow:
+        0 18px 45px
+        rgba(0,0,0,.35);
+    }
+
+    .section-title{
+      display:flex;
+      align-items:center;
+
+      gap:10px;
+
+      margin-bottom:18px;
+
+      color:var(--gold-light);
+
+      font-size:25px;
+    }
+
+    .section-title::after{
+      content:"";
+
+      flex:1;
+      height:1px;
+
+      margin-left:8px;
+
+      background:
+        linear-gradient(
+          90deg,
+          rgba(212,175,55,.38),
+          transparent
+        );
+    }
+    function isCurrentlyPublished(cast){
+
+  if(cast.visible === false){
+    return false;
+  }
+
+  const now =
+    new Date();
+
+  if(cast.startDate){
+
+    const start =
+      new Date(
+        `${cast.startDate}T00:00:00`
+      );
+
+    if(start > now){
+      return false;
+    }
+
+  }
+
+  if(cast.endDate){
+
+    const end =
+      new Date(
+        `${cast.endDate}T23:59:59`
+      );
+
+    if(end < now){
+      return false;
+    }
+
+  }
+
+  return true;
+
+}
+
+function getStoreDisplayName(cast){
+
+  if(
+    cast.storeDisplayType ===
+    "partners"
+  ){
+    return "NOX PARTNERS";
+  }
+
+  return (
+    cast.storeName ||
+    "NOX PARTNERS"
+  );
+
+}
+
+function getContactUrl(cast){
+
+  if(
+    cast.storeDisplayType ===
+    "partners"
+  ){
+    return NOX_LINE_URL;
+  }
+
+  return (
+    cast.reservationUrl ||
+    cast.storeLineUrl ||
+    cast.contactUrl ||
+    NOX_LINE_URL
+  );
+
+}
+
+function getContactLabel(cast){
+
+  if(
+    cast.storeDisplayType ===
+    "partners"
+  ){
+    return "NOXへ問い合わせる";
+  }
+
+  return "このキャストに会いたい・予約する";
+
+}
+
+function getImageList(cast){
+
+  const images = [];
+
+  if(cast.mainImageUrl){
+    images.push(
+      cast.mainImageUrl
+    );
+  }
+
+  if(
+    Array.isArray(
+      cast.galleryImages
+    )
+  ){
+
+    cast.galleryImages.forEach(
+      (image)=>{
+
+        const imageUrl =
+          typeof image === "string"
+            ? image
+            : image?.url || "";
+
+        if(
+          imageUrl &&
+          !images.includes(imageUrl)
+        ){
+          images.push(imageUrl);
+        }
+
+      }
+    );
+
+  }
+
+  return images;
+
+}
+
+function createBadges(cast){
+
+  const genderText =
+    cast.gender === "male"
+      ? "男の子"
+      : "女の子";
+
+  const genderClass =
+    cast.gender === "male"
+      ? "male"
+      : "female";
+
+  return [
+
+    `
+      <span
+        class="badge ${genderClass}"
+      >
+        ${genderText}
+      </span>
+    `,
+
+    cast.isNew
+      ? `
+        <span class="badge">
+          NEW
+        </span>
+      `
+      : "",
+
+    cast.pickup
+      ? `
+        <span class="badge">
+          PICK UP
+        </span>
+      `
+      : "",
+
+    cast.popular
+      ? `
+        <span class="badge">
+          人気キャスト
+        </span>
+      `
+      : "",
+
+    cast.verified
+      ? `
+        <span
+          class="badge verified"
+        >
+          NOX認証
+        </span>
+      `
+      : ""
+
+  ].join("");
+
+}
+
+function createInfoItem(
+  label,
+  value
+){
+
+  if(
+    value === undefined ||
+    value === null ||
+    String(value).trim() === ""
+  ){
+    return "";
+  }
+
+  return `
+    <div class="info-item">
+
+      <p class="info-label">
+        ${h(label)}
+      </p>
+
+      <p class="info-value">
+        ${h(value)}
+      </p>
+
+    </div>
+  `;
+
+}
+
+function createGallery(
+  images,
+  name
+){
+
+  if(images.length <= 1){
+    return "";
+  }
+
+  return `
+    <div class="gallery">
+
+      ${images.map(
+        (image,index)=>`
+          <button
+            type="button"
+            class="gallery-button ${
+              index === 0
+                ? "active"
+                : ""
+            }"
+            data-image="${h(image)}"
+          >
+            <img
+              src="${h(image)}"
+              alt="${h(name)} 写真${index + 1}"
+              loading="lazy"
+            >
+          </button>
+        `
+      ).join("")}
+
+    </div>
+  `;
+
+}
+
+function createInterview(cast){
+
+  const interview =
+    cast.interview || {};
+
+  const items = [
+
+    {
+      label:
+        "このお仕事を始めたきっかけは？",
+
+      value:
+        interview.reason
+    },
+
+    {
+      label:
+        "ご自身の性格を一言で教えてください！",
+
+      value:
+        interview.personality
+    },
+
+    {
+      label:
+        "接客で一番大切にしていることは？",
+
+      value:
+        interview.important
+    },
+
+    {
+      label:
+        "お客様からよく言われることは？",
+
+      value:
+        interview.oftenSaid
+    },
+
+    {
+      label:
+        "あなたのチャームポイントは？",
+
+      value:
+        interview.charm
+    },
+
+    {
+      label:
+        "趣味・休日の過ごし方は？",
+
+      value:
+        interview.hobby
+    },
+
+    {
+      label:
+        "初めてのお客様へ一言お願いします！",
+
+      value:
+        interview.message
+    },
+
+    {
+      label:
+        "最後にPRをお願いします！",
+
+      value:
+        interview.pr
+    }
+
+  ].filter(
+    (item)=>
+      item.value !== undefined &&
+      item.value !== null &&
+      String(item.value).trim() !== ""
+  );
+
+  if(items.length === 0){
+    return "";
+  }
+
+  return `
+    <section class="section-card">
+
+      <h2 class="section-title">
+        インタビュー
+      </h2>
+
+      ${items.map(
+        (item)=>`
+          <div
+            class="info-item"
+            style="margin-bottom:12px;"
+          >
+
+            <p
+              class="info-label"
+              style="
+                color:#f5d36b;
+                font-size:14px;
+                font-weight:900;
+              "
+            >
+              ${h(item.label)}
+            </p>
+
+            <p
+              class="description"
+              style="margin-top:8px;"
+            >
+              ${h(item.value)}
+            </p>
+
+          </div>
+        `
+      ).join("")}
+
+    </section>
+  `;
+
+}
+    function createSnsSection(cast){
+
+  const sns =
+    cast.sns || {};
+
+  const items = [
+
+    {
+      name:"X",
+      value:
+        sns.x ||
+        cast.x,
+      urlType:"x"
+    },
+
+    {
+      name:"Instagram",
+      value:
+        sns.instagram ||
+        cast.instagram,
+      urlType:"instagram"
+    },
+
+    {
+      name:"TikTok",
+      value:
+        sns.tiktok ||
+        cast.tiktok,
+      urlType:"tiktok"
+    }
+
+  ].filter(
+    (item)=>
+      item.value !== undefined &&
+      item.value !== null &&
+      String(item.value).trim() !== ""
+  );
+
+  if(items.length === 0){
+    return "";
+  }
+
+  function createSnsUrl(
+    value,
+    type
+  ){
+
+    const text =
+      String(value || "")
+        .trim();
+
+    if(
+      text.startsWith("https://") ||
+      text.startsWith("http://")
+    ){
+      return text;
+    }
+
+    const account =
+      text.replace(/^@/,"");
+
+    if(type === "x"){
+      return `https://x.com/${account}`;
+    }
+
+    if(type === "instagram"){
+      return `https://www.instagram.com/${account}/`;
+    }
+
+    if(type === "tiktok"){
+      return `https://www.tiktok.com/@${account}`;
+    }
+
+    return text;
+
+  }
+
+  return `
+    <section class="section-card">
+
+      <h2 class="section-title">
+        SNS
+      </h2>
+
+      <div class="sns-grid">
+
+        ${items.map(
+          (item)=>`
+            <a
+              href="${h(
+                createSnsUrl(
+                  item.value,
+                  item.urlType
+                )
+              )}"
+              class="sns-button"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              ${h(item.name)}
+            </a>
+          `
+        ).join("")}
+
+      </div>
+
+    </section>
+  `;
+
+}
+
+function createVideoSection(cast){
+
+  const hasUploadedVideo =
+    Boolean(cast.videoUrl);
+
+  const hasExternalVideo =
+    Boolean(cast.externalVideoUrl);
+
+  if(
+    !hasUploadedVideo &&
+    !hasExternalVideo
+  ){
+    return "";
+  }
+
+  return `
+    <section class="section-card">
+
+      <h2 class="section-title">
+        動画
+      </h2>
+
+      ${
+        hasUploadedVideo
+          ? `
+            <video
+              src="${h(cast.videoUrl)}"
+              controls
+              playsinline
+              preload="metadata"
+              style="
+                width:100%;
+                max-height:650px;
+                border-radius:18px;
+                background:#000;
+              "
+            ></video>
+          `
+          : ""
+      }
+
+      ${
+        hasExternalVideo
+          ? `
+            <a
+              href="${h(
+                cast.externalVideoUrl
+              )}"
+              class="gold-button"
+              target="_blank"
+              rel="noopener noreferrer"
+              style="margin-top:14px;"
+            >
+              外部サイトで動画を見る
+            </a>
+          `
+          : ""
+      }
+
+    </section>
+  `;
+
+}
+
+function createStoreSection(cast){
+
+  const storeName =
+    getStoreDisplayName(cast);
+
+  const contactUrl =
+    getContactUrl(cast);
+
+  const isPartners =
+    cast.storeDisplayType ===
+    "partners";
+
+  const storeJobUrl =
+    cast.storeJobId
+      ? `./job-detail.html?id=${
+          encodeURIComponent(
+            cast.storeJobId
+          )
+        }`
+      : "";
+
+  return `
+    <section class="section-card">
+
+      <h2 class="section-title">
+        在籍・提携先
+      </h2>
+
+      <div class="store-card">
+
+        <p class="store-name">
+          ${h(storeName)}
+        </p>
+
+        <p class="description">
+          ${
+            isPartners
+              ? "店舗名非公開・NOX提携キャストです。お問い合わせはNOX公式LINEよりお願いいたします。"
+              : "このキャストへの来店予約・お問い合わせはこちらから行えます。"
+          }
+        </p>
+
+        <div class="store-buttons">
+
+          <a
+            href="${h(contactUrl)}"
+            class="gold-button"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            ${h(
+              getContactLabel(cast)
+            )}
+          </a>
+
+          ${
+            !isPartners &&
+            storeJobUrl
+              ? `
+                <a
+                  href="${h(storeJobUrl)}"
+                  class="line-button"
+                >
+                  在籍店舗・求人を見る
+                </a>
+              `
+              : ""
+          }
+
+          <a
+            href="./cast-list.html"
+            class="line-button"
+          >
+            他のキャストを見る
+          </a>
+
+        </div>
+
+      </div>
+
+    </section>
+  `;
+
+}
+
+function createProfileSection(cast){
+
+  const information = [
+
+    createInfoItem(
+      "年齢",
+      cast.age
+        ? `${cast.age}歳`
+        : ""
+    ),
+
+    createInfoItem(
+      "在籍・提携先",
+      getStoreDisplayName(cast)
+    ),
+
+    createInfoItem(
+      "エリア",
+      cast.area
+    ),
+
+    createInfoItem(
+      "業種",
+      cast.jobType
+    ),
+
+    createInfoItem(
+      "身長",
+      cast.height
+        ? `${cast.height}cm`
+        : ""
+    ),
+
+    createInfoItem(
+      "趣味",
+      cast.hobby
+    )
+
+  ].join("");
+
+  return `
+    <section class="section-card">
+
+      <h2 class="section-title">
+        プロフィール
+      </h2>
+
+      ${
+        cast.catchCopy
+          ? `
+            <p class="catch-copy">
+              ${h(cast.catchCopy)}
+            </p>
+          `
+          : ""
+      }
+
+      <div class="info-grid">
+        ${information}
+      </div>
+
+      ${
+        cast.description
+          ? `
+            <p
+              class="description"
+              style="margin-top:20px;"
+            >
+              ${h(cast.description)}
+            </p>
+          `
+          : ""
+      }
+
+    </section>
+  `;
+
+}
+        async function loadCast(){
+
+  if(!castId){
+
+    app.innerHTML = `
+      <section class="section-card">
+
+        <h2 class="section-title">
+          キャストが指定されていません
+        </h2>
+
+        <p class="description">
+          キャスト一覧からプロフィールを開いてください。
+        </p>
+
+        <a
+          href="./cast-list.html"
+          class="gold-button"
+          style="margin-top:20px;"
+        >
+          キャスト一覧へ戻る
+        </a>
+
+      </section>
+    `;
+
+    return;
+  }
+
+  try{
+
+    const castSnapshot =
+      await getDoc(
+        doc(
+          db,
+          "casts",
+          castId
+        )
+      );
+
+    if(!castSnapshot.exists()){
+
+      app.innerHTML = `
+        <section class="section-card">
+
+          <h2 class="section-title">
+            キャストが見つかりません
+          </h2>
+
+          <p class="description">
+            削除されたか、URLが変更された可能性があります。
+          </p>
+
+          <a
+            href="./cast-list.html"
+            class="gold-button"
+            style="margin-top:20px;"
+          >
+            キャスト一覧へ戻る
+          </a>
+
+        </section>
+      `;
+
+      return;
+    }
+
+    const cast = {
+      id:castSnapshot.id,
+      ...castSnapshot.data()
+    };
+
+    if(!isCurrentlyPublished(cast)){
+
+      app.innerHTML = `
+        <section class="section-card">
+
+          <h2 class="section-title">
+            現在掲載されていません
+          </h2>
+
+          <p class="description">
+            このキャストの掲載期間は終了したか、非表示に設定されています。
+          </p>
+
+          <a
+            href="./cast-list.html"
+            class="gold-button"
+            style="margin-top:20px;"
+          >
+            キャスト一覧へ戻る
+          </a>
+
+        </section>
+      `;
+
+      return;
+    }
+
+    const name =
+      cast.name ||
+      "名前未設定";
+
+    const images =
+      getImageList(cast);
+
+    const mainImage =
+      images[0] || "";
+
+    document.title =
+      `${name} | キャスト詳細 | NOX`;
+
+    app.innerHTML = `
+
+      <section class="hero">
+
+        ${
+          mainImage
+            ? `
+              <img
+                src="${h(mainImage)}"
+                alt="${h(name)}"
+                class="hero-image"
+                id="mainHeroImage"
+              >
+            `
+            : `
+              <div class="hero-empty">
+                NO IMAGE
+              </div>
+            `
+        }
+
+        <div class="hero-overlay"></div>
+
+        <div class="hero-badges">
+          ${createBadges(cast)}
+        </div>
+
+        <div class="hero-bottom">
+
+          <p class="hero-store">
+            在籍・提携先：
+            ${h(
+              getStoreDisplayName(cast)
+            )}
+          </p>
+
+          <h1 class="hero-name">
+            ${h(name)}
+          </h1>
+
+        </div>
+
+      </section>
+
+      ${createGallery(
+        images,
+        name
+      )}
+
+      ${createProfileSection(cast)}
+
+      ${createInterview(cast)}
+
+      ${createVideoSection(cast)}
+
+      ${createSnsSection(cast)}
+
+      ${createStoreSection(cast)}
+
+    `;
+
+    document
+      .querySelectorAll(
+        ".gallery-button"
+      )
+      .forEach((button)=>{
+
+        button.addEventListener(
+          "click",
+          ()=>{
+
+            const selectedImage =
+              button.dataset.image;
+
+            const heroImage =
+              document.getElementById(
+                "mainHeroImage"
+              );
+
+            if(
+              heroImage &&
+              selectedImage
+            ){
+              heroImage.src =
+                selectedImage;
+            }
+
+            document
+              .querySelectorAll(
+                ".gallery-button"
+              )
+              .forEach((item)=>{
+                item.classList.remove(
+                  "active"
+                );
+              });
+
+            button.classList.add(
+              "active"
+            );
+
+          }
+        );
+
+      });
+
+  }catch(error){
+
+    console.error(
+      "キャスト詳細読み込みエラー",
+      error
+    );
+
+    app.innerHTML = `
+      <section class="section-card">
+
+        <h2 class="section-title">
+          読み込みに失敗しました
+        </h2>
+
+        <p class="description">
+          時間を空けて、もう一度お試しください。
+        </p>
+
+        <a
+          href="./cast-list.html"
+          class="gold-button"
+          style="margin-top:20px;"
+        >
+          キャスト一覧へ戻る
+        </a>
+
+      </section>
+    `;
+
+  }
+
+}
+
+loadCast();
+
+</script>
+
+</div>
+
+</body>
+</html>
