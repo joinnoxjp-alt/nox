@@ -1092,12 +1092,127 @@ if(pickupMaleButton){
     }
   );
 }
+/* ===========================
+   TOP キャスト
+=========================== */
 
+async function loadTopCasts() {
+
+  const container =
+    document.getElementById("topCastList");
+
+  if (!container) {
+    return;
+  }
+
+  container.innerHTML =
+    "<p>キャストを読み込んでいます...</p>";
+
+  try {
+
+    const snapshot =
+      await getDocs(
+        collection(db, "casts")
+      );
+
+    const casts = [];
+
+    snapshot.forEach((docSnap) => {
+
+      const data = docSnap.data();
+
+      if (data.visible !== true) {
+        return;
+      }
+
+      if (data.topFeatured !== true) {
+        return;
+      }
+
+      casts.push({
+        id: docSnap.id,
+        ...data
+      });
+
+    });
+
+    casts.sort((a, b) => {
+      return (a.topDisplayOrder || 9999)
+        - (b.topDisplayOrder || 9999);
+    });
+
+    if (casts.length === 0) {
+
+      container.innerHTML = `
+        <p style="width:100%;text-align:center;color:#aaa;">
+          現在表示できるキャストはいません。
+        </p>
+      `;
+
+      return;
+    }
+
+    container.innerHTML =
+      casts
+        .slice(0, 10)
+        .map((cast) => `
+          <a
+            href="pages/cast-detail.html?id=${cast.id}"
+            style="
+              flex:0 0 260px;
+              background:#111;
+              border:1px solid rgba(212,175,55,.3);
+              border-radius:18px;
+              overflow:hidden;
+              text-decoration:none;
+              color:#fff;
+            "
+          >
+
+            <img
+              src="${cast.mainImageUrl || ""}"
+              style="
+                width:100%;
+                height:300px;
+                object-fit:cover;
+              "
+            >
+
+            <div style="padding:16px;">
+
+              <h3 style="margin:0 0 8px;">
+                ${escapeHtml(cast.name || "")}
+              </h3>
+
+              <p style="margin:0;color:#bbb;">
+                ${escapeHtml(cast.storeName || "")}
+              </p>
+
+            </div>
+
+          </a>
+        `)
+        .join("");
+
+  } catch (error) {
+
+    console.error(error);
+
+    container.innerHTML = `
+      <p style="width:100%;text-align:center;color:#f66;">
+        キャストを読み込めませんでした。
+      </p>
+    `;
+
+  }
+
+}
 /* ===========================
    初期実行
 =========================== */
 
 loadNoxAdvertisements();
+loadTopCasts();
 /* ==========================
    MEMBER LOUNGE
 ========================== */
