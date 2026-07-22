@@ -1247,7 +1247,39 @@
               <h3 class="cast-form-title">
                 ⚙️ 掲載設定
               </h3>
+<div class="cast-form-grid" style="margin-bottom:20px;">
 
+  <div class="cast-form-group">
+    <label for="castStartDate">
+      掲載開始日
+    </label>
+
+    <input
+      type="date"
+      id="castStartDate"
+    >
+
+    <small class="cast-form-note">
+      未設定の場合は保存後すぐに掲載されます。
+    </small>
+  </div>
+
+  <div class="cast-form-group">
+    <label for="castEndDate">
+      掲載終了日
+    </label>
+
+    <input
+      type="date"
+      id="castEndDate"
+    >
+
+    <small class="cast-form-note">
+      終了日の23:59を過ぎると自動で非表示になります。
+    </small>
+  </div>
+
+</div>
               <div class="cast-setting-grid">
 
                 <label class="cast-setting-item">
@@ -3517,6 +3549,18 @@ ${data.sns || "-"}
           data.description
         );
 
+        
+setInputValue(
+  "castStartDate",
+  data.startDate || ""
+);
+
+setInputValue(
+  "castEndDate",
+  data.endDate || ""
+);
+
+
         setInputValue(
           "castVideoUrl",
           data.externalVideoUrl
@@ -3706,6 +3750,12 @@ ${data.sns || "-"}
           "castDescription"
         );
 
+      const startDate =
+  getInputValue("castStartDate");
+
+const endDate =
+  getInputValue("castEndDate");
+
       const externalVideoUrl =
         getInputValue(
           "castVideoUrl"
@@ -3725,7 +3775,17 @@ ${data.sns || "-"}
         document
           .getElementById("castVideo")
           .files?.[0] || null;
+if (
+  startDate &&
+  endDate &&
+  startDate > endDate
+) {
+  alert(
+    "掲載終了日は掲載開始日より後の日付にしてください。"
+  );
 
+  return;
+}
       if (!name) {
         alert(
           "掲載名を入力してください"
@@ -3981,7 +4041,8 @@ ${data.sns || "-"}
           area,
           catchCopy,
           description,
-
+          startDate,
+endDate,
           mainImageUrl,
           mainImageStoragePath,
 
@@ -4243,6 +4304,33 @@ alert(
           const isVisible =
             cast.visible !== false;
 
+    const now = new Date();
+
+const isExpired =
+  Boolean(cast.endDate) &&
+  new Date(`${cast.endDate}T23:59:59`) < now;
+if (
+  isExpired &&
+  cast.visible !== false
+) {
+  updateDoc(
+    doc(
+      db,
+      "casts",
+      cast.id
+    ),
+    {
+      visible: false,
+      automaticallyHiddenAt:
+        serverTimestamp()
+    }
+  ).catch((error) => {
+    console.error(
+      "期限切れ自動非表示エラー",
+      error
+    );
+  });
+}
           const badgeHtml = [
             cast.pickup
               ? `<span class="cast-badge">PICK UP</span>`
@@ -4328,11 +4416,7 @@ alert(
                         : "hidden"
                     }"
                   >
-                    ${
-                      isVisible
-                        ? "表示中"
-                        : "非表示"
-                    }
+                  ${isVisible && !isExpired? "表示中" : "非表示"}
                   </span>
 
                   ${badgeHtml}
@@ -4357,7 +4441,7 @@ alert(
                   data-visible="${isVisible ? "true" : "false"}"
                 >
                   ${
-                    isVisible
+                    isVisible && !isExpired
                       ? "非表示にする"
                       : "表示する"
                   }
