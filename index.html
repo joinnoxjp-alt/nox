@@ -881,36 +881,44 @@
 
       </div>
 
-      <div
-        style="
-          max-width:900px;
-          margin:0 auto;
-          padding:30px 20px;
-          text-align:center;
-          background:#111;
-          border:1px solid rgba(212,175,55,.3);
-          border-radius:18px;
-        "
-      >
+     <div
+  id="topCastList"
+  style="
+    display:flex;
+    gap:16px;
+    overflow-x:auto;
+    padding:4px 18px 20px;
+    margin:0 -18px;
+    scroll-snap-type:x mandatory;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  "
+>
+  <p
+    style="
+      width:100%;
+      padding:30px 20px;
+      color:#aaa;
+      text-align:center;
+    "
+  >
+    キャストを読み込んでいます...
+  </p>
+</div>
 
-        <p
-          style="
-            margin-bottom:22px;
-            color:#ddd;
-            line-height:1.9;
-          "
-        >
-          キャストプロフィール・写真・インタビュー・SNS・在籍店舗などを掲載しています。
-        </p>
-
-        <a
-          href="pages/casts.html"
-          class="btn gold"
-        >
-          キャスト紹介を見る
-        </a>
-
-      </div>
+<div
+  style="
+    margin-top:20px;
+    text-align:center;
+  "
+>
+  <a
+    href="pages/casts.html"
+    class="btn gold"
+  >
+    キャスト一覧を見る
+  </a>
+</div>
 
     </section>
     <!-- AI診断 -->
