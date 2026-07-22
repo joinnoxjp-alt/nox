@@ -1280,6 +1280,51 @@
   </div>
 
 </div>
+                            <!-- TOPページ表示設定 -->
+              <div class="cast-form-grid" style="margin-bottom:20px;">
+
+                <div class="cast-form-group">
+                  <label for="castTopOrder">
+                    TOPページ表示順
+                  </label>
+
+                  <input
+                    type="number"
+                    id="castTopOrder"
+                    min="1"
+                    step="1"
+                    placeholder="例：1"
+                  >
+
+                  <small class="cast-form-note">
+                    数字が小さいキャストから順番に表示されます。
+                  </small>
+                </div>
+
+                <div class="cast-form-group">
+
+                  <label>
+                    TOPページ掲載
+                  </label>
+
+                  <label class="cast-setting-item">
+                    <input
+                      type="checkbox"
+                      id="castTopFeatured"
+                    >
+
+                    <span>
+                      TOPページに表示する
+                    </span>
+                  </label>
+
+                  <small class="cast-form-note">
+                    将来的に有料掲載枠として利用できます。
+                  </small>
+
+                </div>
+
+              </div>
               <div class="cast-setting-grid">
 
                 <label class="cast-setting-item">
@@ -3473,6 +3518,24 @@ ${data.sns || "-"}
 
       saveCastButton.textContent =
         "キャストを保存";
+      setInputValue(
+  "castStartDate",
+  ""
+);
+
+setInputValue(
+  "castEndDate",
+  ""
+);
+      setCheckboxValue(
+  "castTopFeatured",
+  false
+);
+
+setInputValue(
+  "castTopOrder",
+  ""
+);
     }
 
     function openNewCastModal() {
@@ -3646,6 +3709,16 @@ setInputValue(
           data.verified
         );
 
+        setCheckboxValue(
+  "castTopFeatured",
+  data.topFeatured === true
+);
+
+setInputValue(
+  "castTopOrder",
+  data.topDisplayOrder || ""
+);
+
         if (data.mainImageUrl) {
           castMainImagePreview.innerHTML = `
             <img
@@ -3756,6 +3829,21 @@ setInputValue(
 const endDate =
   getInputValue("castEndDate");
 
+      const topFeatured =
+  getCheckboxValue(
+    "castTopFeatured"
+  );
+
+const topDisplayOrderValue =
+  getInputValue(
+    "castTopOrder"
+  );
+
+const topDisplayOrder =
+  topDisplayOrderValue
+    ? Number(topDisplayOrderValue)
+    : 0;
+      
       const externalVideoUrl =
         getInputValue(
           "castVideoUrl"
@@ -3782,6 +3870,19 @@ if (
 ) {
   alert(
     "掲載終了日は掲載開始日より後の日付にしてください。"
+  );
+
+  return;
+}
+      if (
+  topFeatured &&
+  (
+    !Number.isInteger(topDisplayOrder) ||
+    topDisplayOrder < 1
+  )
+) {
+  alert(
+    "TOPページに表示する場合は、表示順を1以上の数字で入力してください。"
   );
 
   return;
@@ -4135,6 +4236,13 @@ endDate,
               "castVerified"
             ),
 
+          topFeatured,
+
+topDisplayOrder:
+  topFeatured
+    ? topDisplayOrder
+    : 0,
+
           favoriteCount:
             numberValue(
               oldData.favoriteCount
@@ -4186,6 +4294,7 @@ endDate,
         closeCastModal();
 
         await loadCasts();
+        await loadTopCasts();
 
       } catch (error) {
         console.error(
