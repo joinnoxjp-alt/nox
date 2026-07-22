@@ -1179,7 +1179,34 @@ async function loadTopCasts() {
             >
 
             <div style="padding:16px;">
+           <div style="
+display:flex;
+flex-wrap:wrap;
+gap:6px;
+margin-bottom:12px;
+">
 
+${cast.pickup ? `
+<span style="background:#d4af37;color:#000;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:bold;">
+👑 PICK UP
+</span>` : ""}
+
+${cast.isNew ? `
+<span style="background:#d4af37;color:#000;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:bold;">
+🆕 NEW
+</span>` : ""}
+
+${cast.popular ? `
+<span style="background:#d4af37;color:#000;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:bold;">
+🔥 人気
+</span>` : ""}
+
+${cast.verified ? `
+<span style="background:#d4af37;color:#000;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:bold;">
+✅ NOX認証
+</span>` : ""}
+
+</div>
               <h3 style="margin:0 0 8px;">
                 ${escapeHtml(cast.name || "")}
               </h3>
