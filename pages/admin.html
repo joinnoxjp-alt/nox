@@ -4131,7 +4131,17 @@ ${data.sns || "-"}
           "キャスト保存エラー",
           error
         );
+   castSaveStatus.className =
+  "save-status error";
 
+castSaveStatus.textContent =
+  error.message ||
+  "キャストを保存できませんでした";
+
+alert(
+  error.message ||
+  "キャストを保存できませんでした"
+);
         castSaveStatus.className =
           "save-status error";
 
@@ -4139,9 +4149,6 @@ ${data.sns || "-"}
           error.message ||
           "キャストを保存できませんでした";
 
-        alert(
-          "キャストを保存できませんでした"
-        );
 
       } finally {
         saveCastButton.disabled =
