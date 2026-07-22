@@ -2,11 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>管理者ページ | NOX</title>
 
@@ -396,6 +392,335 @@
       margin-top:40px;
     }
 
+    /* キャスト管理 */
+
+    .cast-admin-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+      gap:18px;
+    }
+
+    .cast-card-admin{
+      overflow:hidden;
+      border:1px solid rgba(212,175,55,.35);
+      border-radius:18px;
+      background:linear-gradient(145deg,#121212,#090909);
+      box-shadow:0 15px 35px rgba(0,0,0,.35);
+    }
+
+    .cast-card-image{
+      width:100%;
+      aspect-ratio:3 / 2;
+      overflow:hidden;
+      background:#080808;
+    }
+
+    .cast-card-image img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+
+    .cast-card-body{
+      padding:18px;
+    }
+
+    .cast-card-admin h3{
+      color:#f5d36b;
+      margin-bottom:10px;
+      font-size:22px;
+    }
+
+    .cast-info{
+      color:#ddd;
+      line-height:1.8;
+      font-size:14px;
+    }
+
+    .cast-badge{
+      display:inline-block;
+      padding:5px 10px;
+      border-radius:999px;
+      background:#d4af37;
+      color:#111;
+      font-size:11px;
+      font-weight:bold;
+      margin-right:6px;
+      margin-top:8px;
+    }
+
+    .cast-badge.female{
+      background:#ff69b4;
+      color:#fff;
+    }
+
+    .cast-badge.male{
+      background:#4d9dff;
+      color:#fff;
+    }
+
+    .cast-badge.hidden{
+      background:#555;
+      color:#fff;
+    }
+
+    .cast-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:18px;
+    }
+
+    .cast-actions button{
+      flex:1 1 120px;
+    }
+
+    /* キャスト追加・編集モーダル */
+
+    .cast-modal{
+      position:fixed;
+      inset:0;
+      z-index:1000;
+      display:none;
+      align-items:flex-start;
+      justify-content:center;
+      padding:24px 14px;
+      overflow-y:auto;
+      background:rgba(0,0,0,.84);
+      backdrop-filter:blur(7px);
+      -webkit-backdrop-filter:blur(7px);
+    }
+
+    .cast-modal.is-open{
+      display:flex;
+    }
+
+    .cast-modal-box{
+      position:relative;
+      width:100%;
+      max-width:880px;
+      margin:auto;
+      padding:28px 22px;
+      border:1px solid rgba(212,175,55,.5);
+      border-radius:22px;
+      background:
+        radial-gradient(
+          circle at top right,
+          rgba(212,175,55,.13),
+          transparent 30%
+        ),
+        linear-gradient(145deg,#151515,#080808);
+      box-shadow:0 25px 80px rgba(0,0,0,.7);
+    }
+
+    .cast-modal-box h2{
+      padding-right:50px;
+      margin-bottom:24px;
+      color:#f5d36b;
+      font-size:27px;
+    }
+
+    .cast-modal-close{
+      position:absolute;
+      top:16px;
+      right:16px;
+      width:40px;
+      height:40px;
+      border:1px solid rgba(212,175,55,.45);
+      border-radius:50%;
+      color:#f5d36b;
+      background:#111;
+      font-size:26px;
+      line-height:1;
+      cursor:pointer;
+    }
+
+    .cast-form-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:16px;
+    }
+
+    .cast-form-group{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      min-width:0;
+    }
+
+    .cast-form-group.full{
+      grid-column:1 / -1;
+    }
+
+    .cast-form-group label{
+      color:#f5d36b;
+      font-size:13px;
+      font-weight:800;
+    }
+
+    .cast-form-group input,
+    .cast-form-group select,
+    .cast-form-group textarea{
+      width:100%;
+      min-width:0;
+      padding:13px 14px;
+      border:1px solid rgba(212,175,55,.3);
+      border-radius:12px;
+      outline:none;
+      color:#fff;
+      background:#101010;
+      font-size:15px;
+    }
+
+    .cast-form-group textarea{
+      min-height:120px;
+      resize:vertical;
+    }
+
+    .cast-form-group input:focus,
+    .cast-form-group select:focus,
+    .cast-form-group textarea:focus{
+      border-color:#d4af37;
+      box-shadow:0 0 18px rgba(212,175,55,.15);
+    }
+
+    .cast-form-block{
+      margin-top:30px;
+      padding-top:24px;
+      border-top:1px solid rgba(212,175,55,.18);
+    }
+
+    .cast-form-title{
+      margin-bottom:18px;
+      color:#f5d36b;
+      font-size:21px;
+      font-weight:800;
+    }
+
+    .cast-form-note{
+      display:block;
+      margin-top:6px;
+      color:#999;
+      font-size:12px;
+      line-height:1.6;
+    }
+
+    .cast-main-image-preview{
+      width:180px;
+      height:230px;
+      margin-top:14px;
+      border:1px dashed rgba(212,175,55,.35);
+      border-radius:18px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+      background:#0d0d0d;
+      color:#777;
+      font-size:13px;
+    }
+
+    .cast-main-image-preview img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
+
+    .cast-gallery-preview{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(90px,1fr));
+      gap:10px;
+      margin-top:14px;
+    }
+
+    .cast-gallery-preview-item{
+      position:relative;
+      overflow:hidden;
+      border-radius:12px;
+      border:1px solid rgba(212,175,55,.25);
+      background:#080808;
+    }
+
+    .cast-gallery-preview-item img{
+      width:100%;
+      aspect-ratio:1;
+      object-fit:cover;
+      display:block;
+    }
+
+    .cast-gallery-preview-item span{
+      position:absolute;
+      right:6px;
+      bottom:6px;
+      min-width:22px;
+      height:22px;
+      padding:0 6px;
+      border-radius:999px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:rgba(0,0,0,.75);
+      color:#f5d36b;
+      font-size:11px;
+      font-weight:800;
+    }
+
+    .cast-existing-gallery{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(90px,1fr));
+      gap:10px;
+      margin-top:14px;
+    }
+
+    .cast-existing-gallery img{
+      width:100%;
+      aspect-ratio:1;
+      object-fit:cover;
+      border-radius:12px;
+      border:1px solid rgba(212,175,55,.25);
+    }
+
+    .cast-setting-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+      gap:14px;
+    }
+
+    .cast-setting-item{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:14px;
+      border-radius:14px;
+      border:1px solid rgba(212,175,55,.2);
+      background:#111;
+      color:#fff;
+      cursor:pointer;
+    }
+
+    .cast-setting-item input{
+      width:18px;
+      height:18px;
+      accent-color:#d4af37;
+    }
+
+    .cast-form-actions{
+      display:flex;
+      gap:14px;
+      justify-content:flex-end;
+      flex-wrap:wrap;
+      margin-top:32px;
+    }
+
+    .cast-form-actions button{
+      min-width:180px;
+    }
+
+    body.cast-modal-open{
+      overflow:hidden;
+    }
+
     @media(max-width:900px){
       .ad-management-grid{
         grid-template-columns:1fr;
@@ -403,6 +728,22 @@
 
       .admin-main-card{
         padding:30px 18px;
+      }
+    }
+
+    @media(max-width:700px){
+      .cast-main-image-preview{
+        width:100%;
+        max-width:220px;
+        height:280px;
+      }
+
+      .cast-form-actions{
+        flex-direction:column;
+      }
+
+      .cast-form-actions button{
+        width:100%;
       }
     }
 
@@ -437,6 +778,31 @@
       .ad-stats{
         grid-template-columns:1fr 1fr;
       }
+
+      .cast-admin-grid{
+        grid-template-columns:1fr;
+      }
+
+      .cast-modal{
+        padding:12px 10px;
+      }
+
+      .cast-modal-box{
+        padding:22px 15px;
+        border-radius:18px;
+      }
+
+      .cast-modal-box h2{
+        font-size:23px;
+      }
+
+      .cast-form-grid{
+        grid-template-columns:1fr;
+      }
+
+      .cast-form-group.full{
+        grid-column:auto;
+      }
     }
   </style>
 </head>
@@ -451,7 +817,7 @@
         <div class="admin-header">
           <span>NOX ADMIN</span>
           <h1>管理者ページ</h1>
-          <p>求人・広告・会員情報を管理できます。</p>
+          <p>求人・広告・会員・キャスト情報を管理できます。</p>
         </div>
 
         <!-- 広告管理 -->
@@ -496,7 +862,7 @@
 
         </section>
 
-        <!-- 女の子一覧 -->
+        <!-- 会員一覧 -->
         <section class="admin-section">
 
           <h2 class="admin-section-title">
@@ -514,6 +880,448 @@
           </div>
 
         </section>
+
+        <!-- キャスト管理 -->
+        <section class="admin-section">
+
+          <h2 class="admin-section-title">
+            👑 キャスト管理
+          </h2>
+
+          <p class="admin-section-description">
+            NOXへ掲載するキャストを追加・編集・削除できます。
+            女の子・男の子どちらもここから管理します。
+          </p>
+
+          <div class="admin-btn-row" style="margin-bottom:20px;">
+            <button
+              type="button"
+              id="openCastModal"
+              class="admin-button"
+            >
+              ＋ キャストを追加
+            </button>
+          </div>
+
+          <div id="castList">
+            <p class="admin-message">
+              キャストを読み込み中...
+            </p>
+          </div>
+
+        </section>
+
+        <!-- キャスト追加・編集モーダル -->
+        <div
+          id="castModal"
+          class="cast-modal"
+          aria-hidden="true"
+        >
+          <div class="cast-modal-box">
+
+            <button
+              type="button"
+              id="closeCastModal"
+              class="cast-modal-close"
+              aria-label="閉じる"
+            >
+              ×
+            </button>
+
+            <h2 id="castModalTitle">
+              👑 キャスト追加
+            </h2>
+
+            <input
+              type="hidden"
+              id="castEditId"
+              value=""
+            >
+
+            <div class="cast-form-grid">
+
+              <div class="cast-form-group">
+                <label for="castName">掲載名</label>
+                <input
+                  type="text"
+                  id="castName"
+                  placeholder="例：掲載名"
+                >
+              </div>
+
+              <div class="cast-form-group">
+                <label for="castGender">性別</label>
+                <select id="castGender">
+                  <option value="female">女の子</option>
+                  <option value="male">男の子</option>
+                </select>
+              </div>
+
+              <div class="cast-form-group">
+                <label for="castAge">年齢</label>
+                <input
+                  type="number"
+                  id="castAge"
+                  min="18"
+                  max="99"
+                  placeholder="例：24"
+                >
+              </div>
+
+              <div class="cast-form-group">
+                <label for="castStore">在籍店舗</label>
+                <input
+                  type="text"
+                  id="castStore"
+                  placeholder="例：店舗名"
+                >
+              </div>
+
+              <div class="cast-form-group">
+                <label for="castJob">業種</label>
+                <input
+                  type="text"
+                  id="castJob"
+                  placeholder="例：キャバクラ・ホストなど"
+                >
+              </div>
+
+              <div class="cast-form-group">
+                <label for="castArea">エリア</label>
+                <input
+                  type="text"
+                  id="castArea"
+                  placeholder="例：東京都○○区"
+                >
+              </div>
+
+              <div class="cast-form-group full">
+                <label for="castCatch">キャッチコピー</label>
+                <input
+                  type="text"
+                  id="castCatch"
+                  placeholder="例：笑顔が魅力の人気キャスト"
+                >
+              </div>
+
+              <div class="cast-form-group full">
+                <label for="castDescription">紹介文</label>
+                <textarea
+                  id="castDescription"
+                  rows="5"
+                  placeholder="紹介文を入力してください"
+                ></textarea>
+              </div>
+
+            </div>
+
+            <!-- 掲載用素材 -->
+            <div class="cast-form-block">
+
+              <h3 class="cast-form-title">
+                📸 掲載用の写真・動画
+              </h3>
+
+              <div class="cast-form-grid">
+
+                <div class="cast-form-group full">
+                  <label for="castMainImage">
+                    メイン画像
+                  </label>
+
+                  <input
+                    type="file"
+                    id="castMainImage"
+                    accept="image/jpeg,image/png,image/webp"
+                  >
+
+                  <small class="cast-form-note">
+                    新規登録時は必須です。編集時は変更する場合だけ選択してください。
+                  </small>
+
+                  <div
+                    id="castMainImagePreview"
+                    class="cast-main-image-preview"
+                  >
+                    メイン画像のプレビュー
+                  </div>
+                </div>
+
+                <div class="cast-form-group full">
+                  <label for="castGalleryImages">
+                    追加画像（最大9枚）
+                  </label>
+
+                  <input
+                    type="file"
+                    id="castGalleryImages"
+                    accept="image/jpeg,image/png,image/webp"
+                    multiple
+                  >
+
+                  <small class="cast-form-note">
+                    編集時に新しい画像を選択すると、既存の追加画像をすべて差し替えます。
+                  </small>
+
+                  <div
+                    id="castGalleryPreview"
+                    class="cast-gallery-preview"
+                  ></div>
+
+                  <div
+                    id="castExistingGallery"
+                    class="cast-existing-gallery"
+                  ></div>
+                </div>
+
+                <div class="cast-form-group full">
+                  <label for="castVideo">
+                    掲載用動画（任意）
+                  </label>
+
+                  <input
+                    type="file"
+                    id="castVideo"
+                    accept="video/mp4,video/quicktime,video/webm"
+                  >
+
+                  <small class="cast-form-note">
+                    MP4・MOV・WebM形式、100MB以下。
+                  </small>
+
+                  <p
+                    id="castExistingVideo"
+                    class="cast-form-note"
+                  ></p>
+                </div>
+
+                <div class="cast-form-group full">
+                  <label for="castVideoUrl">
+                    外部動画URL（任意）
+                  </label>
+
+                  <input
+                    type="url"
+                    id="castVideoUrl"
+                    placeholder="https://..."
+                  >
+                </div>
+
+              </div>
+            </div>
+
+            <!-- SNS -->
+            <div class="cast-form-block">
+
+              <h3 class="cast-form-title">
+                📱 SNS
+              </h3>
+
+              <div class="cast-form-grid">
+
+                <div class="cast-form-group">
+                  <label for="castX">X</label>
+                  <input
+                    type="text"
+                    id="castX"
+                    placeholder="@アカウント名 または URL"
+                  >
+                </div>
+
+                <div class="cast-form-group">
+                  <label for="castInstagram">Instagram</label>
+                  <input
+                    type="text"
+                    id="castInstagram"
+                    placeholder="@アカウント名 または URL"
+                  >
+                </div>
+
+                <div class="cast-form-group full">
+                  <label for="castTikTok">TikTok</label>
+                  <input
+                    type="text"
+                    id="castTikTok"
+                    placeholder="@アカウント名 または URL"
+                  >
+                </div>
+
+              </div>
+            </div>
+
+            <!-- キャストインタビュー -->
+            <div class="cast-form-block">
+
+              <h3 class="cast-form-title">
+                🎤 キャストインタビュー
+              </h3>
+
+              <div class="cast-form-grid">
+
+                <div class="cast-form-group full">
+                  <label for="castInterviewReason">
+                    ③ 夜職を始めたきっかけは？
+                  </label>
+                  <textarea
+                    id="castInterviewReason"
+                    placeholder="回答を入力してください"
+                  ></textarea>
+                </div>
+
+                <div class="cast-form-group full">
+                  <label for="castInterviewPersonality">
+                    ④ ご自身の性格を一言で教えてください！
+                  </label>
+                  <textarea
+                    id="castInterviewPersonality"
+                    placeholder="回答を入力してください"
+                  ></textarea>
+                </div>
+
+                <div class="cast-form-group full">
+                  <label for="castInterviewImportant">
+                    ⑤ 接客で一番大切にしていることは？
+                  </label>
+                  <textarea
+                    id="castInterviewImportant"
+                    placeholder="回答を入力してください"
+                  ></textarea>
+                </div>
+
+                <div class="cast-form-group full">
+                  <label for="castInterviewOftenSaid">
+                    ⑥ お客様からよく言われることは？
+                  </label>
+                  <textarea
+                    id="castInterviewOftenSaid"
+                    placeholder="回答を入力してください"
+                  ></textarea>
+                </div>
+
+                <div class="cast-form-group full">
+                  <label for="castInterviewCharm">
+                    ⑦ あなたのチャームポイントは？
+                  </label>
+                  <textarea
+                    id="castInterviewCharm"
+                    placeholder="回答を入力してください"
+                  ></textarea>
+                </div>
+
+                <div class="cast-form-group full">
+                  <label for="castInterviewHobby">
+                    ⑧ 趣味・休日の過ごし方は？
+                  </label>
+                  <textarea
+                    id="castInterviewHobby"
+                    placeholder="回答を入力してください"
+                  ></textarea>
+                </div>
+
+                <div class="cast-form-group full">
+                  <label for="castInterviewMessage">
+                    ⑨ 初めてのお客様へ一言お願いします！
+                  </label>
+                  <textarea
+                    id="castInterviewMessage"
+                    placeholder="回答を入力してください"
+                  ></textarea>
+                </div>
+
+                <div class="cast-form-group full">
+                  <label for="castInterviewPr">
+                    ⑩ 最後にPRをお願いします！
+                  </label>
+                  <textarea
+                    id="castInterviewPr"
+                    placeholder="ご自身・お店・イベントなどのPRを入力してください"
+                  ></textarea>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- 掲載設定 -->
+            <div class="cast-form-block">
+
+              <h3 class="cast-form-title">
+                ⚙️ 掲載設定
+              </h3>
+
+              <div class="cast-setting-grid">
+
+                <label class="cast-setting-item">
+                  <input
+                    type="checkbox"
+                    id="castVisible"
+                    checked
+                  >
+                  <span>サイトに表示する</span>
+                </label>
+
+                <label class="cast-setting-item">
+                  <input
+                    type="checkbox"
+                    id="castPickup"
+                  >
+                  <span>PICK UP</span>
+                </label>
+
+                <label class="cast-setting-item">
+                  <input
+                    type="checkbox"
+                    id="castNew"
+                    checked
+                  >
+                  <span>NEW</span>
+                </label>
+
+                <label class="cast-setting-item">
+                  <input
+                    type="checkbox"
+                    id="castPopular"
+                  >
+                  <span>人気キャスト</span>
+                </label>
+
+                <label class="cast-setting-item">
+                  <input
+                    type="checkbox"
+                    id="castVerified"
+                  >
+                  <span>NOX認証</span>
+                </label>
+
+              </div>
+            </div>
+
+            <div class="cast-form-actions">
+
+              <button
+                type="button"
+                id="cancelCastButton"
+                class="admin-button sub"
+              >
+                キャンセル
+              </button>
+
+              <button
+                type="button"
+                id="saveCastButton"
+                class="admin-button"
+              >
+                キャストを保存
+              </button>
+
+            </div>
+
+            <p
+              id="castSaveStatus"
+              class="save-status"
+            ></p>
+
+          </div>
+        </div>
 
         <div class="admin-bottom-actions">
           <a href="../index.html" class="btn ghost">
@@ -570,9 +1378,14 @@
     const adManagementGrid =
       document.getElementById("adManagementGrid");
 
+    const castList =
+      document.getElementById("castList");
+
     const AD_SLOT_COUNT = 6;
 
     let currentAdminUser = null;
+    let castMainPreviewUrl = "";
+    let castGalleryPreviewUrls = [];
 
     onAuthStateChanged(auth, async (user) => {
 
@@ -604,7 +1417,8 @@
       await Promise.all([
         loadAds(),
         loadUsers(),
-        loadJobApplications()
+        loadJobApplications(),
+        loadCasts()
       ]);
     });
 
@@ -652,50 +1466,55 @@
     function getRemainingDays(endDate) {
       if (!endDate) {
         return {
-          text: "未設定",
-          days: null,
-          expired: false
+          text:"未設定",
+          days:null,
+          expired:false
         };
       }
 
-      const end = new Date(`${endDate}T23:59:59`);
-      const now = new Date();
+      const end =
+        new Date(`${endDate}T23:59:59`);
+
+      const now =
+        new Date();
 
       if (Number.isNaN(end.getTime())) {
         return {
-          text: "日付エラー",
-          days: null,
-          expired: false
+          text:"日付エラー",
+          days:null,
+          expired:false
         };
       }
 
       const difference =
         end.getTime() - now.getTime();
 
-      const days = Math.ceil(
-        difference / (1000 * 60 * 60 * 24)
-      );
+      const days =
+        Math.ceil(
+          difference /
+          (1000 * 60 * 60 * 24)
+        );
 
       if (days < 0) {
         return {
-          text: "掲載終了",
+          text:"掲載終了",
           days,
-          expired: true
+          expired:true
         };
       }
 
       if (days === 0) {
         return {
-          text: "本日まで",
+          text:"本日まで",
           days,
-          expired: false
+          expired:false
         };
       }
 
       return {
-        text: `残り${days}日`,
+        text:`残り${days}日`,
         days,
-        expired: false
+        expired:false
       };
     }
 
@@ -704,7 +1523,8 @@
         return true;
       }
 
-      const start = new Date(`${startDate}T00:00:00`);
+      const start =
+        new Date(`${startDate}T00:00:00`);
 
       if (Number.isNaN(start.getTime())) {
         return true;
@@ -715,22 +1535,137 @@
 
     function getAdDefaultData(slotNumber) {
       return {
-        slot: slotNumber,
-        advertiserName: "",
-        title: "",
-        description: "",
-        linkUrl: "",
-        buttonText: "詳しく見る",
-        imageUrl: "",
-        storagePath: "",
-        enabled: false,
-        startDate: "",
-        endDate: "",
-        contractPrice: 0,
-        paymentStatus: "unpaid",
-        impressions: 0,
-        clicks: 0
+        slot:slotNumber,
+        advertiserName:"",
+        title:"",
+        description:"",
+        linkUrl:"",
+        buttonText:"詳しく見る",
+        imageUrl:"",
+        storagePath:"",
+        enabled:false,
+        startDate:"",
+        endDate:"",
+        contractPrice:0,
+        paymentStatus:"unpaid",
+        impressions:0,
+        clicks:0
       };
+    }
+
+    function getInputValue(id) {
+      return (
+        document
+          .getElementById(id)
+          ?.value
+          ?.trim() || ""
+      );
+    }
+
+    function getCheckboxValue(id) {
+      return Boolean(
+        document
+          .getElementById(id)
+          ?.checked
+      );
+    }
+
+    function setInputValue(id, value) {
+      const element =
+        document.getElementById(id);
+
+      if (element) {
+        element.value =
+          value ?? "";
+      }
+    }
+
+    function setCheckboxValue(id, value) {
+      const element =
+        document.getElementById(id);
+
+      if (element) {
+        element.checked =
+          Boolean(value);
+      }
+    }
+
+    function getSafeFileExtension(file) {
+      const extension =
+        file?.name
+          ?.split(".")
+          .pop()
+          ?.toLowerCase()
+          .replace(/[^a-z0-9]/g, "");
+
+      return extension || "jpg";
+    }
+
+    function validateExternalUrl(value) {
+      if (!value) {
+        return true;
+      }
+
+      try {
+        const parsedUrl =
+          new URL(value);
+
+        return (
+          parsedUrl.protocol === "https:" ||
+          parsedUrl.protocol === "http:"
+        );
+
+      } catch {
+        return false;
+      }
+    }
+
+    async function uploadFile(
+      file,
+      storagePath
+    ) {
+      const fileRef =
+        ref(
+          storage,
+          storagePath
+        );
+
+      await uploadBytes(
+        fileRef,
+        file,
+        {
+          contentType:
+            file.type ||
+            "application/octet-stream"
+        }
+      );
+
+      const url =
+        await getDownloadURL(fileRef);
+
+      return {
+        url,
+        storagePath
+      };
+    }
+
+    async function removeStoragePaths(paths) {
+      const safePaths =
+        (paths || []).filter(Boolean);
+
+      for (const storagePath of safePaths) {
+        try {
+          await deleteObject(
+            ref(storage, storagePath)
+          );
+        } catch (error) {
+          console.warn(
+            "Storageファイルを削除できませんでした",
+            storagePath,
+            error
+          );
+        }
+      }
     }
 
     /* =========================
@@ -746,26 +1681,31 @@
         slotNumber++
       ) {
         try {
-          const adRef = doc(
-            db,
-            "ads",
-            `slot${slotNumber}`
-          );
+          const adRef =
+            doc(
+              db,
+              "ads",
+              `slot${slotNumber}`
+            );
 
-          const adSnap = await getDoc(adRef);
+          const adSnap =
+            await getDoc(adRef);
 
-          let adData = getAdDefaultData(slotNumber);
+          let adData =
+            getAdDefaultData(slotNumber);
 
           if (adSnap.exists()) {
             adData = {
               ...adData,
               ...adSnap.data(),
-              slot: slotNumber
+              slot:slotNumber
             };
           }
 
           const remaining =
-            getRemainingDays(adData.endDate);
+            getRemainingDays(
+              adData.endDate
+            );
 
           if (
             remaining.expired &&
@@ -776,17 +1716,20 @@
             await setDoc(
               adRef,
               {
-                enabled: false,
+                enabled:false,
                 automaticallyDisabledAt:
                   serverTimestamp()
               },
               {
-                merge: true
+                merge:true
               }
             );
           }
 
-          createAdCard(slotNumber, adData);
+          createAdCard(
+            slotNumber,
+            adData
+          );
 
         } catch (error) {
           console.error(
@@ -810,30 +1753,49 @@
         numberValue(data.clicks);
 
       const ctr =
-        calculateCTR(impressions, clicks);
+        calculateCTR(
+          impressions,
+          clicks
+        );
 
       const remaining =
-        getRemainingDays(data.endDate);
+        getRemainingDays(
+          data.endDate
+        );
 
       const isWaiting =
         data.enabled &&
-        !isStartDateReached(data.startDate);
+        !isStartDateReached(
+          data.startDate
+        );
 
-      let statusText = "非表示";
+      let statusText =
+        "非表示";
 
-      if (data.enabled && isWaiting) {
-        statusText = "開始待ち";
+      if (
+        data.enabled &&
+        isWaiting
+      ) {
+        statusText =
+          "開始待ち";
+
       } else if (data.enabled) {
-        statusText = "表示中";
+        statusText =
+          "表示中";
+
       } else if (remaining.expired) {
-        statusText = "掲載終了";
+        statusText =
+          "掲載終了";
       }
 
-      const card = document.createElement("article");
+      const card =
+        document.createElement("article");
 
       card.className =
         `ad-admin-card ${
-          data.enabled ? "" : "is-disabled"
+          data.enabled
+            ? ""
+            : "is-disabled"
         }`;
 
       card.dataset.slot =
@@ -845,7 +1807,9 @@
 
           <span
             class="ad-status-badge ${
-              data.enabled ? "" : "off"
+              data.enabled
+                ? ""
+                : "off"
             }"
             id="adStatus${slotNumber}"
           >
@@ -947,7 +1911,8 @@
               type="text"
               id="adButtonText${slotNumber}"
               value="${escapeHTML(
-                data.buttonText || "詳しく見る"
+                data.buttonText ||
+                "詳しく見る"
               )}"
               placeholder="詳しく見る"
             >
@@ -1128,15 +2093,21 @@
       imageInput.addEventListener(
         "change",
         () => {
-          const file = imageInput.files?.[0];
+          const file =
+            imageInput.files?.[0];
 
           if (!file) {
             return;
           }
 
           if (!file.type.startsWith("image/")) {
-            alert("画像ファイルを選択してください");
-            imageInput.value = "";
+            alert(
+              "画像ファイルを選択してください"
+            );
+
+            imageInput.value =
+              "";
+
             return;
           }
 
@@ -1160,7 +2131,9 @@
       enabledInput.addEventListener(
         "change",
         () => {
-          updateAdCardVisual(slotNumber);
+          updateAdCardVisual(
+            slotNumber
+          );
         }
       );
 
@@ -1189,33 +2162,51 @@
           `adEnabled${slotNumber}`
         ).checked;
 
-      const card = document.querySelector(
-        `.ad-admin-card[data-slot="${slotNumber}"]`
-      );
+      const card =
+        document.querySelector(
+          `.ad-admin-card[data-slot="${slotNumber}"]`
+        );
 
-      const status = document.getElementById(
-        `adStatus${slotNumber}`
-      );
+      const status =
+        document.getElementById(
+          `adStatus${slotNumber}`
+        );
 
       if (!card || !status) {
         return;
       }
 
       if (enabled) {
-        card.classList.remove("is-disabled");
-        status.classList.remove("off");
-        status.textContent = "表示予定";
+        card.classList.remove(
+          "is-disabled"
+        );
+
+        status.classList.remove(
+          "off"
+        );
+
+        status.textContent =
+          "表示予定";
+
       } else {
-        card.classList.add("is-disabled");
-        status.classList.add("off");
-        status.textContent = "非表示";
+        card.classList.add(
+          "is-disabled"
+        );
+
+        status.classList.add(
+          "off"
+        );
+
+        status.textContent =
+          "非表示";
       }
     }
 
     async function saveAd(slotNumber) {
-      const saveButton = document.querySelector(
-        `.saveAdButton[data-slot="${slotNumber}"]`
-      );
+      const saveButton =
+        document.querySelector(
+          `.saveAdButton[data-slot="${slotNumber}"]`
+        );
 
       const statusElement =
         document.getElementById(
@@ -1228,56 +2219,56 @@
         );
 
       const advertiserName =
-        document.getElementById(
+        getInputValue(
           `advertiserName${slotNumber}`
-        ).value.trim();
+        );
 
       const title =
-        document.getElementById(
+        getInputValue(
           `adTitle${slotNumber}`
-        ).value.trim();
+        );
 
       const description =
-        document.getElementById(
+        getInputValue(
           `adDescription${slotNumber}`
-        ).value.trim();
+        );
 
       const linkUrl =
-        document.getElementById(
+        getInputValue(
           `adLink${slotNumber}`
-        ).value.trim();
+        );
 
       const buttonText =
-        document.getElementById(
+        getInputValue(
           `adButtonText${slotNumber}`
-        ).value.trim() || "詳しく見る";
+        ) || "詳しく見る";
 
       const contractPrice =
         numberValue(
-          document.getElementById(
+          getInputValue(
             `adPrice${slotNumber}`
-          ).value
+          )
         );
 
       const startDate =
-        document.getElementById(
+        getInputValue(
           `adStartDate${slotNumber}`
-        ).value;
+        );
 
       const endDate =
-        document.getElementById(
+        getInputValue(
           `adEndDate${slotNumber}`
-        ).value;
+        );
 
       const paymentStatus =
-        document.getElementById(
+        getInputValue(
           `adPaymentStatus${slotNumber}`
-        ).value;
+        );
 
       let enabled =
-        document.getElementById(
+        getCheckboxValue(
           `adEnabled${slotNumber}`
-        ).checked;
+        );
 
       if (
         startDate &&
@@ -1287,25 +2278,19 @@
         alert(
           "掲載終了日は、掲載開始日より後に設定してください"
         );
+
         return;
       }
 
-      if (linkUrl) {
-        try {
-          const parsedURL = new URL(linkUrl);
+      if (
+        linkUrl &&
+        !validateExternalUrl(linkUrl)
+      ) {
+        alert(
+          "リンク先URLを正しく入力してください"
+        );
 
-          if (
-            parsedURL.protocol !== "https:" &&
-            parsedURL.protocol !== "http:"
-          ) {
-            throw new Error("無効なURL");
-          }
-        } catch {
-          alert(
-            "リンク先URLを正しく入力してください"
-          );
-          return;
-        }
+        return;
       }
 
       const remaining =
@@ -1314,25 +2299,31 @@
       if (remaining.expired) {
         enabled = false;
 
-        document.getElementById(
-          `adEnabled${slotNumber}`
-        ).checked = false;
+        setCheckboxValue(
+          `adEnabled${slotNumber}`,
+          false
+        );
       }
 
-      saveButton.disabled = true;
+      saveButton.disabled =
+        true;
 
-      statusElement.className = "save-status";
+      statusElement.className =
+        "save-status";
+
       statusElement.textContent =
         "広告情報を保存中...";
 
       try {
-        const adRef = doc(
-          db,
-          "ads",
-          `slot${slotNumber}`
-        );
+        const adRef =
+          doc(
+            db,
+            "ads",
+            `slot${slotNumber}`
+          );
 
-        const oldSnap = await getDoc(adRef);
+        const oldSnap =
+          await getDoc(adRef);
 
         const oldData =
           oldSnap.exists()
@@ -1349,56 +2340,45 @@
           imageInput.files?.[0];
 
         if (selectedImage) {
-          if (selectedImage.size > 8 * 1024 * 1024) {
+          if (
+            selectedImage.size >
+            8 * 1024 * 1024
+          ) {
             throw new Error(
               "画像サイズは8MB以下にしてください"
             );
           }
 
           const safeExtension =
-            selectedImage.name
-              .split(".")
-              .pop()
-              ?.toLowerCase()
-              .replace(/[^a-z0-9]/g, "") || "jpg";
+            getSafeFileExtension(
+              selectedImage
+            );
 
           const newStoragePath =
             `ads/slot${slotNumber}/` +
             `${Date.now()}.${safeExtension}`;
 
-          const imageRef = ref(
-            storage,
-            newStoragePath
-          );
-
-          await uploadBytes(
-            imageRef,
-            selectedImage,
-            {
-              contentType:selectedImage.type
-            }
-          );
-
-          imageUrl =
-            await getDownloadURL(imageRef);
+          const uploaded =
+            await uploadFile(
+              selectedImage,
+              newStoragePath
+            );
 
           if (
             storagePath &&
-            storagePath !== newStoragePath
+            storagePath !==
+              uploaded.storagePath
           ) {
-            try {
-              await deleteObject(
-                ref(storage, storagePath)
-              );
-            } catch (deleteError) {
-              console.warn(
-                "古い広告画像を削除できませんでした",
-                deleteError
-              );
-            }
+            await removeStoragePaths(
+              [storagePath]
+            );
           }
 
-          storagePath = newStoragePath;
+          imageUrl =
+            uploaded.url;
+
+          storagePath =
+            uploaded.storagePath;
         }
 
         await setDoc(
@@ -1419,12 +2399,17 @@
             paymentStatus,
 
             impressions:
-              numberValue(oldData.impressions),
+              numberValue(
+                oldData.impressions
+              ),
 
             clicks:
-              numberValue(oldData.clicks),
+              numberValue(
+                oldData.clicks
+              ),
 
-            updatedAt:serverTimestamp(),
+            updatedAt:
+              serverTimestamp(),
 
             updatedBy:
               currentAdminUser?.uid || ""
@@ -1440,11 +2425,13 @@
         statusElement.textContent =
           `広告${slotNumber}を保存しました`;
 
-        imageInput.value = "";
+        imageInput.value =
+          "";
 
-        setTimeout(() => {
-          loadAds();
-        }, 700);
+        setTimeout(
+          () => loadAds(),
+          700
+        );
 
       } catch (error) {
         console.error(
@@ -1459,15 +2446,17 @@
           error.message ||
           "広告を保存できませんでした";
 
-        saveButton.disabled = false;
+        saveButton.disabled =
+          false;
       }
     }
 
     async function deleteAd(slotNumber) {
-      const ok = confirm(
-        `広告${slotNumber}の登録内容を削除しますか？\n` +
-        "表示回数・クリック数もリセットされます。"
-      );
+      const ok =
+        confirm(
+          `広告${slotNumber}の登録内容を削除しますか？\n` +
+          "表示回数・クリック数もリセットされます。"
+        );
 
       if (!ok) {
         return;
@@ -1483,36 +2472,33 @@
           `adSaveStatus${slotNumber}`
         );
 
-      deleteButton.disabled = true;
+      deleteButton.disabled =
+        true;
 
-      statusElement.className = "save-status";
+      statusElement.className =
+        "save-status";
+
       statusElement.textContent =
         "広告を削除中...";
 
       try {
-        const adRef = doc(
-          db,
-          "ads",
-          `slot${slotNumber}`
-        );
+        const adRef =
+          doc(
+            db,
+            "ads",
+            `slot${slotNumber}`
+          );
 
-        const adSnap = await getDoc(adRef);
+        const adSnap =
+          await getDoc(adRef);
 
         if (adSnap.exists()) {
-          const data = adSnap.data();
+          const data =
+            adSnap.data();
 
-          if (data.storagePath) {
-            try {
-              await deleteObject(
-                ref(storage, data.storagePath)
-              );
-            } catch (storageError) {
-              console.warn(
-                "Storage画像削除エラー",
-                storageError
-              );
-            }
-          }
+          await removeStoragePaths(
+            [data.storagePath]
+          );
 
           await deleteDoc(adRef);
         }
@@ -1523,9 +2509,10 @@
         statusElement.textContent =
           `広告${slotNumber}を削除しました`;
 
-        setTimeout(() => {
-          loadAds();
-        }, 600);
+        setTimeout(
+          () => loadAds(),
+          600
+        );
 
       } catch (error) {
         console.error(
@@ -1539,7 +2526,8 @@
         statusElement.textContent =
           "広告を削除できませんでした";
 
-        deleteButton.disabled = false;
+        deleteButton.disabled =
+          false;
       }
     }
 
@@ -1549,11 +2537,13 @@
 
     async function loadUsers() {
       try {
-        const snap = await getDocs(
-          collection(db, "users")
-        );
+        const snap =
+          await getDocs(
+            collection(db, "users")
+          );
 
-        userList.innerHTML = "";
+        userList.innerHTML =
+          "";
 
         if (snap.empty) {
           userList.innerHTML = `
@@ -1561,12 +2551,16 @@
               ユーザーがいません。
             </p>
           `;
+
           return;
         }
 
         snap.forEach((userDoc) => {
-          const data = userDoc.data();
-          const uid = userDoc.id;
+          const data =
+            userDoc.data();
+
+          const uid =
+            userDoc.id;
 
           const name =
             data.name ||
@@ -1671,7 +2665,6 @@
       document
         .querySelectorAll(".deleteBtn")
         .forEach((button) => {
-
           button.addEventListener(
             "click",
             async () => {
@@ -1688,13 +2681,15 @@
                 alert(
                   "現在ログイン中の管理者は削除できません"
                 );
+
                 return;
               }
 
-              const ok = confirm(
-                `${email} のFirestore上のユーザーデータを削除しますか？\n` +
-                "この操作は元に戻せません。"
-              );
+              const ok =
+                confirm(
+                  `${email} のFirestore上のユーザーデータを削除しますか？\n` +
+                  "この操作は元に戻せません。"
+                );
 
               if (!ok) {
                 return;
@@ -1702,14 +2697,18 @@
 
               try {
                 await deleteDoc(
-                  doc(db, "users", uid)
+                  doc(
+                    db,
+                    "users",
+                    uid
+                  )
                 );
 
                 alert(
                   "ユーザーデータを削除しました"
                 );
 
-                loadUsers();
+                await loadUsers();
 
               } catch (error) {
                 console.error(
@@ -1728,7 +2727,6 @@
       document
         .querySelectorAll(".blockBtn")
         .forEach((button) => {
-
           button.addEventListener(
             "click",
             async () => {
@@ -1745,6 +2743,7 @@
                 alert(
                   "現在ログイン中の管理者はブロックできません"
                 );
+
                 return;
               }
 
@@ -1755,7 +2754,11 @@
 
               try {
                 await updateDoc(
-                  doc(db, "users", uid),
+                  doc(
+                    db,
+                    "users",
+                    uid
+                  ),
                   {
                     status:newStatus,
                     statusUpdatedAt:
@@ -1769,7 +2772,7 @@
                     : "ブロック解除しました"
                 );
 
-                loadUsers();
+                await loadUsers();
 
               } catch (error) {
                 console.error(
@@ -1788,7 +2791,6 @@
       document
         .querySelectorAll(".detailBtn")
         .forEach((button) => {
-
           button.addEventListener(
             "click",
             async () => {
@@ -1796,18 +2798,25 @@
                 button.dataset.id;
 
               try {
-                const snap = await getDoc(
-                  doc(db, "users", uid)
-                );
+                const snap =
+                  await getDoc(
+                    doc(
+                      db,
+                      "users",
+                      uid
+                    )
+                  );
 
                 if (!snap.exists()) {
                   alert(
                     "ユーザーが見つかりません"
                   );
+
                   return;
                 }
 
-                const data = snap.data();
+                const data =
+                  snap.data();
 
                 alert(`
 名前:
@@ -1871,11 +2880,16 @@ ${data.sns || "-"}
 
     async function loadJobApplications() {
       try {
-        const snap = await getDocs(
-          collection(db, "jobApplications")
-        );
+        const snap =
+          await getDocs(
+            collection(
+              db,
+              "jobApplications"
+            )
+          );
 
-        jobApplicationList.innerHTML = "";
+        jobApplicationList.innerHTML =
+          "";
 
         if (snap.empty) {
           jobApplicationList.innerHTML = `
@@ -1883,16 +2897,20 @@ ${data.sns || "-"}
               求人申請はありません。
             </p>
           `;
+
           return;
         }
 
-        let displayCount = 0;
+        let displayCount =
+          0;
 
         snap.forEach((jobDoc) => {
-          const data = jobDoc.data();
+          const data =
+            jobDoc.data();
 
           const status =
-            data.status || "pending";
+            data.status ||
+            "pending";
 
           if (status === "approved") {
             return;
@@ -1916,17 +2934,23 @@ ${data.sns || "-"}
 
             <p>
               職種：
-              ${escapeHTML(data.jobType || "-")}
+              ${escapeHTML(
+                data.jobType || "-"
+              )}
             </p>
 
             <p>
               勤務地：
-              ${escapeHTML(data.area || "-")}
+              ${escapeHTML(
+                data.area || "-"
+              )}
             </p>
 
             <p>
               時給・給与：
-              ${escapeHTML(data.salary || "-")}
+              ${escapeHTML(
+                data.salary || "-"
+              )}
             </p>
 
             <p>
@@ -1951,7 +2975,9 @@ ${data.sns || "-"}
             </div>
           `;
 
-          jobApplicationList.appendChild(card);
+          jobApplicationList.appendChild(
+            card
+          );
         });
 
         if (displayCount === 0) {
@@ -1960,6 +2986,7 @@ ${data.sns || "-"}
               現在、承認待ちの求人申請はありません。
             </p>
           `;
+
           return;
         }
 
@@ -1983,40 +3010,47 @@ ${data.sns || "-"}
       document
         .querySelectorAll(".approveBtn")
         .forEach((button) => {
-
           button.addEventListener(
             "click",
             async () => {
               const jobId =
                 button.dataset.id;
 
-              const ok = confirm(
-                "この求人を承認して公開しますか？"
-              );
+              const ok =
+                confirm(
+                  "この求人を承認して公開しますか？"
+                );
 
               if (!ok) {
                 return;
               }
 
-              button.disabled = true;
+              button.disabled =
+                true;
+
               button.textContent =
                 "承認処理中...";
 
               try {
-                const applicationRef = doc(
-                  db,
-                  "jobApplications",
-                  jobId
-                );
+                const applicationRef =
+                  doc(
+                    db,
+                    "jobApplications",
+                    jobId
+                  );
 
                 const approvedSnap =
-                  await getDoc(applicationRef);
+                  await getDoc(
+                    applicationRef
+                  );
 
                 if (!approvedSnap.exists()) {
                   alert(
                     "求人データが見つかりません"
                   );
-                  loadJobApplications();
+
+                  await loadJobApplications();
+
                   return;
                 }
 
@@ -2037,31 +3071,47 @@ ${data.sns || "-"}
 
                 const existingJobs =
                   await getDocs(
-                    collection(db, "jobs")
+                    collection(
+                      db,
+                      "jobs"
+                    )
                   );
 
-                let alreadyPublished = false;
+                let alreadyPublished =
+                  false;
 
-                existingJobs.forEach((jobSnap) => {
-                  const jobData =
-                    jobSnap.data();
+                existingJobs.forEach(
+                  (jobSnap) => {
+                    const jobData =
+                      jobSnap.data();
 
-                  if (
-                    jobData.sourceApplicationId ===
-                    jobId
-                  ) {
-                    alreadyPublished = true;
+                    if (
+                      jobData.sourceApplicationId ===
+                      jobId
+                    ) {
+                      alreadyPublished =
+                        true;
+                    }
                   }
-                });
+                );
 
                 if (!alreadyPublished) {
                   await addDoc(
-                    collection(db, "jobs"),
+                    collection(
+                      db,
+                      "jobs"
+                    ),
                     {
                       ...approvedData,
-                      sourceApplicationId:jobId,
-                      status:"approved",
-                      isPublished:true,
+
+                      sourceApplicationId:
+                        jobId,
+
+                      status:
+                        "approved",
+
+                      isPublished:
+                        true,
 
                       approvedAt:
                         serverTimestamp(),
@@ -2073,78 +3123,83 @@ ${data.sns || "-"}
                   );
                 }
 
-              const inviteCode =
-  crypto
-    .randomUUID()
-    .replaceAll("-", "");
+                const inviteCode =
+                  crypto
+                    .randomUUID()
+                    .replaceAll("-", "");
 
-const storeName =
-  approvedData.storeName ||
-  "店舗名未設定";
+                const storeName =
+                  approvedData.storeName ||
+                  "店舗名未設定";
 
-const storeEmail =
-  approvedData.email ||
-  approvedData.contactEmail ||
-  approvedData.ownerEmail ||
-  "";
+                const storeEmail =
+                  approvedData.email ||
+                  approvedData.contactEmail ||
+                  approvedData.ownerEmail ||
+                  "";
 
-const inviteUrl =
-  `https://joinnox.jp/pages/store-register.html?invite=${inviteCode}`;
+                const inviteUrl =
+                  `https://joinnox.jp/pages/store-register.html?invite=${inviteCode}`;
 
-await setDoc(
-  doc(
-    db,
-    "storeInvites",
-    inviteCode
-  ),
-  {
-    storeName: storeName,
-    email: storeEmail,
-    sourceApplicationId: jobId,
-    used: false,
-    registeredUid: "",
-    createdAt: serverTimestamp(),
-    createdBy:
-      currentAdminUser?.uid || ""
-  }
-);
+                await setDoc(
+                  doc(
+                    db,
+                    "storeInvites",
+                    inviteCode
+                  ),
+                  {
+                    storeName,
+                    email:storeEmail,
+                    sourceApplicationId:
+                      jobId,
 
-await updateDoc(
-  applicationRef,
-  {
-    inviteCode: inviteCode,
-    inviteUrl: inviteUrl,
-    inviteCreatedAt:
-      serverTimestamp()
-  }
-);
+                    used:false,
+                    registeredUid:"",
 
-try {
+                    createdAt:
+                      serverTimestamp(),
 
-  await navigator.clipboard.writeText(inviteUrl);
+                    createdBy:
+                      currentAdminUser?.uid || ""
+                  }
+                );
 
-  alert(
-    "求人を承認しました。\n\n" +
-    "店舗登録URLをコピーしました。\n" +
-    "そのままLINEで店舗へ送れます。\n\n" +
-    inviteUrl
-  );
+                await updateDoc(
+                  applicationRef,
+                  {
+                    inviteCode,
+                    inviteUrl,
 
-} catch (copyError) {
+                    inviteCreatedAt:
+                      serverTimestamp()
+                  }
+                );
 
-  console.warn(
-    "URLコピーエラー",
-    copyError
-  );
+                try {
+                  await navigator
+                    .clipboard
+                    .writeText(inviteUrl);
 
-  prompt(
-    "求人を承認しました。\n下のURLをコピーしてください。",
-    inviteUrl
-  );
+                  alert(
+                    "求人を承認しました。\n\n" +
+                    "店舗登録URLをコピーしました。\n" +
+                    "そのままLINEで店舗へ送れます。\n\n" +
+                    inviteUrl
+                  );
 
-}
+                } catch (copyError) {
+                  console.warn(
+                    "URLコピーエラー",
+                    copyError
+                  );
 
-                loadJobApplications();
+                  prompt(
+                    "求人を承認しました。\n下のURLをコピーしてください。",
+                    inviteUrl
+                  );
+                }
+
+                await loadJobApplications();
 
               } catch (error) {
                 console.error(
@@ -2156,7 +3211,9 @@ try {
                   "求人を承認できませんでした"
                 );
 
-                button.disabled = false;
+                button.disabled =
+                  false;
+
                 button.textContent =
                   "✅ 承認して公開";
               }
@@ -2164,6 +3221,1523 @@ try {
           );
         });
     }
+
+    /* =========================
+       キャスト管理
+    ========================= */
+
+    const openCastModalButton =
+      document.getElementById(
+        "openCastModal"
+      );
+
+    const castModal =
+      document.getElementById(
+        "castModal"
+      );
+
+    const closeCastModalButton =
+      document.getElementById(
+        "closeCastModal"
+      );
+
+    const cancelCastButton =
+      document.getElementById(
+        "cancelCastButton"
+      );
+
+    const saveCastButton =
+      document.getElementById(
+        "saveCastButton"
+      );
+
+    const castSaveStatus =
+      document.getElementById(
+        "castSaveStatus"
+      );
+
+    const castMainImageInput =
+      document.getElementById(
+        "castMainImage"
+      );
+
+    const castGalleryImagesInput =
+      document.getElementById(
+        "castGalleryImages"
+      );
+
+    const castMainImagePreview =
+      document.getElementById(
+        "castMainImagePreview"
+      );
+
+    const castGalleryPreview =
+      document.getElementById(
+        "castGalleryPreview"
+      );
+
+    const castExistingGallery =
+      document.getElementById(
+        "castExistingGallery"
+      );
+
+    const castExistingVideo =
+      document.getElementById(
+        "castExistingVideo"
+      );
+
+    function clearCastPreviewUrls() {
+      if (castMainPreviewUrl) {
+        URL.revokeObjectURL(
+          castMainPreviewUrl
+        );
+
+        castMainPreviewUrl =
+          "";
+      }
+
+      castGalleryPreviewUrls.forEach(
+        (previewUrl) => {
+          URL.revokeObjectURL(
+            previewUrl
+          );
+        }
+      );
+
+      castGalleryPreviewUrls =
+        [];
+    }
+
+    function openCastModal() {
+      castModal.classList.add(
+        "is-open"
+      );
+
+      castModal.setAttribute(
+        "aria-hidden",
+        "false"
+      );
+
+      document.body.classList.add(
+        "cast-modal-open"
+      );
+
+      setTimeout(
+        () => {
+          document
+            .getElementById("castName")
+            ?.focus();
+        },
+        100
+      );
+    }
+
+    function closeCastModal() {
+      castModal.classList.remove(
+        "is-open"
+      );
+
+      castModal.setAttribute(
+        "aria-hidden",
+        "true"
+      );
+
+      document.body.classList.remove(
+        "cast-modal-open"
+      );
+    }
+
+    function resetCastForm() {
+      clearCastPreviewUrls();
+
+      [
+        "castEditId",
+        "castName",
+        "castAge",
+        "castStore",
+        "castJob",
+        "castArea",
+        "castCatch",
+        "castDescription",
+        "castVideoUrl",
+        "castX",
+        "castInstagram",
+        "castTikTok",
+        "castInterviewReason",
+        "castInterviewPersonality",
+        "castInterviewImportant",
+        "castInterviewOftenSaid",
+        "castInterviewCharm",
+        "castInterviewHobby",
+        "castInterviewMessage",
+        "castInterviewPr"
+      ].forEach(
+        (id) => setInputValue(id, "")
+      );
+
+      setInputValue(
+        "castGender",
+        "female"
+      );
+
+      setCheckboxValue(
+        "castVisible",
+        true
+      );
+
+      setCheckboxValue(
+        "castPickup",
+        false
+      );
+
+      setCheckboxValue(
+        "castNew",
+        true
+      );
+
+      setCheckboxValue(
+        "castPopular",
+        false
+      );
+
+      setCheckboxValue(
+        "castVerified",
+        false
+      );
+
+      castMainImageInput.value =
+        "";
+
+      castGalleryImagesInput.value =
+        "";
+
+      document
+        .getElementById("castVideo")
+        .value = "";
+
+      castMainImagePreview.textContent =
+        "メイン画像のプレビュー";
+
+      castGalleryPreview.innerHTML =
+        "";
+
+      castExistingGallery.innerHTML =
+        "";
+
+      castExistingVideo.textContent =
+        "";
+
+      castSaveStatus.className =
+        "save-status";
+
+      castSaveStatus.textContent =
+        "";
+
+      document
+        .getElementById("castModalTitle")
+        .textContent =
+          "👑 キャスト追加";
+
+      saveCastButton.textContent =
+        "キャストを保存";
+    }
+
+    function openNewCastModal() {
+      resetCastForm();
+      openCastModal();
+    }
+
+    async function openEditCastModal(castId) {
+      resetCastForm();
+
+      try {
+        const castSnap =
+          await getDoc(
+            doc(
+              db,
+              "casts",
+              castId
+            )
+          );
+
+        if (!castSnap.exists()) {
+          alert(
+            "キャスト情報が見つかりません"
+          );
+
+          return;
+        }
+
+        const data =
+          castSnap.data();
+
+        setInputValue(
+          "castEditId",
+          castId
+        );
+
+        setInputValue(
+          "castName",
+          data.name
+        );
+
+        setInputValue(
+          "castGender",
+          data.gender || "female"
+        );
+
+        setInputValue(
+          "castAge",
+          data.age
+        );
+
+        setInputValue(
+          "castStore",
+          data.storeName
+        );
+
+        setInputValue(
+          "castJob",
+          data.jobType
+        );
+
+        setInputValue(
+          "castArea",
+          data.area
+        );
+
+        setInputValue(
+          "castCatch",
+          data.catchCopy
+        );
+
+        setInputValue(
+          "castDescription",
+          data.description
+        );
+
+        setInputValue(
+          "castVideoUrl",
+          data.externalVideoUrl
+        );
+
+        setInputValue(
+          "castX",
+          data.sns?.x
+        );
+
+        setInputValue(
+          "castInstagram",
+          data.sns?.instagram
+        );
+
+        setInputValue(
+          "castTikTok",
+          data.sns?.tiktok
+        );
+
+        setInputValue(
+          "castInterviewReason",
+          data.interview?.reason
+        );
+
+        setInputValue(
+          "castInterviewPersonality",
+          data.interview?.personality
+        );
+
+        setInputValue(
+          "castInterviewImportant",
+          data.interview?.important
+        );
+
+        setInputValue(
+          "castInterviewOftenSaid",
+          data.interview?.oftenSaid
+        );
+
+        setInputValue(
+          "castInterviewCharm",
+          data.interview?.charm
+        );
+
+        setInputValue(
+          "castInterviewHobby",
+          data.interview?.hobby
+        );
+
+        setInputValue(
+          "castInterviewMessage",
+          data.interview?.message
+        );
+
+        setInputValue(
+          "castInterviewPr",
+          data.interview?.pr
+        );
+
+        setCheckboxValue(
+          "castVisible",
+          data.visible !== false
+        );
+
+        setCheckboxValue(
+          "castPickup",
+          data.pickup
+        );
+
+        setCheckboxValue(
+          "castNew",
+          data.isNew
+        );
+
+        setCheckboxValue(
+          "castPopular",
+          data.popular
+        );
+
+        setCheckboxValue(
+          "castVerified",
+          data.verified
+        );
+
+        if (data.mainImageUrl) {
+          castMainImagePreview.innerHTML = `
+            <img
+              src="${escapeHTML(data.mainImageUrl)}"
+              alt="${escapeHTML(data.name || "キャスト")}の現在のメイン画像"
+            >
+          `;
+        }
+
+        const galleryImages =
+          Array.isArray(
+            data.galleryImages
+          )
+            ? data.galleryImages
+            : [];
+
+        castExistingGallery.innerHTML =
+          galleryImages
+            .map(
+              (imageUrl) => `
+                <img
+                  src="${escapeHTML(imageUrl)}"
+                  alt="現在の追加画像"
+                >
+              `
+            )
+            .join("");
+
+        castExistingVideo.textContent =
+          data.videoUrl
+            ? "現在、動画ファイルが登録されています。"
+            : "";
+
+        document
+          .getElementById("castModalTitle")
+          .textContent =
+            "✏️ キャスト編集";
+
+        saveCastButton.textContent =
+          "変更を保存";
+
+        openCastModal();
+
+      } catch (error) {
+        console.error(
+          "キャスト編集読み込みエラー",
+          error
+        );
+
+        alert(
+          "キャスト情報を読み込めませんでした"
+        );
+      }
+    }
+
+    async function saveCast() {
+      const editId =
+        getInputValue(
+          "castEditId"
+        );
+
+      const isEditing =
+        Boolean(editId);
+
+      const name =
+        getInputValue(
+          "castName"
+        );
+
+      const gender =
+        getInputValue(
+          "castGender"
+        );
+
+      const age =
+        getInputValue(
+          "castAge"
+        );
+
+      const storeName =
+        getInputValue(
+          "castStore"
+        );
+
+      const jobType =
+        getInputValue(
+          "castJob"
+        );
+
+      const area =
+        getInputValue(
+          "castArea"
+        );
+
+      const catchCopy =
+        getInputValue(
+          "castCatch"
+        );
+
+      const description =
+        getInputValue(
+          "castDescription"
+        );
+
+      const externalVideoUrl =
+        getInputValue(
+          "castVideoUrl"
+        );
+
+      const mainImageFile =
+        castMainImageInput
+          .files?.[0] || null;
+
+      const galleryFiles =
+        Array.from(
+          castGalleryImagesInput
+            .files || []
+        );
+
+      const videoFile =
+        document
+          .getElementById("castVideo")
+          .files?.[0] || null;
+
+      if (!name) {
+        alert(
+          "掲載名を入力してください"
+        );
+
+        return;
+      }
+
+      if (
+        gender !== "female" &&
+        gender !== "male"
+      ) {
+        alert(
+          "性別を選択してください"
+        );
+
+        return;
+      }
+
+      if (
+        !isEditing &&
+        !mainImageFile
+      ) {
+        alert(
+          "メイン画像を1枚選択してください"
+        );
+
+        return;
+      }
+
+      if (
+        galleryFiles.length > 9
+      ) {
+        alert(
+          "追加画像は最大9枚までです"
+        );
+
+        return;
+      }
+
+      if (
+        externalVideoUrl &&
+        !validateExternalUrl(
+          externalVideoUrl
+        )
+      ) {
+        alert(
+          "外部動画URLを正しく入力してください"
+        );
+
+        return;
+      }
+
+      if (
+        mainImageFile &&
+        mainImageFile.size >
+          8 * 1024 * 1024
+      ) {
+        alert(
+          "メイン画像は8MB以下にしてください"
+        );
+
+        return;
+      }
+
+      if (
+        galleryFiles.some(
+          (file) =>
+            file.size >
+            8 * 1024 * 1024
+        )
+      ) {
+        alert(
+          "追加画像は1枚8MB以下にしてください"
+        );
+
+        return;
+      }
+
+      if (
+        videoFile &&
+        videoFile.size >
+          100 * 1024 * 1024
+      ) {
+        alert(
+          "動画は100MB以下にしてください"
+        );
+
+        return;
+      }
+
+      saveCastButton.disabled =
+        true;
+
+      castSaveStatus.className =
+        "save-status";
+
+      castSaveStatus.textContent =
+        isEditing
+          ? "変更内容を保存しています..."
+          : "画像とキャスト情報を保存しています...";
+
+      try {
+        const castRef =
+          isEditing
+            ? doc(
+                db,
+                "casts",
+                editId
+              )
+            : doc(
+                collection(
+                  db,
+                  "casts"
+                )
+              );
+
+        const oldSnap =
+          isEditing
+            ? await getDoc(castRef)
+            : null;
+
+        const oldData =
+          oldSnap?.exists()
+            ? oldSnap.data()
+            : {};
+
+        const castId =
+          castRef.id;
+
+        const timestamp =
+          Date.now();
+
+        let mainImageUrl =
+          oldData.mainImageUrl || "";
+
+        let mainImageStoragePath =
+          oldData.mainImageStoragePath || "";
+
+        if (mainImageFile) {
+          const uploadedMain =
+            await uploadFile(
+              mainImageFile,
+              `casts/${castId}/main/` +
+              `${timestamp}.` +
+              getSafeFileExtension(
+                mainImageFile
+              )
+            );
+
+          await removeStoragePaths(
+            [mainImageStoragePath]
+          );
+
+          mainImageUrl =
+            uploadedMain.url;
+
+          mainImageStoragePath =
+            uploadedMain.storagePath;
+        }
+
+        let galleryImages =
+          Array.isArray(
+            oldData.galleryImages
+          )
+            ? oldData.galleryImages
+            : [];
+
+        let galleryStoragePaths =
+          Array.isArray(
+            oldData.galleryStoragePaths
+          )
+            ? oldData.galleryStoragePaths
+            : [];
+
+        if (galleryFiles.length > 0) {
+          const newGalleryImages =
+            [];
+
+          const newGalleryStoragePaths =
+            [];
+
+          for (
+            let index = 0;
+            index < galleryFiles.length;
+            index++
+          ) {
+            const file =
+              galleryFiles[index];
+
+            const uploadedGallery =
+              await uploadFile(
+                file,
+                `casts/${castId}/gallery/` +
+                `${timestamp}_${index + 1}.` +
+                getSafeFileExtension(file)
+              );
+
+            newGalleryImages.push(
+              uploadedGallery.url
+            );
+
+            newGalleryStoragePaths.push(
+              uploadedGallery.storagePath
+            );
+          }
+
+          await removeStoragePaths(
+            galleryStoragePaths
+          );
+
+          galleryImages =
+            newGalleryImages;
+
+          galleryStoragePaths =
+            newGalleryStoragePaths;
+        }
+
+        let videoUrl =
+          oldData.videoUrl || "";
+
+        let videoStoragePath =
+          oldData.videoStoragePath || "";
+
+        if (videoFile) {
+          const uploadedVideo =
+            await uploadFile(
+              videoFile,
+              `casts/${castId}/video/` +
+              `${timestamp}.` +
+              getSafeFileExtension(
+                videoFile
+              )
+            );
+
+          await removeStoragePaths(
+            [videoStoragePath]
+          );
+
+          videoUrl =
+            uploadedVideo.url;
+
+          videoStoragePath =
+            uploadedVideo.storagePath;
+        }
+
+        const castData = {
+          name,
+          gender,
+          age,
+          storeName,
+          jobType,
+          area,
+          catchCopy,
+          description,
+
+          mainImageUrl,
+          mainImageStoragePath,
+
+          galleryImages,
+          galleryStoragePaths,
+
+          videoUrl,
+          videoStoragePath,
+
+          externalVideoUrl,
+
+          sns:{
+            x:getInputValue("castX"),
+
+            instagram:
+              getInputValue(
+                "castInstagram"
+              ),
+
+            tiktok:
+              getInputValue(
+                "castTikTok"
+              )
+          },
+
+          interview:{
+            reason:
+              getInputValue(
+                "castInterviewReason"
+              ),
+
+            personality:
+              getInputValue(
+                "castInterviewPersonality"
+              ),
+
+            important:
+              getInputValue(
+                "castInterviewImportant"
+              ),
+
+            oftenSaid:
+              getInputValue(
+                "castInterviewOftenSaid"
+              ),
+
+            charm:
+              getInputValue(
+                "castInterviewCharm"
+              ),
+
+            hobby:
+              getInputValue(
+                "castInterviewHobby"
+              ),
+
+            message:
+              getInputValue(
+                "castInterviewMessage"
+              ),
+
+            pr:
+              getInputValue(
+                "castInterviewPr"
+              )
+          },
+
+          visible:
+            getCheckboxValue(
+              "castVisible"
+            ),
+
+          pickup:
+            getCheckboxValue(
+              "castPickup"
+            ),
+
+          isNew:
+            getCheckboxValue(
+              "castNew"
+            ),
+
+          popular:
+            getCheckboxValue(
+              "castPopular"
+            ),
+
+          verified:
+            getCheckboxValue(
+              "castVerified"
+            ),
+
+          favoriteCount:
+            numberValue(
+              oldData.favoriteCount
+            ),
+
+          viewCount:
+            numberValue(
+              oldData.viewCount
+            ),
+
+          updatedAt:
+            serverTimestamp(),
+
+          updatedBy:
+            currentAdminUser?.uid || ""
+        };
+
+        if (!isEditing) {
+          castData.createdAt =
+            serverTimestamp();
+
+          castData.createdBy =
+            currentAdminUser?.uid || "";
+        }
+
+        await setDoc(
+          castRef,
+          castData,
+          {
+            merge:isEditing
+          }
+        );
+
+        castSaveStatus.className =
+          "save-status success";
+
+        castSaveStatus.textContent =
+          isEditing
+            ? "変更を保存しました"
+            : "キャストを保存しました";
+
+        alert(
+          isEditing
+            ? `${name}さんの情報を更新しました`
+            : `${name}さんを保存しました`
+        );
+
+        resetCastForm();
+        closeCastModal();
+
+        await loadCasts();
+
+      } catch (error) {
+        console.error(
+          "キャスト保存エラー",
+          error
+        );
+
+        castSaveStatus.className =
+          "save-status error";
+
+        castSaveStatus.textContent =
+          error.message ||
+          "キャストを保存できませんでした";
+
+        alert(
+          "キャストを保存できませんでした"
+        );
+
+      } finally {
+        saveCastButton.disabled =
+          false;
+
+        saveCastButton.textContent =
+          getInputValue("castEditId")
+            ? "変更を保存"
+            : "キャストを保存";
+      }
+    }
+
+    async function loadCasts() {
+      if (!castList) {
+        return;
+      }
+
+      castList.innerHTML = `
+        <p class="admin-message">
+          キャストを読み込み中...
+        </p>
+      `;
+
+      try {
+        const castSnapshot =
+          await getDocs(
+            collection(
+              db,
+              "casts"
+            )
+          );
+
+        if (castSnapshot.empty) {
+          castList.innerHTML = `
+            <p class="admin-message">
+              登録されているキャストはいません。
+            </p>
+          `;
+
+          return;
+        }
+
+        const casts =
+          [];
+
+        castSnapshot.forEach(
+          (castDoc) => {
+            casts.push({
+              id:castDoc.id,
+              ...castDoc.data()
+            });
+          }
+        );
+
+        casts.sort(
+          (a, b) => {
+            const aTime =
+              a.createdAt
+                ?.toMillis?.() || 0;
+
+            const bTime =
+              b.createdAt
+                ?.toMillis?.() || 0;
+
+            return bTime - aTime;
+          }
+        );
+
+        const castGrid =
+          document.createElement("div");
+
+        castGrid.className =
+          "cast-admin-grid";
+
+        casts.forEach((cast) => {
+          const card =
+            document.createElement("article");
+
+          card.className =
+            "cast-card-admin";
+
+          const genderText =
+            cast.gender === "male"
+              ? "男の子"
+              : "女の子";
+
+          const genderClass =
+            cast.gender === "male"
+              ? "male"
+              : "female";
+
+          const isVisible =
+            cast.visible !== false;
+
+          const badgeHtml = [
+            cast.pickup
+              ? `<span class="cast-badge">PICK UP</span>`
+              : "",
+
+            cast.isNew
+              ? `<span class="cast-badge">NEW</span>`
+              : "",
+
+            cast.popular
+              ? `<span class="cast-badge">人気</span>`
+              : "",
+
+            cast.verified
+              ? `<span class="cast-badge">NOX認証</span>`
+              : ""
+          ].join("");
+
+          card.innerHTML = `
+            ${
+              cast.mainImageUrl
+                ? `
+                  <div class="cast-card-image">
+                    <img
+                      src="${escapeHTML(cast.mainImageUrl)}"
+                      alt="${escapeHTML(cast.name || "キャスト")}の画像"
+                    >
+                  </div>
+                `
+                : ""
+            }
+
+            <div class="cast-card-body">
+
+              <h3>
+                ${escapeHTML(
+                  cast.name ||
+                  "名前未設定"
+                )}
+              </h3>
+
+              <div class="cast-info">
+
+                <p>
+                  🏪 在籍店舗：
+                  ${escapeHTML(
+                    cast.storeName || "-"
+                  )}
+                </p>
+
+                <p>
+                  📍 エリア：
+                  ${escapeHTML(
+                    cast.area || "-"
+                  )}
+                </p>
+
+                <p>
+                  💼 業種：
+                  ${escapeHTML(
+                    cast.jobType || "-"
+                  )}
+                </p>
+
+                <p>
+                  🎂 年齢：
+                  ${escapeHTML(
+                    cast.age || "-"
+                  )}
+                </p>
+
+                <div>
+                  <span
+                    class="cast-badge ${genderClass}"
+                  >
+                    ${genderText}
+                  </span>
+
+                  <span
+                    class="cast-badge ${
+                      isVisible
+                        ? ""
+                        : "hidden"
+                    }"
+                  >
+                    ${
+                      isVisible
+                        ? "表示中"
+                        : "非表示"
+                    }
+                  </span>
+
+                  ${badgeHtml}
+                </div>
+
+              </div>
+
+              <div class="cast-actions">
+
+                <button
+                  type="button"
+                  class="admin-button editCastButton"
+                  data-id="${escapeHTML(cast.id)}"
+                >
+                  編集
+                </button>
+
+                <button
+                  type="button"
+                  class="admin-button sub toggleCastButton"
+                  data-id="${escapeHTML(cast.id)}"
+                  data-visible="${isVisible ? "true" : "false"}"
+                >
+                  ${
+                    isVisible
+                      ? "非表示にする"
+                      : "表示する"
+                  }
+                </button>
+
+                <button
+                  type="button"
+                  class="admin-button danger deleteCastButton"
+                  data-id="${escapeHTML(cast.id)}"
+                >
+                  削除
+                </button>
+
+              </div>
+
+            </div>
+          `;
+
+          castGrid.appendChild(card);
+        });
+
+        castList.innerHTML =
+          "";
+
+        castList.appendChild(
+          castGrid
+        );
+
+        setCastListButtons();
+
+      } catch (error) {
+        console.error(
+          "キャスト一覧読み込みエラー",
+          error
+        );
+
+        castList.innerHTML = `
+          <p class="admin-message">
+            キャスト一覧を読み込めませんでした。
+          </p>
+        `;
+      }
+    }
+
+    function setCastListButtons() {
+      document
+        .querySelectorAll(".editCastButton")
+        .forEach((button) => {
+          button.addEventListener(
+            "click",
+            () => {
+              openEditCastModal(
+                button.dataset.id
+              );
+            }
+          );
+        });
+
+      document
+        .querySelectorAll(".toggleCastButton")
+        .forEach((button) => {
+          button.addEventListener(
+            "click",
+            async () => {
+              const castId =
+                button.dataset.id;
+
+              const isVisible =
+                button.dataset.visible ===
+                "true";
+
+              button.disabled =
+                true;
+
+              try {
+                await updateDoc(
+                  doc(
+                    db,
+                    "casts",
+                    castId
+                  ),
+                  {
+                    visible:
+                      !isVisible,
+
+                    updatedAt:
+                      serverTimestamp(),
+
+                    updatedBy:
+                      currentAdminUser?.uid || ""
+                  }
+                );
+
+                await loadCasts();
+
+              } catch (error) {
+                console.error(
+                  "キャスト表示変更エラー",
+                  error
+                );
+
+                alert(
+                  "表示状態を変更できませんでした"
+                );
+
+                button.disabled =
+                  false;
+              }
+            }
+          );
+        });
+
+      document
+        .querySelectorAll(".deleteCastButton")
+        .forEach((button) => {
+          button.addEventListener(
+            "click",
+            async () => {
+              const castId =
+                button.dataset.id;
+
+              const ok =
+                confirm(
+                  "このキャストを削除しますか？\n" +
+                  "写真・動画も削除され、元に戻せません。"
+                );
+
+              if (!ok) {
+                return;
+              }
+
+              button.disabled =
+                true;
+
+              button.textContent =
+                "削除中...";
+
+              try {
+                const castRef =
+                  doc(
+                    db,
+                    "casts",
+                    castId
+                  );
+
+                const castSnap =
+                  await getDoc(
+                    castRef
+                  );
+
+                if (castSnap.exists()) {
+                  const castData =
+                    castSnap.data();
+
+                  await removeStoragePaths(
+                    [
+                      castData.mainImageStoragePath,
+
+                      ...(
+                        castData.galleryStoragePaths ||
+                        []
+                      ),
+
+                      castData.videoStoragePath
+                    ]
+                  );
+
+                  await deleteDoc(
+                    castRef
+                  );
+                }
+
+                alert(
+                  "キャストを削除しました"
+                );
+
+                await loadCasts();
+
+              } catch (error) {
+                console.error(
+                  "キャスト削除エラー",
+                  error
+                );
+
+                alert(
+                  "キャストを削除できませんでした"
+                );
+
+                button.disabled =
+                  false;
+
+                button.textContent =
+                  "削除";
+              }
+            }
+          );
+        });
+    }
+
+    /* 画像プレビュー */
+
+    castMainImageInput.addEventListener(
+      "change",
+      () => {
+        const file =
+          castMainImageInput
+            .files?.[0];
+
+        if (castMainPreviewUrl) {
+          URL.revokeObjectURL(
+            castMainPreviewUrl
+          );
+
+          castMainPreviewUrl =
+            "";
+        }
+
+        if (!file) {
+          return;
+        }
+
+        if (
+          !file.type.startsWith("image/")
+        ) {
+          alert(
+            "メイン画像には画像ファイルを選択してください"
+          );
+
+          castMainImageInput.value =
+            "";
+
+          return;
+        }
+
+        castMainPreviewUrl =
+          URL.createObjectURL(file);
+
+        castMainImagePreview.innerHTML = `
+          <img
+            src="${castMainPreviewUrl}"
+            alt="メイン画像プレビュー"
+          >
+        `;
+      }
+    );
+
+    castGalleryImagesInput.addEventListener(
+      "change",
+      () => {
+        castGalleryPreviewUrls.forEach(
+          (previewUrl) => {
+            URL.revokeObjectURL(
+              previewUrl
+            );
+          }
+        );
+
+        castGalleryPreviewUrls =
+          [];
+
+        castGalleryPreview.innerHTML =
+          "";
+
+        const files =
+          Array.from(
+            castGalleryImagesInput
+              .files || []
+          );
+
+        if (files.length > 9) {
+          alert(
+            "追加画像は最大9枚まで選択できます"
+          );
+
+          castGalleryImagesInput.value =
+            "";
+
+          return;
+        }
+
+        const invalidFile =
+          files.find(
+            (file) =>
+              !file.type.startsWith(
+                "image/"
+              )
+          );
+
+        if (invalidFile) {
+          alert(
+            "追加画像には画像ファイルだけを選択してください"
+          );
+
+          castGalleryImagesInput.value =
+            "";
+
+          return;
+        }
+
+        files.forEach(
+          (file, index) => {
+            const previewUrl =
+              URL.createObjectURL(file);
+
+            castGalleryPreviewUrls.push(
+              previewUrl
+            );
+
+            const previewItem =
+              document.createElement("div");
+
+            previewItem.className =
+              "cast-gallery-preview-item";
+
+            previewItem.innerHTML = `
+              <img
+                src="${previewUrl}"
+                alt="追加画像${index + 1}"
+              >
+
+              <span>
+                ${index + 1}
+              </span>
+            `;
+
+            castGalleryPreview.appendChild(
+              previewItem
+            );
+          }
+        );
+      }
+    );
+
+    /* モーダル・保存ボタン */
+
+    openCastModalButton.addEventListener(
+      "click",
+      openNewCastModal
+    );
+
+    closeCastModalButton.addEventListener(
+      "click",
+      closeCastModal
+    );
+
+    cancelCastButton.addEventListener(
+      "click",
+      () => {
+        const ok =
+          confirm(
+            "入力内容を閉じますか？"
+          );
+
+        if (ok) {
+          closeCastModal();
+        }
+      }
+    );
+
+    saveCastButton.addEventListener(
+      "click",
+      saveCast
+    );
+
+    castModal.addEventListener(
+      "click",
+      (event) => {
+        if (
+          event.target === castModal
+        ) {
+          closeCastModal();
+        }
+      }
+    );
+
+    document.addEventListener(
+      "keydown",
+      (event) => {
+        if (
+          event.key === "Escape" &&
+          castModal.classList.contains(
+            "is-open"
+          )
+        ) {
+          closeCastModal();
+        }
+      }
+    );
 
   </script>
 
