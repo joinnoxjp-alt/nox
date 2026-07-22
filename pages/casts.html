@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>キャスト紹介 | NOX</title>
+
+  <meta
+    name="description"
+    content="NOXに掲載中の女の子・男の子キャストをご紹介します。"
+  >
+
+  <meta name="theme-color" content="#050505">
+
+  <style>
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+    }
+
+    body{
+      min-height:100vh;
+      background:
+        radial-gradient(
+          circle at top,
+          rgba(212,175,55,.18),
+          transparent 32%
+        ),
+        linear-gradient(
+          180deg,
+          #080706,
+          #000
+        );
+      color:#fff;
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Hiragino Kaku Gothic ProN",
+        sans-serif;
+    }
+
+    a{
+      color:inherit;
+      text-decoration:none;
+    }
+
+    button,
+    input,
+    select{
+      font:inherit;
+    }
+
+    .page{
+      width:min(1150px,100%);
+      margin:0 auto;
+      padding:28px 16px 80px;
+    }
+
+    .header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:16px;
+      margin-bottom:30px;
+    }
+
+    .logo{
+      color:#f5d36b;
+      font-family:serif;
+      font-size:38px;
+      font-weight:900;
+      letter-spacing:4px;
+    }
+
+    .logo small{
+      display:block;
+      margin-top:3px;
+      color:#999;
+      font-family:sans-serif;
+      font-size:10px;
+      letter-spacing:4px;
+    }
+
+    .nav{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .nav-button{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:44px;
+      padding:11px 18px;
+      border:1px solid rgba(212,175,55,.4);
+      border-radius:999px;
+      color:#f5d36b;
+      background:#0a0a0a;
+      font-size:14px;
+      font-weight:800;
+    }
+
+    .nav-button.gold{
+      background:
+        linear-gradient(
+          135deg,
+          #a77919,
+          #f6d96d
+        );
+      color:#111;
+    }
+
+    .hero{
+      margin-bottom:26px;
+      padding:38px 25px;
+      border:1px solid rgba(212,175,55,.42);
+      border-radius:28px;
+      background:
+        radial-gradient(
+          circle at top right,
+          rgba(212,175,55,.17),
+          transparent 38%
+        ),
+        linear-gradient(
+          145deg,
+          #12110f,
+          #070707
+        );
+      box-shadow:0 22px 60px rgba(0,0,0,.5);
+    }
+
+    .hero-kicker{
+      margin-bottom:10px;
+      color:#f5d36b;
+      font-size:12px;
+      font-weight:800;
+      letter-spacing:5px;
+    }
+
+    .hero h1{
+      color:#f5d36b;
+      font-size:clamp(34px,8vw,62px);
+      line-height:1.15;
+      margin-bottom:14px;
+    }
+
+    .hero p{
+      color:#ccc;
+      line-height:1.9;
+    }
+
+    .filter-box{
+      display:grid;
+      grid-template-columns:
+        repeat(
+          auto-fit,
+          minmax(150px,1fr)
+        );
+      gap:11px;
+      margin:24px 0;
+    }
+
+    .filter-box input,
+    .filter-box select{
+      width:100%;
+      min-height:50px;
+      padding:12px 14px;
+      border:1px solid rgba(212,175,55,.28);
+      border-radius:14px;
+      background:#0b0b0b;
+      color:#fff;
+      outline:none;
+    }
+
+    .filter-box input:focus,
+    .filter-box select:focus{
+      border-color:#d4af37;
+      box-shadow:0 0 18px rgba(212,175,55,.14);
+    }
+
+    .status{
+      margin:18px 2px;
+      color:#aaa;
+      line-height:1.7;
+    }
+
+    .cast-grid{
+      display:grid;
+      grid-template-columns:
+        repeat(
+          auto-fit,
+          minmax(270px,1fr)
+        );
+      gap:20px;
+    }
+
+    .cast-card{
+      overflow:hidden;
+      border:1px solid rgba(212,175,55,.42);
+      border-radius:24px;
+      background:
+        linear-gradient(
+          180deg,
+          #111,
+          #080808
+        );
+      box-shadow:0 18px 45px rgba(0,0,0,.45);
+      transition:.25s;
+    }
+
+    .cast-card:active{
+      transform:scale(.985);
+    }
+
+    .cast-image{
+      position:relative;
+      width:100%;
+      aspect-ratio:4 / 5;
+      overflow:hidden;
+      background:#101010;
+    }
+
+    .cast-image img{
+      width:100%;
+      height:100%;
+      display:block;
+      object-fit:cover;
+    }
+
+    .cast-image-empty{
+      width:100%;
+      height:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#777;
+    }
+
+    .image-badges{
+      position:absolute;
+      left:13px;
+      bottom:13px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:7px;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:7px 11px;
+      border-radius:999px;
+      background:
+        linear-gradient(
+          135deg,
+          #a77919,
+          #f6d96d
+        );
+      color:#111;
+      font-size:11px;
+      font-weight:900;
+      box-shadow:0 5px 15px rgba(0,0,0,.3);
+    }
+
+    .badge.female{
+      background:#ff5aaa;
+      color:#fff;
+    }
+
+    .badge.male{
+      background:#53a5ff;
+      color:#fff;
+    }
+
+    .badge.verified{
+      background:#152b3a;
+      color:#d9f2ff;
+      border:1px solid #6cb8e8;
+    }
+
+    .cast-content{
+      padding:20px;
+    }
+
+    .cast-content h2{
+      margin-bottom:8px;
+      color:#f5d36b;
+      font-size:27px;
+    }
+
+    .catch-copy{
+      margin-bottom:15px;
+      color:#e4c96a;
+      font-size:14px;
+      font-weight:700;
+      line-height:1.7;
+    }
+
+    .cast-info{
+      color:#ddd;
+      font-size:14px;
+      line-height:2;
+    }
+
+    .detail-button{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      width:100%;
+      min-height:50px;
+      margin-top:18px;
+      border-radius:999px;
+      background:
+        linear-gradient(
+          135deg,
+          #a77919,
+          #f6d96d
+        );
+      color:#111;
+      font-weight:900;
+    }
+
+    .empty{
+      grid-column:1 / -1;
+      padding:50px 20px;
+      border:1px solid rgba(212,175,55,.25);
+      border-radius:24px;
+      color:#aaa;
+      text-align:center;
+      line-height:1.9;
+    }
+
+    .footer-actions{
+      display:flex;
+      justify-content:center;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top:38px;
+    }
+
+    @media(max-width:650px){
+      .header{
+        align-items:flex-start;
+        flex-direction:column;
+      }
+
+      .hero{
+        padding:30px 20px;
+      }
+
+      .cast-grid{
+        grid-template-columns:1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="page">
+
+    <header class="header">
+
+      <a href="../index.html" class="logo">
+        NOX
+
+        <small>
+          NIGHT OPENS X
+        </small>
+      </a>
+
+      <nav class="nav">
+
+        <a
+          href="../index.html"
+          class="nav-button"
+        >
+          TOP
+        </a>
+
+        <a
+          href="./jobs.html"
+          class="nav-button"
+        >
+          求人を探す
+        </a>
+
+        <a
+          href="./mypage.html"
+          class="nav-button gold"
+        >
+          マイページ
+        </a>
+
+      </nav>
+
+    </header>
+
+    <section class="hero">
+
+      <p class="hero-kicker">
+        NOX CAST
+      </p>
+
+      <h1>
+        キャスト紹介
+      </h1>
+
+      <p>
+        NOXで活躍する女の子・男の子をご紹介。<br>
+        気になるキャストのプロフィールや在籍店舗をご覧いただけます。
+      </p>
+
+    </section>
+
+    <section class="filter-box">
+
+      <input
+        type="text"
+        id="keywordInput"
+        placeholder="名前・店舗・エリアで検索"
+      >
+
+      <select id="genderSelect">
+        <option value="">
+          男女すべて
+        </option>
+
+        <option value="female">
+          女の子
+        </option>
+
+        <option value="male">
+          男の子
+        </option>
+      </select>
+
+      <select id="areaSelect">
+        <option value="">
+          エリアすべて
+        </option>
+      </select>
+
+      <select id="sortSelect">
+        <option value="new">
+          新着順
+        </option>
+
+        <option value="name">
+          名前順
+        </option>
+      </select>
+
+    </section>
+
+    <p class="status" id="statusText">
+      キャストを読み込み中です...
+    </p>
+
+    <section
+      class="cast-grid"
+      id="castList"
+    ></section>
+
+    <div class="footer-actions">
+
+      <a
+        href="../index.html"
+        class="nav-button"
+      >
+        TOPへ戻る
+      </a>
+
+      <a
+        href="./jobs.html"
+        class="nav-button gold"
+      >
+        求人を見る
+      </a>
+
+    </div>
+
+  </main>
+
+  <script type="module">
+
+    import { db } from "./firebase-db.js";
+
+    import {
+      collection,
+      getDocs
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const castList =
+      document.getElementById("castList");
+
+    const statusText =
+      document.getElementById("statusText");
+
+    const keywordInput =
+      document.getElementById("keywordInput");
+
+    const genderSelect =
+      document.getElementById("genderSelect");
+
+    const areaSelect =
+      document.getElementById("areaSelect");
+
+    const sortSelect =
+      document.getElementById("sortSelect");
+
+    let casts = [];
+
+    function escapeHTML(value){
+      return String(value ?? "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    function getCreatedTime(cast){
+      return (
+        cast.createdAt
+          ?.toMillis?.() || 0
+      );
+    }
+
+    function isCastCurrentlyPublished(cast){
+
+      if(cast.visible === false){
+        return false;
+      }
+
+      const now = new Date();
+
+      if(cast.startDate){
+        const start =
+          new Date(
+            `${cast.startDate}T00:00:00`
+          );
+
+        if(start > now){
+          return false;
+        }
+      }
+
+      if(cast.endDate){
+        const end =
+          new Date(
+            `${cast.endDate}T23:59:59`
+          );
+
+        if(end < now){
+          return false;
+        }
+      }
+
+      return true;
+    }
+
+    async function loadCasts(){
+
+      statusText.textContent =
+        "キャストを読み込み中です...";
+
+      castList.innerHTML = "";
+
+      try{
+
+        const snapshot =
+          await getDocs(
+            collection(db,"casts")
+          );
+
+        casts = [];
+
+        snapshot.forEach((castDocument) => {
+
+          const cast = {
+            id:castDocument.id,
+            ...castDocument.data()
+          };
+
+          if(!isCastCurrentlyPublished(cast)){
+            return;
+          }
+
+          casts.push(cast);
+        });
+
+        createAreaOptions();
+        renderCasts();
+
+      }catch(error){
+
+        console.error(
+          "キャスト読み込みエラー",
+          error
+        );
+
+        statusText.textContent =
+          "キャストを読み込めませんでした。";
+
+        castList.innerHTML = `
+          <div class="empty">
+            キャスト情報の読み込みに失敗しました。<br>
+            時間を空けて、もう一度お試しください。
+          </div>
+        `;
+      }
+    }
+
+    function createAreaOptions(){
+
+      const currentArea =
+        areaSelect.value;
+
+      const areas = [
+        ...new Set(
+          casts
+            .map((cast) => cast.area)
+            .filter(Boolean)
+        )
+      ].sort();
+
+      areaSelect.innerHTML = `
+        <option value="">
+          エリアすべて
+        </option>
+      `;
+
+      areas.forEach((area) => {
+
+        const option =
+          document.createElement("option");
+
+        option.value = area;
+        option.textContent = area;
+
+        areaSelect.appendChild(option);
+      });
+
+      if(areas.includes(currentArea)){
+        areaSelect.value = currentArea;
+      }
+    }
+
+    function renderCasts(){
+
+      const keyword =
+        keywordInput.value
+          .trim()
+          .toLowerCase();
+
+      const selectedGender =
+        genderSelect.value;
+
+      const selectedArea =
+        areaSelect.value;
+
+      const selectedSort =
+        sortSelect.value;
+
+      let filteredCasts =
+        casts.filter((cast) => {
+
+          const searchText = `
+            ${cast.name || ""}
+            ${cast.storeName || ""}
+            ${cast.area || ""}
+            ${cast.jobType || ""}
+            ${cast.catchCopy || ""}
+          `.toLowerCase();
+
+          const keywordMatch =
+            !keyword ||
+            searchText.includes(keyword);
+
+          const genderMatch =
+            !selectedGender ||
+            cast.gender === selectedGender;
+
+          const areaMatch =
+            !selectedArea ||
+            cast.area === selectedArea;
+
+          return (
+            keywordMatch &&
+            genderMatch &&
+            areaMatch
+          );
+        });
+
+      filteredCasts.sort((a,b) => {
+
+        if(selectedSort === "name"){
+          return String(a.name || "")
+            .localeCompare(
+              String(b.name || ""),
+              "ja"
+            );
+        }
+
+        return (
+          getCreatedTime(b) -
+          getCreatedTime(a)
+        );
+      });
+
+      statusText.textContent =
+        `掲載キャスト ${filteredCasts.length}名`;
+
+      castList.innerHTML = "";
+
+      if(filteredCasts.length === 0){
+
+        castList.innerHTML = `
+          <div class="empty">
+            条件に合うキャストは見つかりませんでした。
+          </div>
+        `;
+
+        return;
+      }
+
+      filteredCasts.forEach((cast) => {
+
+        const genderText =
+          cast.gender === "male"
+            ? "男の子"
+            : "女の子";
+
+        const genderClass =
+          cast.gender === "male"
+            ? "male"
+            : "female";
+
+        const badges = [
+          `
+            <span class="badge ${genderClass}">
+              ${genderText}
+            </span>
+          `,
+
+          cast.isNew
+            ? `
+              <span class="badge">
+                NEW
+              </span>
+            `
+            : "",
+
+          cast.pickup
+            ? `
+              <span class="badge">
+                PICK UP
+              </span>
+            `
+            : "",
+
+          cast.popular
+            ? `
+              <span class="badge">
+                人気
+              </span>
+            `
+            : "",
+
+          cast.verified
+            ? `
+              <span class="badge verified">
+                NOX認証
+              </span>
+            `
+            : ""
+        ].join("");
+
+        const card =
+          document.createElement("article");
+
+        card.className = "cast-card";
+
+        card.innerHTML = `
+          <div class="cast-image">
+
+            ${
+              cast.mainImageUrl
+                ? `
+                  <img
+                    src="${escapeHTML(cast.mainImageUrl)}"
+                    alt="${escapeHTML(cast.name || "キャスト")}"
+                    loading="lazy"
+                  >
+                `
+                : `
+                  <div class="cast-image-empty">
+                    NO IMAGE
+                  </div>
+                `
+            }
+
+            <div class="image-badges">
+              ${badges}
+            </div>
+
+          </div>
+
+          <div class="cast-content">
+
+            <h2>
+              ${escapeHTML(cast.name || "名前未設定")}
+            </h2>
+
+            ${
+              cast.catchCopy
+                ? `
+                  <p class="catch-copy">
+                    ${escapeHTML(cast.catchCopy)}
+                  </p>
+                `
+                : ""
+            }
+
+            <div class="cast-info">
+              🎂 年齢：${escapeHTML(cast.age || "-")}<br>
+              🏪 在籍店舗：${escapeHTML(cast.storeName || "-")}<br>
+              📍 エリア：${escapeHTML(cast.area || "-")}<br>
+              💼 業種：${escapeHTML(cast.jobType || "-")}
+            </div>
+
+            <a
+              href="./cast-detail.html?id=${encodeURIComponent(cast.id)}"
+              class="detail-button"
+            >
+              プロフィールを見る
+            </a>
+
+          </div>
+        `;
+
+        castList.appendChild(card);
+      });
+    }
+
+    keywordInput.addEventListener(
+      "input",
+      renderCasts
+    );
+
+    genderSelect.addEventListener(
+      "change",
+      renderCasts
+    );
+
+    areaSelect.addEventListener(
+      "change",
+      renderCasts
+    );
+
+    sortSelect.addEventListener(
+      "change",
+      renderCasts
+    );
+
+    loadCasts();
+
+  </script>
+
+</body>
+</html>
