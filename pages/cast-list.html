@@ -1,0 +1,1436 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+  >
+
+  <title>キャスト紹介 | NOX</title>
+
+  <meta
+    name="description"
+    content="NOXに掲載中の女性・男性キャストを紹介。エリア・性別・店舗名・キーワードから検索できます。"
+  >
+
+  <meta
+    name="theme-color"
+    content="#050505"
+  >
+
+  <style>
+    :root{
+      --bg:#050505;
+      --bg-soft:#0b0b0b;
+      --card:#111111;
+      --card-soft:#171717;
+      --gold:#d4af37;
+      --gold-light:#f5d36b;
+      --text:#f5f5f5;
+      --muted:#aaaaaa;
+      --line:rgba(212,175,55,.28);
+      --shadow:0 20px 55px rgba(0,0,0,.45);
+      --female:#ff5aa6;
+      --male:#4f9fff;
+      --success:#7de39b;
+    }
+
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+    }
+
+    html{
+      scroll-behavior:smooth;
+    }
+
+    body{
+      min-height:100vh;
+      overflow-x:hidden;
+
+      background:
+        radial-gradient(
+          circle at 50% 0%,
+          rgba(212,175,55,.15),
+          transparent 30%
+        ),
+        linear-gradient(
+          180deg,
+          #070707,
+          #000000
+        );
+
+      color:var(--text);
+
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        "Hiragino Kaku Gothic ProN",
+        "Yu Gothic",
+        sans-serif;
+    }
+
+    a{
+      color:inherit;
+      text-decoration:none;
+    }
+
+    button,
+    input,
+    select{
+      font:inherit;
+    }
+
+    img{
+      display:block;
+      width:100%;
+    }
+
+    .page{
+      width:min(1160px,100%);
+      margin:0 auto;
+
+      padding:
+        calc(22px + env(safe-area-inset-top))
+        16px
+        calc(80px + env(safe-area-inset-bottom));
+    }
+
+    .header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+
+      gap:16px;
+
+      margin-bottom:28px;
+    }
+
+    .logo{
+      color:var(--gold-light);
+
+      font-family:Georgia,serif;
+      font-size:38px;
+      font-weight:900;
+
+      letter-spacing:4px;
+      line-height:1;
+    }
+
+    .logo small{
+      display:block;
+
+      margin-top:6px;
+
+      color:#8d8d8d;
+
+      font-family:inherit;
+      font-size:9px;
+
+      letter-spacing:4px;
+    }
+
+    .nav{
+      display:flex;
+      flex-wrap:wrap;
+
+      gap:10px;
+    }
+
+    .nav-button{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+
+      min-height:44px;
+      padding:11px 17px;
+
+      border:
+        1px solid
+        rgba(212,175,55,.34);
+
+      border-radius:999px;
+
+      background:#0a0a0a;
+      color:var(--gold-light);
+
+      font-size:13px;
+      font-weight:800;
+    }
+
+    .nav-button.gold{
+      background:
+        linear-gradient(
+          135deg,
+          #9f7217,
+          #f4d777
+        );
+
+      color:#111111;
+    }
+
+    .hero{
+      margin-bottom:24px;
+      padding:40px 26px;
+
+      border:
+        1px solid
+        rgba(212,175,55,.38);
+
+      border-radius:28px;
+
+      background:
+        radial-gradient(
+          circle at top right,
+          rgba(212,175,55,.16),
+          transparent 40%
+        ),
+        linear-gradient(
+          145deg,
+          #15130f,
+          #080808
+        );
+
+      box-shadow:var(--shadow);
+    }
+
+    .hero-kicker{
+      margin-bottom:10px;
+
+      color:var(--gold);
+
+      font-size:12px;
+      font-weight:900;
+
+      letter-spacing:5px;
+    }
+
+    .hero h1{
+      margin-bottom:14px;
+
+      color:var(--gold-light);
+
+      font-family:Georgia,serif;
+      font-size:clamp(38px,8vw,68px);
+
+      line-height:1.05;
+      letter-spacing:.04em;
+    }
+
+    .hero p{
+      color:#d2d2d2;
+      line-height:1.9;
+    }
+
+    .category-row{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+
+      gap:10px;
+
+      margin:22px 0 16px;
+    }
+
+    .category-button{
+      min-height:56px;
+      padding:12px 14px;
+
+      border:
+        1px solid
+        rgba(212,175,55,.28);
+
+      border-radius:16px;
+
+      background:#0b0b0b;
+      color:#dddddd;
+
+      font-weight:900;
+      cursor:pointer;
+    }
+
+    .category-button.active{
+      border-color:var(--gold);
+
+      background:
+        linear-gradient(
+          135deg,
+          #9f7217,
+          #f4d777
+        );
+
+      color:#111111;
+
+      box-shadow:
+        0 0 0 3px
+        rgba(212,175,55,.08);
+    }
+
+    .filter-box{
+      display:grid;
+
+      grid-template-columns:
+        1.4fr
+        repeat(
+          3,
+          minmax(140px,1fr)
+        );
+
+      gap:11px;
+
+      margin:16px 0 10px;
+    }
+
+    .filter-box input,
+    .filter-box select{
+      width:100%;
+      min-height:50px;
+
+      padding:12px 14px;
+
+      border:
+        1px solid
+        rgba(212,175,55,.25);
+
+      border-radius:14px;
+
+      outline:none;
+
+      background:#0b0b0b;
+      color:#ffffff;
+    }
+
+    .filter-box input:focus,
+    .filter-box select:focus{
+      border-color:var(--gold);
+
+      box-shadow:
+        0 0 18px
+        rgba(212,175,55,.14);
+    }
+
+    .status{
+      margin:18px 2px;
+
+      color:#aaaaaa;
+      line-height:1.7;
+    }
+        .cast-grid{
+      display:grid;
+
+      grid-template-columns:
+        repeat(
+          auto-fit,
+          minmax(270px,1fr)
+        );
+
+      gap:20px;
+    }
+
+    .cast-card{
+      overflow:hidden;
+
+      border:
+        1px solid
+        rgba(212,175,55,.38);
+
+      border-radius:24px;
+
+      background:
+        linear-gradient(
+          180deg,
+          #121212,
+          #080808
+        );
+
+      box-shadow:var(--shadow);
+
+      transition:
+        transform .22s ease,
+        border-color .22s ease;
+    }
+
+    .cast-card:active{
+      transform:scale(.985);
+    }
+
+    .cast-card:hover{
+      border-color:var(--gold);
+    }
+
+    .cast-image{
+      position:relative;
+
+      aspect-ratio:4 / 5;
+
+      overflow:hidden;
+
+      background:#101010;
+    }
+
+    .cast-image img{
+      width:100%;
+      height:100%;
+
+      object-fit:cover;
+    }
+
+    .cast-image-empty{
+      width:100%;
+      height:100%;
+
+      display:flex;
+      align-items:center;
+      justify-content:center;
+
+      color:#777777;
+
+      letter-spacing:2px;
+    }
+
+    .image-badges{
+      position:absolute;
+
+      left:12px;
+      right:12px;
+      bottom:12px;
+
+      display:flex;
+      flex-wrap:wrap;
+
+      gap:7px;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+
+      min-height:29px;
+      padding:6px 10px;
+
+      border-radius:999px;
+
+      background:
+        linear-gradient(
+          135deg,
+          #9f7217,
+          #f4d777
+        );
+
+      color:#111111;
+
+      font-size:10px;
+      font-weight:900;
+
+      box-shadow:
+        0 5px 15px
+        rgba(0,0,0,.25);
+    }
+
+    .badge.female{
+      background:var(--female);
+      color:#ffffff;
+    }
+
+    .badge.male{
+      background:var(--male);
+      color:#ffffff;
+    }
+
+    .badge.verified{
+      border:1px solid #6cb8e8;
+
+      background:#142b3a;
+      color:#ddf4ff;
+    }
+
+    .cast-content{
+      padding:20px;
+    }
+
+    .cast-name-row{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+
+      gap:12px;
+    }
+
+    .cast-content h2{
+      color:var(--gold-light);
+
+      font-size:27px;
+      line-height:1.3;
+    }
+
+    .partner-label{
+      flex:0 0 auto;
+
+      padding:5px 8px;
+
+      border:
+        1px solid
+        rgba(212,175,55,.3);
+
+      border-radius:999px;
+
+      color:var(--gold-light);
+
+      font-size:9px;
+      font-weight:900;
+    }
+
+    .catch-copy{
+      margin-top:9px;
+
+      color:#e3c967;
+
+      font-size:14px;
+      font-weight:800;
+
+      line-height:1.7;
+    }
+
+    .cast-info{
+      margin-top:14px;
+
+      color:#dddddd;
+
+      font-size:14px;
+      line-height:2;
+    }
+
+    .card-actions{
+      display:grid;
+      grid-template-columns:1fr;
+
+      gap:10px;
+
+      margin-top:18px;
+    }
+
+    .detail-button,
+    .contact-button{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+
+      min-height:50px;
+      padding:12px 16px;
+
+      border-radius:999px;
+
+      text-align:center;
+      font-weight:900;
+    }
+
+    .detail-button{
+      background:
+        linear-gradient(
+          135deg,
+          #9f7217,
+          #f4d777
+        );
+
+      color:#111111;
+    }
+
+    .contact-button{
+      border:
+        1px solid
+        rgba(212,175,55,.35);
+
+      background:#0a0a0a;
+      color:var(--gold-light);
+    }
+
+    .empty{
+      grid-column:1 / -1;
+
+      padding:50px 20px;
+
+      border:
+        1px solid
+        rgba(212,175,55,.24);
+
+      border-radius:24px;
+
+      color:#aaaaaa;
+
+      text-align:center;
+      line-height:1.9;
+    }
+
+    .footer-actions{
+      display:flex;
+      justify-content:center;
+      flex-wrap:wrap;
+
+      gap:12px;
+
+      margin-top:40px;
+    }
+
+    @media(max-width:820px){
+
+      .filter-box{
+        grid-template-columns:1fr 1fr;
+      }
+
+    }
+
+    @media(max-width:650px){
+
+      .header{
+        align-items:flex-start;
+        flex-direction:column;
+      }
+
+      .hero{
+        padding:30px 20px;
+      }
+
+      .category-row{
+        grid-template-columns:1fr;
+      }
+
+      .filter-box{
+        grid-template-columns:1fr;
+      }
+
+      .cast-grid{
+        grid-template-columns:1fr;
+      }
+
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="page">
+
+    <header class="header">
+
+      <a
+        href="../index.html"
+        class="logo"
+      >
+        NOX
+
+        <small>
+          NIGHT OPENS X
+        </small>
+      </a>
+
+      <nav class="nav">
+
+        <a
+          href="../index.html"
+          class="nav-button"
+        >
+          TOP
+        </a>
+
+        <a
+          href="./jobs.html"
+          class="nav-button"
+        >
+          求人を探す
+        </a>
+
+        <a
+          href="./mypage.html"
+          class="nav-button gold"
+        >
+          マイページ
+        </a>
+
+      </nav>
+
+    </header>
+
+    <section class="hero">
+
+      <p class="hero-kicker">
+        NOX CAST
+      </p>
+
+      <h1>
+        キャスト紹介
+      </h1>
+
+      <p>
+        NOXで活躍する女の子・男の子をご紹介。<br>
+        気になるキャストのプロフィールや在籍・提携先をご覧いただけます。
+      </p>
+
+    </section>
+
+    <div class="category-row">
+
+      <button
+        type="button"
+        class="category-button active"
+        data-gender=""
+      >
+        男女すべて
+      </button>
+
+      <button
+        type="button"
+        class="category-button"
+        data-gender="female"
+      >
+        女の子特集
+      </button>
+
+      <button
+        type="button"
+        class="category-button"
+        data-gender="male"
+      >
+        男の子特集
+      </button>
+
+    </div>
+
+    <section class="filter-box">
+
+      <input
+        type="text"
+        id="keywordInput"
+        placeholder="名前・店舗・エリアで検索"
+      >
+
+      <select id="areaSelect">
+        <option value="">
+          エリアすべて
+        </option>
+      </select>
+
+      <select id="typeSelect">
+        <option value="">
+          業種すべて
+        </option>
+      </select>
+
+      <select id="sortSelect">
+
+        <option value="new">
+          新着順
+        </option>
+
+        <option value="name">
+          名前順
+        </option>
+
+        <option value="popular">
+          人気順
+        </option>
+
+      </select>
+
+    </section>
+
+    <p
+      class="status"
+      id="statusText"
+    >
+      キャストを読み込み中です...
+    </p>
+
+    <section
+      class="cast-grid"
+      id="castList"
+    ></section>
+
+    <div class="footer-actions">
+
+      <a
+        href="../index.html"
+        class="nav-button"
+      >
+        TOPへ戻る
+      </a>
+
+      <a
+        href="./jobs.html"
+        class="nav-button gold"
+      >
+        求人を見る
+      </a>
+
+    </div>
+
+  </main>
+
+  <script type="module">
+
+    import { db } from "./firebase-db.js";
+
+    import {
+      collection,
+      getDocs
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        const NOX_LINE_URL =
+      "https://lin.ee/V3gHmHR";
+
+    const castList =
+      document.getElementById("castList");
+
+    const statusText =
+      document.getElementById("statusText");
+
+    const keywordInput =
+      document.getElementById("keywordInput");
+
+    const areaSelect =
+      document.getElementById("areaSelect");
+
+    const typeSelect =
+      document.getElementById("typeSelect");
+
+    const sortSelect =
+      document.getElementById("sortSelect");
+
+    const categoryButtons =
+      document.querySelectorAll(".category-button");
+
+    let casts = [];
+
+    let selectedGender = "";
+
+    function escapeHTML(value){
+
+      return String(value ?? "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+
+    }
+
+    function getCreatedTime(cast){
+
+      return cast.createdAt?.toMillis?.() || 0;
+
+    }
+
+    function getPopularity(cast){
+
+      return Number(
+        cast.favoriteCount ??
+        cast.likeCount ??
+        cast.viewCount ??
+        0
+      ) || 0;
+
+    }
+
+    function isCastCurrentlyPublished(cast){
+
+      if(cast.visible === false){
+        return false;
+      }
+
+      const now =
+        new Date();
+
+      if(cast.startDate){
+
+        const start =
+          new Date(
+            `${cast.startDate}T00:00:00`
+          );
+
+        if(start > now){
+          return false;
+        }
+
+      }
+
+      if(cast.endDate){
+
+        const end =
+          new Date(
+            `${cast.endDate}T23:59:59`
+          );
+
+        if(end < now){
+          return false;
+        }
+
+      }
+
+      return true;
+
+    }
+
+    function getStoreDisplayName(cast){
+
+      if(
+        cast.storeDisplayType ===
+        "partners"
+      ){
+
+        return "NOX PARTNERS";
+
+      }
+
+      return (
+        cast.storeName ||
+        "NOX PARTNERS"
+      );
+
+    }
+
+    function getContactUrl(cast){
+
+      if(
+        cast.storeDisplayType ===
+        "partners"
+      ){
+
+        return NOX_LINE_URL;
+
+      }
+
+      return (
+        cast.reservationUrl ||
+        cast.storeLineUrl ||
+        cast.contactUrl ||
+        NOX_LINE_URL
+      );
+
+    }
+
+    function getContactLabel(cast){
+
+      if(
+        cast.storeDisplayType ===
+        "partners"
+      ){
+
+        return "NOXへ問い合わせる";
+
+      }
+
+      return "このキャストに会いたい・予約する";
+
+    }
+
+    async function loadCasts(){
+
+      statusText.textContent =
+        "キャストを読み込み中です...";
+
+      castList.innerHTML = "";
+
+      try{
+
+        const snapshot =
+          await getDocs(
+            collection(
+              db,
+              "casts"
+            )
+          );
+
+        casts = [];
+
+        snapshot.forEach(
+          (castDocument)=>{
+
+          const cast = {
+
+            id:
+              castDocument.id,
+
+            ...castDocument.data()
+
+          };
+
+          if(
+            !isCastCurrentlyPublished(
+              cast
+            )
+          ){
+            return;
+          }
+
+          casts.push(cast);
+
+        });
+
+        createFilterOptions();
+
+        renderCasts();
+
+      }catch(error){
+
+        console.error(error);
+
+        statusText.textContent =
+          "キャストを読み込めませんでした。";
+
+      }
+
+    }
+
+    function createFilterOptions(){
+
+      const areas = [
+
+        ...new Set(
+
+          casts
+
+            .filter(
+              cast =>
+                !selectedGender ||
+                cast.gender ===
+                selectedGender
+            )
+
+            .map(
+              cast => cast.area
+            )
+
+            .filter(Boolean)
+
+        )
+
+      ].sort();
+
+      const types = [
+
+        ...new Set(
+
+          casts
+
+            .filter(
+              cast =>
+                !selectedGender ||
+                cast.gender ===
+                selectedGender
+            )
+
+            .map(
+              cast =>
+                cast.jobType
+            )
+
+            .filter(Boolean)
+
+        )
+
+      ].sort();
+
+      areaSelect.innerHTML =
+        `<option value="">
+          エリアすべて
+        </option>`;
+
+      typeSelect.innerHTML =
+        `<option value="">
+          業種すべて
+        </option>`;
+
+      areas.forEach(area=>{
+
+        areaSelect.innerHTML +=
+        `
+        <option
+          value="${area}"
+        >
+          ${area}
+        </option>
+        `;
+
+      });
+
+      types.forEach(type=>{
+
+        typeSelect.innerHTML +=
+        `
+        <option
+          value="${type}"
+        >
+          ${type}
+        </option>
+        `;
+
+      });
+
+    }
+        function renderCasts(){
+
+      const keyword =
+        keywordInput.value
+          .trim()
+          .toLowerCase();
+
+      const selectedArea =
+        areaSelect.value;
+
+      const selectedType =
+        typeSelect.value;
+
+      const selectedSort =
+        sortSelect.value;
+
+      let filteredCasts =
+        casts.filter((cast)=>{
+
+          const storeDisplayName =
+            getStoreDisplayName(cast);
+
+          const searchText = `
+            ${cast.name || ""}
+            ${storeDisplayName}
+            ${cast.area || ""}
+            ${cast.jobType || ""}
+            ${cast.catchCopy || ""}
+          `.toLowerCase();
+
+          const keywordMatch =
+            !keyword ||
+            searchText.includes(keyword);
+
+          const genderMatch =
+            !selectedGender ||
+            cast.gender === selectedGender;
+
+          const areaMatch =
+            !selectedArea ||
+            cast.area === selectedArea;
+
+          const typeMatch =
+            !selectedType ||
+            cast.jobType === selectedType;
+
+          return (
+            keywordMatch &&
+            genderMatch &&
+            areaMatch &&
+            typeMatch
+          );
+
+        });
+
+      filteredCasts.sort((a,b)=>{
+
+        if(selectedSort === "name"){
+
+          return String(a.name || "")
+            .localeCompare(
+              String(b.name || ""),
+              "ja"
+            );
+
+        }
+
+        if(selectedSort === "popular"){
+
+          return (
+            getPopularity(b) -
+            getPopularity(a)
+          );
+
+        }
+
+        return (
+          getCreatedTime(b) -
+          getCreatedTime(a)
+        );
+
+      });
+
+      statusText.textContent =
+        `掲載キャスト ${filteredCasts.length}名`;
+
+      castList.innerHTML = "";
+
+      if(filteredCasts.length === 0){
+
+        castList.innerHTML = `
+          <div class="empty">
+            条件に合うキャストは
+            見つかりませんでした。
+          </div>
+        `;
+
+        return;
+
+      }
+
+      filteredCasts.forEach((cast)=>{
+
+        const genderText =
+          cast.gender === "male"
+            ? "男の子"
+            : "女の子";
+
+        const genderClass =
+          cast.gender === "male"
+            ? "male"
+            : "female";
+
+        const storeDisplayName =
+          getStoreDisplayName(cast);
+
+        const contactUrl =
+          getContactUrl(cast);
+
+        const badges = [
+
+          `
+            <span
+              class="badge ${genderClass}"
+            >
+              ${genderText}
+            </span>
+          `,
+
+          cast.isNew
+            ? `
+              <span class="badge">
+                NEW
+              </span>
+            `
+            : "",
+
+          cast.pickup
+            ? `
+              <span class="badge">
+                PICK UP
+              </span>
+            `
+            : "",
+
+          cast.popular
+            ? `
+              <span class="badge">
+                人気
+              </span>
+            `
+            : "",
+
+          cast.verified
+            ? `
+              <span
+                class="badge verified"
+              >
+                NOX認証
+              </span>
+            `
+            : ""
+
+        ].join("");
+
+        const card =
+          document.createElement(
+            "article"
+          );
+
+        card.className =
+          "cast-card";
+
+        card.innerHTML = `
+          <div class="cast-image">
+
+            ${
+              cast.mainImageUrl
+                ? `
+                  <img
+                    src="${escapeHTML(
+                      cast.mainImageUrl
+                    )}"
+                    alt="${escapeHTML(
+                      cast.name ||
+                      "キャスト"
+                    )}"
+                    loading="lazy"
+                  >
+                `
+                : `
+                  <div
+                    class="cast-image-empty"
+                  >
+                    NO IMAGE
+                  </div>
+                `
+            }
+
+            <div class="image-badges">
+              ${badges}
+            </div>
+
+          </div>
+
+          <div class="cast-content">
+
+            <div class="cast-name-row">
+
+              <h2>
+                ${escapeHTML(
+                  cast.name ||
+                  "名前未設定"
+                )}
+              </h2>
+
+              ${
+                cast.storeDisplayType ===
+                "partners"
+                  ? `
+                    <span
+                      class="partner-label"
+                    >
+                      NOX PARTNERS
+                    </span>
+                  `
+                  : ""
+              }
+
+            </div>
+
+            ${
+              cast.catchCopy
+                ? `
+                  <p class="catch-copy">
+                    ${escapeHTML(
+                      cast.catchCopy
+                    )}
+                  </p>
+                `
+                : ""
+            }
+
+            <div class="cast-info">
+
+              🎂 年齢：
+              ${escapeHTML(
+                cast.age || "-"
+              )}
+              <br>
+
+              🏪 在籍・提携先：
+              ${escapeHTML(
+                storeDisplayName
+              )}
+              <br>
+
+              📍 エリア：
+              ${escapeHTML(
+                cast.area || "-"
+              )}
+              <br>
+
+              💼 業種：
+              ${escapeHTML(
+                cast.jobType || "-"
+              )}
+
+            </div>
+
+            <div class="card-actions">
+
+              <a
+                href="./cast-detail.html?id=${
+                  encodeURIComponent(
+                    cast.id
+                  )
+                }"
+                class="detail-button"
+              >
+                プロフィールを見る
+              </a>
+
+              <a
+                href="${escapeHTML(
+                  contactUrl
+                )}"
+                class="contact-button"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                ${escapeHTML(
+                  getContactLabel(cast)
+                )}
+              </a>
+
+            </div>
+
+          </div>
+        `;
+
+        castList.appendChild(card);
+
+      });
+
+    }
+
+    categoryButtons.forEach((button)=>{
+
+      button.addEventListener(
+        "click",
+        ()=>{
+
+          selectedGender =
+            button.dataset.gender || "";
+
+          categoryButtons.forEach(
+            (item)=>{
+              item.classList.remove(
+                "active"
+              );
+            }
+          );
+
+          button.classList.add(
+            "active"
+          );
+
+          areaSelect.value = "";
+          typeSelect.value = "";
+
+          createFilterOptions();
+          renderCasts();
+
+        }
+      );
+
+    });
+
+    keywordInput.addEventListener(
+      "input",
+      renderCasts
+    );
+
+    areaSelect.addEventListener(
+      "change",
+      renderCasts
+    );
+
+    typeSelect.addEventListener(
+      "change",
+      renderCasts
+    );
+
+    sortSelect.addEventListener(
+      "change",
+      renderCasts
+    );
+
+    loadCasts();
+
+  </script>
+
+</body>
+</html>
