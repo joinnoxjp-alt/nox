@@ -1877,14 +1877,14 @@ footer a:hover{
     animation:fadeIn 1s ease;
 }
 .header-logo-image{
-    height:58px;
+    height:74px;
     width:auto;
     display:block;
 }
 .footer-logo-image{
-    width:220px;
+    width:240px;
     max-width:100%;
     height:auto;
     display:block;
-    margin-bottom:20px;
+    margin:0 auto 25px;
 }
