@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>NOX CHARACTERS</title>
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+background:#050505;
+color:#fff;
+font-family:serif;
+}
+
+header{
+padding:60px 20px;
+text-align:center;
+border-bottom:1px solid rgba(212,175,55,.25);
+}
+
+header img{
+width:170px;
+margin-bottom:25px;
+}
+
+header h1{
+font-size:42px;
+color:#d4af37;
+margin-bottom:15px;
+}
+
+header p{
+color:#bbb;
+line-height:1.8;
+}
+
+.grid{
+max-width:1200px;
+margin:auto;
+padding:50px 20px;
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+gap:28px;
+}
+
+.card{
+background:#101010;
+border:1px solid rgba(212,175,55,.25);
+border-radius:20px;
+overflow:hidden;
+transition:.3s;
+}
+
+.card:hover{
+transform:translateY(-8px);
+border-color:#d4af37;
+}
+
+.card img{
+width:100%;
+display:block;
+}
+
+.card h2{
+padding-top:18px;
+text-align:center;
+color:#d4af37;
+}
+
+.card h3{
+text-align:center;
+color:#888;
+margin:8px 0 18px;
+font-weight:400;
+}
+
+.card p{
+padding:0 20px 25px;
+text-align:center;
+line-height:1.8;
+color:#ccc;
+}
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<img src="../images/nox-logo.png">
+
+<h1>NOX CHARACTERS</h1>
+
+<p>
+NOX公式キャラクター紹介
+</p>
+
+</header>
+
+<section class="grid">
+
+<div class="card">
+<img src="../images/noa.png">
+<h2>NOA</h2>
+<h3>Founder</h3>
+<p>
+NOXの創設者。
+夜を照らすカリスマ。
+</p>
+</div>
+
+<div class="card">
+<img src="../images/rei.png">
+<h2>REI</h2>
+<h3>Guardian</h3>
+<p>
+冷静沈着な守護者。
+</p>
+</div>
+
+<div class="card">
+<img src="../images/lux.png">
+<h2>LUX</h2>
+<h3>Strategist</h3>
+<p>
+知略を司る戦略家。
+</p>
+</div>
+
+<div class="card">
+<img src="../images/luna.png">
+<h2>LUNA</h2>
+<h3>Muse</h3>
+<p>
+月のように優しく導く存在。
+</p>
+</div>
+
+</section>
+
+</body>
+</html>
