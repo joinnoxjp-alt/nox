@@ -1615,13 +1615,13 @@
 
         </div>
 
-        <button
-          type="button"
-          class="main-btn"
-          onclick="shareResult()"
-        >
-          Xでシェア
-        </button>
+       <button
+  type="button"
+  class="main-btn"
+  onclick="shareResultImage()"
+>
+  Xで画像をシェア
+</button>
 
         <button
           type="button"
@@ -1631,13 +1631,13 @@
           結果をコピー
         </button>
 
-        <button
-          type="button"
-          class="sub-btn"
-          onclick="saveResultImage()"
-        >
-          📸 診断結果を画像で保存
-        </button>
+       <button
+  type="button"
+  class="sub-btn"
+  onclick="saveResultImage()"
+>
+  📸 画像を保存・共有
+</button>
 
         <a
           href="pages/girls.html"
@@ -2293,211 +2293,149 @@
         }
       );
     }
-        /*
-      保存画像に使う画像の読み込み待ち
-    */
+     
+/*
+  画像を読み込み待ち
+*/
+function waitForImageLoad(image){
 
-    function waitForImageLoad(
-      imageElement
-    ){
+  return new Promise((resolve,reject)=>{
 
-      return new Promise(
-        (resolve,reject) => {
-
-          if(
-            imageElement.complete &&
-            imageElement.naturalWidth > 0
-          ){
-            resolve();
-            return;
-          }
-
-          imageElement.onload =
-            () => resolve();
-
-          imageElement.onerror =
-            () => reject(
-              new Error(
-                "画像の読み込みに失敗しました"
-              )
-            );
-
-        }
-      );
+    if(image.complete && image.naturalWidth>0){
+      resolve();
+      return;
     }
 
-    /*
-      診断結果を
-      1080×1920で保存
-    */
+    image.onload=()=>resolve();
+    image.onerror=()=>reject(new Error("画像読込失敗"));
 
-    window.saveResultImage =
-      async function(){
+  });
 
-        const resultImage =
-          document.getElementById(
-            "resultImage"
-          );
+}
 
-        const resultName =
-          document.getElementById(
-            "resultName"
-          );
 
-        const resultTitle =
-          document.getElementById(
-            "resultTitle"
-          );
+/*
+  保存
+*/
 
-        const statsArea =
-          document.getElementById(
-            "statsArea"
-          );
+window.saveResultImage=async function(){
 
-        const shareImage =
-          document.getElementById(
-            "shareImage"
-          );
+  const resultImage=document.getElementById("resultImage");
 
-        const shareName =
-          document.getElementById(
-            "shareName"
-          );
+  if(!resultImage || !resultImage.src){
+    alert("画像がありません");
+    return;
+  }
 
-        const shareTitle =
-          document.getElementById(
-            "shareTitle"
-          );
+  try{
 
-        const shareStats =
-          document.getElementById(
-            "shareStats"
-          );
+    await waitForImageLoad(resultImage);
 
-        const shareCard =
-          document.getElementById(
-            "shareCard"
-          );
+    const response=await fetch(resultImage.src);
+    const blob=await response.blob();
 
-        if(
-          !resultImage ||
-          !resultImage.src
-        ){
-          alert(
-            "診断結果画像を読み込めませんでした。"
-          );
+    const file=new File(
+      [blob],
+      "NOX-TYPE.png",
+      {type:blob.type}
+    );
 
-          return;
-        }
+    if(
+      navigator.canShare &&
+      navigator.canShare({files:[file]})
+    ){
 
-        if(
-          !shareImage ||
-          !shareName ||
-          !shareTitle ||
-          !shareStats ||
-          !shareCard
-        ){
-          alert(
-            "保存用データを準備できませんでした。"
-          );
+      await navigator.share({
+        files:[file],
+        title:"NOX TYPE 診断結果"
+      });
 
-          return;
-        }
+      return;
+    }
 
-        shareImage.src =
-          resultImage.src;
+    const url=URL.createObjectURL(blob);
 
-        shareName.textContent =
-          resultName?.textContent ||
-          "NOX TYPE";
+    const a=document.createElement("a");
+    a.href=url;
+    a.download="NOX-TYPE.png";
+    a.click();
 
-        shareTitle.textContent =
-          resultTitle?.textContent ||
-          "";
+    setTimeout(()=>{
+      URL.revokeObjectURL(url);
+    },1000);
 
-        shareStats.innerHTML =
-          statsArea?.innerHTML ||
-          "";
+  }catch(e){
 
-        try{
+    console.error(e);
 
-          await waitForImageLoad(
-            shareImage
-          );
+    alert("画像を保存できませんでした。");
 
-          const canvas =
-            await html2canvas(
-              shareCard,
-              {
-                backgroundColor:
-                  "#040404",
+  }
 
-                scale:1,
+};
 
-                width:1080,
-                height:1920,
 
-                windowWidth:1080,
-                windowHeight:1920,
+/*
+  X共有
+*/
 
-                useCORS:true,
-                allowTaint:false,
-                logging:false
-              }
-            );
+window.shareResultImage=async function(){
 
-          const imageUrl =
-            canvas.toDataURL(
-              "image/png",
-              1
-            );
+  const resultImage=document.getElementById("resultImage");
+  const resultName=document.getElementById("resultName");
 
-          const safeName =
-            (
-              shareName.textContent ||
-              "NOX-TYPE"
-            )
-              .replace(
-                /[\\/:*?"<>|]/g,
-                "-"
-              )
-              .replace(
-                /\s+/g,
-                "-"
-              );
+  if(!resultImage || !resultImage.src){
+    alert("画像がありません");
+    return;
+  }
 
-          const downloadLink =
-            document.createElement(
-              "a"
-            );
+  try{
 
-          downloadLink.href =
-            imageUrl;
+    await waitForImageLoad(resultImage);
 
-          downloadLink.download =
-            `NOX-TYPE-${safeName}.png`;
+    const response=await fetch(resultImage.src);
+    const blob=await response.blob();
 
-          document.body.appendChild(
-            downloadLink
-          );
+    const file=new File(
+      [blob],
+      "NOX-TYPE.png",
+      {type:blob.type}
+    );
 
-          downloadLink.click();
-          downloadLink.remove();
+    const text=
+`${resultName.textContent}
 
-        }catch(error){
+NOX TYPE 夜の性格診断
+https://joinnox.jp/ai-diagnosis.html`;
 
-          console.error(
-            "画像保存エラー:",
-            error
-          );
+    if(
+      navigator.canShare &&
+      navigator.canShare({files:[file]})
+    ){
 
-          alert(
-            "画像を保存できませんでした。少し時間を空けてもう一度お試しください。"
-          );
+      await navigator.share({
+        files:[file],
+        text:text
+      });
 
-        }
-      };
+      return;
+    }
 
+    window.open(
+      "https://twitter.com/intent/tweet?text="+
+      encodeURIComponent(text),
+      "_blank"
+    );
+
+  }catch(e){
+
+    console.error(e);
+
+    alert("共有できませんでした。");
+
+  }
+
+};
     /*
       ページ読み込み後に
       進捗・回答演出・最終解析を開始
