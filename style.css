@@ -1876,3 +1876,8 @@ footer a:hover{
     margin:0 auto;
     animation:fadeIn 1s ease;
 }
+.header-logo-image{
+    height:58px;
+    width:auto;
+    display:block;
+}
