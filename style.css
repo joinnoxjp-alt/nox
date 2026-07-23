@@ -1881,3 +1881,10 @@ footer a:hover{
     width:auto;
     display:block;
 }
+.footer-logo-image{
+    width:220px;
+    max-width:100%;
+    height:auto;
+    display:block;
+    margin-bottom:20px;
+}
