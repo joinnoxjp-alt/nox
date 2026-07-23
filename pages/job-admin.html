@@ -1636,21 +1636,10 @@
             );
         }
 
-        const previousImages =
-          Array.isArray(oldData.images)
-            ? oldData.images.filter(Boolean)
-            : [];
-
-        const updatedImages =
-          mainImage
-            ? [
-                mainImage,
-                ...previousImages.filter(
-                  (image) =>
-                    image !== mainImage
-                )
-              ]
-            : previousImages;
+      const updatedImages =
+  mainImage
+    ? [mainImage]
+    : [];
 
         await updateDoc(
           jobReference,
