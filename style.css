@@ -1868,3 +1868,11 @@ footer a:hover{
         gap:12px;
     }
 }
+.loading-logo-image{
+    width:220px;
+    max-width:80%;
+    height:auto;
+    display:block;
+    margin:0 auto;
+    animation:fadeIn 1s ease;
+}
