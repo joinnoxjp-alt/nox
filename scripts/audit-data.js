@@ -152,6 +152,268 @@ function buildOwnerIndexes(stores) {
   return { byOwnerId, byName };
 }
 
+function indexDocumentsById(documents) {
+  return new Map(
+    documents.map((document) => [document.id, document])
+  );
+}
+
+function groupDocumentsByField(documents, field) {
+  const groups = new Map();
+
+  for (const document of documents) {
+    const value = document.data[field];
+
+    if (!hasValue(value)) {
+      continue;
+    }
+
+    const key = String(value);
+
+    if (!groups.has(key)) {
+      groups.set(key, []);
+    }
+
+    groups.get(key).push(document);
+  }
+
+  return groups;
+}
+
+function auditJobOwnership(collections) {
+  const usersById = indexDocumentsById(collections.users);
+  const storesById = indexDocumentsById(collections.stores);
+  const storesBySourceApplicationId = groupDocumentsByField(
+    collections.stores,
+    "sourceApplicationId"
+  );
+  const jobsBySourceApplicationId = groupDocumentsByField(
+    collections.jobs,
+    "sourceApplicationId"
+  );
+
+  const jobsWithOwnerId = [];
+  const jobsWithoutOwnerId = [];
+  const ownerUserMissing = [];
+  const ownerStoreMissing = [];
+  const ownerUserRoleAndStatus = [];
+  const ownerStoreNameConflicts = [];
+  const legacyOwnerFieldsOnly = [];
+  const unresolvedJobs = [];
+  const sourceMatchedJobIds = [];
+
+  for (const job of collections.jobs) {
+    const ownerId = hasValue(job.data.ownerId)
+      ? String(job.data.ownerId)
+      : "";
+    const storeId = hasValue(job.data.storeId)
+      ? String(job.data.storeId)
+      : "";
+    const userId = hasValue(job.data.userId)
+      ? String(job.data.userId)
+      : "";
+    const sourceApplicationId = hasValue(job.data.sourceApplicationId)
+      ? String(job.data.sourceApplicationId)
+      : "";
+
+    if (ownerId) {
+      jobsWithOwnerId.push(job.id);
+    } else {
+      jobsWithoutOwnerId.push(job.id);
+    }
+
+    const ownerUser = ownerId
+      ? usersById.get(ownerId)
+      : null;
+    const ownerStore = ownerId
+      ? storesById.get(ownerId)
+      : null;
+
+    if (ownerId && !ownerUser) {
+      ownerUserMissing.push({
+        jobId: job.id,
+        ownerId
+      });
+    }
+
+    if (ownerId && !ownerStore) {
+      ownerStoreMissing.push({
+        jobId: job.id,
+        ownerId
+      });
+    }
+
+    if (ownerId && ownerUser) {
+      ownerUserRoleAndStatus.push({
+        jobId: job.id,
+        ownerId,
+        role: hasValue(ownerUser.data.role)
+          ? String(ownerUser.data.role)
+          : null,
+        status: hasValue(ownerUser.data.status)
+          ? String(ownerUser.data.status)
+          : null
+      });
+    }
+
+    if (
+      ownerId &&
+      ownerStore &&
+      hasValue(job.data.storeName) &&
+      hasValue(ownerStore.data.storeName) &&
+      normalizedName(job.data.storeName) !==
+        normalizedName(ownerStore.data.storeName)
+    ) {
+      ownerStoreNameConflicts.push({
+        jobId: job.id,
+        ownerId,
+        jobStoreName: String(job.data.storeName),
+        ownerStoreName: String(ownerStore.data.storeName)
+      });
+    }
+
+    if (!ownerId && (storeId || userId)) {
+      legacyOwnerFieldsOnly.push({
+        jobId: job.id,
+        storeId: storeId || null,
+        userId: userId || null,
+        storeIdUserIdConflict:
+          Boolean(storeId && userId && storeId !== userId)
+      });
+    }
+
+    const sourceStores = sourceApplicationId
+      ? storesBySourceApplicationId.get(sourceApplicationId) || []
+      : [];
+    const hasValidUidOwner =
+      Boolean(ownerId && ownerUser && ownerStore);
+    const hasUniqueSourceOwner =
+      sourceStores.length === 1;
+
+    if (hasUniqueSourceOwner) {
+      sourceMatchedJobIds.push(job.id);
+    }
+
+    if (!hasValidUidOwner && !hasUniqueSourceOwner) {
+      const storeNameKey = normalizedName(job.data.storeName);
+      const nameCandidates = storeNameKey
+        ? collections.stores
+            .filter(
+              (store) =>
+                normalizedName(store.data.storeName) ===
+                storeNameKey
+            )
+            .map((store) => store.id)
+        : [];
+
+      unresolvedJobs.push({
+        jobId: job.id,
+        ownerId: ownerId || null,
+        sourceApplicationId: sourceApplicationId || null,
+        sourceStoreDocumentIds: sourceStores.map((store) => store.id),
+        nameCandidateStoreDocumentIds: nameCandidates,
+        reason:
+          sourceStores.length > 1
+            ? "sourceApplicationId matches multiple stores"
+            : ownerId
+              ? "ownerId does not resolve to both users and stores"
+              : sourceApplicationId
+                ? "sourceApplicationId has no matching store"
+                : "no valid ownerId or sourceApplicationId"
+      });
+    }
+  }
+
+  const duplicateJobSourceApplicationIds = [
+    ...jobsBySourceApplicationId.entries()
+  ]
+    .filter(([, jobs]) => jobs.length > 1)
+    .map(([sourceApplicationId, jobs]) => ({
+      sourceApplicationId,
+      jobIds: jobs.map((job) => job.id)
+    }))
+    .sort((left, right) =>
+      left.sourceApplicationId.localeCompare(right.sourceApplicationId)
+    );
+
+  const unknownJobIds = new Set(
+    unresolvedJobs.map((job) => job.jobId)
+  );
+  const unknownApplicationsByJobId = new Map();
+  let applicationsWithMissingJobDocument = 0;
+  const jobsById = indexDocumentsById(collections.jobs);
+
+  for (const application of collections.applications) {
+    const jobId = hasValue(application.data.jobId)
+      ? String(application.data.jobId)
+      : "";
+
+    if (!jobId || !jobsById.has(jobId)) {
+      applicationsWithMissingJobDocument += 1;
+      continue;
+    }
+
+    if (unknownJobIds.has(jobId)) {
+      unknownApplicationsByJobId.set(
+        jobId,
+        (unknownApplicationsByJobId.get(jobId) || 0) + 1
+      );
+    }
+  }
+
+  const applicationsForUnresolvedJobs = [
+    ...unknownApplicationsByJobId.entries()
+  ]
+    .map(([jobId, count]) => ({ jobId, count }))
+    .sort((left, right) => left.jobId.localeCompare(right.jobId));
+
+  return {
+    total: collections.jobs.length,
+    ownerId: {
+      presentCount: jobsWithOwnerId.length,
+      missingCount: jobsWithoutOwnerId.length,
+      presentJobIds: jobsWithOwnerId,
+      missingJobIds: jobsWithoutOwnerId
+    },
+    missingOwnerReferences: {
+      users: ownerUserMissing,
+      stores: ownerStoreMissing
+    },
+    ownerUserRoleAndStatus,
+    sourceApplicationId: {
+      jobsPresentCount: jobsBySourceApplicationId.size === 0
+        ? 0
+        : [...jobsBySourceApplicationId.values()]
+            .reduce((total, jobs) => total + jobs.length, 0),
+      jobsMissingCount:
+        collections.jobs.length -
+        [...jobsBySourceApplicationId.values()]
+          .reduce((total, jobs) => total + jobs.length, 0),
+      storesPresentCount: storesBySourceApplicationId.size === 0
+        ? 0
+        : [...storesBySourceApplicationId.values()]
+            .reduce((total, stores) => total + stores.length, 0),
+      storesMissingCount:
+        collections.stores.length -
+        [...storesBySourceApplicationId.values()]
+          .reduce((total, stores) => total + stores.length, 0),
+      matchedJobCount: sourceMatchedJobIds.length,
+      matchedJobIds: sourceMatchedJobIds,
+      duplicateJobSources: duplicateJobSourceApplicationIds
+    },
+    ownerStoreNameConflicts,
+    legacyOwnerFieldsOnly,
+    unresolvedJobs,
+    applicationsForUnresolvedJobs: {
+      total: applicationsForUnresolvedJobs
+        .reduce((total, item) => total + item.count, 0),
+      byJobId: applicationsForUnresolvedJobs,
+      missingOrUnknownJobDocumentCount:
+        applicationsWithMissingJobDocument
+    }
+  };
+}
+
 function unresolvedOwnership(collectionName, documents, storeIndexes) {
   const results = [];
 
@@ -256,6 +518,7 @@ async function main() {
 
   const storeIndexes = buildOwnerIndexes(collections.stores);
   const duplicateNames = duplicateStoreNames(collections.stores);
+  const jobOwnershipAudit = auditJobOwnership(collections);
 
   const unresolvedOwners = [
     ...unresolvedOwnership("jobs", collections.jobs, storeIndexes),
@@ -306,7 +569,8 @@ async function main() {
     jobs: {
       missingOwnerId: missingFieldIds(collections.jobs, "ownerId"),
       missingStoreId: missingFieldIds(collections.jobs, "storeId"),
-      missingStatus: missingFieldIds(collections.jobs, "status")
+      missingStatus: missingFieldIds(collections.jobs, "status"),
+      ownershipAudit: jobOwnershipAudit
     },
     applications: {
       missingApplicantId: missingFieldIds(
