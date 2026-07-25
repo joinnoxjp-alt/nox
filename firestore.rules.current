@@ -1,18 +1,187 @@
-// NOX production Firestore Security Rules backup
-//
-// STATUS: NOT CAPTURED
-//
-// The current production rules could not be read from this repository because
-// no authenticated Firebase CLI or Google Cloud CLI connection is configured.
-//
-// Before any Phase 2 work:
-// 1. Open Firebase Console > Firestore Database > Rules.
-// 2. Copy the complete currently published rules without editing them.
-// 3. Replace this entire placeholder with that exact text.
-// 4. Record the Firebase Console release timestamp and ruleset version in the
-//    Git commit message.
-//
-// IMPORTANT:
-// - This file is a backup target only.
-// - This placeholder is not the current production rules.
-// - Do not deploy this placeholder.
+// Production Rules backup
+// Retrieved at: 2026-07-26T01:50:57+09:00
+// Project ID: noxapp-29171
+// Method: Firebase Rules REST API via authenticated gcloud access token
+
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isLoggedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isLoggedIn()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "admin";
+    }
+
+    function isOwner(ownerId) {
+      return isLoggedIn()
+        && request.auth.uid == ownerId;
+    }
+
+    /* =========================
+       求人
+    ========================= */
+
+    match /jobs/{jobId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    /* =========================
+       求人掲載申請
+    ========================= */
+
+    match /jobApplications/{applicationId} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+
+    /* =========================
+       応募情報
+    ========================= */
+
+    match /applications/{applicationId} {
+      allow create: if true;
+
+      allow read, update, delete: if isAdmin()
+        || isOwner(resource.data.ownerId);
+    }
+
+    match /jobEntries/{entryId} {
+      allow create: if true;
+
+      allow read, update, delete: if isAdmin()
+        || isOwner(resource.data.ownerId);
+    }
+
+    /* =========================
+       閲覧数
+    ========================= */
+
+    match /jobViewStats/{statId} {
+
+      allow create: if true;
+
+      allow update: if false;
+
+      allow read: if isLoggedIn();
+
+      allow delete: if isAdmin();
+    }
+
+    match /storeViewStats/{statId} {
+
+      allow create: if true;
+
+      allow update: if false;
+
+      allow read: if isLoggedIn();
+
+      allow delete: if isAdmin();
+    }
+
+    /* =========================
+       店舗情報
+    ========================= */
+
+    match /stores/{storeId} {
+
+      allow read: if isAdmin()
+        || isOwner(storeId);
+
+      allow create, update: if isAdmin()
+        || isOwner(storeId);
+
+      allow delete: if isAdmin();
+    }
+
+    /* =========================
+       ユーザー
+    ========================= */
+
+    match /users/{userId} {
+
+      allow create: if isLoggedIn()
+        && request.auth.uid == userId;
+
+      allow read: if isAdmin()
+        || (
+          isLoggedIn()
+          && request.auth.uid == userId
+        );
+
+      allow update: if isAdmin()
+        || (
+          isLoggedIn()
+          && request.auth.uid == userId
+          && request.resource.data.role
+             == resource.data.role
+        );
+
+      allow delete: if isAdmin();
+    }
+
+    /* =========================
+       広告
+    ========================= */
+
+    match /ads/{adId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+/* =========================
+   キャスト
+========================= */
+
+match /casts/{castId} {
+  allow read: if true;
+  allow create, update, delete: if isAdmin();
+}
+    /* =========================
+       店舗招待
+    ========================= */
+
+    match /storeInvites/{inviteCode} {
+
+      allow get: if true;
+
+      allow list: if false;
+
+      allow create, delete: if isAdmin();
+
+      allow update: if isAdmin()
+        || (
+          isLoggedIn()
+          && resource.data.used == false
+          && request.resource.data.used == true
+          && request.resource.data.registeredUid == request.auth.uid
+          && request.resource.data.storeName == resource.data.storeName
+          && request.resource.data.email == resource.data.email
+          && request.resource.data.sourceApplicationId
+             == resource.data.sourceApplicationId
+          && request.resource.data
+               .diff(resource.data)
+               .affectedKeys()
+               .hasOnly([
+                 "used",
+                 "registeredUid",
+                 "registeredAt"
+               ])
+        );
+    }
+
+    /* =========================
+       その他
+    ========================= */
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+  }
+}

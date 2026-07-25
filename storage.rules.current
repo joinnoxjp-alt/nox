@@ -1,18 +1,27 @@
-// NOX production Firebase Storage Security Rules backup
-//
-// STATUS: NOT CAPTURED
-//
-// The current production rules could not be read from this repository because
-// no authenticated Firebase CLI or Google Cloud CLI connection is configured.
-//
-// Before any Phase 2 work:
-// 1. Open Firebase Console > Storage > Rules.
-// 2. Copy the complete currently published rules without editing them.
-// 3. Replace this entire placeholder with that exact text.
-// 4. Record the Firebase Console release timestamp and ruleset version in the
-//    Git commit message.
-//
-// IMPORTANT:
-// - This file is a backup target only.
-// - This placeholder is not the current production rules.
-// - Do not deploy this placeholder.
+// Production Rules backup
+// Retrieved at: 2026-07-26T01:50:57+09:00
+// Project ID: noxapp-29171
+// Method: Firebase Rules REST API via authenticated gcloud access token
+
+rules_version = '2';
+
+// Craft rules based on data in your Firestore database
+// allow write: if firestore.get(
+//    /databases/(default)/documents/users/$(request.auth.uid)).data.isAdmin;
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // This rule allows anyone with your Storage bucket reference to view, edit,
+    // and delete all data in your Storage bucket. It is useful for getting
+    // started, but it is configured to expire after 30 days because it
+    // leaves your app open to attackers. At that time, all client
+    // requests to your Storage bucket will be denied.
+    //
+    // Make sure to write security rules for your app before that time, or else
+    // all client requests to your Storage bucket will be denied until you Update
+    // your rules
+    match /{allPaths=**} {
+      allow read, write: if request.time < timestamp.date(2026, 8, 10);
+    }
+  }
+}
