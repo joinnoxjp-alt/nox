@@ -1,0 +1,24 @@
+{
+  "name": "nox-functions",
+  "version": "0.1.0",
+  "private": true,
+  "description": "NOX trusted backend functions",
+  "main": "lib/index.js",
+  "engines": {
+    "node": "22"
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "emulators": "firebase emulators:start --config ../firebase.json --project demo-nox-local --only auth,firestore,functions"
+  },
+  "dependencies": {
+    "firebase-admin": "14.2.0",
+    "firebase-functions": "7.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.1",
+    "firebase-tools": "15.24.0",
+    "typescript": "5.9.3"
+  }
+}
