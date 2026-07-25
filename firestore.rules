@@ -610,6 +610,34 @@ service cloud.firestore {
     }
 
     /*
+     * Public pricing catalog
+     *
+     * Only active catalog documents are public. All catalog writes are
+     * reserved for a future trusted administration function.
+     */
+    match /pricingCatalog/{catalogId} {
+      allow get, list: if resource.data.status == "active";
+      allow create, update, delete: if false;
+    }
+
+    /*
+     * Store contract snapshots
+     *
+     * An active store may read only the contract whose document ID, storeId,
+     * and ownerId all match its Authentication UID. The fixed active
+     * administrator may read contracts for future management screens, but no
+     * browser client, including the administrator, may write them.
+     */
+    match /storeContracts/{storeUid} {
+      allow get, list: if isActiveAdmin()
+        || (isActiveStore()
+          && request.auth.uid == storeUid
+          && resource.data.storeId == request.auth.uid
+          && resource.data.ownerId == request.auth.uid);
+      allow create, update, delete: if false;
+    }
+
+    /*
      * Deny every undeclared collection and all subcollections by default.
      */
     match /{document=**} {

@@ -232,6 +232,69 @@ Purpose: Daily store view aggregate.
 | Legacy | Name-based identity; records missing `storeId` |
 | Migration needed | Populate verified `storeId`; move writes to trusted backend; confirm whether this collection is still consumed |
 
+## `pricingCatalog`
+
+Purpose: Public canonical pricing and store-publication flow configuration.
+
+The active catalog is stored at `pricingCatalog/current`. Field names use
+camelCase. The catalog is public read-only data; every client write, including
+an administrator browser session, is denied. A future trusted administration
+Function must validate the complete schema before writing through the Admin
+SDK.
+
+| Field | Type / allowed value |
+|---|---|
+| `schemaVersion` | integer, currently `1` |
+| `currency` | `"JPY"` |
+| `taxIncluded` | `true` |
+| `billingMethod` | `"prepaid"` |
+| `status` | `"active"` |
+| `effectiveFrom` | Timestamp |
+| `listingPlans.oneMonth` | `{ planCode: "one_month", label: "1ヶ月", durationMonths: 1, amount: 4980 }` |
+| `listingPlans.sixMonths` | `{ planCode: "six_months", label: "6ヶ月", durationMonths: 6, amount: 29800 }` |
+| `listingPlans.twelveMonths` | `{ planCode: "twelve_months", label: "12ヶ月", durationMonths: 12, amount: 59760 }` |
+| `options.topAd` | `{ optionCode: "top_ad", label: "TOP広告", billingUnit: "month", amount: 15000 }` |
+| `options.newJob` | `{ optionCode: "new_job", label: "新着求人掲載", billingUnit: "month", amount: 1000 }` |
+| `applicationFlow` | ordered string list: 料金確認, 店舗掲載申請, NOX公式LINE追加, NOX運営から案内, 前払い, 入金確認, 掲載開始 |
+| `updatedAt` | Timestamp |
+| `updatedBy` | trusted administrator UID |
+
+Changing this catalog never changes an existing contract. Contract amounts are
+snapshotted when the contract is created.
+
+## `storeContracts`
+
+Purpose: Canonical, immutable-to-clients contract snapshot for each store.
+
+The document is `storeContracts/{storeUid}`. Remaining days are never stored;
+clients calculate them from `contractEndAt`. Contract fields are not mixed into
+`stores/{uid}`, and no public cache is introduced in this phase.
+
+| Field | Type / allowed value |
+|---|---|
+| `schemaVersion` | integer, currently `1` |
+| `storeId`, `ownerId` | Auth UID; both equal `{storeUid}` |
+| `planCode` | `"one_month"`, `"six_months"`, `"twelve_months"`, or `"custom"` |
+| `planLabel` | display snapshot |
+| `durationMonths` | positive integer |
+| `contractStartAt`, `contractEndAt` | Timestamp |
+| `listingAmount` | non-negative integer JPY snapshot |
+| `options` | map of purchased option snapshots; option codes use `top_ad` and `new_job` |
+| `optionAmount`, `totalAmount` | non-negative integer JPY snapshots |
+| `currency` | `"JPY"` |
+| `taxIncluded` | `true` |
+| `billingMethod` | `"prepaid"` |
+| `paymentStatus` | `"not_billed"`, `"awaiting_payment"`, `"paid"`, `"expired"`, or `"suspended"` |
+| `listingStatus` | `"pending"`, `"active"`, `"paused"`, `"expired"`, or `"suspended"` |
+| `pricingCatalogVersion` | catalog schema/version snapshot |
+| `pricingEffectiveFrom` | Timestamp copied from the catalog |
+| `createdAt`, `updatedAt`, `statusChangedAt` | Timestamp |
+| `createdBy`, `updatedBy` | trusted administrator UID |
+
+An active store can read only its own contract. The fixed active administrator
+can read contracts for a future management screen. All client creates, updates,
+and deletes are denied; only trusted Admin SDK code may write.
+
 ## Phase 1 audit outputs
 
 The read-only audit must report:
