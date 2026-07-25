@@ -277,6 +277,29 @@ onAuthStateChanged(auth, async user => {
     return;
   }
 
+  try {
+    const userRef = doc(db, "users", user.uid);
+    const userSnap = await getDoc(userRef);
+    const userData = userSnap.exists()
+      ? userSnap.data()
+      : null;
+
+    if (
+      !userData ||
+      userData.role !== "store" ||
+      userData.status !== "active"
+    ) {
+      alert("有効な店舗アカウントのみアクセスできます");
+      location.href = "mypage.html";
+      return;
+    }
+  } catch (error) {
+    console.error("店舗権限の確認に失敗しました", error);
+    alert("店舗アカウント情報を確認できませんでした");
+    location.href = "login.html";
+    return;
+  }
+
   currentUser = user;
 
   await loadStoreInfo();
