@@ -58,8 +58,283 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/stores/$(uid)).data.ownerId == uid;
     }
 
+    function isActiveGeneralUser() {
+      return hasUserDocument()
+        && currentUser().role == "user"
+        && currentUser().status == "active";
+    }
+
+    function isValidJobStatus(status) {
+      return status in [
+        "draft",
+        "pending",
+        "approved",
+        "paused",
+        "reapproval_pending",
+        "rejected",
+        "archived"
+      ];
+    }
+
+    function isValidContractListingStatus(status) {
+      return status in [
+        "pending",
+        "active",
+        "paused",
+        "expired",
+        "suspended"
+      ];
+    }
+
+    function isOptionalTimestamp(value) {
+      return value == null || value is timestamp;
+    }
+
+    function hasValidJobFields(data) {
+      return data.keys().hasAll([
+          "schemaVersion",
+          "ownerId",
+          "storeId",
+          "storeName",
+          "title",
+          "category",
+          "targetGender",
+          "position",
+          "area",
+          "address",
+          "station",
+          "businessHours",
+          "salary",
+          "trial",
+          "beginner",
+          "description",
+          "requirements",
+          "benefits",
+          "imageStoragePaths",
+          "imageUrls",
+          "status",
+          "isPublic",
+          "contractListingStatus",
+          "createdAt",
+          "createdBy",
+          "updatedAt",
+          "updatedBy",
+          "approvedAt",
+          "approvedBy",
+          "pausedAt",
+          "pausedBy",
+          "reapprovalRequestedAt",
+          "archivedAt",
+          "archivedBy",
+          "sourceApplicationId"
+        ])
+        && data.keys().hasOnly([
+          "schemaVersion",
+          "ownerId",
+          "storeId",
+          "storeName",
+          "title",
+          "category",
+          "targetGender",
+          "position",
+          "area",
+          "address",
+          "station",
+          "businessHours",
+          "salary",
+          "trial",
+          "beginner",
+          "description",
+          "requirements",
+          "benefits",
+          "imageStoragePaths",
+          "imageUrls",
+          "status",
+          "isPublic",
+          "contractListingStatus",
+          "createdAt",
+          "createdBy",
+          "updatedAt",
+          "updatedBy",
+          "approvedAt",
+          "approvedBy",
+          "pausedAt",
+          "pausedBy",
+          "reapprovalRequestedAt",
+          "archivedAt",
+          "archivedBy",
+          "sourceApplicationId"
+        ])
+        && data.schemaVersion == 1
+        && data.ownerId is string
+        && data.storeId is string
+        && data.ownerId == data.storeId
+        && data.storeName is string
+        && data.storeName.size() > 0
+        && data.storeName.size() <= 120
+        && data.title is string
+        && data.title.size() > 0
+        && data.title.size() <= 160
+        && data.category is string
+        && data.category.size() <= 120
+        && data.targetGender is string
+        && data.targetGender.size() <= 30
+        && data.position is string
+        && data.position.size() <= 120
+        && data.area is string
+        && data.area.size() <= 120
+        && data.address is string
+        && data.address.size() <= 240
+        && data.station is string
+        && data.station.size() <= 160
+        && data.businessHours is string
+        && data.businessHours.size() <= 500
+        && data.salary is string
+        && data.salary.size() <= 500
+        && data.trial is string
+        && data.trial.size() <= 500
+        && data.beginner is bool
+        && data.description is string
+        && data.description.size() <= 5000
+        && data.requirements is string
+        && data.requirements.size() <= 3000
+        && data.benefits is string
+        && data.benefits.size() <= 3000
+        && data.imageStoragePaths is list
+        && data.imageStoragePaths.size() <= 10
+        && data.imageUrls is list
+        && data.imageUrls.size() <= 10
+        && data.imageStoragePaths.size() == data.imageUrls.size()
+        && isValidJobStatus(data.status)
+        && data.isPublic is bool
+        && isValidContractListingStatus(data.contractListingStatus)
+        && data.createdAt is timestamp
+        && data.createdBy is string
+        && data.updatedAt is timestamp
+        && data.updatedBy is string
+        && isOptionalTimestamp(data.approvedAt)
+        && (data.approvedBy == null || data.approvedBy is string)
+        && isOptionalTimestamp(data.pausedAt)
+        && (data.pausedBy == null || data.pausedBy is string)
+        && isOptionalTimestamp(data.reapprovalRequestedAt)
+        && isOptionalTimestamp(data.archivedAt)
+        && (data.archivedBy == null || data.archivedBy is string)
+        && (data.sourceApplicationId == null
+          || data.sourceApplicationId is string);
+    }
+
+    function storeMayCreateJob(data) {
+      return isActiveStore()
+        && ownsStore(request.auth.uid)
+        && hasValidJobFields(data)
+        && data.ownerId == request.auth.uid
+        && data.storeId == request.auth.uid
+        && data.status == "draft"
+        && data.isPublic == false
+        && data.contractListingStatus == "pending"
+        && data.createdAt == request.time
+        && data.createdBy == request.auth.uid
+        && data.updatedAt == request.time
+        && data.updatedBy == request.auth.uid
+        && data.approvedAt == null
+        && data.approvedBy == null
+        && data.pausedAt == null
+        && data.pausedBy == null
+        && data.reapprovalRequestedAt == null
+        && data.archivedAt == null
+        && data.archivedBy == null;
+    }
+
+    function storeJobMutableFieldsOnly() {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+        "title",
+        "category",
+        "targetGender",
+        "position",
+        "area",
+        "address",
+        "station",
+        "businessHours",
+        "salary",
+        "trial",
+        "beginner",
+        "description",
+        "requirements",
+        "benefits",
+        "imageStoragePaths",
+        "imageUrls",
+        "status",
+        "updatedAt",
+        "updatedBy",
+        "pausedAt",
+        "pausedBy",
+        "reapprovalRequestedAt",
+        "archivedAt",
+        "archivedBy"
+      ]);
+    }
+
+    function isValidStoreJobTransition() {
+      return (resource.data.status == "draft"
+          && request.resource.data.status in ["draft", "pending", "archived"])
+        || (resource.data.status == "approved"
+          && request.resource.data.status == "paused")
+        || (resource.data.status == "paused"
+          && request.resource.data.status in [
+            "paused",
+            "reapproval_pending",
+            "archived"
+          ])
+        || (resource.data.status == "rejected"
+          && request.resource.data.status in ["rejected", "draft", "archived"]);
+    }
+
+    function hasValidJobTransitionMetadata() {
+      return request.resource.data.updatedAt == request.time
+        && request.resource.data.updatedBy == request.auth.uid
+        && (request.resource.data.status != "paused"
+          || resource.data.status == "paused"
+          || (request.resource.data.pausedAt == request.time
+            && request.resource.data.pausedBy == request.auth.uid))
+        && (request.resource.data.status != "reapproval_pending"
+          || request.resource.data.reapprovalRequestedAt == request.time)
+        && (request.resource.data.status != "archived"
+          || (request.resource.data.archivedAt == request.time
+            && request.resource.data.archivedBy == request.auth.uid));
+    }
+
     function isValidApplicationStatus(status) {
-      return status in ["new", "progress", "hired", "ng"];
+      return status in [
+        "new",
+        "contacted",
+        "interview_scheduled",
+        "hired",
+        "rejected"
+      ];
+    }
+
+    function isValidApplicationTransition() {
+      return (resource.data.status == "new"
+          && request.resource.data.status in ["contacted", "rejected"])
+        || (resource.data.status == "contacted"
+          && request.resource.data.status in [
+            "interview_scheduled",
+            "rejected"
+          ])
+        || (resource.data.status == "interview_scheduled"
+          && request.resource.data.status in ["hired", "rejected"]);
+    }
+
+    function hasValidApplicationTransitionTimestamp() {
+      return request.resource.data.updatedAt == request.time
+        && (request.resource.data.status != "contacted"
+          || request.resource.data.contactedAt == request.time)
+        && (request.resource.data.status != "interview_scheduled"
+          || request.resource.data.interviewScheduledAt == request.time)
+        && (request.resource.data.status != "hired"
+          || request.resource.data.hiredAt == request.time)
+        && (request.resource.data.status != "rejected"
+          || request.resource.data.rejectedAt == request.time);
     }
 
     function isValidCachedImageUrl(url) {
@@ -120,7 +395,9 @@ service cloud.firestore {
 
     function isPublishedJob(jobId) {
       return exists(/databases/$(database)/documents/jobs/$(jobId))
-        && get(/databases/$(database)/documents/jobs/$(jobId)).data.status == "approved";
+        && get(/databases/$(database)/documents/jobs/$(jobId)).data.status == "approved"
+        && get(/databases/$(database)/documents/jobs/$(jobId)).data.isPublic == true
+        && get(/databases/$(database)/documents/jobs/$(jobId)).data.contractListingStatus == "active";
     }
 
     /*
@@ -376,18 +653,34 @@ service cloud.firestore {
     }
 
     /*
-     * Published jobs
+     * Jobs
      *
-     * Public clients may read approved jobs only. Administrative writes are
-     * kept client-compatible for the current admin pages.
+     * Store names are display-only cache. Ownership is determined exclusively
+     * by ownerId/storeId. Administrative approval and publication cache
+     * changes must use trusted backend code.
      */
     match /jobs/{jobId} {
-      allow get, list: if resource.data.status == "approved"
+      allow get, list: if (resource.data.status == "approved"
+          && resource.data.isPublic == true
+          && resource.data.contractListingStatus == "active")
         || isActiveAdmin()
         || (isActiveStore()
-          && resource.data.ownerId == request.auth.uid);
+          && resource.data.ownerId == request.auth.uid
+          && resource.data.storeId == request.auth.uid);
 
-      allow create, update, delete: if isActiveAdmin();
+      allow create: if storeMayCreateJob(request.resource.data);
+
+      allow update: if isActiveStore()
+        && resource.data.ownerId == request.auth.uid
+        && resource.data.storeId == request.auth.uid
+        && request.resource.data.ownerId == resource.data.ownerId
+        && request.resource.data.storeId == resource.data.storeId
+        && hasValidJobFields(request.resource.data)
+        && storeJobMutableFieldsOnly()
+        && isValidStoreJobTransition()
+        && hasValidJobTransitionMetadata();
+
+      allow delete: if false;
     }
 
     /*
@@ -400,12 +693,23 @@ service cloud.firestore {
       allow read: if isActiveAdmin();
 
       allow create: if isActiveStore()
+        && request.resource.data.jobId == applicationId
         && request.resource.data.ownerId == request.auth.uid
         && request.resource.data.submittedBy == request.auth.uid
         && request.resource.data.storeId == request.auth.uid
         && ownsStore(request.auth.uid)
         && isValidBusinessScope(request.resource.data.businessScope)
         && request.resource.data.status == "pending"
+        && request.resource.data.imageStoragePaths is list
+        && request.resource.data.imageUrls is list
+        && request.resource.data.imageStoragePaths.size()
+          == request.resource.data.imageUrls.size()
+        && request.resource.data.imageStoragePaths.size() <= 10
+        && exists(/databases/$(database)/documents/jobs/$(applicationId))
+        && get(/databases/$(database)/documents/jobs/$(applicationId)).data.ownerId
+          == request.auth.uid
+        && get(/databases/$(database)/documents/jobs/$(applicationId)).data.storeId
+          == request.auth.uid
         && !request.resource.data.keys().hasAny([
           "approvedAt",
           "approvedBy",
@@ -415,6 +719,7 @@ service cloud.firestore {
         ])
         && request.resource.data.keys().hasOnly([
           "ownerId",
+          "jobId",
           "submittedBy",
           "storeId",
           "storeName",
@@ -453,6 +758,8 @@ service cloud.firestore {
           "contactName",
           "contactInfo",
           "images",
+          "imageStoragePaths",
+          "imageUrls",
           "image",
           "mainImage",
           "imageUrl",
@@ -470,65 +777,84 @@ service cloud.firestore {
      * must target an approved job owned by the stated store UID.
      */
     match /applications/{applicationId} {
-      allow create: if isUsableUser()
+      allow create: if isActiveGeneralUser()
+        && request.resource.data.keys().hasAll([
+          "schemaVersion",
+          "jobId",
+          "storeId",
+          "applicantId",
+          "name",
+          "phone",
+          "message",
+          "status",
+          "createdAt",
+          "updatedAt",
+          "contactedAt",
+          "interviewScheduledAt",
+          "hiredAt",
+          "rejectedAt"
+        ])
+        && request.resource.data.keys().hasOnly([
+          "schemaVersion",
+          "jobId",
+          "storeId",
+          "applicantId",
+          "name",
+          "phone",
+          "message",
+          "status",
+          "createdAt",
+          "updatedAt",
+          "contactedAt",
+          "interviewScheduledAt",
+          "hiredAt",
+          "rejectedAt"
+        ])
+        && request.resource.data.schemaVersion == 1
         && isPublishedJob(request.resource.data.jobId)
         && request.resource.data.applicantId == request.auth.uid
         && request.resource.data.storeId ==
           get(/databases/$(database)/documents/jobs/$(request.resource.data.jobId)).data.ownerId
+        && request.resource.data.storeId ==
+          get(/databases/$(database)/documents/jobs/$(request.resource.data.jobId)).data.storeId
         && request.resource.data.status == "new"
         && request.resource.data.jobId is string
         && request.resource.data.storeId is string
         && request.resource.data.applicantId is string
-        && request.resource.data.applicantName is string
-        && request.resource.data.applicantName.size() > 0
-        && request.resource.data.applicantName.size() <= 100
-        && request.resource.data.applicantPhone is string
-        && request.resource.data.applicantPhone.size() > 0
-        && request.resource.data.applicantPhone.size() <= 30
-        && (!request.resource.data.keys().hasAny(["storeName"])
-          || (request.resource.data.storeName is string
-            && request.resource.data.storeName.size() <= 200))
-        && (!request.resource.data.keys().hasAny(["message"])
-          || (request.resource.data.message is string
-            && request.resource.data.message.size() <= 2000))
-        && request.resource.data.keys().hasAll([
-          "jobId",
-          "storeId",
-          "applicantId",
-          "applicantName",
-          "applicantPhone",
-          "status",
-          "createdAt"
-        ])
-        && request.resource.data.keys().hasOnly([
-          "jobId",
-          "storeId",
-          "storeName",
-          "applicantId",
-          "applicantName",
-          "applicantPhone",
-          "message",
-          "status",
-          "createdAt"
-        ]);
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 100
+        && request.resource.data.phone is string
+        && request.resource.data.phone.size() > 0
+        && request.resource.data.phone.size() <= 30
+        && request.resource.data.message is string
+        && request.resource.data.message.size() <= 2000
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time
+        && request.resource.data.contactedAt == null
+        && request.resource.data.interviewScheduledAt == null
+        && request.resource.data.hiredAt == null
+        && request.resource.data.rejectedAt == null;
 
       allow get, list: if isActiveAdmin()
         || (signedIn() && resource.data.applicantId == request.auth.uid)
         || (isActiveStore() && resource.data.storeId == request.auth.uid);
 
-      allow update: if isActiveAdmin()
-        || (isActiveStore()
+      allow update: if isActiveStore()
           && resource.data.storeId == request.auth.uid
-          && request.resource.data.storeId == resource.data.storeId
-          && request.resource.data.jobId == resource.data.jobId
-          && request.resource.data.applicantId == resource.data.applicantId
-          && isValidApplicationStatus(request.resource.data.status)
           && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
             "status",
-            "updatedAt"
-          ]));
+            "updatedAt",
+            "contactedAt",
+            "interviewScheduledAt",
+            "hiredAt",
+            "rejectedAt"
+          ])
+          && isValidApplicationStatus(request.resource.data.status)
+          && isValidApplicationTransition()
+          && hasValidApplicationTransitionTimestamp();
 
-      allow delete: if isActiveAdmin();
+      allow delete: if false;
     }
 
     /*
@@ -544,17 +870,7 @@ service cloud.firestore {
 
       allow create: if false;
 
-      allow update: if isActiveAdmin()
-        || (isActiveStore()
-          && resource.data.storeId == request.auth.uid
-          && request.resource.data.storeId == resource.data.storeId
-          && isValidApplicationStatus(request.resource.data.status)
-          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-            "status",
-            "updatedAt"
-          ]));
-
-      allow delete: if isActiveAdmin();
+      allow update, delete: if false;
     }
 
     /*

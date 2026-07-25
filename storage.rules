@@ -59,17 +59,41 @@ service firebase.storage {
     }
 
     /*
-     * Job images use the owning store UID as the first path component.
-     * Public reads support published pages; writes require the matching active
-     * store or an active administrator.
+     * Legacy two-level job image path. Existing public URLs keep working, but
+     * all new writes must use /jobs/{storeId}/{jobId}/{fileId}.
      */
     match /jobs/{storeId}/{fileName} {
       allow read: if true;
-      allow create, update: if validImage(5 * 1024 * 1024)
-        && (isActiveAdmin()
-          || (isActiveStore() && request.auth.uid == storeId));
-      allow delete: if isActiveAdmin()
-        || (isActiveStore() && request.auth.uid == storeId);
+      allow write: if false;
+    }
+
+    /*
+     * Canonical job image path. Job ownership is checked using immutable UID
+     * fields; store names are never authorization inputs.
+     */
+    match /jobs/{storeId}/{jobId}/{fileId} {
+      allow read: if true;
+      allow create, update: if ownsStore(storeId)
+        && firestore.exists(
+          /databases/(default)/documents/jobs/$(jobId)
+        )
+        && firestore.get(
+          /databases/(default)/documents/jobs/$(jobId)
+        ).data.ownerId == request.auth.uid
+        && firestore.get(
+          /databases/(default)/documents/jobs/$(jobId)
+        ).data.storeId == request.auth.uid
+        && validRasterImage(5 * 1024 * 1024);
+      allow delete: if ownsStore(storeId)
+        && firestore.exists(
+          /databases/(default)/documents/jobs/$(jobId)
+        )
+        && firestore.get(
+          /databases/(default)/documents/jobs/$(jobId)
+        ).data.ownerId == request.auth.uid
+        && firestore.get(
+          /databases/(default)/documents/jobs/$(jobId)
+        ).data.storeId == request.auth.uid;
     }
 
     /*

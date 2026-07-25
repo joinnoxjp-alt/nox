@@ -93,39 +93,45 @@ browser-maintained counter or exceeding the Rules expression limit.
 
 ## `jobs`
 
-Purpose: Public and administratively managed job listings.
+Purpose: Canonical store-owned job listing. Authorization and queries use only
+`ownerId` and `storeId`; both equal the owning Authentication UID. `storeName`
+is display cache and never an ownership key.
 
-| Meaning | Current fields | Planned canonical | Legacy fields |
-|---|---|---|---|
-| Ownership | `ownerId`, `storeId`, `userId` | `ownerId` | `storeId`, `userId` as owner aliases |
-| Store display name | `storeName`, `name`, `shopName`, `storeTitle` | `storeName` | `name`, `shopName`, `storeTitle` |
-| Business/job type | `businessType`, `jobType`, `position`, `genre`, `type` | `businessType`, `position` | `jobType`, `genre`, `type` where ambiguous |
-| Audience | `targetGender`, `gender`, `jobAudience`, `audience`, `target` | `targetGender` | remaining aliases |
-| Men's category | `menCategory`, `jobCategory`, `category` | `menCategory` | `jobCategory`, `category` |
-| Title | `title`, `jobTitle` | `title` | `jobTitle` |
-| Description | `description`, `jobDescription`, `storeDescription`, `selfPr`, `pr`, `shopPR` | `description`, optional `storeDescription` | ambiguous aliases |
-| Location | `area`, `location`, `prefecture`, `address`, `station` | `area`, `address`, `station` | `location`, `prefecture` |
-| Salary | `salary`, `salaryText`, `back`, `dailyPay`, `trial` | `salaryText` plus structured salary later | duplicate `salary` |
-| Hours | `workHours`, `workingHours`, `shift`, `businessHours`, `closedDay` | `workHours`, `businessHours`, `closedDay` | `workingHours`; ambiguous `shift` |
-| Requirements | `requirements`, `qualification`, `conditions`, `beginner`, `age`, `quota`, `penalty` | `requirements` plus structured flags | aliases |
-| Benefits | `benefits`, `treatment`, `features` | `benefits` | aliases |
-| Contact | `applyUrl`, `lineUrl`, `contactUrl`, `officialLine`, `applicationPhone`, `contactName`, `contactInfo`, `website`, social URLs | explicit contact fields | generic URL aliases |
-| Images | `images`, `image`, `imageUrl`, `mainImage`, `logoUrl` | `images`, `mainImage` | single-image aliases |
-| Publication | `status`, `isPublished`, `topFeatured`, `topOrder` | `status`, `topFeatured`, `topOrder` | `isPublished` |
-| Source/audit | `sourceApplicationId`, `approvedAt`, `approvedBy`, `createdAt`, `republishedAt`, pause/feature timestamps | source and audit timestamps | none |
-| Test flags | `isTest`, `isDummy` | no production test records | both flags |
+| Category | Required schema version 1 fields |
+|---|---|
+| Identity | `schemaVersion`, `ownerId`, `storeId`, display-only `storeName` |
+| Listing | `title`, `category`, `targetGender`, `position`, `area`, `address`, `station`, `businessHours`, `salary`, `trial`, `beginner`, `description`, `requirements`, `benefits` |
+| Images | `imageStoragePaths`, `imageUrls`; parallel lists, maximum 10 |
+| Publication cache | `status`, `isPublic`, `contractListingStatus` |
+| Ownership audit | `createdAt`, `createdBy`, `updatedAt`, `updatedBy` |
+| Review/status audit | `approvedAt`, `approvedBy`, `pausedAt`, `pausedBy`, `reapprovalRequestedAt`, `archivedAt`, `archivedBy` |
+| Source | nullable `sourceApplicationId` |
 
-Planned canonical status values include `approved` and `paused`; pending
-publication data remains in `jobApplications`, not `jobs`.
+Canonical statuses are `draft`, `pending`, `approved`, `paused`,
+`reapproval_pending`, `rejected`, and `archived`.
 
-Migration needed:
+A store may transition `draft -> pending`, `approved -> paused`,
+`paused -> reapproval_pending`, `rejected -> draft`, and
+`draft|paused|rejected -> archived`. Draft, paused, and rejected content may be
+edited while remaining non-public. An approved listing cannot be edited while
+staying approved. Approval, rejection, publication-cache changes, and archived
+restoration require trusted backend code. Physical deletes are denied.
 
-- Populate a verified `ownerId` for every job.
-- Do not infer ownership from `storeName` when names are duplicated.
-- Normalize audience, business type, title, area, salary and image fields.
-- Resolve conflicting `status` and `isPublished`.
-- Deduplicate jobs sharing the same `sourceApplicationId`.
-- Separate test/dummy documents from production data.
+Public reads require `status == "approved"`, `isPublic == true`, and
+`contractListingStatus == "active"`. Contract timestamps will additionally be
+checked by the future public UI and expiry Function.
+
+Canonical images use `jobs/{storeUid}/{jobId}/{fileId}` and the job must have
+both UID ownership fields equal to `{storeUid}`. The legacy two-level path
+`jobs/{storeUid}/{fileName}` remains publicly readable but is read-only.
+
+The create screen reserves a canonical `jobs/{jobId}` draft before uploading,
+because Storage Rules verify the job's `ownerId` and `storeId`. Images are
+validated as JPEG, PNG, or WebP, limited to 5 MiB each and ten images total.
+`imageStoragePaths` is authoritative; `imageUrls` is a display cache. The final
+draft-to-pending update and `jobApplications/{jobId}` creation are committed in
+one batch. If that batch fails, newly uploaded objects are cleaned up where
+possible and no publication application is created.
 
 ## `jobApplications`
 
@@ -144,18 +150,29 @@ job-seeker application.
 
 ## `applications`
 
-Purpose: Job-seeker application sent to a store.
+Purpose: Canonical job-seeker application sent to one UID-owned store.
 
-| Category | Fields |
-|---|---|
-| Current target | `jobId`, `storeId`, `storeName` |
-| Current applicant | `applicantName`, `applicantPhone`, `message` |
-| Current workflow | `status`, `createdAt` |
-| Planned canonical | `jobId`, `storeId`, `applicantId`, applicant fields, `status`, `createdAt`, `updatedAt` |
-| Legacy/missing | Records without `applicantId`; `storeName` used as fallback ownership |
-| Migration needed | Derive `storeId` only from a verified job owner; attach `applicantId` only when deterministically known; isolate records whose applicant cannot be identified |
+Schema version 1 requires `jobId`, `storeId`, `applicantId`, `name`, `phone`,
+`message`, `status`, `createdAt`, `updatedAt`, `contactedAt`,
+`interviewScheduledAt`, `hiredAt`, and `rejectedAt`. Creation requires an
+active general user, binds `applicantId` to the caller UID, and verifies
+`storeId` against both UID ownership fields of an approved, public,
+contract-active job.
 
-Planned status values: `new`, `progress`, `hired`, `ng`.
+Canonical statuses are `new`, `contacted`, `interview_scheduled`, `hired`, and
+`rejected`. Allowed transitions are `new -> contacted|rejected`,
+`contacted -> interview_scheduled|rejected`, and
+`interview_scheduled -> hired|rejected`. Terminal states cannot be restored.
+The destination store may change only workflow status, `updatedAt`, and the
+corresponding workflow timestamps. Applicant identity, content, job, store,
+and creation fields are immutable.
+
+Legacy `progress` and `ng`, name-based ownership fallback, and `jobEntries`
+writes are not part of the canonical model.
+
+The store dashboard queries this collection with `storeId == Auth UID` ordered
+by `createdAt` descending. This query requires the composite index declared in
+`firestore.indexes.json`.
 
 ## `jobEntries`
 
@@ -261,6 +278,20 @@ SDK.
 
 Changing this catalog never changes an existing contract. Contract amounts are
 snapshotted when the contract is created.
+
+Canonical UTF-8 values used by local fixtures:
+
+- `listingPlans.oneMonth.label`: `1ヶ月`
+- `listingPlans.sixMonths.label`: `6ヶ月`
+- `listingPlans.twelveMonths.label`: `12ヶ月`
+- `options.topAd.label`: `TOP広告`
+- `options.newJob.label`: `新着求人掲載`
+- `applicationFlow`: `料金確認`, `店舗掲載申請`, `NOX公式LINE追加`,
+  `NOX運営から案内`, `前払い`, `入金確認`, `掲載開始`
+
+The production document was observed with corrupted Japanese in these five
+labels and all seven `applicationFlow` entries. Production correction is a
+separate approved operation and is not part of this local Rules phase.
 
 ## `storeContracts`
 

@@ -17,6 +17,9 @@
     "test:integration:admin-auth": "npm run build:test && node --test --test-concurrency=1 lib-test/test/approveStoreApplicationAndIssueInvite.integration.test.js lib-test/test/firestoreAdminAuthorization.rules.integration.test.js",
     "test:rules:admin": "npm run build:test && node --test lib-test/test/firestoreAdminAuthorization.rules.integration.test.js",
     "test:rules:pricing-contracts": "npm run build:test && node --test --test-concurrency=1 lib-test/test/firestorePricingContracts.rules.integration.test.js",
+    "test:rules:jobs-applications": "npm run build:test && node --test --test-concurrency=1 lib-test/test/firestoreJobsApplications.rules.integration.test.js",
+    "test:rules:storage-job-images": "npm run build:test && node --test --test-concurrency=1 lib-test/test/storageJobImages.rules.integration.test.js",
+    "test:rules:phase2": "npm run build:test && node --test --test-concurrency=1 lib-test/test/firestoreJobsApplications.rules.integration.test.js lib-test/test/storageJobImages.rules.integration.test.js lib-test/test/firestorePricingContracts.rules.integration.test.js lib-test/test/firestoreAdminAuthorization.rules.integration.test.js",
     "test:integration:discord": "npm run build:test && node --test --test-concurrency=1 lib-test/test/discordNotifier.integration.test.js",
     "emulators": "firebase emulators:start --config ../firebase.json --project demo-nox-local --only auth,firestore,functions"
   },
