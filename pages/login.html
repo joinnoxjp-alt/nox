@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ログイン｜NOX</title>
+  <title>ログイン | NOX</title>
   <link rel="stylesheet" href="../style.css">
 </head>
 
@@ -20,16 +20,18 @@
         <form id="loginForm" class="nox-form">
           <label>
             メールアドレス
-            <input type="email" id="email" placeholder="example@nox.jp" required>
+            <input type="email" id="email" autocomplete="email" required>
           </label>
 
           <label>
             パスワード
-            <input type="password" id="password" placeholder="********" required>
+            <input type="password" id="password" autocomplete="current-password" required>
           </label>
 
-          <button type="submit" class="gold-btn">ログイン</button>
+          <button type="submit" id="loginButton" class="gold-btn">ログイン</button>
         </form>
+
+        <p id="loginMessage" role="status" aria-live="polite"></p>
 
         <div class="header-actions">
           <a href="../index.html" class="btn ghost">トップへ戻る</a>
@@ -38,41 +40,78 @@
     </section>
   </main>
 
-<script type="module">
-  import { auth } from "../firebase.js";
-  import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-  import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  <script type="module">
+    import { auth } from "../firebase.js";
+    import {
+      signInWithEmailAndPassword
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import {
+      getFirestore,
+      doc,
+      getDoc,
+      setDoc,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import {
+      getAccountAccess,
+      getPostLoginPath
+    } from "./account-authorization.js";
 
-  const db = getFirestore();
+    const db = getFirestore();
+    const form = document.getElementById("loginForm");
+    const loginButton = document.getElementById("loginButton");
+    const message = document.getElementById("loginMessage");
 
-  document.getElementById("loginForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-
-    try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-
-      const userRef = doc(db, "users", user.uid);
-      const userSnapshot = await getDoc(userRef);
-
-      if (!userSnapshot.exists()) {
-        await setDoc(userRef, {
-          email: user.email,
-          role: "user",
-          status: "pending",
-          createdAt: serverTimestamp(),
-          updatedAt: serverTimestamp()
-        });
-      }
-
-      location.href = "./mypage.html";
-    } catch (err) {
-      alert("ログインに失敗しました：" + err.message);
+    function showMessage(text) {
+      message.textContent = text;
     }
-  });
-</script>
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      loginButton.disabled = true;
+      showMessage("ログイン情報を確認しています。");
+
+      try {
+        const credential = await signInWithEmailAndPassword(
+          auth,
+          document.getElementById("email").value.trim(),
+          document.getElementById("password").value
+        );
+        const user = credential.user;
+        const userRef = doc(db, "users", user.uid);
+        const userSnapshot = await getDoc(userRef);
+
+        if (!userSnapshot.exists()) {
+          await setDoc(userRef, {
+            email: user.email || "",
+            role: "user",
+            status: "pending",
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp()
+          });
+        }
+
+        const access = await getAccountAccess(db, user);
+        const destination = getPostLoginPath(access.kind);
+
+        if (destination) {
+          location.replace(destination);
+          return;
+        }
+
+        if (access.kind === "pending") {
+          showMessage("メール認証または登録手続きが完了していません。");
+        } else if (access.kind === "blocked") {
+          showMessage("このアカウントは現在利用停止中です。");
+        } else {
+          showMessage("アカウントの権限状態を確認できません。サポートへお問い合わせください。");
+        }
+      } catch {
+        showMessage("ログインできませんでした。入力内容をご確認ください。");
+      } finally {
+        loginButton.disabled = false;
+      }
+    });
+  </script>
 </body>
 </html>

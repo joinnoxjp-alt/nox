@@ -5,6 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>マイページ | NOX</title>
   <link rel="stylesheet" href="../style.css">
+  <style>
+    body { visibility: hidden; }
+    .mypage-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 24px;
+    }
+    .mypage-grid .wide { grid-column: 1 / -1; }
+    .admin-menu {
+      display: none;
+      margin-top: 28px;
+      padding-top: 24px;
+      border-top: 1px solid rgba(201, 163, 74, .4);
+    }
+    .account-message { text-align: center; margin: 24px 0; }
+    @media (max-width: 640px) {
+      .mypage-grid { grid-template-columns: 1fr; }
+      .mypage-grid .wide { grid-column: auto; }
+    }
+  </style>
 </head>
 
 <body class="register-body">
@@ -13,99 +34,72 @@
       <div class="register-card">
         <div class="register-step">
           <span>NOX MY PAGE</span>
-          <h2>マイページ</h2>
-          <p>ログイン中です。</p>
+          <h2 id="pageTitle">マイページ</h2>
+          <p id="pageLead">アカウントを確認しています。</p>
         </div>
 
-        <div style="text-align:center; margin:24px 0;">
-          <img id="profilePreview" src="" alt="プロフィール画像"
-            style="width:110px;height:110px;border-radius:50%;object-fit:cover;border:1px solid #c9a34a;background:#111;display:none;margin:0 auto 12px;">
-          
-          <input type="file" id="profileImage" accept="image/*" style="display:none;">
-          <button type="button" class="btn ghost" id="uploadBtn">写真をアップロード</button>
+        <div id="accountMessage" class="account-message" hidden></div>
+
+        <div id="profileContent" hidden>
+          <div style="text-align:center; margin:24px 0;">
+            <img id="profilePreview" src="" alt="プロフィール画像"
+              style="width:110px;height:110px;border-radius:50%;object-fit:cover;border:1px solid #c9a34a;background:#111;display:none;margin:0 auto 12px;">
+            <input type="file" id="profileImage" accept="image/*" hidden>
+            <button type="button" class="btn ghost" id="uploadBtn">プロフィール画像を変更</button>
+          </div>
+
+          <form id="profileForm" class="nox-form">
+            <label>
+              名前
+              <input type="text" id="name" maxlength="100">
+            </label>
+            <label>
+              メールアドレス
+              <input type="email" id="email" readonly>
+            </label>
+            <label>
+              自己紹介
+              <textarea id="bio" maxlength="2000" rows="4"></textarea>
+            </label>
+            <button type="submit" class="gold-btn">プロフィールを保存</button>
+          </form>
+
+          <nav class="mypage-grid" aria-label="会員メニュー">
+            <a href="./applications.html" class="member-lounge-card">
+              <strong>応募履歴</strong>
+              <small>応募状況を確認</small>
+            </a>
+            <a href="./saved.html" class="member-lounge-card">
+              <strong>保存した求人</strong>
+              <small>お気に入りを確認</small>
+            </a>
+            <a href="./matches.html" class="member-lounge-card">
+              <strong>AI診断履歴</strong>
+              <small>診断・マッチング結果を確認</small>
+            </a>
+            <a href="./matching-profile.html" class="member-lounge-card">
+              <strong>設定</strong>
+              <small>希望条件を編集</small>
+            </a>
+          </nav>
+
+          <section id="adminMenu" class="admin-menu" aria-labelledby="adminMenuTitle">
+            <div class="register-step">
+              <span>ADMIN ONLY</span>
+              <h3 id="adminMenuTitle">管理者メニュー</h3>
+            </div>
+            <nav class="mypage-grid" aria-label="管理者メニュー">
+              <a href="./admin.html" class="member-lounge-card"><strong>店舗管理・掲載申請</strong></a>
+              <a href="./job-admin.html" class="member-lounge-card"><strong>求人掲載管理</strong></a>
+              <a href="./admin.html" class="member-lounge-card"><strong>広告・契約管理</strong></a>
+              <a href="./admin.html" class="member-lounge-card"><strong>ユーザー・キャスト管理</strong></a>
+              <a href="./admin.html" class="member-lounge-card wide"><strong>監査ログ</strong></a>
+            </nav>
+          </section>
         </div>
 
-        <form id="profileForm" class="nox-form">
-          <label>名前
-            <input type="text" id="name" placeholder="名前を入力">
-          </label>
-
-          <label>メールアドレス
-            <input type="email" id="email" placeholder="example@nox.jp" readonly>
-          </label>
-
-          <label>自己紹介
-            <textarea id="bio" placeholder="自己紹介を入力" rows="4"
-              style="width:100%;border-radius:14px;padding:14px;background:#111;color:white;border:1px solid #c9a34a;"></textarea>
-          </label>
-
-          <button type="submit" class="gold-btn">保存する</button>
-        </form>
-<div
-  style="
-    display:grid;
-    grid-template-columns:repeat(2,minmax(0,1fr));
-    gap:12px;
-    margin-top:24px;
-  "
->
-
-  <a
-    href="./matches.html"
-    class="member-lounge-card"
-  >
-    <span>🎯</span>
-    <strong>AIおすすめ求人</strong>
-    <small>相性の高い求人を見る</small>
-  </a>
-
-  <a
-    href="./saved.html"
-    class="member-lounge-card"
-  >
-    <span>❤️</span>
-    <strong>保存した求人</strong>
-    <small>お気に入りを確認</small>
-  </a>
-
-  <a
-    href="./offers.html"
-    class="member-lounge-card"
-  >
-    <span>📩</span>
-    <strong>店舗オファー</strong>
-    <small>届いたオファーを見る</small>
-  </a>
-
-  <a
-    href="./applications.html"
-    class="member-lounge-card"
-  >
-    <span>📄</span>
-    <strong>応募履歴</strong>
-    <small>応募状況を確認</small>
-  </a>
-
-  <a
-    href="./matching-profile.html"
-    class="member-lounge-card"
-    style="grid-column:1 / -1;"
-  >
-    <span>⚙️</span>
-    <strong>希望条件を登録</strong>
-    <small>AIマッチング精度を上げる</small>
-  </a>
-
-</div>
         <hr style="border:0;border-top:1px solid rgba(201,163,74,.4);margin:28px 0;">
-
-        <div class="register-step">
-          <span>STATUS</span>
-          <p>✅ ログイン済み</p>
-        </div>
-
         <button id="logoutBtn" type="button" class="gold-btn">ログアウト</button>
-
         <div class="header-actions">
           <a href="../index.html" class="btn ghost">トップへ戻る</a>
         </div>
@@ -114,85 +108,103 @@
   </main>
 
   <script type="module">
-    import { auth } from "./firebase.js";
-    import { signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { auth } from "../firebase.js";
+    import {
+      signOut,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import {
+      getFirestore,
+      doc,
+      setDoc,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getAccountAccess } from "./account-authorization.js";
 
     const db = getFirestore();
-
+    const profileContent = document.getElementById("profileContent");
+    const accountMessage = document.getElementById("accountMessage");
+    const adminMenu = document.getElementById("adminMenu");
     const nameInput = document.getElementById("name");
     const emailInput = document.getElementById("email");
     const bioInput = document.getElementById("bio");
     const imageInput = document.getElementById("profileImage");
     const preview = document.getElementById("profilePreview");
-    const uploadBtn = document.getElementById("uploadBtn");
-
     let profileImageBase64 = "";
+    let resolvedAccessKind = null;
 
-    uploadBtn.addEventListener("click", () => {
+    function revealPage() {
+      document.body.style.visibility = "visible";
+    }
+
+    function showAccountMessage(text) {
+      profileContent.hidden = true;
+      accountMessage.hidden = false;
+      accountMessage.textContent = text;
+      revealPage();
+    }
+
+    document.getElementById("uploadBtn").addEventListener("click", () => {
       imageInput.click();
     });
 
     imageInput.addEventListener("change", () => {
-      const file = imageInput.files[0];
-      if (!file) return;
+      const file = imageInput.files?.[0];
+      if (!file || !file.type.startsWith("image/")) return;
 
       const reader = new FileReader();
-
-      reader.onload = (event) => {
-        const img = new Image();
-
-        img.onload = () => {
+      reader.addEventListener("load", () => {
+        const image = new Image();
+        image.addEventListener("load", () => {
           const canvas = document.createElement("canvas");
-          const maxSize = 400;
-
-          let width = img.width;
-          let height = img.height;
-
-          if (width > height) {
-            if (width > maxSize) {
-              height *= maxSize / width;
-              width = maxSize;
-            }
-          } else {
-            if (height > maxSize) {
-              width *= maxSize / height;
-              height = maxSize;
-            }
-          }
-
-          canvas.width = width;
-          canvas.height = height;
-
-          const ctx = canvas.getContext("2d");
-          ctx.drawImage(img, 0, 0, width, height);
-
-          profileImageBase64 = canvas.toDataURL("image/jpeg", 0.7);
-
+          const scale = Math.min(1, 400 / Math.max(image.width, image.height));
+          canvas.width = Math.round(image.width * scale);
+          canvas.height = Math.round(image.height * scale);
+          canvas.getContext("2d").drawImage(image, 0, 0, canvas.width, canvas.height);
+          profileImageBase64 = canvas.toDataURL("image/jpeg", .7);
           preview.src = profileImageBase64;
           preview.style.display = "block";
-        };
-
-        img.src = event.target.result;
-      };
-
+        });
+        image.src = reader.result;
+      });
       reader.readAsDataURL(file);
     });
 
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
-        location.href = "./login.html";
+        location.replace("./login.html");
         return;
       }
 
-      emailInput.value = user.email || "";
+      try {
+        const access = await getAccountAccess(db, user);
+        resolvedAccessKind = access.kind;
 
-      const ref = doc(db, "users", user.uid);
-      const snap = await getDoc(ref);
+        if (access.kind === "store") {
+          location.replace("./store-dashboard.html");
+          return;
+        }
 
-      if (snap.exists()) {
-        const data = snap.data();
+        if (access.kind === "pending") {
+          showAccountMessage("メール認証または登録手続きが完了していません。");
+          return;
+        }
 
+        if (access.kind === "blocked") {
+          showAccountMessage("このアカウントは現在利用停止中です。");
+          return;
+        }
+
+        if (access.kind !== "user" && access.kind !== "admin") {
+          showAccountMessage("このアカウントではマイページを利用できません。");
+          return;
+        }
+
+        const data = access.userData;
+        document.getElementById("pageLead").textContent =
+          access.kind === "admin" ? "管理者としてログイン中です。" : "会員情報を確認・編集できます。";
+        adminMenu.style.display = access.kind === "admin" ? "block" : "none";
+        emailInput.value = user.email || "";
         nameInput.value = data.name || data.nickname || "";
         bioInput.value = data.bio || data.selfPr || "";
 
@@ -201,22 +213,23 @@
           preview.src = data.profileImage;
           preview.style.display = "block";
         }
+
+        profileContent.hidden = false;
+        revealPage();
+      } catch {
+        showAccountMessage("アカウント情報を確認できませんでした。");
       }
     });
 
-    document.getElementById("profileForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-
+    document.getElementById("profileForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
       const user = auth.currentUser;
-      if (!user) {
-        alert("ログインしてください");
-        return;
-      }
+      if (!user || (resolvedAccessKind !== "user" && resolvedAccessKind !== "admin")) return;
 
       await setDoc(doc(db, "users", user.uid), {
-        name: nameInput.value,
-        email: emailInput.value,
-        bio: bioInput.value,
+        name: nameInput.value.trim(),
+        email: user.email || "",
+        bio: bioInput.value.trim(),
         profileImage: profileImageBase64,
         updatedAt: serverTimestamp()
       }, { merge: true });
@@ -226,7 +239,7 @@
 
     document.getElementById("logoutBtn").addEventListener("click", async () => {
       await signOut(auth);
-      location.href = "../index.html";
+      location.replace("../index.html");
     });
   </script>
 </body>
