@@ -34,3 +34,23 @@ export class StoreInviteUtilityError extends Error {
     this.code = code;
   }
 }
+
+export const STORE_APPLICATION_APPROVAL_REASONS = {
+  APPLICATION_NOT_FOUND:
+    "store-application-not-found",
+  APPLICATION_NOT_PENDING:
+    "store-application-not-pending",
+  APPLICATION_INVALID:
+    "store-application-invalid",
+  APPLICATION_ALREADY_REGISTERED:
+    "store-application-already-registered",
+  INVITE_ALREADY_ISSUED:
+    "invite-already-issued",
+  INVITE_COLLISION:
+    "invite-collision"
+} as const;
+
+export type StoreApplicationApprovalReason =
+  typeof STORE_APPLICATION_APPROVAL_REASONS[
+    keyof typeof STORE_APPLICATION_APPROVAL_REASONS
+  ];

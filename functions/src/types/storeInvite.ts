@@ -30,3 +30,12 @@ export interface GetStoreInvitePreviewOutput {
   expiresAt: string;
   businessScope: BusinessScope;
 }
+
+export interface ApproveStoreApplicationInput {
+  storeApplicationId: string;
+}
+
+export interface ApproveStoreApplicationOutput {
+  inviteUrl: string;
+  expiresAt: string;
+}
