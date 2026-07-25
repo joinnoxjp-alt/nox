@@ -11,6 +11,10 @@ import {
 } from "firebase-admin/app";
 
 import {
+  getAuth
+} from "firebase-admin/auth";
+
+import {
   FieldValue,
   Timestamp,
   getFirestore
@@ -25,6 +29,9 @@ import type {
 } from "../src/types/storeInvite";
 
 const PROJECT_ID = "demo-nox-local";
+const AUTH_EMULATOR_HOST =
+  process.env.FIREBASE_AUTH_EMULATOR_HOST ??
+  "";
 const FUNCTION_URL =
   "http://127.0.0.1:5001/" +
   `${PROJECT_ID}/asia-northeast1/` +
@@ -32,11 +39,13 @@ const FUNCTION_URL =
 
 if (
   process.env.GCLOUD_PROJECT !== PROJECT_ID ||
-  !process.env.FIRESTORE_EMULATOR_HOST
+  !process.env.FIRESTORE_EMULATOR_HOST ||
+  !AUTH_EMULATOR_HOST ||
+  process.env.FUNCTIONS_EMULATOR !== "true"
 ) {
   throw new Error(
     "Integration tests require the demo-nox-local " +
-    "Firestore Emulator."
+    "Auth, Firestore, and Functions Emulators."
   );
 }
 
@@ -48,8 +57,10 @@ const app = initializeApp(
 );
 
 const firestore = getFirestore(app);
+const auth = getAuth(app);
 
 const createdDocumentPaths: string[] = [];
+const createdUserIds: string[] = [];
 
 interface CallableResponse {
   status: number;
@@ -61,15 +72,23 @@ interface CallableResponse {
 }
 
 async function callPreview(
-  data: Record<string, unknown>
+  data: Record<string, unknown>,
+  idToken?: string
 ): Promise<CallableResponse> {
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json"
+  };
+
+  if (idToken) {
+    headers.Authorization =
+      `Bearer ${idToken}`;
+  }
+
   const response = await fetch(
     FUNCTION_URL,
     {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
+      headers,
       body: JSON.stringify({ data })
     }
   );
@@ -88,6 +107,40 @@ async function callPreview(
       payload.result,
     error: payload.error
   };
+}
+
+async function createIdentity(
+  email: string
+): Promise<string> {
+  const password = "Test-password-123!";
+  const response = await fetch(
+    `http://${AUTH_EMULATOR_HOST}/` +
+      "identitytoolkit.googleapis.com/v1/" +
+      "accounts:signUp?key=fake-key",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        email,
+        password,
+        returnSecureToken: true
+      })
+    }
+  );
+  const payload =
+    await response.json() as {
+      localId?: string;
+      idToken?: string;
+    };
+
+  assert.equal(response.ok, true);
+  assert.ok(payload.localId);
+  assert.ok(payload.idToken);
+  createdUserIds.push(payload.localId);
+
+  return payload.idToken;
 }
 
 async function createInvite(
@@ -151,6 +204,12 @@ after(async () => {
     createdDocumentPaths.map(
       (documentPath) =>
         firestore.doc(documentPath).delete()
+    )
+  );
+
+  await Promise.all(
+    createdUserIds.map(
+      (uid) => auth.deleteUser(uid)
     )
   );
 
@@ -373,6 +432,107 @@ test(
     assert.equal(
       serialized.includes(
         invite.documentPath.split("/")[1]
+      ),
+      false
+    );
+  }
+);
+
+test(
+  "omits email match information when unauthenticated",
+  async () => {
+    const invite =
+      await createInvite();
+
+    const response =
+      await callPreview({
+        inviteToken:
+          invite.inviteToken
+      });
+
+    assert.equal(response.status, 200);
+    assert.equal(
+      Object.hasOwn(
+        response.result ?? {},
+        "emailMatchesAuthenticatedUser"
+      ),
+      false
+    );
+  }
+);
+
+test(
+  "returns true only for the authenticated invite email",
+  async () => {
+    const email =
+      "preview-match@example.test";
+    const idToken =
+      await createIdentity(email);
+    const invite =
+      await createInvite({
+        invitedEmail:
+          "  PREVIEW-MATCH@EXAMPLE.TEST "
+      });
+
+    const response =
+      await callPreview(
+        {
+          inviteToken:
+            invite.inviteToken
+        },
+        idToken
+      );
+
+    assert.equal(response.status, 200);
+    assert.equal(
+      response.result
+        ?.emailMatchesAuthenticatedUser,
+      true
+    );
+  }
+);
+
+test(
+  "returns false for a different authenticated email",
+  async () => {
+    const idToken =
+      await createIdentity(
+        "preview-other@example.test"
+      );
+    const invite =
+      await createInvite({
+        invitedEmail:
+          "preview-invited@example.test"
+      });
+
+    const response =
+      await callPreview(
+        {
+          inviteToken:
+            invite.inviteToken
+        },
+        idToken
+      );
+
+    assert.equal(response.status, 200);
+    assert.equal(
+      response.result
+        ?.emailMatchesAuthenticatedUser,
+      false
+    );
+
+    const serialized =
+      JSON.stringify(response.result);
+
+    assert.equal(
+      serialized.includes(
+        "preview-other@example.test"
+      ),
+      false
+    );
+    assert.equal(
+      serialized.includes(
+        "preview-invited@example.test"
       ),
       false
     );

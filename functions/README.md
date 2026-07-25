@@ -56,7 +56,10 @@ The utilities do not log sensitive values or initialize any Firebase service.
 
 - accepts an exact 43-character Base64URL invite token;
 - hashes the token before reading `storeInvites/{tokenHash}`;
-- returns only a store name, masked email hint, expiration, and business scope;
+- returns only a store name, masked email hint, expiration, and business scope
+  when unauthenticated;
+- additionally returns only a boolean email-match result when authenticated,
+  comparing normalized Auth and invite email addresses on the server;
 - supports `night`, `general`, and `both`;
 - treats a missing legacy business scope as `night`;
 - gives unavailable invites one generic public error.

@@ -520,6 +520,15 @@
           </button>
         </div>
 
+        <button
+          class="submit-button"
+          id="logoutForInviteBtn"
+          type="button"
+          hidden
+        >
+          ログアウトして招待メールで続行
+        </button>
+
         <div
           id="message"
           class="message info show"
@@ -564,7 +573,8 @@
       onAuthStateChanged,
       reload,
       sendEmailVerification,
-      signInWithEmailAndPassword
+      signInWithEmailAndPassword,
+      signOut
     }
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
@@ -615,6 +625,7 @@
 
     let previewReady = false;
     let processing = false;
+    let sessionEmailMismatch = false;
 
     const form =
       document.getElementById("registerForm");
@@ -666,6 +677,11 @@
         "completeRegistrationBtn"
       );
 
+    const logoutForInviteBtn =
+      document.getElementById(
+        "logoutForInviteBtn"
+      );
+
     function showMessage(
       text,
       type = "info"
@@ -681,12 +697,18 @@
       processing = value;
 
       submitBtn.disabled =
-        value || !previewReady;
+        value ||
+        !previewReady ||
+        sessionEmailMismatch;
       loginBtn.disabled =
-        value || !previewReady;
+        value ||
+        !previewReady ||
+        sessionEmailMismatch;
       resendVerificationBtn.disabled =
         value;
       completeRegistrationBtn.disabled =
+        value;
+      logoutForInviteBtn.disabled =
         value;
     }
 
@@ -709,12 +731,48 @@
     }
 
     function showVerificationActions() {
+      sessionEmailMismatch = false;
       verificationActions.hidden = false;
       submitBtn.hidden = true;
       loginBtn.hidden = true;
+      logoutForInviteBtn.hidden = true;
       showMessage(
         "確認メール内のリンクを開いた後、「メール認証を確認して登録を完了」を押してください。",
         "info"
+      );
+    }
+
+    function showMismatchedSession() {
+      sessionEmailMismatch = true;
+      verificationActions.hidden = true;
+      submitBtn.hidden = false;
+      loginBtn.hidden = false;
+      logoutForInviteBtn.hidden = false;
+      setProcessing(false);
+      showMessage(
+        "現在ログイン中のアカウントは、この招待の対象ではありません。一度ログアウトして、招待されたメールアドレスで登録またはログインしてください。",
+        "error"
+      );
+    }
+
+    async function authenticatedEmailMatchesInvite(
+      user
+    ) {
+      if (!user) {
+        return false;
+      }
+
+      await getIdToken(user, true);
+
+      const response =
+        await getStoreInvitePreview({
+          inviteToken
+        });
+
+      return (
+        response?.data
+          ?.emailMatchesAuthenticatedUser ===
+        true
       );
     }
 
@@ -915,6 +973,9 @@
       );
 
       try {
+        const existingUser =
+          await waitForInitialAuthState();
+
         const response =
           await getStoreInvitePreview({
             inviteToken
@@ -972,13 +1033,18 @@
 
         enableRegistration();
 
-        const existingUser =
-          await waitForInitialAuthState();
-
         if (existingUser) {
-          emailInput.value =
-            existingUser.email || "";
-          showVerificationActions();
+          if (
+            preview
+              .emailMatchesAuthenticatedUser ===
+            true
+          ) {
+            emailInput.value =
+              existingUser.email || "";
+            showVerificationActions();
+          } else {
+            showMismatchedSession();
+          }
         }
       } catch {
         disableRegistration(
@@ -988,6 +1054,12 @@
     }
 
     function validatedInput() {
+      if (sessionEmailMismatch) {
+        throw new Error(
+          "session-email-mismatch"
+        );
+      }
+
       if (!previewReady) {
         throw new Error(
           "invalid-invite"
@@ -1045,6 +1117,16 @@
               input.password
             );
 
+          if (
+            !await authenticatedEmailMatchesInvite(
+              result.user
+            )
+          ) {
+            passwordInput.value = "";
+            showMismatchedSession();
+            return;
+          }
+
           await ensurePendingUser(
             result.user,
             input.ownerName
@@ -1096,6 +1178,16 @@
               input.password
             );
 
+          if (
+            !await authenticatedEmailMatchesInvite(
+              result.user
+            )
+          ) {
+            passwordInput.value = "";
+            showMismatchedSession();
+            return;
+          }
+
           await ensurePendingUser(
             result.user,
             input.ownerName
@@ -1122,7 +1214,30 @@
             "既存アカウントでログインして続行";
         }
       }
-    );
+      );
+
+    logoutForInviteBtn
+      .addEventListener(
+        "click",
+        async () => {
+          if (processing) {
+            return;
+          }
+
+          try {
+            setProcessing(true);
+            await signOut(auth);
+            location.reload();
+          } catch {
+            showMessage(
+              "ログアウトできませんでした。時間を置いて再度お試しください。",
+              "error"
+            );
+          } finally {
+            setProcessing(false);
+          }
+        }
+      );
 
     resendVerificationBtn
       .addEventListener(
@@ -1196,6 +1311,16 @@
             }
 
             await getIdToken(user, true);
+
+            if (
+              !await authenticatedEmailMatchesInvite(
+                user
+              )
+            ) {
+              showMismatchedSession();
+              return;
+            }
+
             await ensurePendingUser(
               user,
               ownerName

@@ -29,6 +29,7 @@ export interface GetStoreInvitePreviewOutput {
   emailHint: string;
   expiresAt: string;
   businessScope: BusinessScope;
+  emailMatchesAuthenticatedUser?: boolean;
 }
 
 export interface ApproveStoreApplicationInput {

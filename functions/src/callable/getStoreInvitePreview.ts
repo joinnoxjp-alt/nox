@@ -21,7 +21,8 @@ import {
 
 import {
   hashInviteToken,
-  isValidInviteTokenInput
+  isValidInviteTokenInput,
+  normalizeInviteEmail
 } from "../security/inviteToken";
 
 import type {
@@ -205,18 +206,24 @@ export const getStoreInvitePreview =
       }
 
       let emailHint: string;
+      let normalizedInvitedEmail: string;
 
       try {
+        normalizedInvitedEmail =
+          normalizeInviteEmail(
+            invitedEmail
+          );
         emailHint =
           createInviteEmailHint(
-            invitedEmail
+            normalizedInvitedEmail
           );
 
       } catch {
         throw invalidInviteError();
       }
 
-      return {
+      const output:
+        GetStoreInvitePreviewOutput = {
         valid: true,
         storeName,
         emailHint,
@@ -224,5 +231,26 @@ export const getStoreInvitePreview =
           expiration.isoString,
         businessScope
       };
+
+      if (request.auth) {
+        const authenticatedEmail =
+          request.auth.token.email;
+
+        try {
+          output
+            .emailMatchesAuthenticatedUser =
+              typeof authenticatedEmail ===
+                "string" &&
+              normalizeInviteEmail(
+                authenticatedEmail
+              ) === normalizedInvitedEmail;
+        } catch {
+          output
+            .emailMatchesAuthenticatedUser =
+              false;
+        }
+      }
+
+      return output;
     }
   );

@@ -13,6 +13,7 @@
     "typecheck": "tsc --noEmit",
     "test": "npm run build:test && node --test lib-test/test/inviteToken.test.js",
     "test:integration": "npm run build:test && node --test lib-test/test/*.integration.test.js",
+    "test:integration:invite-preview": "npm run build:test && node --test lib-test/test/getStoreInvitePreview.integration.test.js",
     "emulators": "firebase emulators:start --config ../firebase.json --project demo-nox-local --only auth,firestore,functions"
   },
   "dependencies": {
