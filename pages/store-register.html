@@ -534,8 +534,7 @@
     import {
       doc,
       getDoc,
-      setDoc,
-      updateDoc,
+      writeBatch,
       serverTimestamp
     }
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -791,7 +790,10 @@
           const uid =
             result.user.uid;
 
-          await setDoc(
+          const batch =
+            writeBatch(db);
+
+          batch.set(
             doc(db, "users", uid),
             {
               name: ownerName,
@@ -801,13 +803,10 @@
               status: "active",
               createdAt: serverTimestamp(),
               updatedAt: serverTimestamp()
-            },
-            {
-              merge: true
             }
           );
 
-          await setDoc(
+          batch.set(
             doc(db, "stores", uid),
             {
               ownerId: uid,
@@ -819,12 +818,10 @@
                 inviteData.sourceApplicationId || "",
               createdAt: serverTimestamp(),
               updatedAt: serverTimestamp()
-            },
-            {
-              merge: true
             }
           );
-                    await updateDoc(
+
+          batch.update(
             doc(
               db,
               "storeInvites",
@@ -837,6 +834,8 @@
                 serverTimestamp()
             }
           );
+
+          await batch.commit();
 
           showMessage(
             "登録が完了しました。店舗ダッシュボードへ移動します。",
