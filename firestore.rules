@@ -33,8 +33,19 @@ service cloud.firestore {
         && currentUser().status in ["pending", "active"];
     }
 
+    function isValidBusinessScope(scope) {
+      return scope in ["night", "general", "both"];
+    }
+
     function isSelf(uid) {
       return signedIn() && request.auth.uid == uid;
+    }
+
+    function ownsStore(uid) {
+      return signedIn()
+        && request.auth.uid == uid
+        && exists(/databases/$(database)/documents/stores/$(uid))
+        && get(/databases/$(database)/documents/stores/$(uid)).data.ownerId == uid;
     }
 
     function isValidApplicationStatus(status) {
@@ -110,7 +121,30 @@ service cloud.firestore {
           "updatedAt"
         ]);
 
-      allow update, delete: if isActiveAdmin();
+      allow update: if isActiveAdmin()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          "name",
+          "nickname",
+          "birthDate",
+          "email",
+          "phone",
+          "area",
+          "jobType",
+          "salary",
+          "experience",
+          "height",
+          "bodyType",
+          "alcohol",
+          "workDays",
+          "selfPr",
+          "sns",
+          "bio",
+          "profileImage",
+          "savedJobIds",
+          "updatedAt"
+        ]);
+
+      allow delete: if isActiveAdmin();
     }
 
     /*
@@ -126,12 +160,21 @@ service cloud.firestore {
           && resource.data.ownerId == request.auth.uid);
       allow list: if isActiveAdmin();
 
-      allow create: if isActiveAdmin()
-        || (isActiveStore()
-          && request.auth.uid == storeId
-          && request.resource.data.ownerId == request.auth.uid);
+      allow create: if false;
 
       allow update: if isActiveAdmin()
+        && request.resource.data.ownerId == resource.data.ownerId
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          "storeName",
+          "ownerName",
+          "email",
+          "area",
+          "phone",
+          "line",
+          "instagram",
+          "description",
+          "updatedAt"
+        ])
         || (isActiveStore()
           && request.auth.uid == storeId
           && resource.data.ownerId == request.auth.uid
@@ -149,6 +192,78 @@ service cloud.firestore {
           ]));
 
       allow delete: if isActiveAdmin();
+    }
+
+    /*
+     * Public store publication applications
+     *
+     * A browser may submit a tightly validated pending application. All
+     * review, approval, invitation, registration, update, and delete
+     * operations must run through trusted backend code.
+     */
+    match /storeApplications/{applicationId} {
+      allow create: if request.resource.data.keys().hasAll([
+          "storeName",
+          "businessScope",
+          "businessType",
+          "area",
+          "address",
+          "contactName",
+          "contactEmail",
+          "contactPhone",
+          "notes",
+          "status",
+          "schemaVersion",
+          "createdAt",
+          "updatedAt"
+        ])
+        && request.resource.data.keys().hasOnly([
+          "storeName",
+          "businessScope",
+          "businessType",
+          "area",
+          "address",
+          "contactName",
+          "contactEmail",
+          "contactPhone",
+          "notes",
+          "status",
+          "schemaVersion",
+          "createdAt",
+          "updatedAt"
+        ])
+        && request.resource.data.storeName is string
+        && request.resource.data.storeName.size() > 0
+        && request.resource.data.storeName.size() <= 120
+        && isValidBusinessScope(request.resource.data.businessScope)
+        && request.resource.data.businessType is string
+        && request.resource.data.businessType.size() > 0
+        && request.resource.data.businessType.size() <= 120
+        && request.resource.data.area is string
+        && request.resource.data.area.size() > 0
+        && request.resource.data.area.size() <= 120
+        && request.resource.data.address is string
+        && request.resource.data.address.size() <= 240
+        && request.resource.data.contactName is string
+        && request.resource.data.contactName.size() > 0
+        && request.resource.data.contactName.size() <= 120
+        && request.resource.data.contactEmail is string
+        && request.resource.data.contactEmail.size() > 3
+        && request.resource.data.contactEmail.size() <= 254
+        && request.resource.data.contactEmail.matches(
+          "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$"
+        )
+        && request.resource.data.contactPhone is string
+        && request.resource.data.contactPhone.size() <= 30
+        && request.resource.data.notes is string
+        && request.resource.data.notes.size() <= 2000
+        && request.resource.data.status == "pending"
+        && request.resource.data.schemaVersion == 1
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time;
+
+      allow get, list: if isActiveAdmin();
+      allow update, delete: if false;
     }
 
     /*
@@ -178,6 +293,9 @@ service cloud.firestore {
       allow create: if isActiveStore()
         && request.resource.data.ownerId == request.auth.uid
         && request.resource.data.submittedBy == request.auth.uid
+        && request.resource.data.storeId == request.auth.uid
+        && ownsStore(request.auth.uid)
+        && isValidBusinessScope(request.resource.data.businessScope)
         && request.resource.data.status == "pending"
         && !request.resource.data.keys().hasAny([
           "approvedAt",
@@ -189,7 +307,9 @@ service cloud.firestore {
         && request.resource.data.keys().hasOnly([
           "ownerId",
           "submittedBy",
+          "storeId",
           "storeName",
+          "businessScope",
           "businessType",
           "targetGender",
           "jobAudience",
@@ -331,11 +451,11 @@ service cloud.firestore {
     /*
      * Store invitations contain privilege-granting material.
      *
-     * They are intentionally admin-only. Store registration must be moved to
-     * a trusted backend transaction before these rules are deployed.
+     * Direct client access is denied, including administrative browser
+     * sessions. Trusted backend code uses the Admin SDK for all operations.
      */
     match /storeInvites/{inviteId} {
-      allow read, create, update, delete: if isActiveAdmin();
+      allow read, create, update, delete: if false;
     }
 
     /*
