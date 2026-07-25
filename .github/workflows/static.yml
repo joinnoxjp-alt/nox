@@ -40,6 +40,9 @@ jobs:
             --exclude='.git/' \
             --exclude='.github/' \
             --exclude='_site/' \
+            --exclude='.firebaserc' \
+            --exclude='firebase.json' \
+            --exclude='functions/' \
             --exclude='firestore.rules' \
             --exclude='storage.rules' \
             --exclude='firestore.rules.current' \
