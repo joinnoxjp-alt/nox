@@ -57,10 +57,53 @@
     .message.error { color: #ff9b9b; }
     .message.success { color: #9ee6b0; }
     .back { display: inline-block; margin-top: 18px; color: #ddd; }
+    .pricing-panel { margin-bottom: 20px; }
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      margin: 16px 0;
+    }
+    .pricing-plan-card {
+      padding: 14px;
+      border: 1px solid #393939;
+      border-radius: 12px;
+      background: #0d0d0d;
+    }
+    .pricing-plan-card h3 { margin: 0 0 8px; font-size: 16px; }
+    .pricing-plan-card .price { margin: 0; color: #d7b25b; font-weight: 700; }
+    .pricing-option {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid #333;
+    }
+    .pricing-flow { margin: 12px 0 0; padding-left: 22px; line-height: 1.8; }
+    .pricing-error { color: #ffb0b0; line-height: 1.7; }
   </style>
 </head>
 <body>
   <main>
+    <section class="panel pricing-panel" aria-labelledby="pricingHeading">
+      <h2 id="pricingHeading">掲載料金のご案内</h2>
+      <div id="pricingContent" aria-live="polite">
+        <p class="lead">料金情報を読み込んでいます。</p>
+      </div>
+      <div id="pricingDetails" hidden>
+        <div id="pricingPlans" class="pricing-grid"></div>
+        <p id="pricingPaymentNote" class="note"></p>
+        <h3>オプション料金</h3>
+        <div id="pricingOptions"></div>
+        <h3>掲載までの流れ</h3>
+        <ol id="pricingFlow" class="pricing-flow"></ol>
+        <p class="lead">
+          申請時点ではプラン選択や請求は確定しません。
+          NOX運営から内容をご案内します。
+        </p>
+      </div>
+    </section>
+
     <section class="panel">
       <h1>店舗掲載申請</h1>
       <p class="lead">
@@ -112,22 +155,59 @@
   </main>
 
   <script type="module">
-    import "../firebase.js";
+    import { db } from "./firebase.js";
+    import {
+      createPricingDisplayModel,
+      loadPricingCatalog,
+      renderApplicationFlow,
+      renderPricingError,
+      renderPricingOptions,
+      renderPricingPlans
+    } from "./pricing.js";
     import {
       addDoc,
       collection,
-      getFirestore,
       serverTimestamp
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    const db = getFirestore();
     const form = document.getElementById("storeApplicationForm");
     const submitButton = document.getElementById("submitButton");
     const formMessage = document.getElementById("formMessage");
     const allowedBusinessScopes = new Set(["night", "general", "both"]);
+    const pricingContent = document.getElementById("pricingContent");
+    const pricingDetails = document.getElementById("pricingDetails");
 
     const valueOf = (id) =>
       document.getElementById(id).value.trim();
+
+    async function showPricing() {
+      try {
+        const model = createPricingDisplayModel(
+          await loadPricingCatalog()
+        );
+        renderPricingPlans(
+          document.getElementById("pricingPlans"),
+          model
+        );
+        renderPricingOptions(
+          document.getElementById("pricingOptions"),
+          model
+        );
+        renderApplicationFlow(
+          document.getElementById("pricingFlow"),
+          model
+        );
+        document.getElementById("pricingPaymentNote").textContent =
+          model.paymentNote;
+        pricingContent.replaceChildren();
+        pricingDetails.hidden = false;
+      } catch {
+        pricingDetails.hidden = true;
+        renderPricingError(pricingContent);
+      }
+    }
+
+    showPricing();
 
     form.addEventListener("submit", async (event) => {
       event.preventDefault();

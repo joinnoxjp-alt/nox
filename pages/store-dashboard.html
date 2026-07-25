@@ -42,6 +42,11 @@ th{color:#aaa}
 .galleryGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-top:14px}
 .galleryItem{background:#090909;border:1px solid #2b2b2b;border-radius:12px;padding:10px}
 .galleryItem img{width:100%;height:130px;object-fit:cover;border-radius:8px;margin-bottom:8px}
+.contractGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
+.contractItem{padding:14px;border:1px solid #2b2b2b;border-radius:12px;background:#090909}
+.contractItem dt{margin-bottom:7px;color:#aaa;font-size:12px}
+.contractItem dd{margin:0;font-weight:700;line-height:1.5}
+.contractMessage{color:#ccc;line-height:1.7}
 @media(max-width:800px){
 .wrap{display:block}
 .side{position:relative;width:100%;height:auto}
@@ -92,7 +97,7 @@ table{font-size:12px}
 
 <div class="card">
 <p>契約状況</p>
-<strong>有効</strong>
+<strong id="dashboardContractStatus">確認中</strong>
 </div>
 </div>
 
@@ -222,13 +227,13 @@ table{font-size:12px}
 
 <section id="pay" class="hidden">
 <h1>お支払い</h1>
-<div class="desc">契約状況を確認できます。</div>
+<div class="desc">NOX運営が登録した契約内容を確認できます。店舗側から変更はできません。</div>
 
 <div class="panel">
-<h2>現在のプラン</h2>
-<p>リリース記念プラン</p>
-<h2 style="color:#d6a84f;">月額500円</h2>
-<p>状態：<span class="tag">入金確認待ち</span></p>
+<h2>契約情報</h2>
+<div id="contractContent" aria-live="polite">
+  <p class="contractMessage">契約情報を読み込んでいます。</p>
+</div>
 </div>
 </section>
 
@@ -249,6 +254,9 @@ table{font-size:12px}
 <script type="module">
 
 import { auth, db } from "./firebase.js";
+import {
+  formatJapaneseYen
+} from "./pricing.js";
 
 import {
   onAuthStateChanged,
@@ -317,6 +325,22 @@ const MEDIA_CONFIG = {
     pathField: "profileImageStoragePath"
   }
 };
+const PAYMENT_STATUS_LABELS = {
+  not_billed: "未請求",
+  awaiting_payment: "入金待ち",
+  paid: "入金確認済み",
+  expired: "契約期限切れ",
+  suspended: "停止中"
+};
+const LISTING_STATUS_LABELS = {
+  pending: "掲載準備中",
+  active: "掲載中",
+  paused: "一時停止",
+  expired: "契約期限切れ",
+  suspended: "強制停止"
+};
+const CONTRACT_UNAVAILABLE_MESSAGE =
+  "契約情報を確認できません。NOX運営へお問い合わせください。";
 
 /* =========================
    共通処理
@@ -366,6 +390,158 @@ function isCurrentMonth(timestamp) {
   );
 
   return formatter.format(date) === formatter.format(new Date());
+}
+
+function timestampToDate(value) {
+  if (!value || typeof value.toDate !== "function") return null;
+  const date = value.toDate();
+  return date instanceof Date && !Number.isNaN(date.getTime())
+    ? date
+    : null;
+}
+
+function formatDate(date) {
+  return new Intl.DateTimeFormat("ja-JP", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).format(date);
+}
+
+function calculateRemainingDays(contractEndAt) {
+  const millisecondsPerDay = 24 * 60 * 60 * 1000;
+  return Math.max(
+    0,
+    Math.ceil((contractEndAt.getTime() - Date.now()) / millisecondsPerDay)
+  );
+}
+
+function validateContract(data, uid) {
+  const startAt = timestampToDate(data?.contractStartAt);
+  const endAt = timestampToDate(data?.contractEndAt);
+  return data
+    && data.schemaVersion === 1
+    && data.storeId === uid
+    && data.ownerId === uid
+    && typeof data.planLabel === "string"
+    && data.planLabel.trim().length > 0
+    && Number.isInteger(data.listingAmount)
+    && data.listingAmount >= 0
+    && Number.isInteger(data.optionAmount)
+    && data.optionAmount >= 0
+    && Number.isInteger(data.totalAmount)
+    && data.totalAmount >= 0
+    && data.currency === "JPY"
+    && data.taxIncluded === true
+    && data.billingMethod === "prepaid"
+    && Object.hasOwn(PAYMENT_STATUS_LABELS, data.paymentStatus)
+    && Object.hasOwn(LISTING_STATUS_LABELS, data.listingStatus)
+    && startAt
+    && endAt
+    && endAt.getTime() >= startAt.getTime();
+}
+
+function contractOptionsText(options) {
+  if (!options || typeof options !== "object" || Array.isArray(options)) {
+    return "なし";
+  }
+  const labels = Object.values(options)
+    .filter((option) => option && option.enabled === true)
+    .map((option) =>
+      typeof option.label === "string" ? option.label.trim() : ""
+    )
+    .filter(Boolean);
+  return labels.length > 0 ? labels.join("、") : "なし";
+}
+
+function addContractItem(container, label, value) {
+  const item = document.createElement("div");
+  item.className = "contractItem";
+  const term = document.createElement("dt");
+  term.textContent = label;
+  const description = document.createElement("dd");
+  description.textContent = value;
+  item.append(term, description);
+  container.append(item);
+}
+
+function showContractUnavailable() {
+  const content = document.getElementById("contractContent");
+  content.replaceChildren();
+  const message = document.createElement("p");
+  message.className = "contractMessage";
+  message.textContent = CONTRACT_UNAVAILABLE_MESSAGE;
+  content.append(message);
+  document.getElementById("dashboardContractStatus").textContent =
+    "確認できません";
+}
+
+async function loadStoreContract() {
+  try {
+    const snapshot = await getDoc(
+      doc(db, "storeContracts", currentUser.uid)
+    );
+    if (!snapshot.exists()) {
+      showContractUnavailable();
+      return;
+    }
+
+    const data = snapshot.data();
+    if (!validateContract(data, currentUser.uid)) {
+      showContractUnavailable();
+      return;
+    }
+
+    const startAt = timestampToDate(data.contractStartAt);
+    const endAt = timestampToDate(data.contractEndAt);
+    const grid = document.createElement("dl");
+    grid.className = "contractGrid";
+
+    addContractItem(grid, "プラン名", data.planLabel);
+    addContractItem(grid, "契約開始日", formatDate(startAt));
+    addContractItem(grid, "契約終了日", formatDate(endAt));
+    addContractItem(
+      grid,
+      "契約残日数",
+      `${calculateRemainingDays(endAt)}日`
+    );
+    addContractItem(
+      grid,
+      "掲載料金",
+      formatJapaneseYen(data.listingAmount)
+    );
+    addContractItem(
+      grid,
+      "オプション",
+      contractOptionsText(data.options)
+    );
+    addContractItem(
+      grid,
+      "オプション料金",
+      formatJapaneseYen(data.optionAmount)
+    );
+    addContractItem(
+      grid,
+      "合計金額",
+      formatJapaneseYen(data.totalAmount)
+    );
+    addContractItem(
+      grid,
+      "支払状況",
+      PAYMENT_STATUS_LABELS[data.paymentStatus]
+    );
+    addContractItem(
+      grid,
+      "掲載状態",
+      LISTING_STATUS_LABELS[data.listingStatus]
+    );
+
+    document.getElementById("contractContent").replaceChildren(grid);
+    document.getElementById("dashboardContractStatus").textContent =
+      LISTING_STATUS_LABELS[data.listingStatus];
+  } catch {
+    showContractUnavailable();
+  }
 }
 
 function getOwnedStorePrefix() {
@@ -725,6 +901,7 @@ onAuthStateChanged(auth, async user => {
   currentUser = user;
 
   await loadStoreInfo();
+  await loadStoreContract();
 
   const jobs = await loadJobs();
 
