@@ -539,7 +539,7 @@
         <input
           id="jobImages"
           type="file"
-          accept="image/*"
+          accept="image/jpeg,image/png,image/webp"
           multiple
         >
 
@@ -663,10 +663,11 @@
 
     import {
       collection,
-      addDoc,
       doc,
       getDoc,
-      serverTimestamp
+      serverTimestamp,
+      setDoc,
+      writeBatch
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     import {
@@ -677,7 +678,8 @@
       getStorage,
       ref as storageRef,
       uploadBytes,
-      getDownloadURL
+      getDownloadURL,
+      deleteObject
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
     const storage = getStorage(app);
@@ -711,6 +713,13 @@
 
     let currentStoreUser = null;
     let currentStoreData = null;
+    const MAX_JOB_IMAGES = 10;
+    const MAX_JOB_IMAGE_BYTES = 5 * 1024 * 1024;
+    const ALLOWED_JOB_IMAGE_TYPES = new Set([
+      "image/jpeg",
+      "image/png",
+      "image/webp"
+    ]);
 
     submitButton.disabled = true;
 
@@ -849,7 +858,7 @@
       const files =
         Array.from(jobImages.files);
 
-      if (files.length > 9) {
+      if (files.length > MAX_JOB_IMAGES) {
         jobImages.value = "";
 
         showMessage(
@@ -902,7 +911,7 @@
       return cleanedName || "image.jpg";
     }
 
-    async function uploadJobImages(files) {
+    async function legacyUploadJobImages(files) {
       const imageUrls = [];
 
       for (
@@ -934,6 +943,63 @@
       return imageUrls;
     }
 
+    async function validateImageFile(file) {
+      if (
+        !ALLOWED_JOB_IMAGE_TYPES.has(file.type) ||
+        file.size <= 0 ||
+        file.size > MAX_JOB_IMAGE_BYTES
+      ) {
+        throw new Error(
+          "画像は5MiB以下のJPEG・PNG・WebPを選択してください。"
+        );
+      }
+      const bitmap = await createImageBitmap(file);
+      const valid = bitmap.width > 0 && bitmap.height > 0;
+      bitmap.close();
+      if (!valid) {
+        throw new Error("画像を読み取れませんでした。");
+      }
+    }
+
+    function extensionForContentType(contentType) {
+      return {
+        "image/jpeg": "jpg",
+        "image/png": "png",
+        "image/webp": "webp"
+      }[contentType];
+    }
+
+    async function uploadJobImages(jobId, files) {
+      const imageStoragePaths = [];
+      const imageUrls = [];
+      for (const imageFile of files) {
+        await validateImageFile(imageFile);
+        const fileId =
+          `${crypto.randomUUID()}.${
+            extensionForContentType(imageFile.type)
+          }`;
+        const path =
+          `jobs/${currentStoreUser.uid}/${jobId}/${fileId}`;
+        const imageReference = storageRef(storage, path);
+        await uploadBytes(
+          imageReference,
+          imageFile,
+          { contentType: imageFile.type }
+        );
+        imageStoragePaths.push(path);
+        imageUrls.push(await getDownloadURL(imageReference));
+      }
+      return { imageStoragePaths, imageUrls };
+    }
+
+    async function cleanupUploadedImages(paths) {
+      await Promise.allSettled(
+        paths.map((path) =>
+          deleteObject(storageRef(storage, path))
+        )
+      );
+    }
+
     form.addEventListener(
       "submit",
       async (event) => {
@@ -962,7 +1028,7 @@
         const files =
           Array.from(jobImages.files);
 
-        if (files.length > 9) {
+        if (files.length > MAX_JOB_IMAGES) {
           showMessage(
             "掲載画像は最大9枚まで選択できます。",
             "error"
@@ -991,9 +1057,12 @@
             ? "画像をアップロードしています..."
             : "掲載情報を送信しています...";
 
+        const jobReference = doc(collection(db, "jobs"));
+        const jobId = jobReference.id;
+        let uploadedPaths = [];
+
         try {
-          const imageUrls =
-            await uploadJobImages(files);
+          await Promise.all(files.map(validateImageFile));
 
           submitButton.textContent =
             "掲載情報を送信しています...";
@@ -1011,7 +1080,66 @@
             throw new Error("掲載区分が正しくありません。");
           }
 
+          const storeUid = currentStoreUser.uid;
+          const storeName = String(
+            currentStoreData.storeName || ""
+          ).trim();
+          const position = getValue("jobPosition");
+          const description = getValue("shopPR");
+          const requirements = [
+            getValue("age"),
+            getValue("shift"),
+            getValue("quota"),
+            getValue("penalty")
+          ].filter(Boolean).join(" / ");
+          const benefits = [
+            getValue("back"),
+            getValue("dailyPay")
+          ].filter(Boolean).join(" / ");
+
+          await setDoc(jobReference, {
+            schemaVersion: 1,
+            ownerId: storeUid,
+            storeId: storeUid,
+            storeName,
+            title: `${storeName} ${position}`.trim(),
+            category: selectedBusinessType,
+            targetGender: getValue("targetGender"),
+            position,
+            area: getValue("area"),
+            address: getValue("address"),
+            station: getValue("station"),
+            businessHours: getValue("businessHours"),
+            salary: getValue("salary"),
+            trial: getValue("trial"),
+            beginner: getValue("beginner") !== "",
+            description,
+            requirements,
+            benefits,
+            imageStoragePaths: [],
+            imageUrls: [],
+            status: "draft",
+            isPublic: false,
+            contractListingStatus: "pending",
+            createdAt: serverTimestamp(),
+            createdBy: storeUid,
+            updatedAt: serverTimestamp(),
+            updatedBy: storeUid,
+            approvedAt: null,
+            approvedBy: null,
+            pausedAt: null,
+            pausedBy: null,
+            reapprovalRequestedAt: null,
+            archivedAt: null,
+            archivedBy: null,
+            sourceApplicationId: jobId
+          });
+
+          const uploaded = await uploadJobImages(jobId, files);
+          uploadedPaths = uploaded.imageStoragePaths;
+
           const applicationData = {
+            jobId,
             ownerId: currentStoreUser.uid,
             submittedBy: currentStoreUser.uid,
             storeId: currentStoreUser.uid,
@@ -1065,19 +1193,30 @@ position: getValue("jobPosition"),
             contactName: getValue("contactName"),
             contactInfo: getValue("contactInfo"),
 
-            images: imageUrls,
-            image: imageUrls[0] || "",
-            mainImage: imageUrls[0] || "",
-            imageUrl: imageUrls[0] || "",
+            imageStoragePaths: uploaded.imageStoragePaths,
+            imageUrls: uploaded.imageUrls,
+            images: uploaded.imageUrls,
+            image: uploaded.imageUrls[0] || "",
+            mainImage: uploaded.imageUrls[0] || "",
+            imageUrl: uploaded.imageUrls[0] || "",
 
             status: "pending",
             createdAt: serverTimestamp()
           };
 
-await addDoc(
-  collection(db, "jobApplications"),
-  applicationData
-);
+          const batch = writeBatch(db);
+          batch.update(jobReference, {
+            imageStoragePaths: uploaded.imageStoragePaths,
+            imageUrls: uploaded.imageUrls,
+            status: "pending",
+            updatedAt: serverTimestamp(),
+            updatedBy: storeUid
+          });
+          batch.set(
+            doc(db, "jobApplications", jobId),
+            applicationData
+          );
+          await batch.commit();
           form.reset();
           imagePreview.innerHTML = "";
           toggleOtherBusiness();
@@ -1088,6 +1227,7 @@ await addDoc(
           );
 
         } catch (error) {
+          await cleanupUploadedImages(uploadedPaths);
           console.error(
             "掲載申請エラー:",
             error

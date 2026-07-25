@@ -108,6 +108,7 @@ table{font-size:12px}
 </div>
 </section>
 <section id="jobs" class="hidden">
+<p><a class="btn" href="./job-create.html">新規求人掲載申請</a></p>
 <h1>求人管理</h1>
 
 <div class="panel">
@@ -271,6 +272,7 @@ import {
   getDocs,
   query,
   where,
+  orderBy,
   updateDoc,
   deleteDoc,
   serverTimestamp
@@ -877,15 +879,23 @@ onAuthStateChanged(auth, async user => {
 
   try {
     const userRef = doc(db, "users", user.uid);
-    const userSnap = await getDoc(userRef);
+    const [userSnap, storeSnap] = await Promise.all([
+      getDoc(userRef),
+      getDoc(doc(db, "stores", user.uid))
+    ]);
     const userData = userSnap.exists()
       ? userSnap.data()
+      : null;
+    const storeData = storeSnap.exists()
+      ? storeSnap.data()
       : null;
 
     if (
       !userData ||
       userData.role !== "store" ||
-      userData.status !== "active"
+      userData.status !== "active" ||
+      !storeData ||
+      storeData.ownerId !== user.uid
     ) {
       alert("有効な店舗アカウントのみアクセスできます");
       location.href = "mypage.html";
@@ -1086,7 +1096,7 @@ window.saveStoreInfo = async function() {
    求人一覧
 ========================= */
 
-async function loadJobs() {
+async function legacyLoadJobs() {
 
   const list =
     document.getElementById("jobList");
@@ -1252,7 +1262,7 @@ async function loadTodayViews() {
    応募一覧
 ========================= */
 
-async function loadApplications(jobIds) {
+async function legacyLoadApplications(jobIds) {
 
   const list =
     document.getElementById(
@@ -1510,8 +1520,236 @@ async function loadApplications(jobIds) {
    応募状態変更
 ========================= */
 
-window.changeStatus =
-async function(
+const JOB_STATUS_LABELS = {
+  draft: "下書き",
+  pending: "初回承認待ち",
+  approved: "公開中",
+  paused: "一時停止",
+  reapproval_pending: "再公開承認待ち",
+  rejected: "非承認",
+  archived: "削除済み"
+};
+
+function formatTimestamp(value) {
+  const date = value?.toDate?.();
+  return date
+    ? new Intl.DateTimeFormat("ja-JP", {
+        dateStyle: "medium",
+        timeStyle: "short"
+      }).format(date)
+    : "-";
+}
+
+function jobActionButtons(job) {
+  const editLink =
+    `<a class="btn gray" href="./job-edit.html?job=${encodeURIComponent(job.id)}">編集</a>`;
+  const action = (label, nextStatus) =>
+    `<button class="btn gray" data-job-id="${escapeHtml(job.id)}" ` +
+    `data-job-status="${nextStatus}">${label}</button>`;
+
+  switch (job.status) {
+    case "draft":
+      return `${editLink}${action("申請", "pending")}${action("削除", "archived")}`;
+    case "approved":
+      return `${editLink}${action("一時停止", "paused")}`;
+    case "paused":
+      return `${editLink}${action("再公開申請", "reapproval_pending")}${action("削除", "archived")}`;
+    case "rejected":
+      return `${editLink}${action("再申請準備", "draft")}${action("削除", "archived")}`;
+    default:
+      return "閲覧のみ";
+  }
+}
+
+async function loadJobs() {
+  const list = document.getElementById("jobList");
+  list.innerHTML =
+    '<tr><td colspan="7" style="text-align:center;color:#888;">読み込み中...</td></tr>';
+
+  const snapshot = await getDocs(query(
+    collection(db, "jobs"),
+    where("ownerId", "==", currentUser.uid)
+  ));
+  const jobs = snapshot.docs.map((snapshotDocument) => ({
+    id: snapshotDocument.id,
+    ...snapshotDocument.data()
+  }));
+
+  document.getElementById("jobCount").textContent =
+    String(jobs.filter((job) => job.status !== "archived").length);
+  list.replaceChildren();
+  const header = document.createElement("tr");
+  header.innerHTML =
+    "<th>求人タイトル</th><th>職種</th><th>給与</th><th>状態</th><th>更新日時</th><th>公開状態</th><th>操作</th>";
+  list.append(header);
+  if (jobs.length === 0) {
+    list.insertAdjacentHTML(
+      "beforeend",
+      '<tr><td colspan="7" style="text-align:center;color:#888;">求人はまだありません</td></tr>'
+    );
+    return [];
+  }
+
+  jobs.sort((a, b) =>
+    (b.updatedAt?.toMillis?.() || 0) -
+    (a.updatedAt?.toMillis?.() || 0)
+  );
+  for (const job of jobs) {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${escapeHtml(job.title || "-")}</td>
+      <td>${escapeHtml(job.position || "-")}</td>
+      <td>${escapeHtml(job.salary || "-")}</td>
+      <td><span class="tag">${escapeHtml(JOB_STATUS_LABELS[job.status] || job.status || "-")}</span></td>
+      <td>${escapeHtml(formatTimestamp(job.updatedAt))}</td>
+      <td>${job.isPublic === true ? "公開" : "非公開"}</td>
+      <td class="actionBtns">${jobActionButtons(job)}</td>`;
+    list.append(row);
+  }
+
+  list.querySelectorAll("[data-job-status]").forEach((button) => {
+    button.addEventListener("click", () =>
+      updateJobStatus(button, button.dataset.jobId, button.dataset.jobStatus)
+    );
+  });
+  return jobs;
+}
+
+async function updateJobStatus(button, jobId, nextStatus) {
+  if (button.disabled) return;
+  const updates = {
+    status: nextStatus,
+    updatedAt: serverTimestamp(),
+    updatedBy: currentUser.uid
+  };
+  if (nextStatus === "paused") {
+    updates.pausedAt = serverTimestamp();
+    updates.pausedBy = currentUser.uid;
+  } else if (nextStatus === "reapproval_pending") {
+    updates.reapprovalRequestedAt = serverTimestamp();
+  } else if (nextStatus === "archived") {
+    updates.archivedAt = serverTimestamp();
+    updates.archivedBy = currentUser.uid;
+  }
+  button.disabled = true;
+  try {
+    await updateDoc(doc(db, "jobs", jobId), updates);
+    await loadJobs();
+  } catch (error) {
+    button.disabled = false;
+    alert("求人状態を更新できませんでした。");
+  }
+}
+
+const APPLICATION_STATUS_LABELS = {
+  new: "新着",
+  contacted: "連絡済み",
+  interview_scheduled: "面接予定",
+  hired: "採用",
+  rejected: "不採用"
+};
+const APPLICATION_TRANSITIONS = {
+  new: ["contacted", "rejected"],
+  contacted: ["interview_scheduled", "rejected"],
+  interview_scheduled: ["hired", "rejected"],
+  hired: [],
+  rejected: []
+};
+const APPLICATION_STATUS_TIMESTAMPS = {
+  contacted: "contactedAt",
+  interview_scheduled: "interviewScheduledAt",
+  hired: "hiredAt",
+  rejected: "rejectedAt"
+};
+
+async function loadApplications() {
+  const list = document.getElementById("applicationList");
+  list.innerHTML =
+    '<tr><td colspan="7" style="text-align:center;color:#888;">読み込み中...</td></tr>';
+  const snapshot = await getDocs(query(
+    collection(db, "applications"),
+    where("storeId", "==", currentUser.uid),
+    orderBy("createdAt", "desc")
+  ));
+  const applications = snapshot.docs.map((snapshotDocument) => ({
+    id: snapshotDocument.id,
+    ...snapshotDocument.data()
+  }));
+  document.getElementById("applyCount").textContent = String(
+    applications.filter((application) =>
+      isCurrentMonth(application.createdAt)
+    ).length
+  );
+  list.replaceChildren();
+  const header = document.createElement("tr");
+  header.innerHTML =
+    "<th>名前</th><th>電話番号</th><th>応募求人</th><th>応募日時</th><th>メッセージ</th><th>状態</th><th>操作</th>";
+  list.append(header);
+  if (applications.length === 0) {
+    list.insertAdjacentHTML(
+      "beforeend",
+      '<tr><td colspan="7" style="text-align:center;color:#888;">応募はまだありません</td></tr>'
+    );
+    return;
+  }
+
+  for (const application of applications) {
+    const nextStatuses = APPLICATION_TRANSITIONS[application.status] || [];
+    const options = [
+      `<option value="${application.status}">${APPLICATION_STATUS_LABELS[application.status] || application.status}</option>`,
+      ...nextStatuses.map((status) =>
+        `<option value="${status}">${APPLICATION_STATUS_LABELS[status]}</option>`
+      )
+    ].join("");
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${escapeHtml(application.name || "-")}</td>
+      <td>${escapeHtml(application.phone || "-")}</td>
+      <td>${escapeHtml(application.jobTitle || application.jobId || "-")}</td>
+      <td>${escapeHtml(formatTimestamp(application.createdAt))}</td>
+      <td>${escapeHtml(application.message || "-")}</td>
+      <td><select data-application-id="${escapeHtml(application.id)}" data-current-status="${escapeHtml(application.status)}">${options}</select></td>
+      <td class="actionBtns">${application.phone ? `<a class="btn" href="tel:${escapeHtml(application.phone)}">電話</a>` : ""}</td>`;
+    list.append(row);
+  }
+  list.querySelectorAll("[data-application-id]").forEach((select) => {
+    select.addEventListener("change", () =>
+      changeApplicationStatus(select)
+    );
+  });
+}
+
+async function changeApplicationStatus(select) {
+  const previousStatus = select.dataset.currentStatus;
+  const nextStatus = select.value;
+  if (
+    nextStatus === previousStatus ||
+    !(APPLICATION_TRANSITIONS[previousStatus] || []).includes(nextStatus)
+  ) {
+    select.value = previousStatus;
+    return;
+  }
+  const timestampField = APPLICATION_STATUS_TIMESTAMPS[nextStatus];
+  select.disabled = true;
+  try {
+    await updateDoc(
+      doc(db, "applications", select.dataset.applicationId),
+      {
+        status: nextStatus,
+        updatedAt: serverTimestamp(),
+        [timestampField]: serverTimestamp()
+      }
+    );
+    select.dataset.currentStatus = nextStatus;
+    await loadApplications();
+  } catch (error) {
+    select.value = previousStatus;
+    select.disabled = false;
+    alert("応募状態を更新できませんでした。");
+  }
+}
+
+async function legacyChangeStatus(
   id,
   status,
   collectionName = "applications"
