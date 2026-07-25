@@ -50,6 +50,20 @@ The shared invite utilities use Node.js standard APIs only:
 
 The utilities do not log sensitive values or initialize any Firebase service.
 
+## Store invite preview
+
+`getStoreInvitePreview` is the only implemented callable in this phase. It:
+
+- accepts an exact 43-character Base64URL invite token;
+- hashes the token before reading `storeInvites/{tokenHash}`;
+- returns only a store name, masked email hint, expiration, and business scope;
+- supports `night`, `general`, and `both`;
+- treats a missing legacy business scope as `night`;
+- gives unavailable invites one generic public error.
+
+Integration tests refuse to run unless `GCLOUD_PROJECT` is `demo-nox-local`
+and `FIRESTORE_EMULATOR_HOST` points to the local Firestore emulator.
+
 ## Local-only commands
 
 After dependency installation is approved:

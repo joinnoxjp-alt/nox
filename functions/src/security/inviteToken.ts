@@ -13,6 +13,9 @@ import type {
 } from "../types/storeInvite";
 
 const INVITE_TOKEN_BYTES = 32;
+const INVITE_TOKEN_LENGTH = 43;
+const INVITE_TOKEN_PATTERN =
+  /^[A-Za-z0-9_-]{43}$/;
 
 export function generateInviteToken(): string {
   return randomBytes(INVITE_TOKEN_BYTES)
@@ -46,6 +49,16 @@ export function hashInviteToken(
   return createHash("sha256")
     .update(token, "utf8")
     .digest("hex");
+}
+
+export function isValidInviteTokenInput(
+  value: unknown
+): value is string {
+  return (
+    typeof value === "string" &&
+    value.length === INVITE_TOKEN_LENGTH &&
+    INVITE_TOKEN_PATTERN.test(value)
+  );
 }
 
 export function generateInviteTokenMaterial():

@@ -6,9 +6,7 @@
     "sourceMap": false
   },
   "include": [
-    "src/errors/**/*.ts",
-    "src/security/**/*.ts",
-    "src/types/**/*.ts",
+    "src/**/*.ts",
     "test/**/*.ts"
   ]
 }

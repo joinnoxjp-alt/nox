@@ -13,6 +13,10 @@ import {
   normalizeInviteEmail
 } from "../src/security/inviteToken";
 
+import {
+  createInviteEmailHint
+} from "../src/security/emailHint";
+
 test(
   "generateInviteToken returns 256-bit base64url data",
   () => {
@@ -178,5 +182,32 @@ test(
     }
 
     assert.equal(calls, 0);
+  }
+);
+
+test(
+  "createInviteEmailHint masks the full address",
+  () => {
+    assert.equal(
+      createInviteEmailHint(
+        "  Watabaseball00@Gmail.COM "
+      ),
+      "w***@g***.com"
+    );
+  }
+);
+
+test(
+  "createInviteEmailHint rejects malformed email",
+  () => {
+    assert.throws(
+      () => createInviteEmailHint(
+        "invalid-email"
+      ),
+      (error: unknown) =>
+        error instanceof StoreInviteUtilityError &&
+        error.code ===
+          STORE_INVITE_ERROR_CODES.INVALID_EMAIL
+    );
   }
 );
