@@ -854,6 +854,13 @@
             店舗から届いた掲載申請を確認・承認できます。
           </p>
 
+          <div
+            id="storeInviteResult"
+            class="admin-item-card"
+            hidden
+            aria-live="polite"
+          ></div>
+
           <div id="storeApplicationList">
             <p class="admin-message">
               店舗掲載申請を読み込み中...
@@ -1462,8 +1469,23 @@
       deleteObject
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
+    import {
+      getFunctions,
+      httpsCallable
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-functions.js";
+
     const db = getFirestore();
     const storage = getStorage();
+    const functions = getFunctions(
+      auth.app,
+      "asia-northeast1"
+    );
+
+    const approveStoreApplication =
+      httpsCallable(
+        functions,
+        "approveStoreApplicationAndIssueInvite"
+      );
 
     const userList =
       document.getElementById("userList");
@@ -1473,6 +1495,9 @@
 
     const storeApplicationList =
       document.getElementById("storeApplicationList");
+
+    const storeInviteResult =
+      document.getElementById("storeInviteResult");
 
     const adManagementGrid =
       document.getElementById("adManagementGrid");
@@ -1535,6 +1560,127 @@
         .replaceAll("'", "&#039;");
     }
 
+    function businessScopeLabel(value) {
+      const labels = {
+        night: "夜職求人",
+        general: "一般求人",
+        both: "夜職求人・一般求人の両方"
+      };
+
+      return labels[value] || "不明";
+    }
+
+    function storeApprovalErrorMessage(error) {
+      const code =
+        typeof error?.code === "string"
+          ? error.code
+          : "";
+      const reason =
+        typeof error?.details?.reason === "string"
+          ? error.details.reason
+          : "";
+
+      const reasonMessages = {
+        "store-application-not-found":
+          "対象の店舗掲載申請が見つかりません。",
+        "store-application-not-pending":
+          "この申請は承認待ち状態ではありません。",
+        "store-application-invalid":
+          "申請情報に不足または不整合があります。",
+        "store-application-already-registered":
+          "この申請は既に店舗登録済みです。",
+        "invite-already-issued":
+          "この申請には既に招待が発行されています。",
+        "invite-collision":
+          "招待を発行できませんでした。再発行せず管理者へ確認してください。"
+      };
+
+      if (reasonMessages[reason]) {
+        return reasonMessages[reason];
+      }
+
+      const codeMessages = {
+        "functions/unauthenticated":
+          "ログイン状態を確認してください。",
+        "functions/permission-denied":
+          "この操作を実行する管理者権限がありません。",
+        "functions/invalid-argument":
+          "承認対象の指定が正しくありません。",
+        "functions/not-found":
+          "対象の店舗掲載申請が見つかりません。",
+        "functions/failed-precondition":
+          "この店舗掲載申請は現在承認できません。",
+        "functions/already-exists":
+          "この申請には既に招待が発行されています。",
+        "functions/internal":
+          "招待を発行できませんでした。時間を置いて手動で再確認してください。"
+      };
+
+      return (
+        codeMessages[code] ||
+        "招待を発行できませんでした。自動再試行せず、申請状態を確認してください。"
+      );
+    }
+
+    function showStoreInviteResult(inviteUrl) {
+      storeInviteResult.replaceChildren();
+      storeInviteResult.hidden = false;
+
+      const heading =
+        document.createElement("h3");
+      heading.textContent =
+        "店舗招待URLを発行しました";
+
+      const description =
+        document.createElement("p");
+      description.textContent =
+        "このURLはこの画面で一度だけ表示されます。安全な方法で申請者へ共有してください。";
+
+      const urlText =
+        document.createElement("p");
+      urlText.textContent = inviteUrl;
+
+      const copyButton =
+        document.createElement("button");
+      copyButton.type = "button";
+      copyButton.className = "admin-button";
+      copyButton.textContent =
+        "招待URLをコピー";
+
+      const copyStatus =
+        document.createElement("p");
+      copyStatus.className =
+        "admin-message";
+
+      copyButton.addEventListener(
+        "click",
+        async () => {
+          copyButton.disabled = true;
+
+          try {
+            await navigator.clipboard.writeText(
+              inviteUrl
+            );
+            copyStatus.textContent =
+              "招待URLをコピーしました。";
+          } catch {
+            copyStatus.textContent =
+              "コピーできませんでした。URLを選択して手動でコピーしてください。";
+          } finally {
+            copyButton.disabled = false;
+          }
+        }
+      );
+
+      storeInviteResult.append(
+        heading,
+        description,
+        urlText,
+        copyButton,
+        copyStatus
+      );
+    }
+
     async function loadStoreApplications() {
       try {
         const snapshot = await getDocs(
@@ -1543,20 +1689,27 @@
 
         storeApplicationList.innerHTML = "";
 
-        if (snapshot.empty) {
+        const applications = [];
+        snapshot.forEach((applicationDoc) => {
+          const data =
+            applicationDoc.data();
+
+          if (data.status !== "pending") {
+            return;
+          }
+
+          applications.push({
+            id: applicationDoc.id,
+            ...data
+          });
+        });
+
+        if (applications.length === 0) {
           storeApplicationList.innerHTML = `
-            <p class="admin-message">店舗掲載申請はありません。</p>
+            <p class="admin-message">現在、承認待ちの店舗掲載申請はありません。</p>
           `;
           return;
         }
-
-        const applications = [];
-        snapshot.forEach((applicationDoc) => {
-          applications.push({
-            id: applicationDoc.id,
-            ...applicationDoc.data()
-          });
-        });
 
         applications.sort((left, right) => {
           const leftTime = left.createdAt?.toMillis?.() || 0;
@@ -1569,12 +1722,91 @@
           card.className = "admin-item-card";
           card.innerHTML = `
             <h3>${escapeHTML(application.storeName || "店舗名未設定")}</h3>
-            <p>掲載区分：${escapeHTML(application.businessScope || "night")}</p>
+            <p>掲載区分：${escapeHTML(businessScopeLabel(application.businessScope))}</p>
             <p>業種：${escapeHTML(application.businessType || "-")}</p>
             <p>地域：${escapeHTML(application.area || "-")}</p>
             <p>担当者：${escapeHTML(application.contactName || "-")}</p>
-            <p>状態：${escapeHTML(application.status || "pending")}</p>
+            <p>状態：承認待ち</p>
           `;
+
+          const buttonRow =
+            document.createElement("div");
+          buttonRow.className =
+            "admin-btn-row";
+
+          const approveButton =
+            document.createElement("button");
+          approveButton.type = "button";
+          approveButton.className =
+            "admin-button";
+          approveButton.textContent =
+            "承認して招待発行";
+
+          approveButton.addEventListener(
+            "click",
+            async () => {
+              const approved = confirm(
+                "この店舗掲載申請を承認して招待URLを発行しますか？"
+              );
+
+              if (!approved) {
+                return;
+              }
+
+              approveButton.disabled = true;
+              approveButton.textContent =
+                "招待発行中...";
+
+              try {
+                const response =
+                  await approveStoreApplication({
+                    storeApplicationId:
+                      application.id
+                  });
+
+                const inviteUrl =
+                  response?.data?.inviteUrl;
+
+                if (
+                  typeof inviteUrl !== "string"
+                ) {
+                  throw new Error(
+                    "Invalid callable response."
+                  );
+                }
+
+                const parsedUrl =
+                  new URL(inviteUrl);
+
+                if (
+                  parsedUrl.protocol !== "https:"
+                ) {
+                  throw new Error(
+                    "Invalid callable response."
+                  );
+                }
+
+                await loadStoreApplications();
+                showStoreInviteResult(
+                  inviteUrl
+                );
+              } catch (error) {
+                alert(
+                  storeApprovalErrorMessage(
+                    error
+                  )
+                );
+                approveButton.disabled = false;
+                approveButton.textContent =
+                  "承認して招待発行";
+              }
+            }
+          );
+
+          buttonRow.appendChild(
+            approveButton
+          );
+          card.appendChild(buttonRow);
           storeApplicationList.appendChild(card);
         });
       } catch (error) {
