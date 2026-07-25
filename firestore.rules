@@ -1,0 +1,390 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function hasUserDocument() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+
+    function currentUser() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function isActiveAdmin() {
+      return hasUserDocument()
+        && currentUser().role == "admin"
+        && currentUser().status == "active";
+    }
+
+    function isActiveStore() {
+      return hasUserDocument()
+        && currentUser().role == "store"
+        && currentUser().status == "active";
+    }
+
+    function isUsableUser() {
+      return hasUserDocument()
+        && currentUser().role == "user"
+        && currentUser().status in ["pending", "active"];
+    }
+
+    function isSelf(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    function isValidApplicationStatus(status) {
+      return status in ["new", "progress", "hired", "ng"];
+    }
+
+    function isPublishedJob(jobId) {
+      return exists(/databases/$(database)/documents/jobs/$(jobId))
+        && get(/databases/$(database)/documents/jobs/$(jobId)).data.status == "approved";
+    }
+
+    /*
+     * User accounts
+     *
+     * A user may create only their own safe, non-privileged account.
+     * Existing users may update profile fields, but never role/status/uid.
+     */
+    match /users/{uid} {
+      allow get: if isSelf(uid) || isActiveAdmin();
+      allow list: if isActiveAdmin();
+
+      allow create: if isSelf(uid)
+        && request.resource.data.role == "user"
+        && request.resource.data.status == "pending"
+        && (!request.resource.data.keys().hasAny(["uid"])
+          || request.resource.data.uid == request.auth.uid)
+        && request.resource.data.keys().hasOnly([
+          "uid",
+          "name",
+          "nickname",
+          "birthDate",
+          "email",
+          "phone",
+          "area",
+          "jobType",
+          "salary",
+          "experience",
+          "height",
+          "bodyType",
+          "alcohol",
+          "workDays",
+          "selfPr",
+          "sns",
+          "bio",
+          "profileImage",
+          "savedJobIds",
+          "role",
+          "status",
+          "createdAt",
+          "updatedAt"
+        ]);
+
+      allow update: if isSelf(uid)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          "name",
+          "nickname",
+          "birthDate",
+          "email",
+          "phone",
+          "area",
+          "jobType",
+          "salary",
+          "experience",
+          "height",
+          "bodyType",
+          "alcohol",
+          "workDays",
+          "selfPr",
+          "sns",
+          "bio",
+          "profileImage",
+          "savedJobIds",
+          "updatedAt"
+        ]);
+
+      allow update, delete: if isActiveAdmin();
+    }
+
+    /*
+     * Store profiles
+     *
+     * Store ownership is based only on Authentication UID and ownerId.
+     * Store names are display data and are never authorization identifiers.
+     */
+    match /stores/{storeId} {
+      allow get: if isActiveAdmin()
+        || (isActiveStore()
+          && request.auth.uid == storeId
+          && resource.data.ownerId == request.auth.uid);
+      allow list: if isActiveAdmin();
+
+      allow create: if isActiveAdmin()
+        || (isActiveStore()
+          && request.auth.uid == storeId
+          && request.resource.data.ownerId == request.auth.uid);
+
+      allow update: if isActiveAdmin()
+        || (isActiveStore()
+          && request.auth.uid == storeId
+          && resource.data.ownerId == request.auth.uid
+          && request.resource.data.ownerId == resource.data.ownerId
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            "storeName",
+            "ownerName",
+            "email",
+            "area",
+            "phone",
+            "line",
+            "instagram",
+            "description",
+            "updatedAt"
+          ]));
+
+      allow delete: if isActiveAdmin();
+    }
+
+    /*
+     * Published jobs
+     *
+     * Public clients may read approved jobs only. Administrative writes are
+     * kept client-compatible for the current admin pages.
+     */
+    match /jobs/{jobId} {
+      allow get, list: if resource.data.status == "approved"
+        || isActiveAdmin()
+        || (isActiveStore()
+          && resource.data.ownerId == request.auth.uid);
+
+      allow create, update, delete: if isActiveAdmin();
+    }
+
+    /*
+     * Store-to-NOX job publication requests
+     *
+     * New requests require an authenticated, active store. Approval metadata
+     * and status transitions are reserved for administrators.
+     */
+    match /jobApplications/{applicationId} {
+      allow read: if isActiveAdmin();
+
+      allow create: if isActiveStore()
+        && request.resource.data.ownerId == request.auth.uid
+        && request.resource.data.submittedBy == request.auth.uid
+        && request.resource.data.status == "pending"
+        && !request.resource.data.keys().hasAny([
+          "approvedAt",
+          "approvedBy",
+          "inviteCode",
+          "inviteUrl",
+          "inviteCreatedAt"
+        ])
+        && request.resource.data.keys().hasOnly([
+          "ownerId",
+          "submittedBy",
+          "storeName",
+          "businessType",
+          "targetGender",
+          "jobAudience",
+          "jobType",
+          "position",
+          "area",
+          "address",
+          "station",
+          "businessHours",
+          "closedDay",
+          "salary",
+          "salaryText",
+          "back",
+          "dailyPay",
+          "trial",
+          "beginner",
+          "age",
+          "quota",
+          "penalty",
+          "shift",
+          "shopPR",
+          "atmosphere",
+          "customerBase",
+          "staffCount",
+          "ageGroup",
+          "website",
+          "instagram",
+          "tiktok",
+          "twitter",
+          "officialLine",
+          "applicationPhone",
+          "contactName",
+          "contactInfo",
+          "images",
+          "image",
+          "mainImage",
+          "imageUrl",
+          "status",
+          "createdAt"
+        ]);
+
+      allow update, delete: if isActiveAdmin();
+    }
+
+    /*
+     * Job-seeker applications
+     *
+     * New applications require authentication, bind the applicant UID, and
+     * must target an approved job owned by the stated store UID.
+     */
+    match /applications/{applicationId} {
+      allow create: if isUsableUser()
+        && isPublishedJob(request.resource.data.jobId)
+        && request.resource.data.applicantId == request.auth.uid
+        && request.resource.data.storeId ==
+          get(/databases/$(database)/documents/jobs/$(request.resource.data.jobId)).data.ownerId
+        && request.resource.data.status == "new"
+        && request.resource.data.jobId is string
+        && request.resource.data.storeId is string
+        && request.resource.data.applicantId is string
+        && request.resource.data.applicantName is string
+        && request.resource.data.applicantName.size() > 0
+        && request.resource.data.applicantName.size() <= 100
+        && request.resource.data.applicantPhone is string
+        && request.resource.data.applicantPhone.size() > 0
+        && request.resource.data.applicantPhone.size() <= 30
+        && (!request.resource.data.keys().hasAny(["storeName"])
+          || (request.resource.data.storeName is string
+            && request.resource.data.storeName.size() <= 200))
+        && (!request.resource.data.keys().hasAny(["message"])
+          || (request.resource.data.message is string
+            && request.resource.data.message.size() <= 2000))
+        && request.resource.data.keys().hasAll([
+          "jobId",
+          "storeId",
+          "applicantId",
+          "applicantName",
+          "applicantPhone",
+          "status",
+          "createdAt"
+        ])
+        && request.resource.data.keys().hasOnly([
+          "jobId",
+          "storeId",
+          "storeName",
+          "applicantId",
+          "applicantName",
+          "applicantPhone",
+          "message",
+          "status",
+          "createdAt"
+        ]);
+
+      allow get, list: if isActiveAdmin()
+        || (signedIn() && resource.data.applicantId == request.auth.uid)
+        || (isActiveStore() && resource.data.storeId == request.auth.uid);
+
+      allow update: if isActiveAdmin()
+        || (isActiveStore()
+          && resource.data.storeId == request.auth.uid
+          && request.resource.data.storeId == resource.data.storeId
+          && request.resource.data.jobId == resource.data.jobId
+          && request.resource.data.applicantId == resource.data.applicantId
+          && isValidApplicationStatus(request.resource.data.status)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            "status",
+            "updatedAt"
+          ]));
+
+      allow delete: if isActiveAdmin();
+    }
+
+    /*
+     * Legacy job applications
+     *
+     * No new legacy records may be created. Existing records are accessible
+     * only when they contain a real storeId/applicantId ownership key.
+     */
+    match /jobEntries/{entryId} {
+      allow get, list: if isActiveAdmin()
+        || (signedIn() && resource.data.applicantId == request.auth.uid)
+        || (isActiveStore() && resource.data.storeId == request.auth.uid);
+
+      allow create: if false;
+
+      allow update: if isActiveAdmin()
+        || (isActiveStore()
+          && resource.data.storeId == request.auth.uid
+          && request.resource.data.storeId == resource.data.storeId
+          && isValidApplicationStatus(request.resource.data.status)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            "status",
+            "updatedAt"
+          ]));
+
+      allow delete: if isActiveAdmin();
+    }
+
+    /*
+     * Store invitations contain privilege-granting material.
+     *
+     * They are intentionally admin-only. Store registration must be moved to
+     * a trusted backend transaction before these rules are deployed.
+     */
+    match /storeInvites/{inviteId} {
+      allow read, create, update, delete: if isActiveAdmin();
+    }
+
+    /*
+     * Cast profiles
+     *
+     * Public reads are restricted to explicitly visible profiles. Queries
+     * must include the same visibility constraint.
+     */
+    match /casts/{castId} {
+      allow get, list: if isActiveAdmin()
+        || resource.data.visible == true;
+      allow create, update, delete: if isActiveAdmin();
+    }
+
+    /*
+     * Advertisements
+     *
+     * Public clients may read enabled ads. All writes, including counters,
+     * are admin-only because client-side counters can be forged.
+     */
+    match /ads/{adId} {
+      allow get, list: if isActiveAdmin()
+        || resource.data.enabled == true;
+      allow create, update, delete: if isActiveAdmin();
+    }
+
+    /*
+     * View analytics
+     *
+     * Browser-generated analytics are not trustworthy. Writes must be moved
+     * to a trusted backend. Stores may read only records keyed by owner UID.
+     */
+    match /jobViewStats/{statId} {
+      allow get, list: if isActiveAdmin()
+        || (isActiveStore() && resource.data.storeId == request.auth.uid);
+      allow create, update, delete: if isActiveAdmin();
+    }
+
+    match /storeViewStats/{statId} {
+      allow get, list: if isActiveAdmin()
+        || (isActiveStore() && resource.data.storeId == request.auth.uid);
+      allow create, update, delete: if isActiveAdmin();
+    }
+
+    /*
+     * Deny every undeclared collection and all subcollections by default.
+     */
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

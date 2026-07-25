@@ -1,0 +1,18 @@
+// NOX production Firestore Security Rules backup
+//
+// STATUS: NOT CAPTURED
+//
+// The current production rules could not be read from this repository because
+// no authenticated Firebase CLI or Google Cloud CLI connection is configured.
+//
+// Before any Phase 2 work:
+// 1. Open Firebase Console > Firestore Database > Rules.
+// 2. Copy the complete currently published rules without editing them.
+// 3. Replace this entire placeholder with that exact text.
+// 4. Record the Firebase Console release timestamp and ruleset version in the
+//    Git commit message.
+//
+// IMPORTANT:
+// - This file is a backup target only.
+// - This placeholder is not the current production rules.
+// - Do not deploy this placeholder.

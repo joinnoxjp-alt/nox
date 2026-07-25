@@ -1,0 +1,136 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function hasUserDocument() {
+      return signedIn()
+        && firestore.exists(
+          /databases/(default)/documents/users/$(request.auth.uid)
+        );
+    }
+
+    function currentUser() {
+      return firestore.get(
+        /databases/(default)/documents/users/$(request.auth.uid)
+      ).data;
+    }
+
+    function isActiveAdmin() {
+      return hasUserDocument()
+        && currentUser().role == "admin"
+        && currentUser().status == "active";
+    }
+
+    function isActiveStore() {
+      return hasUserDocument()
+        && currentUser().role == "store"
+        && currentUser().status == "active";
+    }
+
+    function validImage(maxBytes) {
+      return request.resource != null
+        && request.resource.size > 0
+        && request.resource.size <= maxBytes
+        && request.resource.contentType.matches("image/.*");
+    }
+
+    /*
+     * Job images use the owning store UID as the first path component.
+     * Public reads support published pages; writes require the matching active
+     * store or an active administrator.
+     */
+    match /jobs/{storeId}/{fileName} {
+      allow read: if true;
+      allow create, update: if validImage(5 * 1024 * 1024)
+        && (isActiveAdmin()
+          || (isActiveStore() && request.auth.uid == storeId));
+      allow delete: if isActiveAdmin()
+        || (isActiveStore() && request.auth.uid == storeId);
+    }
+
+    /*
+     * Legacy administrator job-image path. New store uploads must not use it
+     * because it does not encode store ownership.
+     */
+    match /job-images/{fileName} {
+      allow read: if true;
+      allow create, update: if isActiveAdmin()
+        && validImage(5 * 1024 * 1024);
+      allow delete: if isActiveAdmin();
+    }
+
+    match /job-images/{jobId}/{fileName} {
+      allow read: if true;
+      allow create, update: if isActiveAdmin()
+        && validImage(5 * 1024 * 1024);
+      allow delete: if isActiveAdmin();
+    }
+
+    /*
+     * Cast media is image-only and administrator-managed.
+     * The existing cast video upload path is deliberately denied.
+     */
+    match /casts/{castId}/main/{fileName} {
+      allow read: if true;
+      allow create, update: if isActiveAdmin()
+        && validImage(5 * 1024 * 1024);
+      allow delete: if isActiveAdmin();
+    }
+
+    match /casts/{castId}/gallery/{fileName} {
+      allow read: if true;
+      allow create, update: if isActiveAdmin()
+        && validImage(5 * 1024 * 1024);
+      allow delete: if isActiveAdmin();
+    }
+
+    /*
+     * Advertisement images are public, but administrator-managed.
+     */
+    match /ads/{slotId}/{fileName} {
+      allow read: if true;
+      allow create, update: if isActiveAdmin()
+        && validImage(5 * 1024 * 1024);
+      allow delete: if isActiveAdmin();
+    }
+
+    /*
+     * Store branding belongs to the authenticated store UID.
+     */
+    match /stores/{storeId}/{fileName} {
+      allow read: if true;
+      allow create, update: if validImage(3 * 1024 * 1024)
+        && (isActiveAdmin()
+          || (isActiveStore() && request.auth.uid == storeId));
+      allow delete: if isActiveAdmin()
+        || (isActiveStore() && request.auth.uid == storeId);
+    }
+
+    /*
+     * User profile images belong to the authenticated user UID.
+     */
+    match /users/{uid}/{fileName} {
+      allow read: if true;
+      allow create, update: if signedIn()
+        && request.auth.uid == uid
+        && validImage(2 * 1024 * 1024);
+      allow delete: if signedIn()
+        && (request.auth.uid == uid || isActiveAdmin());
+    }
+
+    /*
+     * Explicitly deny cast videos and every unknown or dangerous path.
+     */
+    match /casts/{castId}/video/{fileName} {
+      allow read, write: if false;
+    }
+
+    match /{filePath=**} {
+      allow read, write: if false;
+    }
+  }
+}
