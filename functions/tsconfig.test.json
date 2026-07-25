@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "lib-test",
+    "sourceMap": false
+  },
+  "include": [
+    "src/errors/**/*.ts",
+    "src/security/**/*.ts",
+    "src/types/**/*.ts",
+    "test/**/*.ts"
+  ]
+}

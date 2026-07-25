@@ -39,6 +39,17 @@ Development:
 Dependencies have not been installed in this phase. `package-lock.json` must be
 generated when installation is separately approved.
 
+## Invite security utilities
+
+The shared invite utilities use Node.js standard APIs only:
+
+- 256-bit tokens from `randomBytes(32)` encoded as Base64URL
+- SHA-256 token hashes encoded as lowercase hexadecimal
+- trimmed, lowercase invite email normalization
+- fixed error codes and messages that do not disclose tokens or email addresses
+
+The utilities do not log sensitive values or initialize any Firebase service.
+
 ## Local-only commands
 
 After dependency installation is approved:
@@ -46,6 +57,7 @@ After dependency installation is approved:
 ```powershell
 npm --prefix functions run typecheck
 npm --prefix functions run build
+npm --prefix functions test
 npm --prefix functions run emulators
 ```
 
