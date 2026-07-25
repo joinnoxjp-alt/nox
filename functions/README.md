@@ -17,6 +17,33 @@ been implemented.
 - `revokeStoreInvite`
 - `reissueStoreInvite`
 
+## Discord operations notifications
+
+The following second-generation Firestore triggers share one server-side
+notifier and one Secret Manager secret:
+
+- `notifyDiscordOnUserCreated` for `users/{uid}`
+- `notifyDiscordOnJobApplicationCreated` for
+  `jobApplications/{applicationId}`
+- `notifyDiscordOnStoreApplicationCreated` for
+  `storeApplications/{applicationId}`
+
+The secret name is `DISCORD_OPERATIONS_WEBHOOK_URL`. Its value must never be
+committed, logged, returned to clients, or used by local tests. Local tests
+inject a mock sender.
+
+Delivery claims are stored at `discordNotifications/{eventKey}`, where
+`eventKey` is a SHA-256 hash of the event type and source document path.
+Records contain no notification payload or source document ID. Automatic
+Eventarc retries are disabled. A known HTTP failure is recorded as `failed`;
+an unexpected process termination can leave `processing` for administrator
+review. This at-most-once policy favors preventing duplicate Discord messages
+over automatic retries.
+
+The legacy browser POSTs in `pages/register.html` and
+`pages/job-create.html` remain temporarily. They must be removed in the same
+production release that enables these triggers to avoid duplicate messages.
+
 ## Runtime
 
 - Cloud Functions for Firebase, 2nd generation

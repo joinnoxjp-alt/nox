@@ -638,6 +638,15 @@ service cloud.firestore {
     }
 
     /*
+     * Discord delivery records contain operational state only. Payloads,
+     * webhook URLs, and source document IDs are never stored here.
+     */
+    match /discordNotifications/{eventKey} {
+      allow get, list: if isActiveAdmin();
+      allow create, update, delete: if false;
+    }
+
+    /*
      * Deny every undeclared collection and all subcollections by default.
      */
     match /{document=**} {

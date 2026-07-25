@@ -1,3 +1,7 @@
+import {
+  defineSecret
+} from "firebase-functions/params";
+
 export const REGION = "asia-northeast1";
 
 export const FIXED_ADMIN_UID =
@@ -31,6 +35,21 @@ export const authenticatedCallableOptions = {
   enforceAppCheck: false,
   serviceAccount: FUNCTIONS_RUNTIME_SERVICE_ACCOUNT
 } as const;
+
+export const DISCORD_OPERATIONS_WEBHOOK_URL =
+  defineSecret(
+    "DISCORD_OPERATIONS_WEBHOOK_URL"
+  );
+
+export const discordTriggerOptions = {
+  region: REGION,
+  retry: false,
+  serviceAccount:
+    FUNCTIONS_RUNTIME_SERVICE_ACCOUNT,
+  secrets: [
+    DISCORD_OPERATIONS_WEBHOOK_URL
+  ]
+};
 
 export const STORE_INVITE_VALIDITY_DAYS = 7;
 
