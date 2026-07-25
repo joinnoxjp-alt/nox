@@ -62,6 +62,62 @@ service cloud.firestore {
       return status in ["new", "progress", "hired", "ng"];
     }
 
+    function isValidCachedImageUrl(url) {
+      return url is string && url.size() <= 2048;
+    }
+
+    function isValidStoreMediaPath(path, storeId, directory) {
+      return path is string
+        && path.matches(
+          "^stores/" + storeId + "/" + directory
+            + "/[0-9a-fA-F-]{36}$"
+        );
+    }
+
+    function isValidOptionalStoreImage(
+      data,
+      urlField,
+      pathField,
+      storeId,
+      directory
+    ) {
+      return (!data.keys().hasAny([urlField, pathField]))
+        || (data.keys().hasAll([urlField, pathField])
+          && isValidCachedImageUrl(data[urlField])
+          && data[pathField] is string
+          && ((data[urlField] == "" && data[pathField] == "")
+            || (data[urlField].size() > 0
+              && isValidStoreMediaPath(
+                data[pathField],
+                storeId,
+                directory
+              ))));
+    }
+
+    function hasValidStoreMedia(data, storeId) {
+      return isValidOptionalStoreImage(
+          data,
+          "logoUrl",
+          "logoStoragePath",
+          storeId,
+          "logo"
+        )
+        && isValidOptionalStoreImage(
+          data,
+          "coverImageUrl",
+          "coverImageStoragePath",
+          storeId,
+          "cover"
+        )
+        && isValidOptionalStoreImage(
+          data,
+          "profileImageUrl",
+          "profileImageStoragePath",
+          storeId,
+          "profile"
+        );
+    }
+
     function isPublishedJob(jobId) {
       return exists(/databases/$(database)/documents/jobs/$(jobId))
         && get(/databases/$(database)/documents/jobs/$(jobId)).data.status == "approved";
@@ -189,6 +245,7 @@ service cloud.firestore {
           && request.auth.uid == storeId
           && resource.data.ownerId == request.auth.uid
           && request.resource.data.ownerId == resource.data.ownerId
+          && hasValidStoreMedia(request.resource.data, storeId)
           && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
             "storeName",
             "ownerName",
@@ -198,10 +255,52 @@ service cloud.firestore {
             "line",
             "instagram",
             "description",
-            "updatedAt"
+            "updatedAt",
+            "logoUrl",
+            "logoStoragePath",
+            "coverImageUrl",
+            "coverImageStoragePath",
+            "profileImageUrl",
+            "profileImageStoragePath",
+            "mediaUpdatedAt"
           ]));
 
       allow delete: if isActiveAdmin();
+    }
+
+    match /stores/{storeId}/galleryImages/{slotId} {
+      allow get, list: if true;
+
+      allow create, update: if isActiveStore()
+        && request.auth.uid == storeId
+        && slotId in ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+        && exists(/databases/$(database)/documents/stores/$(storeId))
+        && get(/databases/$(database)/documents/stores/$(storeId)).data.ownerId
+          == request.auth.uid
+        && request.resource.data.keys().hasAll([
+          "url",
+          "storagePath",
+          "updatedAt"
+        ])
+        && request.resource.data.keys().hasOnly([
+          "url",
+          "storagePath",
+          "createdAt",
+          "updatedAt"
+        ])
+        && isValidCachedImageUrl(request.resource.data.url)
+        && request.resource.data.url.size() > 0
+        && request.resource.data.storagePath is string
+        && request.resource.data.storagePath.matches(
+          "^stores/" + storeId + "/gallery/" + slotId
+            + "/[0-9a-fA-F-]{36}$"
+        );
+
+      allow delete: if isActiveStore()
+        && request.auth.uid == storeId
+        && exists(/databases/$(database)/documents/stores/$(storeId))
+        && get(/databases/$(database)/documents/stores/$(storeId)).data.ownerId
+          == request.auth.uid;
     }
 
     /*

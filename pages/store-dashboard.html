@@ -34,6 +34,14 @@ th{color:#aaa}
 .tag{display:inline-block;padding:5px 10px;border-radius:999px;background:#1b1b1b;color:#d6a84f;font-size:12px}
 .hidden{display:none}
 .actionBtns{display:flex;gap:8px;flex-wrap:wrap}
+.mediaGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.mediaCard{background:#090909;border:1px solid #2b2b2b;border-radius:14px;padding:14px}
+.mediaCard img{width:100%;height:180px;object-fit:cover;border-radius:10px;background:#050505;margin-bottom:12px}
+.mediaCard .logoPreview,.mediaCard .profilePreview{object-fit:contain}
+.mediaStatus{min-height:20px;color:#aaa;font-size:13px;margin-top:10px}
+.galleryGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-top:14px}
+.galleryItem{background:#090909;border:1px solid #2b2b2b;border-radius:12px;padding:10px}
+.galleryItem img{width:100%;height:130px;object-fit:cover;border-radius:8px;margin-bottom:8px}
 @media(max-width:800px){
 .wrap{display:block}
 .side{position:relative;width:100%;height:auto}
@@ -164,6 +172,52 @@ table{font-size:12px}
 店舗情報を保存
 </button>
 </div>
+
+<div class="panel">
+<h2>店舗画像</h2>
+<p style="color:#aaa;">JPEG・PNG・WebPのみ。画像は店舗アカウント本人だけが変更できます。</p>
+
+<div class="mediaGrid">
+  <div class="mediaCard">
+    <h3>店舗ロゴ</h3>
+    <img id="logoPreview" class="logoPreview" alt="店舗ロゴ" hidden>
+    <input id="logoFile" type="file" accept="image/jpeg,image/png,image/webp">
+    <div class="actionBtns">
+      <button type="button" class="btn" data-upload-kind="logo">変更</button>
+      <button type="button" class="btn gray" data-delete-kind="logo">削除</button>
+    </div>
+  </div>
+
+  <div class="mediaCard">
+    <h3>カバー画像</h3>
+    <img id="coverPreview" alt="店舗カバー画像" hidden>
+    <input id="coverFile" type="file" accept="image/jpeg,image/png,image/webp">
+    <div class="actionBtns">
+      <button type="button" class="btn" data-upload-kind="cover">変更</button>
+      <button type="button" class="btn gray" data-delete-kind="cover">削除</button>
+    </div>
+  </div>
+
+  <div class="mediaCard">
+    <h3>プロフィール画像</h3>
+    <img id="storeProfilePreview" class="profilePreview" alt="店舗プロフィール画像" hidden>
+    <input id="profileFile" type="file" accept="image/jpeg,image/png,image/webp">
+    <div class="actionBtns">
+      <button type="button" class="btn" data-upload-kind="profile">変更</button>
+      <button type="button" class="btn gray" data-delete-kind="profile">削除</button>
+    </div>
+  </div>
+</div>
+
+<div class="mediaCard" style="margin-top:16px;">
+  <h3>ギャラリー（最大10枚）</h3>
+  <input id="galleryFile" type="file" accept="image/jpeg,image/png,image/webp">
+  <button type="button" id="addGalleryButton" class="btn">画像を追加</button>
+  <div id="galleryGrid" class="galleryGrid"></div>
+</div>
+
+<p id="mediaStatus" class="mediaStatus" role="status" aria-live="polite"></p>
+</div>
 </section>
 
 <section id="pay" class="hidden">
@@ -209,12 +263,60 @@ import {
   getDocs,
   query,
   where,
-  updateDoc
+  updateDoc,
+  deleteDoc,
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+import {
+  getStorage,
+  ref as storageRef,
+  uploadBytes,
+  getDownloadURL,
+  deleteObject
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
 let currentUser = null;
 let currentStoreName = "";
 let currentJobIds = [];
+let currentStoreMedia = {
+  logo: null,
+  cover: null,
+  profile: null,
+  gallery: []
+};
+const storage = getStorage();
+const ALLOWED_IMAGE_TYPES = new Set([
+  "image/jpeg",
+  "image/png",
+  "image/webp"
+]);
+const MEDIA_CONFIG = {
+  logo: {
+    inputId: "logoFile",
+    previewId: "logoPreview",
+    directory: "logo",
+    maxBytes: 2 * 1024 * 1024,
+    urlField: "logoUrl",
+    pathField: "logoStoragePath"
+  },
+  cover: {
+    inputId: "coverFile",
+    previewId: "coverPreview",
+    directory: "cover",
+    maxBytes: 5 * 1024 * 1024,
+    urlField: "coverImageUrl",
+    pathField: "coverImageStoragePath"
+  },
+  profile: {
+    inputId: "profileFile",
+    previewId: "storeProfilePreview",
+    directory: "profile",
+    maxBytes: 2 * 1024 * 1024,
+    urlField: "profileImageUrl",
+    pathField: "profileImageStoragePath"
+  }
+};
 
 /* =========================
    共通処理
@@ -265,6 +367,326 @@ function isCurrentMonth(timestamp) {
 
   return formatter.format(date) === formatter.format(new Date());
 }
+
+function getOwnedStorePrefix() {
+  if (!currentUser) return "";
+  return `stores/${currentUser.uid}/`;
+}
+
+function isOwnedStoragePath(path, directory) {
+  return typeof path === "string"
+    && path.startsWith(`${getOwnedStorePrefix()}${directory}/`)
+    && !path.includes("..");
+}
+
+function setMediaStatus(message) {
+  document.getElementById("mediaStatus").textContent = message;
+}
+
+async function decodeImage(file) {
+  const objectUrl = URL.createObjectURL(file);
+  try {
+    await new Promise((resolve, reject) => {
+      const image = new Image();
+      image.onload = resolve;
+      image.onerror = reject;
+      image.src = objectUrl;
+    });
+  } finally {
+    URL.revokeObjectURL(objectUrl);
+  }
+}
+
+async function validateImageFile(file, maxBytes) {
+  if (!file || !ALLOWED_IMAGE_TYPES.has(file.type)) {
+    throw new Error("JPEG・PNG・WebP画像を選択してください。");
+  }
+  if (file.size <= 0 || file.size > maxBytes) {
+    throw new Error(`画像サイズは${Math.floor(maxBytes / 1024 / 1024)}MB以下にしてください。`);
+  }
+  try {
+    await decodeImage(file);
+  } catch {
+    throw new Error("画像として読み込めないファイルです。");
+  }
+}
+
+function makeStoragePath(directory, slot = null) {
+  const slotPart = slot === null ? "" : `${slot}/`;
+  return `${getOwnedStorePrefix()}${directory}/${slotPart}${crypto.randomUUID()}`;
+}
+
+async function resolveImageUrl(cachedUrl, path, directory) {
+  if (!isOwnedStoragePath(path, directory)) return "";
+
+  if (typeof cachedUrl === "string" && cachedUrl) {
+    const available = await new Promise(resolve => {
+      const image = new Image();
+      image.onload = () => resolve(true);
+      image.onerror = () => resolve(false);
+      image.src = cachedUrl;
+    });
+    if (available) return cachedUrl;
+  }
+
+  try {
+    return await getDownloadURL(storageRef(storage, path));
+  } catch {
+    return "";
+  }
+}
+
+function showPreview(element, url) {
+  if (!url) {
+    element.hidden = true;
+    element.removeAttribute("src");
+    return;
+  }
+  element.src = url;
+  element.hidden = false;
+}
+
+async function renderStoreMedia() {
+  for (const [kind, config] of Object.entries(MEDIA_CONFIG)) {
+    const item = currentStoreMedia[kind];
+    const url = item
+      ? await resolveImageUrl(item.url, item.storagePath, config.directory)
+      : "";
+    showPreview(document.getElementById(config.previewId), url);
+  }
+
+  const grid = document.getElementById("galleryGrid");
+  grid.replaceChildren();
+
+  for (const item of currentStoreMedia.gallery) {
+    if (!isOwnedStoragePath(item.storagePath, "gallery")) continue;
+    const url = await resolveImageUrl(item.url, item.storagePath, "gallery");
+    const card = document.createElement("div");
+    card.className = "galleryItem";
+    const image = document.createElement("img");
+    image.alt = "店舗ギャラリー画像";
+    if (url) image.src = url;
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "btn gray";
+    button.textContent = "削除";
+    button.addEventListener("click", () => deleteGalleryImage(item, button));
+    card.append(image, button);
+    grid.append(card);
+  }
+
+  document.getElementById("addGalleryButton").disabled =
+    currentStoreMedia.gallery.length >= 10;
+}
+
+function readStoreMedia(data) {
+  currentStoreMedia.logo =
+    isOwnedStoragePath(data.logoStoragePath, "logo")
+      ? { url: data.logoUrl || "", storagePath: data.logoStoragePath }
+      : null;
+  currentStoreMedia.cover =
+    isOwnedStoragePath(data.coverImageStoragePath, "cover")
+      ? { url: data.coverImageUrl || "", storagePath: data.coverImageStoragePath }
+      : null;
+  currentStoreMedia.profile =
+    isOwnedStoragePath(data.profileImageStoragePath, "profile")
+      ? { url: data.profileImageUrl || "", storagePath: data.profileImageStoragePath }
+      : null;
+  currentStoreMedia.gallery = [];
+}
+
+async function loadGalleryImages() {
+  const gallerySnapshot = await getDocs(
+    collection(db, "stores", currentUser.uid, "galleryImages")
+  );
+  currentStoreMedia.gallery = gallerySnapshot.docs
+    .map(imageDoc => ({ slot: imageDoc.id, ...imageDoc.data() }))
+    .filter(item =>
+      /^[0-9]$/.test(item.slot)
+      && isOwnedStoragePath(item.storagePath, `gallery/${item.slot}`)
+      && typeof item.url === "string"
+    )
+    .sort((a, b) => Number(a.slot) - Number(b.slot))
+    .slice(0, 10);
+}
+
+async function uploadSingleImage(kind, button) {
+  const config = MEDIA_CONFIG[kind];
+  const file = document.getElementById(config.inputId).files?.[0];
+  button.disabled = true;
+  let newPath = "";
+
+  try {
+    await validateImageFile(file, config.maxBytes);
+    newPath = makeStoragePath(config.directory);
+    await uploadBytes(storageRef(storage, newPath), file, {
+      contentType: file.type,
+      customMetadata: { ownerId: currentUser.uid, mediaKind: kind }
+    });
+    const newUrl = await getDownloadURL(storageRef(storage, newPath));
+    const previous = currentStoreMedia[kind];
+
+    await updateDoc(doc(db, "stores", currentUser.uid), {
+      [config.urlField]: newUrl,
+      [config.pathField]: newPath,
+      mediaUpdatedAt: serverTimestamp()
+    });
+
+    currentStoreMedia[kind] = { url: newUrl, storagePath: newPath };
+    await renderStoreMedia();
+
+    if (previous && isOwnedStoragePath(previous.storagePath, config.directory)) {
+      try {
+        await deleteObject(storageRef(storage, previous.storagePath));
+      } catch {
+        setMediaStatus("新しい画像は保存されましたが、旧画像の後処理に失敗しました。");
+        return;
+      }
+    }
+    setMediaStatus("画像を更新しました。");
+  } catch (error) {
+    if (newPath && isOwnedStoragePath(newPath, config.directory)) {
+      try {
+        await deleteObject(storageRef(storage, newPath));
+      } catch {
+        // Firestoreから参照されない孤立画像。機密情報をログへ出さない。
+      }
+    }
+    setMediaStatus(error instanceof Error ? error.message : "画像を更新できませんでした。");
+  } finally {
+    button.disabled = false;
+  }
+}
+
+async function deleteSingleImage(kind, button) {
+  const config = MEDIA_CONFIG[kind];
+  const previous = currentStoreMedia[kind];
+  if (!previous || !isOwnedStoragePath(previous.storagePath, config.directory)) return;
+  button.disabled = true;
+
+  try {
+    await updateDoc(doc(db, "stores", currentUser.uid), {
+      [config.urlField]: "",
+      [config.pathField]: "",
+      mediaUpdatedAt: serverTimestamp()
+    });
+    try {
+      await deleteObject(storageRef(storage, previous.storagePath));
+    } catch {
+      await updateDoc(doc(db, "stores", currentUser.uid), {
+        [config.urlField]: previous.url,
+        [config.pathField]: previous.storagePath,
+        mediaUpdatedAt: serverTimestamp()
+      });
+      throw new Error("画像を削除できなかったため、既存画像を維持しました。");
+    }
+    currentStoreMedia[kind] = null;
+    await renderStoreMedia();
+    setMediaStatus("画像を削除しました。");
+  } catch (error) {
+    setMediaStatus(error instanceof Error ? error.message : "画像を削除できませんでした。");
+  } finally {
+    button.disabled = false;
+  }
+}
+
+async function addGalleryImage(button) {
+  const file = document.getElementById("galleryFile").files?.[0];
+  if (currentStoreMedia.gallery.length >= 10) {
+    setMediaStatus("ギャラリーは10枚までです。");
+    return;
+  }
+
+  button.disabled = true;
+  let newPath = "";
+  try {
+    await validateImageFile(file, 5 * 1024 * 1024);
+    const usedSlots = new Set(
+      currentStoreMedia.gallery.map(item => item.slot)
+    );
+    const slot = Array.from({ length: 10 }, (_, index) => String(index))
+      .find(candidate => !usedSlots.has(candidate));
+    if (slot === undefined) {
+      throw new Error("ギャラリーは10枚までです。");
+    }
+    newPath = makeStoragePath("gallery", slot);
+    await uploadBytes(storageRef(storage, newPath), file, {
+      contentType: file.type,
+      customMetadata: { ownerId: currentUser.uid, mediaKind: "gallery" }
+    });
+    const newUrl = await getDownloadURL(storageRef(storage, newPath));
+    const newItem = { slot, url: newUrl, storagePath: newPath };
+    await setDoc(doc(db, "stores", currentUser.uid, "galleryImages", slot), {
+      url: newUrl,
+      storagePath: newPath,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
+    });
+    currentStoreMedia.gallery = [
+      ...currentStoreMedia.gallery,
+      newItem
+    ].sort((a, b) => Number(a.slot) - Number(b.slot));
+    await renderStoreMedia();
+    setMediaStatus("ギャラリー画像を追加しました。");
+  } catch (error) {
+    if (newPath && isOwnedStoragePath(newPath, "gallery")) {
+      try {
+        await deleteObject(storageRef(storage, newPath));
+      } catch {
+        // Firestoreから参照されない孤立画像。機密情報をログへ出さない。
+      }
+    }
+    setMediaStatus(error instanceof Error ? error.message : "画像を追加できませんでした。");
+  } finally {
+    button.disabled = currentStoreMedia.gallery.length >= 10;
+  }
+}
+
+async function deleteGalleryImage(item, button) {
+  if (!isOwnedStoragePath(item.storagePath, "gallery")) return;
+  button.disabled = true;
+  const previousGallery = [...currentStoreMedia.gallery];
+  const nextGallery = previousGallery.filter(image => image.slot !== item.slot);
+
+  try {
+    await deleteDoc(
+      doc(db, "stores", currentUser.uid, "galleryImages", item.slot)
+    );
+    try {
+      await deleteObject(storageRef(storage, item.storagePath));
+    } catch {
+      await setDoc(doc(db, "stores", currentUser.uid, "galleryImages", item.slot), {
+        url: item.url,
+        storagePath: item.storagePath,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      });
+      throw new Error("画像を削除できなかったため、既存ギャラリーを維持しました。");
+    }
+    currentStoreMedia.gallery = nextGallery;
+    await renderStoreMedia();
+    setMediaStatus("ギャラリー画像を削除しました。");
+  } catch (error) {
+    setMediaStatus(error instanceof Error ? error.message : "画像を削除できませんでした。");
+    button.disabled = false;
+  }
+}
+
+document.querySelectorAll("[data-upload-kind]").forEach(button => {
+  button.addEventListener("click", () =>
+    uploadSingleImage(button.dataset.uploadKind, button)
+  );
+});
+
+document.querySelectorAll("[data-delete-kind]").forEach(button => {
+  button.addEventListener("click", () =>
+    deleteSingleImage(button.dataset.deleteKind, button)
+  );
+});
+
+document.getElementById("addGalleryButton").addEventListener("click", event => {
+  addGalleryImage(event.currentTarget);
+});
 
 /* =========================
    ログイン確認
@@ -391,6 +813,10 @@ async function loadStoreInfo() {
     document
       .getElementById("storeDescription")
       .value = data.description || "";
+
+    readStoreMedia(data);
+    await loadGalleryImages();
+    await renderStoreMedia();
 
     return;
   }

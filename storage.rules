@@ -38,6 +38,26 @@ service firebase.storage {
         && request.resource.contentType.matches("image/.*");
     }
 
+    function validRasterImage(maxBytes) {
+      return request.resource != null
+        && request.resource.size > 0
+        && request.resource.size <= maxBytes
+        && request.resource.contentType.matches(
+          "image/(jpeg|png|webp)"
+        );
+    }
+
+    function ownsStore(storeId) {
+      return isActiveStore()
+        && request.auth.uid == storeId
+        && firestore.exists(
+          /databases/(default)/documents/stores/$(storeId)
+        )
+        && firestore.get(
+          /databases/(default)/documents/stores/$(storeId)
+        ).data.ownerId == request.auth.uid;
+    }
+
     /*
      * Job images use the owning store UID as the first path component.
      * Public reads support published pages; writes require the matching active
@@ -101,13 +121,33 @@ service firebase.storage {
     /*
      * Store branding belongs to the authenticated store UID.
      */
-    match /stores/{storeId}/{fileName} {
+    match /stores/{storeId}/logo/{fileId} {
       allow read: if true;
-      allow create, update: if validImage(3 * 1024 * 1024)
-        && (isActiveAdmin()
-          || (isActiveStore() && request.auth.uid == storeId));
-      allow delete: if isActiveAdmin()
-        || (isActiveStore() && request.auth.uid == storeId);
+      allow create, update: if ownsStore(storeId)
+        && validRasterImage(2 * 1024 * 1024);
+      allow delete: if ownsStore(storeId);
+    }
+
+    match /stores/{storeId}/cover/{fileId} {
+      allow read: if true;
+      allow create, update: if ownsStore(storeId)
+        && validRasterImage(5 * 1024 * 1024);
+      allow delete: if ownsStore(storeId);
+    }
+
+    match /stores/{storeId}/profile/{fileId} {
+      allow read: if true;
+      allow create, update: if ownsStore(storeId)
+        && validRasterImage(2 * 1024 * 1024);
+      allow delete: if ownsStore(storeId);
+    }
+
+    match /stores/{storeId}/gallery/{slotId}/{fileId} {
+      allow read: if true;
+      allow create, update: if ownsStore(storeId)
+        && slotId in ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+        && validRasterImage(5 * 1024 * 1024);
+      allow delete: if ownsStore(storeId);
     }
 
     /*

@@ -64,6 +64,31 @@ Purpose: One authoritative profile per store owner account.
 | Current timestamps | `createdAt`, `updatedAt` |
 | Planned canonical | Document ID = owning Auth UID; `ownerId` = same UID; store profile fields; timestamps |
 | Legacy/duplicate | Store identity inferred from `storeName`; store profile duplicated in `users` and `jobs` |
+
+### Store media
+
+Store media belongs to the Authentication UID that is also stored in
+`stores/{uid}.ownerId`. The Storage path is the authoritative reference. URL
+fields are display caches and may be regenerated with `getDownloadURL()` when
+they expire or fail to load.
+
+| Media | Firestore fields | Storage path | Limit |
+|---|---|---|---:|
+| Logo | `logoStoragePath`, `logoUrl` | `stores/{uid}/logo/{uuid}` | 2 MB |
+| Cover | `coverImageStoragePath`, `coverImageUrl` | `stores/{uid}/cover/{uuid}` | 5 MB |
+| Profile | `profileImageStoragePath`, `profileImageUrl` | `stores/{uid}/profile/{uuid}` | 2 MB |
+| Gallery | `stores/{uid}/galleryImages/{slot}.storagePath`, `.url` | `stores/{uid}/gallery/{slot}/{uuid}` | 5 MB each, slots `0`–`9` |
+
+`mediaUpdatedAt` records the last metadata update. Only JPEG, PNG, and WebP are
+accepted. SVG, GIF, video, unknown content types, and paths outside the owning
+`stores/{uid}/` prefix are rejected. A replacement is performed in this order:
+upload the new image, update Firestore, then delete the old image. Deletion and
+cleanup must use the stored owner-scoped `storagePath`, never a URL supplied by
+the browser.
+
+Gallery entries use ten fixed Firestore slot document IDs (`0` through `9`).
+This makes the ten-image maximum enforceable by Rules without trusting a
+browser-maintained counter or exceeding the Rules expression limit.
 | Migration needed | Find missing/mismatched `ownerId`; verify document ID; resolve duplicate store names manually; stop using names for authorization |
 
 ## `jobs`
