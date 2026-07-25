@@ -259,6 +259,18 @@
           placeholder="例：店舗名"
           required
         >
+
+        <label for="businessScope">
+          掲載区分
+          <span class="required">必須</span>
+        </label>
+
+        <select id="businessScope" required>
+          <option value="night">夜職求人</option>
+          <option value="general">一般求人</option>
+          <option value="both">夜職求人・一般求人の両方</option>
+        </select>
+
        <label for="targetGender">
   求人対象
   <span class="required">必須</span>
@@ -682,6 +694,9 @@
     const businessType =
       document.getElementById("businessType");
 
+    const businessScope =
+      document.getElementById("businessScope");
+
     const otherBusinessType =
       document.getElementById("otherBusinessType");
 
@@ -783,6 +798,15 @@
             canonicalStoreName;
 
           storeNameInput.readOnly = true;
+
+          const storedBusinessScope =
+            String(storeData.businessScope || "night");
+
+          businessScope.value =
+            ["night", "general", "both"].includes(storedBusinessScope)
+              ? storedBusinessScope
+              : "night";
+
           submitButton.disabled = false;
 
         } catch (error) {
@@ -982,6 +1006,14 @@
               ? otherBusinessType.value.trim()
               : businessType.value;
 
+          if (
+            !["night", "general", "both"].includes(
+              businessScope.value
+            )
+          ) {
+            throw new Error("掲載区分が正しくありません。");
+          }
+
           const applicationData = {
             ownerId: currentStoreUser.uid,
             submittedBy: currentStoreUser.uid,
@@ -989,6 +1021,7 @@
               String(
                 currentStoreData.storeName || ""
               ).trim(),
+            businessScope: businessScope.value,
             businessType: selectedBusinessType,
            targetGender: getValue("targetGender"),
 

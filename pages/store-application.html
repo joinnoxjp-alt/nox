@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NOX | 店舗掲載申請</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 32px 16px;
+      color: #fff;
+      background: #080808;
+      font-family: Arial, "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+    }
+    main { width: min(720px, 100%); margin: 0 auto; }
+    .panel {
+      padding: 28px;
+      border: 1px solid #333;
+      border-radius: 18px;
+      background: #151515;
+    }
+    h1 { margin: 0 0 8px; }
+    .lead, .note { color: #ccc; line-height: 1.7; }
+    .note {
+      padding: 14px;
+      border-left: 3px solid #d7b25b;
+      background: #202020;
+    }
+    label { display: block; margin: 20px 0 8px; font-weight: 700; }
+    input, select, textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #555;
+      border-radius: 8px;
+      color: #fff;
+      background: #0d0d0d;
+      font: inherit;
+    }
+    textarea { min-height: 110px; resize: vertical; }
+    button {
+      width: 100%;
+      margin-top: 24px;
+      padding: 14px;
+      border: 0;
+      border-radius: 9px;
+      color: #111;
+      background: #d7b25b;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    button:disabled { cursor: wait; opacity: .6; }
+    .required { color: #ff8e8e; font-size: 12px; }
+    .message { min-height: 24px; margin-top: 16px; line-height: 1.5; }
+    .message.error { color: #ff9b9b; }
+    .message.success { color: #9ee6b0; }
+    .back { display: inline-block; margin-top: 18px; color: #ddd; }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="panel">
+      <h1>店舗掲載申請</h1>
+      <p class="lead">
+        NOXへの店舗・企業掲載をご希望の方は、以下の情報を送信してください。
+        この申請は求人掲載申請とは別に管理されます。
+      </p>
+      <p class="note">
+        申請内容の確認後、承認された方へ店舗アカウント登録用の招待をご案内します。
+        この画面ではアカウントや店舗データは作成しません。
+      </p>
+
+      <form id="storeApplicationForm">
+        <label for="storeName">店舗・企業名 <span class="required">必須</span></label>
+        <input id="storeName" maxlength="120" autocomplete="organization" required>
+
+        <label for="businessScope">掲載区分 <span class="required">必須</span></label>
+        <select id="businessScope" required>
+          <option value="night">夜職求人</option>
+          <option value="general">一般求人</option>
+          <option value="both">夜職求人・一般求人の両方</option>
+        </select>
+
+        <label for="businessType">業種 <span class="required">必須</span></label>
+        <input id="businessType" maxlength="120" placeholder="例：飲食店、美容サロン、キャバクラ" required>
+
+        <label for="area">地域 <span class="required">必須</span></label>
+        <input id="area" maxlength="120" placeholder="例：東京都新宿区" required>
+
+        <label for="address">所在地</label>
+        <input id="address" maxlength="240" autocomplete="street-address">
+
+        <label for="contactName">担当者名 <span class="required">必須</span></label>
+        <input id="contactName" maxlength="120" autocomplete="name" required>
+
+        <label for="contactEmail">連絡先メールアドレス <span class="required">必須</span></label>
+        <input id="contactEmail" type="email" maxlength="254" autocomplete="email" required>
+
+        <label for="contactPhone">連絡先電話番号</label>
+        <input id="contactPhone" type="tel" maxlength="30" autocomplete="tel">
+
+        <label for="notes">補足事項</label>
+        <textarea id="notes" maxlength="2000"></textarea>
+
+        <button id="submitButton" type="submit">店舗掲載を申請する</button>
+        <div id="formMessage" class="message" role="status" aria-live="polite"></div>
+      </form>
+    </section>
+    <a class="back" href="../owner.html">掲載案内へ戻る</a>
+  </main>
+
+  <script type="module">
+    import "../firebase.js";
+    import {
+      addDoc,
+      collection,
+      getFirestore,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const db = getFirestore();
+    const form = document.getElementById("storeApplicationForm");
+    const submitButton = document.getElementById("submitButton");
+    const formMessage = document.getElementById("formMessage");
+    const allowedBusinessScopes = new Set(["night", "general", "both"]);
+
+    const valueOf = (id) =>
+      document.getElementById(id).value.trim();
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      formMessage.textContent = "";
+      formMessage.className = "message";
+
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+
+      const businessScope = valueOf("businessScope");
+      if (!allowedBusinessScopes.has(businessScope)) {
+        formMessage.textContent = "掲載区分を選び直してください。";
+        formMessage.className = "message error";
+        return;
+      }
+
+      submitButton.disabled = true;
+
+      try {
+        await addDoc(collection(db, "storeApplications"), {
+          storeName: valueOf("storeName"),
+          businessScope,
+          businessType: valueOf("businessType"),
+          area: valueOf("area"),
+          address: valueOf("address"),
+          contactName: valueOf("contactName"),
+          contactEmail: valueOf("contactEmail").toLowerCase(),
+          contactPhone: valueOf("contactPhone"),
+          notes: valueOf("notes"),
+          status: "pending",
+          schemaVersion: 1,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        });
+
+        form.reset();
+        formMessage.textContent =
+          "店舗掲載申請を受け付けました。内容確認後にご連絡します。";
+        formMessage.className = "message success";
+      } catch (error) {
+        console.error("店舗掲載申請の送信に失敗しました。");
+        formMessage.textContent =
+          "申請を送信できませんでした。時間を置いて再度お試しください。";
+        formMessage.className = "message error";
+      } finally {
+        submitButton.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

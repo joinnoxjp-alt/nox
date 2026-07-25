@@ -390,6 +390,11 @@
         管理者から届いた専用招待URLから登録してください。
       </div>
 
+      <div class="notice">
+        掲載区分：<strong id="businessScopeLabel">招待確認後に表示</strong><br>
+        今後、招待の確認と店舗権限の有効化は安全な登録処理へ接続されます。
+      </div>
+
       <form id="registerForm">
 
         <div class="form-group">
@@ -561,6 +566,9 @@
     const ownerNameInput =
       document.getElementById("ownerName");
 
+    const businessScopeLabel =
+      document.getElementById("businessScopeLabel");
+
     const emailInput =
       document.getElementById("email");
 
@@ -667,6 +675,16 @@
 
         inviteData =
           inviteSnap.data();
+
+        const businessScopeLabels = {
+          night: "夜職求人",
+          general: "一般求人",
+          both: "夜職求人・一般求人の両方"
+        };
+
+        businessScopeLabel.textContent =
+          businessScopeLabels[inviteData.businessScope || "night"] ||
+          "招待情報を確認してください";
 
         if (inviteData.used === true) {
 

@@ -843,7 +843,7 @@
 
         </section>
 
-        <!-- 店舗申請 -->
+        <!-- 店舗掲載申請 -->
         <section class="admin-section">
 
           <h2 class="admin-section-title">
@@ -854,9 +854,28 @@
             店舗から届いた掲載申請を確認・承認できます。
           </p>
 
+          <div id="storeApplicationList">
+            <p class="admin-message">
+              店舗掲載申請を読み込み中...
+            </p>
+          </div>
+
+        </section>
+
+        <!-- 求人掲載申請 -->
+        <section class="admin-section">
+
+          <h2 class="admin-section-title">
+            📝 求人掲載申請一覧
+          </h2>
+
+          <p class="admin-section-description">
+            登録済み店舗から届いた求人掲載申請を確認できます。
+          </p>
+
           <div id="jobApplicationList">
             <p class="admin-message">
-              求人申請を読み込み中...
+              求人掲載申請を読み込み中...
             </p>
           </div>
 
@@ -1452,6 +1471,9 @@
     const jobApplicationList =
       document.getElementById("jobApplicationList");
 
+    const storeApplicationList =
+      document.getElementById("storeApplicationList");
+
     const adManagementGrid =
       document.getElementById("adManagementGrid");
 
@@ -1494,6 +1516,7 @@
       await Promise.all([
         loadAds(),
         loadUsers(),
+        loadStoreApplications(),
         loadJobApplications(),
         loadCasts()
       ]);
@@ -1510,6 +1533,56 @@
         .replaceAll(">", "&gt;")
         .replaceAll('"', "&quot;")
         .replaceAll("'", "&#039;");
+    }
+
+    async function loadStoreApplications() {
+      try {
+        const snapshot = await getDocs(
+          collection(db, "storeApplications")
+        );
+
+        storeApplicationList.innerHTML = "";
+
+        if (snapshot.empty) {
+          storeApplicationList.innerHTML = `
+            <p class="admin-message">店舗掲載申請はありません。</p>
+          `;
+          return;
+        }
+
+        const applications = [];
+        snapshot.forEach((applicationDoc) => {
+          applications.push({
+            id: applicationDoc.id,
+            ...applicationDoc.data()
+          });
+        });
+
+        applications.sort((left, right) => {
+          const leftTime = left.createdAt?.toMillis?.() || 0;
+          const rightTime = right.createdAt?.toMillis?.() || 0;
+          return rightTime - leftTime;
+        });
+
+        applications.forEach((application) => {
+          const card = document.createElement("div");
+          card.className = "admin-item-card";
+          card.innerHTML = `
+            <h3>${escapeHTML(application.storeName || "店舗名未設定")}</h3>
+            <p>掲載区分：${escapeHTML(application.businessScope || "night")}</p>
+            <p>業種：${escapeHTML(application.businessType || "-")}</p>
+            <p>地域：${escapeHTML(application.area || "-")}</p>
+            <p>担当者：${escapeHTML(application.contactName || "-")}</p>
+            <p>状態：${escapeHTML(application.status || "pending")}</p>
+          `;
+          storeApplicationList.appendChild(card);
+        });
+      } catch (error) {
+        console.error("店舗掲載申請の読み込みに失敗しました。");
+        storeApplicationList.innerHTML = `
+          <p class="admin-message">店舗掲載申請を読み込めませんでした。</p>
+        `;
+      }
     }
 
     function numberValue(value) {
