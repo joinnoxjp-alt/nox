@@ -1,5 +1,11 @@
 export const REGION = "asia-northeast1";
 
+export const FIXED_ADMIN_UID =
+  "MkIUfZ4JFEhRTUzEKPPNxKo0gut1";
+
+export const FIXED_ADMIN_EMAIL =
+  "watabaseball00@gmail.com";
+
 const FUNCTIONS_RUNTIME_SERVICE_ACCOUNT =
   "nox-functions-runtime@noxapp-29171.iam.gserviceaccount.com";
 

@@ -112,38 +112,22 @@ margin-top:25px;
 import { auth, db } from "./firebase-db.js";
 
 import {
-  onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-import {
-  doc,
-  getDoc
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  requireActiveAdmin
+} from "./admin-authorization.js";
 
 document.body.style.visibility = "hidden";
 
-onAuthStateChanged(auth, async (user) => {
+const adminUser =
+  await requireActiveAdmin({
+    auth,
+    db,
+    loginUrl:
+      "./login.html?reason=admin-required"
+  });
 
-  if (!user) {
-    location.href = "./login.html";
-    return;
-  }
-
-  const snap = await getDoc(
-    doc(db, "users", user.uid)
-  );
-
-  if (
-    !snap.exists() ||
-    snap.data().role !== "admin"
-  ) {
-    alert("管理者のみ閲覧できます");
-    location.href = "./mypage.html";
-    return;
-  }
-
+if (adminUser) {
   document.body.style.visibility = "visible";
-});
+}
 </script>
 </body>
 </html>

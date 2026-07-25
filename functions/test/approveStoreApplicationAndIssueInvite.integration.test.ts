@@ -23,6 +23,11 @@ import {
   hashInviteToken
 } from "../src/security/inviteToken";
 
+import {
+  FIXED_ADMIN_EMAIL,
+  FIXED_ADMIN_UID
+} from "../src/config";
+
 const PROJECT_ID = "demo-nox-local";
 const AUTH_EMULATOR_HOST =
   "127.0.0.1:9099";
@@ -77,18 +82,44 @@ interface TestIdentity {
 
 async function createIdentity(
   role: string,
-  status: string
+  status: string,
+  options: {
+    fixedAdmin?: boolean;
+  } = {}
 ): Promise<TestIdentity> {
   const sequence =
     createdUserIds.length + 1;
-  const email =
-    `approval-test-${sequence}@example.test`;
+  const uid = options.fixedAdmin
+    ? FIXED_ADMIN_UID
+    : `approvalTestUser${sequence}`;
+  const email = options.fixedAdmin
+    ? FIXED_ADMIN_EMAIL
+    : `approval-test-${sequence}@example.test`;
   const password = "Test-password-123!";
+
+  try {
+    await auth.getUser(uid);
+    await auth.updateUser(uid, {
+      email,
+      password,
+      emailVerified: true,
+      disabled: false
+    });
+  } catch {
+    await auth.createUser({
+      uid,
+      email,
+      password,
+      emailVerified: true,
+      disabled: false
+    });
+    createdUserIds.push(uid);
+  }
 
   const response = await fetch(
     `http://${AUTH_EMULATOR_HOST}/` +
       "identitytoolkit.googleapis.com/v1/" +
-      "accounts:signUp?key=fake-key",
+      "accounts:signInWithPassword?key=fake-key",
     {
       method: "POST",
       headers: {
@@ -101,30 +132,29 @@ async function createIdentity(
       })
     }
   );
-
   const payload =
     await response.json() as {
-      localId?: string;
       idToken?: string;
     };
 
   assert.equal(response.ok, true);
-  assert.ok(payload.localId);
   assert.ok(payload.idToken);
 
-  createdUserIds.push(payload.localId);
-
   const userPath =
-    `users/${payload.localId}`;
+    `users/${uid}`;
 
   await firestore.doc(userPath).set({
     role,
     status
   });
-  createdDocumentPaths.push(userPath);
+  if (
+    !createdDocumentPaths.includes(userPath)
+  ) {
+    createdDocumentPaths.push(userPath);
+  }
 
   return {
-    uid: payload.localId,
+    uid,
     idToken: payload.idToken
   };
 }
@@ -248,6 +278,7 @@ test(
       const [role, status] of [
         ["user", "active"],
         ["store", "active"],
+        ["admin", "active"],
         ["admin", "pending"],
         ["admin", "blocked"]
       ]
@@ -268,6 +299,122 @@ test(
   }
 );
 
+test(
+  "requires every fixed administrator condition",
+  async () => {
+    const admin =
+      await createIdentity(
+        "admin",
+        "active",
+        { fixedAdmin: true }
+      );
+    const applicationId =
+      await createApplication();
+
+    await auth.updateUser(
+      FIXED_ADMIN_UID,
+      { disabled: true }
+    );
+    const disabled =
+      await callApproval(
+        applicationId,
+        admin.idToken
+      );
+    assert.equal(
+      disabled.error?.status,
+      "PERMISSION_DENIED"
+    );
+
+    await auth.updateUser(
+      FIXED_ADMIN_UID,
+      {
+        disabled: false,
+        emailVerified: false
+      }
+    );
+    const unverified =
+      await callApproval(
+        applicationId,
+        admin.idToken
+      );
+    assert.equal(
+      unverified.error?.status,
+      "PERMISSION_DENIED"
+    );
+
+    await auth.updateUser(
+      FIXED_ADMIN_UID,
+      {
+        emailVerified: true,
+        email: "wrong-admin@example.test"
+      }
+    );
+    const wrongEmail =
+      await callApproval(
+        applicationId,
+        admin.idToken
+      );
+    assert.equal(
+      wrongEmail.error?.status,
+      "PERMISSION_DENIED"
+    );
+
+    await auth.updateUser(
+      FIXED_ADMIN_UID,
+      {
+        email: FIXED_ADMIN_EMAIL,
+        emailVerified: true,
+        disabled: false
+      }
+    );
+
+    for (
+      const [role, status] of [
+        ["user", "active"],
+        ["admin", "pending"],
+        ["admin", "blocked"]
+      ]
+    ) {
+      await firestore
+        .doc(`users/${FIXED_ADMIN_UID}`)
+        .set({ role, status });
+      const response =
+        await callApproval(
+          applicationId,
+          admin.idToken
+        );
+
+      assert.equal(
+        response.error?.status,
+        "PERMISSION_DENIED"
+      );
+    }
+
+    await firestore
+      .doc(`users/${FIXED_ADMIN_UID}`)
+      .set({
+        role: "admin",
+        status: "active"
+      });
+
+    const applicationSnapshot =
+      await firestore
+        .doc(
+          `storeApplications/${applicationId}`
+        )
+        .get();
+
+    assert.equal(
+      applicationSnapshot.get("status"),
+      "pending"
+    );
+    assert.equal(
+      applicationSnapshot.get("inviteId"),
+      undefined
+    );
+  }
+);
+
 for (
   const businessScope of [
     "night",
@@ -281,7 +428,8 @@ for (
       const admin =
         await createIdentity(
           "admin",
-          "active"
+          "active",
+          { fixedAdmin: true }
         );
       const applicationId =
         await createApplication({
@@ -378,7 +526,8 @@ test(
     const admin =
       await createIdentity(
         "admin",
-        "active"
+        "active",
+        { fixedAdmin: true }
       );
     const cases = [
       {
@@ -430,7 +579,8 @@ test(
     const admin =
       await createIdentity(
         "admin",
-        "active"
+        "active",
+        { fixedAdmin: true }
       );
     const applicationId =
       await createApplication();
@@ -480,7 +630,8 @@ test(
     const admin =
       await createIdentity(
         "admin",
-        "active"
+        "active",
+        { fixedAdmin: true }
       );
     const applicationId =
       await createApplication();
@@ -525,7 +676,8 @@ test(
     const admin =
       await createIdentity(
         "admin",
-        "active"
+        "active",
+        { fixedAdmin: true }
       );
     const applicationId =
       await createApplication({

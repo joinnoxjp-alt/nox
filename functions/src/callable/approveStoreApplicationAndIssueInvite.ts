@@ -22,6 +22,11 @@ import {
   normalizeInviteEmail
 } from "../security/inviteToken";
 
+import {
+  assertActiveAdmin,
+  isActiveAdminDocument
+} from "../security/adminAuthorization";
+
 import type {
   ApproveStoreApplicationInput,
   ApproveStoreApplicationOutput,
@@ -105,15 +110,10 @@ export const approveStoreApplicationAndIssueInvite =
   >(
     adminCallableOptions,
     async (request) => {
-      if (!request.auth) {
-        throw new HttpsError(
-          "unauthenticated",
-          "Authentication is required."
+      const admin =
+        await assertActiveAdmin(
+          request.auth
         );
-      }
-
-      const adminUid =
-        request.auth.uid;
 
       const input = request.data;
 
@@ -148,7 +148,7 @@ export const approveStoreApplicationAndIssueInvite =
 
       const adminReference =
         firestore.doc(
-          `users/${adminUid}`
+          `users/${admin.uid}`
         );
       const applicationReference =
         firestore.doc(
@@ -176,8 +176,9 @@ export const approveStoreApplicationAndIssueInvite =
 
           if (
             !adminSnapshot.exists ||
-            adminData?.role !== "admin" ||
-            adminData.status !== "active"
+            !isActiveAdminDocument(
+              adminData
+            )
           ) {
             throw new HttpsError(
               "permission-denied",
@@ -298,7 +299,7 @@ export const approveStoreApplicationAndIssueInvite =
               createdAt:
                 FieldValue.serverTimestamp(),
               createdBy:
-                adminUid,
+                admin.uid,
               schemaVersion: 1
             }
           );
@@ -310,14 +311,14 @@ export const approveStoreApplicationAndIssueInvite =
               approvedAt:
                 FieldValue.serverTimestamp(),
               approvedBy:
-                adminUid,
+                admin.uid,
               inviteId:
                 material.tokenHash,
               inviteStatus: "active",
               inviteIssuedAt:
                 FieldValue.serverTimestamp(),
               inviteIssuedBy:
-                adminUid,
+                admin.uid,
               updatedAt:
                 FieldValue.serverTimestamp()
             }

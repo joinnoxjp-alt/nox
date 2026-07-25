@@ -449,52 +449,31 @@ https://joinnox.jp/pages/chatlady.html
 </div>
 <script type="module">
 
-import { auth } from "../firebase.js";
+import { auth } from "./firebase.js";
 
 import {
-  onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  requireActiveAdmin
+} from "./pages/admin-authorization.js";
 
 import {
-  getFirestore,
-  doc,
-  getDoc
+  getFirestore
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const db = getFirestore();
 
-onAuthStateChanged(auth, async(user)=>{
+document.body.style.visibility = "hidden";
 
-  if(!user){
+const adminUser =
+  await requireActiveAdmin({
+    auth,
+    db,
+    loginUrl:
+      "./pages/login.html?reason=admin-required"
+  });
 
-    alert("ログインしてください");
-
-    location.href="./login.html";
-
-    return;
-
-  }
-
-  const adminRef =
-    doc(db,"users",user.uid);
-
-  const adminSnap =
-    await getDoc(adminRef);
-
-  if(
-    !adminSnap.exists() ||
-    adminSnap.data().role !== "admin"
-  ){
-
-    alert("管理者のみ閲覧できます");
-
-    location.href="./mypage.html";
-
-    return;
-
-  }
-
-});
+if (adminUser) {
+  document.body.style.visibility = "visible";
+}
 
 window.copyUrl = async(url)=>{
 

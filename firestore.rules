@@ -15,8 +15,18 @@ service cloud.firestore {
       return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
     }
 
+    function isFixedAdminIdentity() {
+      return signedIn()
+        && request.auth.uid == "MkIUfZ4JFEhRTUzEKPPNxKo0gut1"
+        && request.auth.token.email is string
+        && request.auth.token.email.lower()
+          == "watabaseball00@gmail.com"
+        && request.auth.token.email_verified == true;
+    }
+
     function isActiveAdmin() {
-      return hasUserDocument()
+      return isFixedAdminIdentity()
+        && hasUserDocument()
         && currentUser().role == "admin"
         && currentUser().status == "active";
     }

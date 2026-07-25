@@ -1445,8 +1445,8 @@
     import { auth } from "../firebase.js";
 
     import {
-      onAuthStateChanged
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+      requireActiveAdmin
+    } from "./admin-authorization.js";
 
     import {
       getFirestore,
@@ -1511,32 +1511,25 @@
     let castMainPreviewUrl = "";
     let castGalleryPreviewUrls = [];
 
-    onAuthStateChanged(auth, async (user) => {
+    document.body.style.visibility =
+      "hidden";
+
+    async function initializeAdminPage() {
+      const user =
+        await requireActiveAdmin({
+          auth,
+          db,
+          loginUrl:
+            "./login.html?reason=admin-required"
+        });
 
       if (!user) {
-        alert("ログインしてください");
-        location.href = "./login.html";
-        return;
-      }
-
-      const adminRef = doc(
-        db,
-        "users",
-        user.uid
-      );
-
-      const adminSnap = await getDoc(adminRef);
-
-      if (
-        !adminSnap.exists() ||
-        adminSnap.data().role !== "admin"
-      ) {
-        alert("管理者のみアクセスできます");
-        location.href = "./mypage.html";
         return;
       }
 
       currentAdminUser = user;
+      document.body.style.visibility =
+        "visible";
 
       await Promise.all([
         loadAds(),
@@ -1545,7 +1538,9 @@
         loadJobApplications(),
         loadCasts()
       ]);
-    });
+    }
+
+    initializeAdminPage();
 
     /* =========================
        共通関数

@@ -402,8 +402,8 @@
     import { auth } from "../firebase.js";
 
     import {
-      onAuthStateChanged
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+      requireActiveAdmin
+    } from "./admin-authorization.js";
 
     import {
       getFirestore,
@@ -434,6 +434,9 @@
       document.getElementById("publishedJobList");
 
     let currentAdminUser = null;
+
+    document.body.style.visibility =
+      "hidden";
 
     /* =========================
        共通関数
@@ -552,48 +555,27 @@
        管理者確認
     ========================= */
 
-    onAuthStateChanged(
-      auth,
-      async (user) => {
+    async function initializeJobAdmin() {
+      const user =
+        await requireActiveAdmin({
+          auth,
+          db,
+          loginUrl:
+            "./login.html?reason=admin-required"
+        });
 
-        if(!user){
-          alert("ログインしてください");
-          location.href = "./login.html";
-          return;
-        }
-
-        try{
-          const adminReference =
-            doc(db,"users",user.uid);
-
-          const adminSnapshot =
-            await getDoc(adminReference);
-
-          if(
-            !adminSnapshot.exists() ||
-            adminSnapshot.data().role !== "admin"
-          ){
-            alert("管理者のみアクセスできます");
-            location.href = "./mypage.html";
-            return;
-          }
-
-          currentAdminUser = user;
-
-          await loadAllJobs();
-
-        }catch(error){
-          console.error(
-            "管理者確認エラー:",
-            error
-          );
-
-          alert(
-            "管理者情報の確認に失敗しました"
-          );
-        }
+      if (!user) {
+        return;
       }
-    );
+
+      currentAdminUser = user;
+      document.body.style.visibility =
+        "visible";
+
+      await loadAllJobs();
+    }
+
+    initializeJobAdmin();
 
     async function loadAllJobs(){
       await Promise.all([
