@@ -39,3 +39,13 @@ export interface ApproveStoreApplicationOutput {
   inviteUrl: string;
   expiresAt: string;
 }
+
+export interface RedeemStoreInviteInput {
+  inviteToken: string;
+  ownerName: string;
+}
+
+export interface RedeemStoreInviteOutput {
+  redeemed: true;
+  alreadyRedeemed: boolean;
+}

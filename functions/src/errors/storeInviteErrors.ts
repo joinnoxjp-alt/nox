@@ -54,3 +54,21 @@ export type StoreApplicationApprovalReason =
   typeof STORE_APPLICATION_APPROVAL_REASONS[
     keyof typeof STORE_APPLICATION_APPROVAL_REASONS
   ];
+
+export const STORE_INVITE_REDEMPTION_REASONS = {
+  EMAIL_NOT_VERIFIED:
+    "email-not-verified",
+  USER_NOT_PENDING:
+    "user-not-pending",
+  INVALID_INVITE:
+    "invalid-invite",
+  STORE_ALREADY_EXISTS:
+    "store-already-exists",
+  REGISTRATION_DATA_INTEGRITY:
+    "registration-data-integrity"
+} as const;
+
+export type StoreInviteRedemptionReason =
+  typeof STORE_INVITE_REDEMPTION_REASONS[
+    keyof typeof STORE_INVITE_REDEMPTION_REASONS
+  ];
