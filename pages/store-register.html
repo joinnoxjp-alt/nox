@@ -392,7 +392,7 @@
 
       <div class="notice">
         掲載区分：<strong id="businessScopeLabel">招待確認後に表示</strong><br>
-        今後、招待の確認と店舗権限の有効化は安全な登録処理へ接続されます。
+        招待先：<strong id="emailHintLabel">招待確認後に表示</strong>
       </div>
 
       <form id="registerForm">
@@ -493,6 +493,33 @@
           招待情報を確認中...
         </button>
 
+        <button
+          class="submit-button"
+          id="loginBtn"
+          type="button"
+          disabled
+        >
+          既存アカウントでログインして続行
+        </button>
+
+        <div id="verificationActions" hidden>
+          <button
+            class="submit-button"
+            id="resendVerificationBtn"
+            type="button"
+          >
+            確認メールを再送
+          </button>
+
+          <button
+            class="submit-button"
+            id="completeRegistrationBtn"
+            type="button"
+          >
+            メール認証を確認して登録を完了
+          </button>
+        </div>
+
         <div
           id="message"
           class="message info show"
@@ -532,25 +559,62 @@
     } from "./firebase.js";
 
     import {
-      createUserWithEmailAndPassword
+      createUserWithEmailAndPassword,
+      getIdToken,
+      onAuthStateChanged,
+      reload,
+      sendEmailVerification,
+      signInWithEmailAndPassword
     }
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
     import {
       doc,
       getDoc,
-      writeBatch,
+      setDoc,
       serverTimestamp
     }
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    const params =
-      new URLSearchParams(location.search);
+    import {
+      getFunctions,
+      httpsCallable
+    }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-functions.js";
 
-    const inviteCode =
-      params.get("invite");
+    const functions = getFunctions(
+      auth.app,
+      "asia-northeast1"
+    );
 
-    let inviteData = null;
+    const getStoreInvitePreview =
+      httpsCallable(
+        functions,
+        "getStoreInvitePreview"
+      );
+
+    const redeemStoreInvite =
+      httpsCallable(
+        functions,
+        "redeemStoreInvite"
+      );
+
+    const inviteToken =
+      new URLSearchParams(
+        location.search
+      ).get("invite");
+
+    const inviteTokenPattern =
+      /^[A-Za-z0-9_-]{43}$/;
+
+    const businessScopeLabels = {
+      night: "夜職求人",
+      general: "一般求人",
+      both: "夜職求人・一般求人の両方"
+    };
+
+    let previewReady = false;
+    let processing = false;
 
     const form =
       document.getElementById("registerForm");
@@ -569,6 +633,9 @@
     const businessScopeLabel =
       document.getElementById("businessScopeLabel");
 
+    const emailHintLabel =
+      document.getElementById("emailHintLabel");
+
     const emailInput =
       document.getElementById("email");
 
@@ -581,6 +648,24 @@
     const togglePasswordButton =
       document.getElementById("togglePassword");
 
+    const loginBtn =
+      document.getElementById("loginBtn");
+
+    const verificationActions =
+      document.getElementById(
+        "verificationActions"
+      );
+
+    const resendVerificationBtn =
+      document.getElementById(
+        "resendVerificationBtn"
+      );
+
+    const completeRegistrationBtn =
+      document.getElementById(
+        "completeRegistrationBtn"
+      );
+
     function showMessage(
       text,
       type = "info"
@@ -592,27 +677,198 @@
       message.textContent = text;
     }
 
-    function disableRegistration(
-      text
-    ) {
+    function setProcessing(value) {
+      processing = value;
 
-      submitBtn.disabled = true;
+      submitBtn.disabled =
+        value || !previewReady;
+      loginBtn.disabled =
+        value || !previewReady;
+      resendVerificationBtn.disabled =
+        value;
+      completeRegistrationBtn.disabled =
+        value;
+    }
 
+    function disableRegistration(text) {
+      previewReady = false;
+      setProcessing(false);
       submitBtn.textContent =
         "登録できません";
-
-      showMessage(
-        text,
-        "error"
-      );
+      showMessage(text, "error");
     }
 
     function enableRegistration() {
-
-      submitBtn.disabled = false;
+      previewReady = true;
+      setProcessing(false);
 
       submitBtn.textContent =
         "店舗アカウントを作成";
+      loginBtn.textContent =
+        "既存アカウントでログインして続行";
+    }
+
+    function showVerificationActions() {
+      verificationActions.hidden = false;
+      submitBtn.hidden = true;
+      loginBtn.hidden = true;
+      showMessage(
+        "確認メール内のリンクを開いた後、「メール認証を確認して登録を完了」を押してください。",
+        "info"
+      );
+    }
+
+    function authErrorMessage(error) {
+      const messages = {
+        "auth/email-already-in-use":
+          "このメールは登録済みです。既存アカウントでログインして続行してください。",
+        "auth/weak-password":
+          "より安全なパスワードを設定してください。",
+        "auth/invalid-email":
+          "メールアドレスの形式を確認してください。",
+        "auth/invalid-credential":
+          "メールアドレスまたはパスワードを確認してください。",
+        "auth/too-many-requests":
+          "試行回数が多すぎます。時間を置いて再度お試しください。"
+      };
+
+      return (
+        messages[error?.code] ||
+        "認証処理を完了できませんでした。自動再試行せず、入力内容を確認してください。"
+      );
+    }
+
+    function redemptionErrorMessage(error) {
+      const reason =
+        typeof error?.details?.reason ===
+          "string"
+          ? error.details.reason
+          : "";
+
+      const reasonMessages = {
+        "email-not-verified":
+          "メール認証が完了していません。確認メール内のリンクを開いてください。",
+        "user-not-pending":
+          "このアカウントは店舗登録可能な状態ではありません。",
+        "invalid-invite":
+          "この招待は無効、期限切れ、または使用できません。",
+        "store-already-exists":
+          "このアカウントには既に店舗情報が存在します。",
+        "registration-data-integrity":
+          "登録情報に不整合があります。自動再試行せず管理者へ確認してください。"
+      };
+
+      if (reasonMessages[reason]) {
+        return reasonMessages[reason];
+      }
+
+      const codeMessages = {
+        "functions/unauthenticated":
+          "ログイン状態を確認してください。",
+        "functions/permission-denied":
+          "この招待を利用する権限を確認できませんでした。",
+        "functions/invalid-argument":
+          "登録情報または招待URLが正しくありません。",
+        "functions/not-found":
+          "この招待は無効、期限切れ、または使用できません。",
+        "functions/failed-precondition":
+          "現在のアカウント状態では店舗登録を完了できません。",
+        "functions/already-exists":
+          "このアカウントには既に店舗情報が存在します。"
+      };
+
+      return (
+        codeMessages[error?.code] ||
+        "店舗登録を完了できませんでした。自動再試行せず状態を確認してください。"
+      );
+    }
+
+    async function waitForInitialAuthState() {
+      return new Promise((resolve) => {
+        const unsubscribe =
+          onAuthStateChanged(
+            auth,
+            (user) => {
+              unsubscribe();
+              resolve(user);
+            }
+          );
+      });
+    }
+
+    async function ensurePendingUser(
+      user,
+      ownerName
+    ) {
+      const userReference =
+        doc(db, "users", user.uid);
+      const userSnapshot =
+        await getDoc(userReference);
+
+      if (!userSnapshot.exists()) {
+        await setDoc(
+          userReference,
+          {
+            name: ownerName,
+            email: user.email || "",
+            role: "user",
+            status: "pending",
+            createdAt:
+              serverTimestamp(),
+            updatedAt:
+              serverTimestamp()
+          }
+        );
+
+        return;
+      }
+
+      const userData =
+        userSnapshot.data();
+
+      if (
+        !(
+          userData.role === "user" &&
+          userData.status === "pending"
+        ) &&
+        !(
+          userData.role === "store" &&
+          userData.status === "active"
+        )
+      ) {
+        throw new Error(
+          "invalid-user-state"
+        );
+      }
+    }
+
+    async function verifyRegisteredStore(user) {
+      const [
+        userSnapshot,
+        storeSnapshot
+      ] = await Promise.all([
+        getDoc(doc(db, "users", user.uid)),
+        getDoc(doc(db, "stores", user.uid))
+      ]);
+
+      const userData =
+        userSnapshot.exists()
+          ? userSnapshot.data()
+          : null;
+      const storeData =
+        storeSnapshot.exists()
+          ? storeSnapshot.data()
+          : null;
+
+      return (
+        userData?.role === "store" &&
+        userData.status === "active" &&
+        storeData?.ownerId === user.uid &&
+        ["night", "general", "both"]
+          .includes(
+            storeData?.businessScope
+          )
+      );
     }
 
     togglePasswordButton
@@ -639,7 +895,12 @@
 
     async function checkInvite() {
 
-      if (!inviteCode) {
+      if (
+        typeof inviteToken !== "string" ||
+        !inviteTokenPattern.test(
+          inviteToken
+        )
+      ) {
 
         disableRegistration(
           "店舗登録用の招待コードがありません。管理者から届いた専用URLを開いてください。"
@@ -654,56 +915,38 @@
       );
 
       try {
+        const response =
+          await getStoreInvitePreview({
+            inviteToken
+          });
 
-        const inviteRef =
-          doc(
-            db,
-            "storeInvites",
-            inviteCode
-          );
+        const preview =
+          response?.data;
 
-        const inviteSnap =
-          await getDoc(inviteRef);
-                if (!inviteSnap.exists()) {
+        const invitedStoreName =
+          typeof preview?.storeName ===
+            "string"
+            ? preview.storeName.trim()
+            : "";
+        const businessScope =
+          preview?.businessScope;
+        const emailHint =
+          typeof preview?.emailHint ===
+            "string"
+            ? preview.emailHint
+            : "";
+
+        if (
+          preview?.valid !== true ||
+          !invitedStoreName ||
+          !businessScopeLabels[
+            businessScope
+          ] ||
+          !emailHint
+        ) {
 
           disableRegistration(
             "この招待URLは無効です。管理者へ確認してください。"
-          );
-
-          return;
-        }
-
-        inviteData =
-          inviteSnap.data();
-
-        const businessScopeLabels = {
-          night: "夜職求人",
-          general: "一般求人",
-          both: "夜職求人・一般求人の両方"
-        };
-
-        businessScopeLabel.textContent =
-          businessScopeLabels[inviteData.businessScope || "night"] ||
-          "招待情報を確認してください";
-
-        if (inviteData.used === true) {
-
-          disableRegistration(
-            "この招待URLはすでに使用されています。"
-          );
-
-          return;
-        }
-
-        const invitedStoreName =
-          String(
-            inviteData.storeName || ""
-          ).trim();
-
-        if (!invitedStoreName) {
-
-          disableRegistration(
-            "招待情報に店舗名がありません。管理者へ確認してください。"
           );
 
           return;
@@ -714,22 +957,13 @@
 
         storeNameInput.readOnly = true;
 
-        const invitedEmail =
-          String(
-            inviteData.email || ""
-          ).trim();
+        businessScopeLabel.textContent =
+          businessScopeLabels[
+            businessScope
+          ];
 
-        if (invitedEmail) {
-
-          emailInput.value =
-            invitedEmail;
-
-          emailInput.readOnly = true;
-
-        } else {
-
-          emailInput.readOnly = false;
-        }
+        emailHintLabel.textContent =
+          emailHint;
 
         showMessage(
           "招待情報を確認しました。必要事項を入力して登録してください。",
@@ -738,183 +972,299 @@
 
         enableRegistration();
 
-      } catch (error) {
+        const existingUser =
+          await waitForInitialAuthState();
 
-        console.error(
-          "招待情報の確認エラー:",
-          error
-        );
-
+        if (existingUser) {
+          emailInput.value =
+            existingUser.email || "";
+          showVerificationActions();
+        }
+      } catch {
         disableRegistration(
-          "招待情報を確認できませんでした。時間を空けて再度お試しください。"
+          "この招待は無効、期限切れ、または使用できません。"
         );
       }
     }
 
+    function validatedInput() {
+      if (!previewReady) {
+        throw new Error(
+          "invalid-invite"
+        );
+      }
+
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        throw new Error(
+          "invalid-form"
+        );
+      }
+
+      const ownerName =
+        ownerNameInput.value.trim();
+
+      if (!ownerName) {
+        throw new Error(
+          "invalid-owner-name"
+        );
+      }
+
+      if (!agreeInput.checked) {
+        throw new Error(
+          "agreement-required"
+        );
+      }
+
+      return {
+        ownerName,
+        email: emailInput.value.trim(),
+        password: passwordInput.value
+      };
+    }
+
     form.addEventListener(
       "submit",
-      async event => {
-
+      async (event) => {
         event.preventDefault();
 
-        if (
-          !inviteData ||
-          inviteData.used === true
-        ) {
-
-          disableRegistration(
-            "招待URLが無効、または使用済みです。"
-          );
-
+        if (processing) {
           return;
         }
-                submitBtn.disabled = true;
-        submitBtn.textContent = "登録中...";
-
-        showMessage(
-          "店舗アカウントを作成しています...",
-          "info"
-        );
 
         try {
-
-          const ownerName =
-            ownerNameInput.value.trim();
-
-          const storeName =
-            storeNameInput.value.trim();
-
-          const email =
-            emailInput.value.trim();
-
-          const password =
-            passwordInput.value;
-
-          if (!ownerName) {
-            throw new Error("担当者名を入力してください");
-          }
-
-          if (!agreeInput.checked) {
-            throw new Error("利用規約に同意してください");
-          }
+          const input = validatedInput();
+          setProcessing(true);
+          submitBtn.textContent =
+            "アカウント作成中...";
 
           const result =
             await createUserWithEmailAndPassword(
               auth,
-              email,
-              password
+              input.email,
+              input.password
             );
 
-          const uid =
-            result.user.uid;
-
-          const batch =
-            writeBatch(db);
-
-          batch.set(
-            doc(db, "users", uid),
-            {
-              name: ownerName,
-              email: email,
-              storeName: storeName,
-              role: "store",
-              status: "active",
-              createdAt: serverTimestamp(),
-              updatedAt: serverTimestamp()
-            }
+          await ensurePendingUser(
+            result.user,
+            input.ownerName
+          );
+          await sendEmailVerification(
+            result.user
           );
 
-          batch.set(
-            doc(db, "stores", uid),
-            {
-              ownerId: uid,
-              ownerName: ownerName,
-              storeName: storeName,
-              email: email,
-              inviteCode: inviteCode,
-              sourceApplicationId:
-                inviteData.sourceApplicationId || "",
-              createdAt: serverTimestamp(),
-              updatedAt: serverTimestamp()
-            }
-          );
-
-          batch.update(
-            doc(
-              db,
-              "storeInvites",
-              inviteCode
-            ),
-            {
-              used: true,
-              registeredUid: uid,
-              registeredAt:
-                serverTimestamp()
-            }
-          );
-
-          await batch.commit();
-
-          showMessage(
-            "登録が完了しました。店舗ダッシュボードへ移動します。",
-            "success"
-          );
-
-          setTimeout(() => {
-
-            location.href =
-              "./store-dashboard.html";
-
-          }, 2000);
-
+          passwordInput.value = "";
+          showVerificationActions();
         } catch (error) {
-
-          console.error(
-            "店舗登録エラー:",
-            error
-          );
-
-          submitBtn.disabled = false;
-
+          if (
+            ![
+              "invalid-form",
+              "invalid-owner-name",
+              "agreement-required"
+            ].includes(error?.message)
+          ) {
+            showMessage(
+              authErrorMessage(error),
+              "error"
+            );
+          }
+        } finally {
+          setProcessing(false);
           submitBtn.textContent =
             "店舗アカウントを作成";
-
-          switch (error.code) {
-
-            case "auth/email-already-in-use":
-
-              showMessage(
-                "このメールアドレスは既に登録されています。",
-                "error"
-              );
-
-              break;
-
-            case "auth/weak-password":
-
-              showMessage(
-                "パスワードは6文字以上必要です。",
-                "error"
-              );
-
-              break;
-
-            default:
-
-              showMessage(
-                error.message ||
-                "店舗登録に失敗しました。",
-                "error"
-              );
-
-              break;
-          }
         }
       }
     );
 
+    loginBtn.addEventListener(
+      "click",
+      async () => {
+        if (processing) {
+          return;
+        }
+
+        try {
+          const input = validatedInput();
+          setProcessing(true);
+          loginBtn.textContent =
+            "ログイン中...";
+
+          const result =
+            await signInWithEmailAndPassword(
+              auth,
+              input.email,
+              input.password
+            );
+
+          await ensurePendingUser(
+            result.user,
+            input.ownerName
+          );
+
+          passwordInput.value = "";
+          showVerificationActions();
+        } catch (error) {
+          if (
+            ![
+              "invalid-form",
+              "invalid-owner-name",
+              "agreement-required"
+            ].includes(error?.message)
+          ) {
+            showMessage(
+              authErrorMessage(error),
+              "error"
+            );
+          }
+        } finally {
+          setProcessing(false);
+          loginBtn.textContent =
+            "既存アカウントでログインして続行";
+        }
+      }
+    );
+
+    resendVerificationBtn
+      .addEventListener(
+        "click",
+        async () => {
+          if (
+            processing ||
+            !auth.currentUser
+          ) {
+            return;
+          }
+
+          try {
+            setProcessing(true);
+            await sendEmailVerification(
+              auth.currentUser
+            );
+            showMessage(
+              "確認メールを再送しました。",
+              "success"
+            );
+          } catch (error) {
+            showMessage(
+              authErrorMessage(error),
+              "error"
+            );
+          } finally {
+            setProcessing(false);
+          }
+        }
+      );
+
+    completeRegistrationBtn
+      .addEventListener(
+        "click",
+        async () => {
+          if (
+            processing ||
+            !previewReady
+          ) {
+            return;
+          }
+
+          const user =
+            auth.currentUser;
+          const ownerName =
+            ownerNameInput.value.trim();
+
+          if (!user || !ownerName) {
+            showMessage(
+              "ログイン状態と担当者名を確認してください。",
+              "error"
+            );
+            return;
+          }
+
+          try {
+            setProcessing(true);
+            completeRegistrationBtn
+              .textContent =
+              "メール認証を確認中...";
+
+            await reload(user);
+
+            if (!user.emailVerified) {
+              showMessage(
+                "メール認証が完了していません。確認メール内のリンクを開いてください。",
+                "error"
+              );
+              return;
+            }
+
+            await getIdToken(user, true);
+            await ensurePendingUser(
+              user,
+              ownerName
+            );
+
+            completeRegistrationBtn
+              .textContent =
+              "店舗登録を完了中...";
+
+            await redeemStoreInvite({
+              inviteToken,
+              ownerName
+            });
+
+            const isRegistered =
+              await verifyRegisteredStore(
+                user
+              );
+
+            if (!isRegistered) {
+              throw new Error(
+                "registration-integrity"
+              );
+            }
+
+            showMessage(
+              "登録が完了しました。店舗ダッシュボードへ移動します。",
+              "success"
+            );
+
+            location.replace(
+              "./store-dashboard.html"
+            );
+          } catch (error) {
+            if (
+              error?.message ===
+              "invalid-user-state"
+            ) {
+              showMessage(
+                "このアカウントは店舗登録可能な状態ではありません。",
+                "error"
+              );
+            } else if (
+              error?.message ===
+              "registration-integrity"
+            ) {
+              showMessage(
+                "登録後の情報に不整合があります。管理者へ確認してください。",
+                "error"
+              );
+            } else {
+              showMessage(
+                redemptionErrorMessage(
+                  error
+                ),
+                "error"
+              );
+            }
+          } finally {
+            setProcessing(false);
+            completeRegistrationBtn
+              .textContent =
+              "メール認証を確認して登録を完了";
+          }
+        }
+      );
+
     checkInvite();
-      </script>
+  </script>
 
 </body>
 </html>
