@@ -49,13 +49,7 @@ service firebase.storage {
 
     function ownsStore(storeId) {
       return isActiveStore()
-        && request.auth.uid == storeId
-        && firestore.exists(
-          /databases/(default)/documents/stores/$(storeId)
-        )
-        && firestore.get(
-          /databases/(default)/documents/stores/$(storeId)
-        ).data.ownerId == request.auth.uid;
+        && request.auth.uid == storeId;
     }
 
     /*
