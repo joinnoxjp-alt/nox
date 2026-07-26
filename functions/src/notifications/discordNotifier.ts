@@ -12,7 +12,7 @@ import {
 } from "../firebaseAdmin";
 import {
   DISCORD_OPERATIONS_WEBHOOK_URL
-} from "../config";
+} from "./discordConfig";
 import {
   DiscordMessage,
   NotificationProcessInput,

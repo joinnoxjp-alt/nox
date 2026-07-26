@@ -1,7 +1,3 @@
-import {
-  defineSecret
-} from "firebase-functions/params";
-
 export const REGION = "asia-northeast1";
 
 export const FIXED_ADMIN_UID =
@@ -10,7 +6,7 @@ export const FIXED_ADMIN_UID =
 export const FIXED_ADMIN_EMAIL =
   "watabaseball00@gmail.com";
 
-const FUNCTIONS_RUNTIME_SERVICE_ACCOUNT =
+export const FUNCTIONS_RUNTIME_SERVICE_ACCOUNT =
   "nox-functions-runtime@noxapp-29171.iam.gserviceaccount.com";
 
 export const callableOptions = {
@@ -35,21 +31,6 @@ export const authenticatedCallableOptions = {
   enforceAppCheck: false,
   serviceAccount: FUNCTIONS_RUNTIME_SERVICE_ACCOUNT
 } as const;
-
-export const DISCORD_OPERATIONS_WEBHOOK_URL =
-  defineSecret(
-    "DISCORD_OPERATIONS_WEBHOOK_URL"
-  );
-
-export const discordTriggerOptions = {
-  region: REGION,
-  retry: false,
-  serviceAccount:
-    FUNCTIONS_RUNTIME_SERVICE_ACCOUNT,
-  secrets: [
-    DISCORD_OPERATIONS_WEBHOOK_URL
-  ]
-};
 
 export const STORE_INVITE_VALIDITY_DAYS = 7;
 

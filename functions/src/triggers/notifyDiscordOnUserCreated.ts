@@ -4,7 +4,7 @@ import {
 
 import {
   discordTriggerOptions
-} from "../config";
+} from "../notifications/discordConfig";
 import {
   buildUserCreatedMessage
 } from "../notifications/discordMessages";
