@@ -15,6 +15,10 @@ export {
 } from "./callable/updateStoreContract";
 
 export {
+  approveJobApplication
+} from "./callable/approveJobApplication";
+
+export {
   revokeStoreInvite
 } from "./callable/revokeStoreInvite";
 

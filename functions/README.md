@@ -12,10 +12,17 @@ been implemented.
 ## Planned callable functions
 
 - `approveStoreApplicationAndIssueInvite`
+- `approveJobApplication`
 - `getStoreInvitePreview`
 - `redeemStoreInvite`
 - `revokeStoreInvite`
 - `reissueStoreInvite`
+
+`approveJobApplication` uses the fixed administrator authorization helper and
+an Admin SDK transaction. It approves only a job belonging to a public store
+with a paid, active, in-period contract, updates the matching application and
+job atomically, and writes an idempotent privacy-safe audit record. It never
+accesses `storeInvites`.
 
 ## Discord operations notifications
 

@@ -331,6 +331,14 @@ creates or updates the contract, synchronizes backend-managed publication
 caches on the store and all jobs owned by that store, and writes an
 `adminAuditLogs/{autoId}` record in one transaction.
 
+The trusted `approveJobApplication` callable validates the matching job,
+store, and paid active contract, then atomically approves
+`jobApplications/{applicationId}` and publishes `jobs/{jobId}`. Its
+idempotent audit record stores only `actionType`, `targetType`, a SHA-256
+`targetHash`, safe status-only `before`/`after` values, `createdAt`, and
+`actorType`. It does not store raw UIDs, document IDs, email addresses,
+telephone numbers, application text, tokens, or image URLs.
+
 Store application approval, store-account registration, and publication are
 independent lifecycles:
 

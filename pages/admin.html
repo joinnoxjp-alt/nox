@@ -1560,6 +1560,12 @@
         "updateStoreContract"
       );
 
+    const approveJobApplicationCallable =
+      httpsCallable(
+        functions,
+        "approveJobApplication"
+      );
+
     const userList =
       document.getElementById("userList");
 
@@ -3966,183 +3972,40 @@ ${data.sns || "-"}
                 "承認処理中...";
 
               try {
-                const applicationRef =
-                  doc(
-                    db,
-                    "jobApplications",
-                    jobId
-                  );
+                await approveJobApplicationCallable({
+                  applicationId: jobId
+                });
 
-                const approvedSnap =
-                  await getDoc(
-                    applicationRef
-                  );
+                alert("求人を承認して公開しました。");
 
-                if (!approvedSnap.exists()) {
-                  alert(
-                    "求人データが見つかりません"
-                  );
-
-                  await loadJobApplications();
-
-                  return;
-                }
-
-                const approvedData =
-                  approvedSnap.data();
-
-                await updateDoc(
-                  applicationRef,
-                  {
-                    status:"approved",
-                    approvedAt:
-                      serverTimestamp(),
-
-                    approvedBy:
-                      currentAdminUser?.uid || ""
-                  }
-                );
-
-                const existingJobs =
-                  await getDocs(
-                    collection(
-                      db,
-                      "jobs"
-                    )
-                  );
-
-                let alreadyPublished =
-                  false;
-
-                existingJobs.forEach(
-                  (jobSnap) => {
-                    const jobData =
-                      jobSnap.data();
-
-                    if (
-                      jobData.sourceApplicationId ===
-                      jobId
-                    ) {
-                      alreadyPublished =
-                        true;
-                    }
-                  }
-                );
-
-                if (!alreadyPublished) {
-                  await addDoc(
-                    collection(
-                      db,
-                      "jobs"
-                    ),
-                    {
-                      ...approvedData,
-
-                      sourceApplicationId:
-                        jobId,
-
-                      status:
-                        "approved",
-
-                      isPublished:
-                        true,
-
-                      approvedAt:
-                        serverTimestamp(),
-
-                      createdAt:
-                        approvedData.createdAt ||
-                        serverTimestamp()
-                    }
-                  );
-                }
-
-                const inviteCode =
-                  crypto
-                    .randomUUID()
-                    .replaceAll("-", "");
-
-                const storeName =
-                  approvedData.storeName ||
-                  "店舗名未設定";
-
-                const storeEmail =
-                  approvedData.email ||
-                  approvedData.contactEmail ||
-                  approvedData.ownerEmail ||
-                  "";
-
-                const inviteUrl =
-                  `https://joinnox.jp/pages/store-register.html?invite=${inviteCode}`;
-
-                await setDoc(
-                  doc(
-                    db,
-                    "storeInvites",
-                    inviteCode
-                  ),
-                  {
-                    storeName,
-                    email:storeEmail,
-                    sourceApplicationId:
-                      jobId,
-
-                    used:false,
-                    registeredUid:"",
-
-                    createdAt:
-                      serverTimestamp(),
-
-                    createdBy:
-                      currentAdminUser?.uid || ""
-                  }
-                );
-
-                await updateDoc(
-                  applicationRef,
-                  {
-                    inviteCode,
-                    inviteUrl,
-
-                    inviteCreatedAt:
-                      serverTimestamp()
-                  }
-                );
-
-                try {
-                  await navigator
-                    .clipboard
-                    .writeText(inviteUrl);
-
-                  alert(
-                    "求人を承認しました。\n\n" +
-                    "店舗登録URLをコピーしました。\n" +
-                    "そのままLINEで店舗へ送れます。\n\n" +
-                    inviteUrl
-                  );
-
-                } catch (copyError) {
-                  console.warn(
-                    "URLコピーエラー",
-                    copyError
-                  );
-
-                  prompt(
-                    "求人を承認しました。\n下のURLをコピーしてください。",
-                    inviteUrl
-                  );
-                }
-
-                await loadJobApplications();
+                await Promise.all([
+                  loadJobApplications(),
+                  loadPublicJobs()
+                ]);
 
               } catch (error) {
-                console.error(
-                  "求人承認エラー",
-                  error
-                );
+                const code =
+                  typeof error?.code === "string"
+                    ? error.code
+                    : "";
+                const messages = {
+                  "functions/unauthenticated":
+                    "ログイン状態を確認してください。",
+                  "functions/permission-denied":
+                    "求人を承認する管理者権限がありません。",
+                  "functions/invalid-argument":
+                    "承認対象の指定が正しくありません。",
+                  "functions/not-found":
+                    "対象の求人掲載申請が見つかりません。",
+                  "functions/failed-precondition":
+                    "店舗の契約または掲載状態を確認できないため、求人を公開できません。",
+                  "functions/internal":
+                    "求人を承認できませんでした。NOX運営で状態を確認してください。"
+                };
 
                 alert(
-                  "求人を承認できませんでした"
+                  messages[code] ||
+                  "求人を承認できませんでした。"
                 );
 
                 button.disabled =
