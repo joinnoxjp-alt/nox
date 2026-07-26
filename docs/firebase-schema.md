@@ -289,9 +289,9 @@ Canonical UTF-8 values used by local fixtures:
 - `applicationFlow`: `料金確認`, `店舗掲載申請`, `NOX公式LINE追加`,
   `NOX運営から案内`, `前払い`, `入金確認`, `掲載開始`
 
-The production document was observed with corrupted Japanese in these five
-labels and all seven `applicationFlow` entries. Production correction is a
-separate approved operation and is not part of this local Rules phase.
+The five labels and all seven `applicationFlow` entries must remain valid
+UTF-8 Japanese. They were repaired in the approved production catalog
+correction on 2026-07-26.
 
 ## `storeContracts`
 
@@ -299,7 +299,7 @@ Purpose: Canonical, immutable-to-clients contract snapshot for each store.
 
 The document is `storeContracts/{storeUid}`. Remaining days are never stored;
 clients calculate them from `contractEndAt`. Contract fields are not mixed into
-`stores/{uid}`, and no public cache is introduced in this phase.
+`stores/{uid}`.
 
 | Field | Type / allowed value |
 |---|---|
@@ -323,8 +323,29 @@ clients calculate them from `contractEndAt`. Contract fields are not mixed into
 | `createdBy`, `updatedBy` | trusted administrator UID |
 
 An active store can read only its own contract. The fixed active administrator
-can read contracts for a future management screen. All client creates, updates,
-and deletes are denied; only trusted Admin SDK code may write.
+can read contracts for the management screen. All client creates, updates, and
+deletes are denied; only trusted Admin SDK code may write.
+
+The trusted `updateStoreContract` callable snapshots `pricingCatalog/current`,
+creates or updates the contract, synchronizes backend-managed publication
+caches on the store and all jobs owned by that store, and writes an
+`adminAuditLogs/{autoId}` record in one transaction.
+
+Store application approval, store-account registration, and publication are
+independent lifecycles:
+
+1. `storeApplications/{id}` records the application and invitation state.
+2. `storeInvites/{tokenHash}`, `users/{uid}`, and `stores/{uid}` record
+   invitation redemption and account registration.
+3. `storeContracts/{uid}` is the contract source of truth.
+4. `stores/{uid}.isPublic`, `contractListingStatus`, and `contractEndAt` are
+   backend-managed publication caches.
+5. `jobs/{jobId}.isPublic` and `contractListingStatus` are synchronized by the
+   backend and cannot be changed by a store client.
+
+A store is publishable only when payment is `paid`, listing status is `active`,
+the current time is inside the contract period, and the store publication cache
+is `true`. Registration completion alone never implies publication.
 
 ## Phase 1 audit outputs
 

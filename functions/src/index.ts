@@ -11,6 +11,10 @@ export {
 } from "./callable/redeemStoreInvite";
 
 export {
+  updateStoreContract
+} from "./callable/updateStoreContract";
+
+export {
   revokeStoreInvite
 } from "./callable/revokeStoreInvite";
 

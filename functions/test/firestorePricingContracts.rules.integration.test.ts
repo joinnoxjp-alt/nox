@@ -101,6 +101,31 @@ async function requestDocument(
   return response.status;
 }
 
+async function patchFields(
+  path: string,
+  fields: Record<string, unknown>,
+  fieldPaths: string[],
+  idToken: string
+): Promise<number> {
+  const query = fieldPaths
+    .map((fieldPath) =>
+      `updateMask.fieldPaths=${encodeURIComponent(fieldPath)}`
+    )
+    .join("&");
+  const response = await fetch(
+    `${documentUrl(path)}?${query}`,
+    {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${idToken}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ fields })
+    }
+  );
+  return response.status;
+}
+
 after(async () => {
   await Promise.all([
     firestore.doc("pricingCatalog/current").delete(),
@@ -112,7 +137,8 @@ after(async () => {
     firestore.doc(`users/${STORE_UID}`).delete(),
     firestore.doc(`users/${OTHER_STORE_UID}`).delete(),
     firestore.doc(`users/${USER_UID}`).delete(),
-    firestore.doc(`users/${FIXED_ADMIN_UID}`).delete()
+    firestore.doc(`users/${FIXED_ADMIN_UID}`).delete(),
+    firestore.doc("adminAuditLogs/rules-test").delete()
   ]);
 
   await Promise.all(
@@ -341,5 +367,63 @@ test("pricing catalog and store contract access boundaries", async (t) => {
         403
       );
     }
+  });
+
+  await t.test("store cannot modify publication caches", async () => {
+    assert.equal(
+      await patchFields(
+        `stores/${STORE_UID}`,
+        {
+          isPublic: {
+            booleanValue: true
+          },
+          contractListingStatus: {
+            stringValue: "active"
+          },
+          contractEndAt: {
+            timestampValue:
+              "2099-12-31T23:59:59Z"
+          }
+        },
+        [
+          "isPublic",
+          "contractListingStatus",
+          "contractEndAt"
+        ],
+        storeToken
+      ),
+      403
+    );
+  });
+
+  await t.test("audit logs are admin-read-only for clients", async () => {
+    await firestore.doc("adminAuditLogs/rules-test").set({
+      action: "test",
+      createdAt: new Date()
+    });
+    assert.equal(
+      await requestDocument(
+        "adminAuditLogs/rules-test",
+        "GET",
+        adminToken
+      ),
+      200
+    );
+    assert.equal(
+      await requestDocument(
+        "adminAuditLogs/rules-test",
+        "GET",
+        storeToken
+      ),
+      403
+    );
+    assert.equal(
+      await requestDocument(
+        "adminAuditLogs/rules-test",
+        "PATCH",
+        adminToken
+      ),
+      403
+    );
   });
 });

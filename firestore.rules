@@ -963,6 +963,16 @@ service cloud.firestore {
     }
 
     /*
+     * Administrative audit records are written only by trusted Admin SDK
+     * processes. The fixed active administrator may inspect them, but no
+     * browser client may create, update, or delete records.
+     */
+    match /adminAuditLogs/{auditLogId} {
+      allow get, list: if isActiveAdmin();
+      allow create, update, delete: if false;
+    }
+
+    /*
      * Deny every undeclared collection and all subcollections by default.
      */
     match /{document=**} {
