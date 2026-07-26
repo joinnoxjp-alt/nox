@@ -1916,12 +1916,13 @@ createDirectStoreButton.addEventListener(
         doc(
           collection(db, "stores")
         );
-
+const finalOwnerId =
+  ownerId || storeRef.id;
       await setDoc(
         storeRef,
         {
           storeName,
-          ownerId,
+          ownerId: finalOwnerId,
           businessScope,
           businessType,
           area,
