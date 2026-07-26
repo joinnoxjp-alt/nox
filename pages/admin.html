@@ -1852,12 +1852,6 @@ createDirectStoreButton.addEventListener(
       return;
     }
 
-    if (!ownerId) {
-      directStoreStatus.textContent =
-        "ownerIdを入力してください。";
-      return;
-    }
-
     if (
       !contractStartAt ||
       !contractEndAt
