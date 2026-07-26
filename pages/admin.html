@@ -3818,6 +3818,18 @@ ${data.sns || "-"}
        求人申請管理
     ========================= */
 
+    function isJobApprovalComplete(
+      application,
+      job
+    ) {
+      return (
+        application.status === "approved" &&
+        job?.status === "approved" &&
+        job?.isPublic === true &&
+        job?.contractListingStatus === "active"
+      );
+    }
+
     async function loadJobApplications() {
       try {
         const snap =
@@ -3841,22 +3853,54 @@ ${data.sns || "-"}
           return;
         }
 
-        let displayCount =
-          0;
+        const applications =
+          await Promise.all(
+            snap.docs.map(async (applicationDocument) => {
+              const application =
+                applicationDocument.data();
+              const jobId =
+                typeof application.jobId === "string" &&
+                application.jobId
+                  ? application.jobId
+                  : applicationDocument.id;
+              const jobSnapshot =
+                await getDoc(
+                  doc(db, "jobs", jobId)
+                );
+              const job =
+                jobSnapshot.exists()
+                  ? jobSnapshot.data()
+                  : null;
 
-        snap.forEach((jobDoc) => {
-          const data =
-            jobDoc.data();
+              return {
+                id: applicationDocument.id,
+                application,
+                job,
+                approvalComplete:
+                  isJobApprovalComplete(
+                    application,
+                    job
+                  )
+              };
+            })
+          );
 
+        const pendingApplications =
+          applications.filter(
+            (item) => !item.approvalComplete
+          );
+
+        pendingApplications.forEach((item) => {
+          const {
+            id,
+            application: data,
+            job
+          } = item;
           const status =
-            data.status ||
-            "pending";
-
-          if (status === "approved") {
-            return;
-          }
-
-          displayCount++;
+            data.status || "pending";
+          const needsReapproval =
+            status === "approved" &&
+            !isJobApprovalComplete(data, job);
 
           const card =
             document.createElement("div");
@@ -3896,7 +3940,9 @@ ${data.sns || "-"}
             <p>
               状態：
               ${
-                status === "pending"
+                needsReapproval
+                  ? "承認処理未完了・再承認が必要"
+                  : status === "pending"
                   ? "審査待ち"
                   : escapeHTML(status)
               }
@@ -3907,9 +3953,13 @@ ${data.sns || "-"}
               <button
                 type="button"
                 class="admin-button approveBtn"
-                data-id="${escapeHTML(jobDoc.id)}"
+                data-id="${escapeHTML(id)}"
               >
-                ✅ 承認して公開
+                ${
+                  needsReapproval
+                    ? "✅ 再承認して公開"
+                    : "✅ 承認して公開"
+                }
               </button>
 
             </div>
@@ -3920,7 +3970,7 @@ ${data.sns || "-"}
           );
         });
 
-        if (displayCount === 0) {
+        if (pendingApplications.length === 0) {
           jobApplicationList.innerHTML = `
             <p class="admin-message">
               現在、承認待ちの求人申請はありません。

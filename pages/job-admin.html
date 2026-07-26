@@ -682,6 +682,18 @@
        承認待ち申請
     ========================= */
 
+    function isJobApprovalComplete(
+      application,
+      job
+    ){
+      return (
+        application.status === "approved" &&
+        job?.status === "approved" &&
+        job?.isPublic === true &&
+        job?.contractListingStatus === "active"
+      );
+    }
+
     async function loadPendingJobs(){
 
       pendingJobList.innerHTML = `
@@ -696,26 +708,46 @@
             collection(db,"jobApplications")
           );
 
-        const applications = [];
+        const applications =
+          await Promise.all(
+            snapshot.docs.map(
+              async (applicationDocument) => {
+                const data =
+                  applicationDocument.data();
+                const jobId =
+                  typeof data.jobId === "string" &&
+                  data.jobId
+                    ? data.jobId
+                    : applicationDocument.id;
+                const jobSnapshot =
+                  await getDoc(
+                    doc(db,"jobs",jobId)
+                  );
+                const job =
+                  jobSnapshot.exists()
+                    ? jobSnapshot.data()
+                    : null;
 
-        snapshot.forEach(
-          (applicationDocument) => {
+                return {
+                  id:applicationDocument.id,
+                  ...data,
+                  approvalComplete:
+                    isJobApprovalComplete(
+                      data,
+                      job
+                    )
+                };
+              }
+            )
+          );
 
-            const data =
-              applicationDocument.data();
+        const pendingApplications =
+          applications.filter(
+            (application) =>
+              !application.approvalComplete
+          );
 
-            if(data.status === "approved"){
-              return;
-            }
-
-            applications.push({
-              id:applicationDocument.id,
-              ...data
-            });
-          }
-        );
-
-        applications.sort(
+        pendingApplications.sort(
           (applicationA,applicationB) => {
 
             return (
@@ -729,7 +761,7 @@
           }
         );
 
-        if(applications.length === 0){
+        if(pendingApplications.length === 0){
 
           pendingJobList.innerHTML = `
             <p class="empty-message">
@@ -742,8 +774,10 @@
 
         pendingJobList.innerHTML = "";
 
-        applications.forEach(
+        pendingApplications.forEach(
           (application) => {
+            const needsReapproval =
+              application.status === "approved";
 
             const card =
               document.createElement("article");
@@ -784,7 +818,11 @@
               <div class="status-row">
 
                 <span class="status-badge status-pending">
-                  承認待ち
+                  ${
+                    needsReapproval
+                      ? "承認処理未完了・再承認が必要"
+                      : "承認待ち"
+                  }
                 </span>
 
               </div>
@@ -807,7 +845,11 @@
                     application.id
                   )}"
                 >
-                  承認して公開
+                  ${
+                    needsReapproval
+                      ? "再承認して公開"
+                      : "承認して公開"
+                  }
                 </button>
 
                 <button
