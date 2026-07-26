@@ -1972,6 +1972,75 @@
       return application.status || "状態不明";
     }
 
+    async function deleteRegisteredStoreData(
+  store,
+  button
+) {
+  const storeName =
+    store.storeName || "店舗名未設定";
+
+  const confirmed = confirm(
+    `「${storeName}」の店舗情報と契約情報を削除しますか？\n\n` +
+    "求人情報と会員アカウントは削除されません。"
+  );
+
+  if (!confirmed) {
+    return;
+  }
+
+  const finalConfirmed = confirm(
+    "この操作は元に戻せません。\n本当に削除しますか？"
+  );
+
+  if (!finalConfirmed) {
+    return;
+  }
+
+  button.disabled = true;
+  button.textContent = "削除中...";
+
+  try {
+    await Promise.all([
+      deleteDoc(
+        doc(
+          db,
+          "stores",
+          store.id
+        )
+      ),
+      deleteDoc(
+        doc(
+          db,
+          "storeContracts",
+          store.id
+        )
+      )
+    ]);
+
+    await Promise.all([
+      loadRegisteredStores(),
+      loadPublicJobs()
+    ]);
+
+    alert(
+      `「${storeName}」の店舗情報と契約情報を削除しました。`
+    );
+  } catch (error) {
+    console.error(
+      "店舗データの削除に失敗しました。",
+      error
+    );
+
+    alert(
+      "店舗データを削除できませんでした。"
+    );
+
+    button.disabled = false;
+    button.textContent =
+      "店舗データを削除";
+  }
+}
+
     async function loadStoreApplicationHistory() {
       try {
         const snapshot = await getDocs(
@@ -2105,6 +2174,39 @@
           timestampDateInput(contract?.contractEndAt || store.contractEndAt) || "-"
         )}</p>
       `;
+      const buttonRow =
+  document.createElement("div");
+
+buttonRow.className =
+  "admin-btn-row";
+
+const deleteButton =
+  document.createElement("button");
+
+deleteButton.type = "button";
+deleteButton.className =
+  "admin-button danger";
+
+deleteButton.textContent =
+  "店舗データを削除";
+
+deleteButton.addEventListener(
+  "click",
+  () => {
+    deleteRegisteredStoreData(
+      store,
+      deleteButton
+    );
+  }
+);
+
+buttonRow.appendChild(
+  deleteButton
+);
+
+card.appendChild(
+  buttonRow
+);
       return card;
     }
 
