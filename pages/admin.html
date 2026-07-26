@@ -2078,7 +2078,45 @@
             <p>担当者：${escapeHTML(application.contactName || "-")}</p>
             <p>状態：${escapeHTML(storeApplicationStateLabel(application))}</p>
           `;
-          storeApplicationHistoryList.append(card);
+          const buttonRow =
+  document.createElement("div");
+
+buttonRow.className =
+  "admin-btn-row";
+
+const deleteButton =
+  document.createElement("button");
+
+deleteButton.type = "button";
+deleteButton.className =
+  "admin-button danger";
+
+deleteButton.textContent =
+  "履歴を削除";
+
+deleteButton.addEventListener(
+  "click",
+  () => {
+    deleteStoreApplicationHistory(
+      application.id,
+      application.storeName ||
+        "店舗名未設定",
+      deleteButton
+    );
+  }
+);
+
+buttonRow.appendChild(
+  deleteButton
+);
+
+card.appendChild(
+  buttonRow
+);
+
+storeApplicationHistoryList.append(
+  card
+);
         });
       } catch {
         storeApplicationHistoryList.innerHTML =
