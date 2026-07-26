@@ -2278,6 +2278,13 @@ card.appendChild(
           <button type="button" class="admin-button sub" data-contract-action="pause">一時停止</button>
           <button type="button" class="admin-button sub" data-contract-action="suspend">強制停止</button>
           <button type="button" class="admin-button sub" data-contract-action="resume">再開</button>
+          <button
+  type="button"
+  class="admin-button danger"
+  data-store-delete
+>
+  店舗・契約データ削除
+</button>
         </div>
         <p class="admin-message" data-contract-status></p>
       `;
@@ -2293,6 +2300,20 @@ card.appendChild(
           )
         );
       });
+      const deleteButton =
+  card.querySelector(
+    "[data-store-delete]"
+  );
+
+deleteButton.addEventListener(
+  "click",
+  () => {
+    deleteRegisteredStoreData(
+      store,
+      deleteButton
+    );
+  }
+);
       return card;
     }
 
