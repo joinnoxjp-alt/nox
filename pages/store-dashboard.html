@@ -103,8 +103,10 @@ table{font-size:12px}
 
 <div class="panel">
 <h2>掲載状況</h2>
-<p>現在：<span class="tag">公開中</span></p>
-<p style="color:#aaa;">掲載中の求人はNOXに表示されています。</p>
+<p>現在：<span id="storePublicationStatus" class="tag">確認中</span></p>
+<p id="storePublicationMessage" style="color:#aaa;">
+  契約と掲載状態を確認しています。
+</p>
 </div>
 </section>
 <section id="jobs" class="hidden">
@@ -444,11 +446,15 @@ function validateContract(data, uid) {
 }
 
 function contractOptionsText(options) {
-  if (!options || typeof options !== "object" || Array.isArray(options)) {
+  if (!options || typeof options !== "object") {
     return "なし";
   }
-  const labels = Object.values(options)
-    .filter((option) => option && option.enabled === true)
+  const entries = Array.isArray(options)
+    ? options
+    : Object.values(options).filter(
+        (option) => option?.enabled === true
+      );
+  const labels = entries
     .map((option) =>
       typeof option.label === "string" ? option.label.trim() : ""
     )
@@ -476,15 +482,106 @@ function showContractUnavailable() {
   content.append(message);
   document.getElementById("dashboardContractStatus").textContent =
     "確認できません";
+  document.getElementById("storePublicationStatus").textContent =
+    "確認できません";
+  document.getElementById("storePublicationMessage").textContent =
+    CONTRACT_UNAVAILABLE_MESSAGE;
 }
 
-async function loadStoreContract() {
+function showContractMissing() {
+  const message =
+    "登録済み・契約未設定";
+  const content =
+    document.getElementById("contractContent");
+  content.replaceChildren();
+  const description =
+    document.createElement("p");
+  description.className = "contractMessage";
+  description.textContent =
+    "契約情報を確認できません。NOX運営へお問い合わせください。";
+  content.append(description);
+  document.getElementById(
+    "dashboardContractStatus"
+  ).textContent = message;
+  document.getElementById(
+    "storePublicationStatus"
+  ).textContent = message;
+  document.getElementById(
+    "storePublicationMessage"
+  ).textContent =
+    "店舗登録は完了していますが、掲載契約はまだ設定されていません。";
+}
+
+function updatePublicationStatus(
+  contract,
+  storeData
+) {
+  const now = new Date();
+  const startAt =
+    timestampToDate(contract.contractStartAt);
+  const endAt =
+    timestampToDate(contract.contractEndAt);
+  const isWithinPeriod =
+    startAt &&
+    endAt &&
+    startAt.getTime() <= now.getTime() &&
+    endAt.getTime() >= now.getTime();
+  const isPublic =
+    contract.paymentStatus === "paid" &&
+    contract.listingStatus === "active" &&
+    isWithinPeriod &&
+    storeData?.isPublic === true;
+  let label =
+    LISTING_STATUS_LABELS[
+      contract.listingStatus
+    ] || "確認できません";
+  let message =
+    "契約と掲載状態を確認してください。";
+
+  if (isPublic) {
+    label = "掲載中";
+    message =
+      "公開条件を満たしているため、掲載対象として公開されています。";
+  } else if (
+    contract.listingStatus === "expired" ||
+    (endAt && endAt.getTime() < now.getTime())
+  ) {
+    label = "契約期限切れ";
+    message =
+      "契約期限切れのため掲載停止中です。更新をご希望の場合はNOX運営へお問い合わせください。";
+  } else if (
+    contract.listingStatus === "suspended"
+  ) {
+    label = "強制停止中";
+    message =
+      "運営により掲載を停止しています。NOX運営へお問い合わせください。";
+  } else if (
+    contract.listingStatus === "paused"
+  ) {
+    label = "一時停止中";
+    message =
+      "現在、店舗と求人の掲載を一時停止しています。";
+  } else {
+    label = "掲載準備中";
+    message =
+      "入金確認・契約期間・公開設定の確認後に掲載を開始します。";
+  }
+
+  document.getElementById(
+    "storePublicationStatus"
+  ).textContent = label;
+  document.getElementById(
+    "storePublicationMessage"
+  ).textContent = message;
+}
+
+async function loadStoreContract(storeData) {
   try {
     const snapshot = await getDoc(
       doc(db, "storeContracts", currentUser.uid)
     );
     if (!snapshot.exists()) {
-      showContractUnavailable();
+      showContractMissing();
       return;
     }
 
@@ -541,6 +638,10 @@ async function loadStoreContract() {
     document.getElementById("contractContent").replaceChildren(grid);
     document.getElementById("dashboardContractStatus").textContent =
       LISTING_STATUS_LABELS[data.listingStatus];
+    updatePublicationStatus(
+      data,
+      storeData
+    );
   } catch {
     showContractUnavailable();
   }
@@ -877,6 +978,8 @@ onAuthStateChanged(auth, async user => {
     return;
   }
 
+  let verifiedStoreData = null;
+
   try {
     const userRef = doc(db, "users", user.uid);
     const [userSnap, storeSnap] = await Promise.all([
@@ -901,6 +1004,7 @@ onAuthStateChanged(auth, async user => {
       location.href = "mypage.html";
       return;
     }
+    verifiedStoreData = storeData;
   } catch (error) {
     console.error("店舗権限の確認に失敗しました", error);
     alert("店舗アカウント情報を確認できませんでした");
@@ -911,7 +1015,9 @@ onAuthStateChanged(auth, async user => {
   currentUser = user;
 
   await loadStoreInfo();
-  await loadStoreContract();
+  await loadStoreContract(
+    verifiedStoreData
+  );
 
   const jobs = await loadJobs();
 

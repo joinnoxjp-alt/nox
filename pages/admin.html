@@ -867,6 +867,54 @@
             </p>
           </div>
 
+          <h3 class="admin-section-title">
+            承認済み・登録完了履歴
+          </h3>
+
+          <div id="storeApplicationHistoryList">
+            <p class="admin-message">
+              店舗掲載申請の履歴を読み込み中...
+            </p>
+          </div>
+
+        </section>
+
+        <!-- 登録済み店舗 -->
+        <section class="admin-section">
+
+          <h2 class="admin-section-title">
+            ✅ 登録済み店舗
+          </h2>
+
+          <p class="admin-section-description">
+            店舗登録が完了した店舗を、店舗UIDとownerIdを基準に表示します。
+          </p>
+
+          <div id="registeredStoreList">
+            <p class="admin-message">
+              登録済み店舗を読み込み中...
+            </p>
+          </div>
+
+        </section>
+
+        <!-- 契約・掲載管理 -->
+        <section class="admin-section">
+
+          <h2 class="admin-section-title">
+            💳 契約・掲載管理
+          </h2>
+
+          <p class="admin-section-description">
+            契約と掲載状態は管理Function経由で更新します。店舗クライアントからは変更できません。
+          </p>
+
+          <div id="storeContractList">
+            <p class="admin-message">
+              契約情報を読み込み中...
+            </p>
+          </div>
+
         </section>
 
         <!-- 求人掲載申請 -->
@@ -883,6 +931,25 @@
           <div id="jobApplicationList">
             <p class="admin-message">
               求人掲載申請を読み込み中...
+            </p>
+          </div>
+
+        </section>
+
+        <!-- 公開求人 -->
+        <section class="admin-section">
+
+          <h2 class="admin-section-title">
+            📢 公開中求人一覧
+          </h2>
+
+          <p class="admin-section-description">
+            公開中の求人をownerId基準で確認します。
+          </p>
+
+          <div id="publicJobList">
+            <p class="admin-message">
+              公開中求人を読み込み中...
             </p>
           </div>
 
@@ -1487,6 +1554,12 @@
         "approveStoreApplicationAndIssueInvite"
       );
 
+    const updateStoreContractCallable =
+      httpsCallable(
+        functions,
+        "updateStoreContract"
+      );
+
     const userList =
       document.getElementById("userList");
 
@@ -1495,6 +1568,18 @@
 
     const storeApplicationList =
       document.getElementById("storeApplicationList");
+
+    const storeApplicationHistoryList =
+      document.getElementById("storeApplicationHistoryList");
+
+    const registeredStoreList =
+      document.getElementById("registeredStoreList");
+
+    const storeContractList =
+      document.getElementById("storeContractList");
+
+    const publicJobList =
+      document.getElementById("publicJobList");
 
     const storeInviteResult =
       document.getElementById("storeInviteResult");
@@ -1535,7 +1620,10 @@
         loadAds(),
         loadUsers(),
         loadStoreApplications(),
+        loadStoreApplicationHistory(),
+        loadRegisteredStores(),
         loadJobApplications(),
+        loadPublicJobs(),
         loadCasts()
       ]);
     }
@@ -1563,6 +1651,56 @@
       };
 
       return labels[value] || "不明";
+    }
+
+    const paymentStatusLabels = {
+      not_billed: "未請求",
+      awaiting_payment: "入金待ち",
+      paid: "入金確認済み",
+      expired: "契約期限切れ",
+      suspended: "停止中"
+    };
+
+    const listingStatusLabels = {
+      pending: "掲載準備中",
+      active: "掲載中",
+      paused: "一時停止",
+      expired: "契約期限切れ",
+      suspended: "強制停止"
+    };
+
+    function timestampDateInput(value) {
+      const date = value?.toDate?.();
+      return date && !Number.isNaN(date.getTime())
+        ? date.toISOString().slice(0, 10)
+        : "";
+    }
+
+    function defaultContractDates() {
+      const start = new Date();
+      const end = new Date(start);
+      end.setUTCMonth(end.getUTCMonth() + 1);
+      return {
+        start: start.toISOString().slice(0, 10),
+        end: end.toISOString().slice(0, 10)
+      };
+    }
+
+    function contractErrorMessage(error) {
+      const messages = {
+        "functions/unauthenticated":
+          "ログイン状態を確認してください。",
+        "functions/permission-denied":
+          "契約を変更する管理者権限がありません。",
+        "functions/invalid-argument":
+          "契約の入力内容を確認してください。",
+        "functions/not-found":
+          "対象店舗が見つかりません。",
+        "functions/failed-precondition":
+          "料金マスタまたは契約状態を確認してください。"
+      };
+      return messages[error?.code] ||
+        "契約を更新できませんでした。自動再試行は行いません。";
     }
 
     function storeApprovalErrorMessage(error) {
@@ -1781,7 +1919,10 @@
                   );
                 }
 
-                await loadStoreApplications();
+                await Promise.all([
+                  loadStoreApplications(),
+                  loadStoreApplicationHistory()
+                ]);
                 showStoreInviteResult(
                   inviteUrl
                 );
@@ -1809,6 +1950,422 @@
         storeApplicationList.innerHTML = `
           <p class="admin-message">店舗掲載申請を読み込めませんでした。</p>
         `;
+      }
+    }
+
+    function storeApplicationStateLabel(application) {
+      if (application.registrationStatus === "completed") {
+        return "店舗登録完了";
+      }
+      if (application.status === "approved") {
+        return "招待発行済み";
+      }
+      if (application.status === "pending") {
+        return "承認待ち";
+      }
+      return application.status || "状態不明";
+    }
+
+    async function loadStoreApplicationHistory() {
+      try {
+        const snapshot = await getDocs(
+          collection(db, "storeApplications")
+        );
+        const applications = snapshot.docs
+          .map((applicationDoc) => ({
+            id: applicationDoc.id,
+            ...applicationDoc.data()
+          }))
+          .filter((application) =>
+            application.status === "approved" ||
+            application.registrationStatus === "completed"
+          )
+          .sort((left, right) =>
+            (right.createdAt?.toMillis?.() || 0) -
+            (left.createdAt?.toMillis?.() || 0)
+          );
+
+        storeApplicationHistoryList.replaceChildren();
+        if (applications.length === 0) {
+          storeApplicationHistoryList.innerHTML =
+            '<p class="admin-message">承認済み・登録完了の申請はありません。</p>';
+          return;
+        }
+
+        applications.forEach((application) => {
+          const card = document.createElement("article");
+          card.className = "admin-item-card";
+          card.innerHTML = `
+            <h3>${escapeHTML(application.storeName || "店舗名未設定")}</h3>
+            <p>掲載区分：${escapeHTML(businessScopeLabel(application.businessScope))}</p>
+            <p>業種：${escapeHTML(application.businessType || "-")}</p>
+            <p>地域：${escapeHTML(application.area || "-")}</p>
+            <p>担当者：${escapeHTML(application.contactName || "-")}</p>
+            <p>状態：${escapeHTML(storeApplicationStateLabel(application))}</p>
+          `;
+          storeApplicationHistoryList.append(card);
+        });
+      } catch {
+        storeApplicationHistoryList.innerHTML =
+          '<p class="admin-message">店舗掲載申請の履歴を読み込めませんでした。</p>';
+      }
+    }
+
+    async function loadPublicJobs() {
+      try {
+        const snapshot = await getDocs(
+          collection(db, "jobs")
+        );
+        const jobs = snapshot.docs
+          .map((jobDocument) => ({
+            id: jobDocument.id,
+            ...jobDocument.data()
+          }))
+          .filter((job) =>
+            job.status === "approved" &&
+            job.isPublic === true &&
+            job.contractListingStatus === "active"
+          );
+
+        publicJobList.replaceChildren();
+        if (jobs.length === 0) {
+          publicJobList.innerHTML =
+            '<p class="admin-message">公開中の求人はありません。</p>';
+          return;
+        }
+
+        jobs.forEach((job) => {
+          const card = document.createElement("article");
+          card.className = "admin-item-card";
+          card.innerHTML = `
+            <h3>${escapeHTML(job.title || "求人タイトル未設定")}</h3>
+            <p>店舗名：${escapeHTML(job.storeName || "-")}</p>
+            <p>ownerId：${escapeHTML(job.ownerId || "-")}</p>
+            <p>状態：公開中</p>
+          `;
+          publicJobList.append(card);
+        });
+      } catch {
+        publicJobList.innerHTML =
+          '<p class="admin-message">公開中求人を読み込めませんでした。</p>';
+      }
+    }
+
+    function contractSelectOptions(
+      values,
+      labels,
+      selected
+    ) {
+      return values.map((value) => `
+        <option value="${escapeHTML(value)}"${
+          value === selected ? " selected" : ""
+        }>${escapeHTML(labels[value] || value)}</option>
+      `).join("");
+    }
+
+    function createRegisteredStoreCard(
+      store,
+      contract,
+      jobCount
+    ) {
+      const card =
+        document.createElement("article");
+      card.className = "admin-item-card";
+      const registrationStatus =
+        store.sourceStoreApplicationId
+          ? "登録完了"
+          : "登録元申請を確認できません";
+      const contractStatus =
+        contract
+          ? `${paymentStatusLabels[contract.paymentStatus] || contract.paymentStatus || "不明"}／${
+              listingStatusLabels[contract.listingStatus] || contract.listingStatus || "不明"
+            }`
+          : "登録済み・契約未設定";
+      card.innerHTML = `
+        <h3>${escapeHTML(store.storeName || "店舗名未設定")}</h3>
+        <p>店舗UID：${escapeHTML(store.id)}</p>
+        <p>ownerId：${escapeHTML(store.ownerId || "-")}</p>
+        <p>掲載区分：${escapeHTML(businessScopeLabel(store.businessScope))}</p>
+        <p>登録状況：${escapeHTML(registrationStatus)}</p>
+        <p>登録日時：${escapeHTML(
+          timestampDateInput(store.createdAt) || "-"
+        )}</p>
+        <p>契約状況：${escapeHTML(contractStatus)}</p>
+        <p>掲載状況：${escapeHTML(
+          store.isPublic === true ? "公開" : "非公開"
+        )}</p>
+        <p>求人件数：${escapeHTML(String(jobCount))}</p>
+        <p>契約終了日：${escapeHTML(
+          timestampDateInput(contract?.contractEndAt || store.contractEndAt) || "-"
+        )}</p>
+      `;
+      return card;
+    }
+
+    function createContractCard(
+      store,
+      contract
+    ) {
+      const defaults = defaultContractDates();
+      const card =
+        document.createElement("article");
+      card.className = "admin-item-card";
+      card.dataset.storeUid = store.id;
+      card.innerHTML = `
+        <h3>${escapeHTML(store.storeName || "店舗名未設定")}</h3>
+        <p>店舗UID：${escapeHTML(store.id)}</p>
+        <label>料金プラン
+          <select data-contract-field="planCode">
+            ${contractSelectOptions(
+              ["one_month", "six_months", "twelve_months"],
+              {
+                one_month: "1ヶ月",
+                six_months: "6ヶ月",
+                twelve_months: "12ヶ月"
+              },
+              contract?.planCode || "one_month"
+            )}
+          </select>
+        </label>
+        <label>契約開始日
+          <input type="date" data-contract-field="contractStartAt"
+            value="${escapeHTML(timestampDateInput(contract?.contractStartAt) || defaults.start)}">
+        </label>
+        <label>契約終了日
+          <input type="date" data-contract-field="contractEndAt"
+            value="${escapeHTML(timestampDateInput(contract?.contractEndAt) || defaults.end)}">
+        </label>
+        <label>支払状況
+          <select data-contract-field="paymentStatus">
+            ${contractSelectOptions(
+              ["not_billed", "awaiting_payment", "paid", "expired", "suspended"],
+              paymentStatusLabels,
+              contract?.paymentStatus || "not_billed"
+            )}
+          </select>
+        </label>
+        <label>掲載状況
+          <select data-contract-field="listingStatus">
+            ${contractSelectOptions(
+              ["pending", "active", "paused", "expired", "suspended"],
+              listingStatusLabels,
+              contract?.listingStatus || "pending"
+            )}
+          </select>
+        </label>
+        <label><input type="checkbox" value="top_ad" data-contract-option
+          ${contract?.options?.top_ad?.enabled === true ? "checked" : ""}>
+          TOP広告</label>
+        <label><input type="checkbox" value="new_job" data-contract-option
+          ${contract?.options?.new_job?.enabled === true ? "checked" : ""}>
+          新着求人掲載</label>
+        <label>管理者メモ
+          <textarea data-contract-field="adminNote" maxlength="500">${escapeHTML(contract?.adminNote || "")}</textarea>
+        </label>
+        <div class="admin-btn-row">
+          <button type="button" class="admin-button" data-contract-action="save">
+            ${contract ? "契約更新" : "契約作成"}
+          </button>
+          <button type="button" class="admin-button sub" data-contract-action="start">掲載開始</button>
+          <button type="button" class="admin-button sub" data-contract-action="pause">一時停止</button>
+          <button type="button" class="admin-button sub" data-contract-action="suspend">強制停止</button>
+          <button type="button" class="admin-button sub" data-contract-action="resume">再開</button>
+        </div>
+        <p class="admin-message" data-contract-status></p>
+      `;
+
+      card.querySelectorAll(
+        "[data-contract-action]"
+      ).forEach((button) => {
+        button.addEventListener(
+          "click",
+          () => saveStoreContract(
+            card,
+            button.dataset.contractAction
+          )
+        );
+      });
+      return card;
+    }
+
+    async function saveStoreContract(
+      card,
+      action
+    ) {
+      const statusElement =
+        card.querySelector(
+          "[data-contract-status]"
+        );
+      const buttons = [
+        ...card.querySelectorAll(
+          "[data-contract-action]"
+        )
+      ];
+      const field = (name) =>
+        card.querySelector(
+          `[data-contract-field="${name}"]`
+        );
+      const paymentSelect =
+        field("paymentStatus");
+      const listingSelect =
+        field("listingStatus");
+
+      if (action === "start") {
+        paymentSelect.value = "paid";
+        listingSelect.value = "active";
+      } else if (action === "pause") {
+        listingSelect.value = "paused";
+      } else if (action === "suspend") {
+        paymentSelect.value = "suspended";
+        listingSelect.value = "suspended";
+      } else if (action === "resume") {
+        listingSelect.value = "active";
+      }
+
+      const startValue =
+        field("contractStartAt").value;
+      const endValue =
+        field("contractEndAt").value;
+      if (!startValue || !endValue) {
+        statusElement.textContent =
+          "契約開始日と終了日を入力してください。";
+        return;
+      }
+
+      buttons.forEach((button) => {
+        button.disabled = true;
+      });
+      statusElement.textContent =
+        "契約を更新しています...";
+
+      try {
+        await updateStoreContractCallable({
+          storeUid: card.dataset.storeUid,
+          planCode:
+            field("planCode").value,
+          contractStartAt:
+            `${startValue}T00:00:00+09:00`,
+          contractEndAt:
+            `${endValue}T23:59:59+09:00`,
+          paymentStatus:
+            paymentSelect.value,
+          listingStatus:
+            listingSelect.value,
+          optionCodes: [
+            ...card.querySelectorAll(
+              "[data-contract-option]:checked"
+            )
+          ].map((input) => input.value),
+          adminNote:
+            field("adminNote").value
+        });
+        statusElement.textContent =
+          "契約と掲載状態を更新しました。";
+        await Promise.all([
+          loadRegisteredStores(),
+          loadPublicJobs()
+        ]);
+      } catch (error) {
+        statusElement.textContent =
+          contractErrorMessage(error);
+      } finally {
+        buttons.forEach((button) => {
+          button.disabled = false;
+        });
+      }
+    }
+
+    async function loadRegisteredStores() {
+      try {
+        const storeSnapshot =
+          await getDocs(
+            collection(db, "stores")
+          );
+        const stores =
+          storeSnapshot.docs.map(
+            (storeDoc) => ({
+              id: storeDoc.id,
+              ...storeDoc.data()
+            })
+          );
+        const jobSnapshot =
+          await getDocs(
+            collection(db, "jobs")
+          );
+        const jobCounts = new Map();
+        jobSnapshot.forEach((jobDocument) => {
+          const ownerId =
+            jobDocument.data().ownerId;
+          if (typeof ownerId === "string") {
+            jobCounts.set(
+              ownerId,
+              (jobCounts.get(ownerId) || 0) + 1
+            );
+          }
+        });
+        const contractEntries =
+          await Promise.all(
+            stores.map(async (store) => {
+              const snapshot =
+                await getDoc(
+                  doc(
+                    db,
+                    "storeContracts",
+                    store.id
+                  )
+                );
+              return [
+                store.id,
+                snapshot.exists()
+                  ? snapshot.data()
+                  : null
+              ];
+            })
+          );
+        const contracts =
+          new Map(contractEntries);
+
+        registeredStoreList.replaceChildren();
+        storeContractList.replaceChildren();
+
+        if (stores.length === 0) {
+          registeredStoreList.innerHTML =
+            '<p class="admin-message">登録済み店舗はありません。</p>';
+          storeContractList.innerHTML =
+            '<p class="admin-message">契約管理対象の店舗はありません。</p>';
+          return;
+        }
+
+        stores
+          .sort((left, right) =>
+            String(left.storeName || "")
+              .localeCompare(
+                String(right.storeName || ""),
+                "ja"
+              )
+          )
+          .forEach((store) => {
+            const contract =
+              contracts.get(store.id);
+            registeredStoreList.append(
+              createRegisteredStoreCard(
+                store,
+                contract,
+                jobCounts.get(store.id) || 0
+              )
+            );
+            storeContractList.append(
+              createContractCard(
+                store,
+                contract
+              )
+            );
+          });
+      } catch {
+        registeredStoreList.innerHTML =
+          '<p class="admin-message">登録済み店舗を読み込めませんでした。</p>';
+        storeContractList.innerHTML =
+          '<p class="admin-message">契約情報を読み込めませんでした。</p>';
       }
     }
 
