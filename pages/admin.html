@@ -878,7 +878,181 @@
           </div>
 
         </section>
+<!-- 管理者から店舗を直接追加 -->
+<section class="admin-section">
 
+  <h2 class="admin-section-title">
+    ➕ 管理者から店舗を直接追加
+  </h2>
+
+  <p class="admin-section-description">
+    店舗掲載申請を通さず、管理者が店舗情報と契約情報を直接登録できます。
+  </p>
+
+  <div class="admin-item-card">
+
+    <div class="ad-form">
+
+      <div class="ad-form-group full">
+        <label for="directStoreName">
+          店舗名
+        </label>
+        <input
+          type="text"
+          id="directStoreName"
+          placeholder="例：NOX新宿店"
+        >
+      </div>
+
+      <div class="ad-form-group">
+        <label for="directBusinessScope">
+          掲載区分
+        </label>
+        <select id="directBusinessScope">
+          <option value="night">夜職求人</option>
+          <option value="general">一般求人</option>
+          <option value="both">両方</option>
+        </select>
+      </div>
+
+      <div class="ad-form-group">
+        <label for="directBusinessType">
+          業種
+        </label>
+        <input
+          type="text"
+          id="directBusinessType"
+          placeholder="例：ガールズバー"
+        >
+      </div>
+
+      <div class="ad-form-group">
+        <label for="directArea">
+          地域
+        </label>
+        <input
+          type="text"
+          id="directArea"
+          placeholder="例：東京都新宿区"
+        >
+      </div>
+
+      <div class="ad-form-group">
+        <label for="directContactName">
+          担当者名
+        </label>
+        <input
+          type="text"
+          id="directContactName"
+          placeholder="例：山田"
+        >
+      </div>
+
+      <div class="ad-form-group full">
+        <label for="directOwnerId">
+          ownerId
+        </label>
+        <input
+          type="text"
+          id="directOwnerId"
+          placeholder="店舗アカウントのUID"
+        >
+      </div>
+
+      <div class="ad-form-group">
+        <label for="directPlanCode">
+          契約プラン
+        </label>
+        <select id="directPlanCode">
+          <option value="one_month">1ヶ月</option>
+          <option value="six_months">6ヶ月</option>
+          <option value="twelve_months">12ヶ月</option>
+        </select>
+      </div>
+
+      <div class="ad-form-group">
+        <label for="directPaymentStatus">
+          支払状況
+        </label>
+        <select id="directPaymentStatus">
+          <option value="not_billed">未請求</option>
+          <option value="awaiting_payment">入金待ち</option>
+          <option value="paid">入金確認済み</option>
+        </select>
+      </div>
+
+      <div class="ad-form-group">
+        <label for="directContractStartAt">
+          契約開始日
+        </label>
+        <input
+          type="date"
+          id="directContractStartAt"
+        >
+      </div>
+
+      <div class="ad-form-group">
+        <label for="directContractEndAt">
+          契約終了日
+        </label>
+        <input
+          type="date"
+          id="directContractEndAt"
+        >
+      </div>
+
+      <div class="ad-form-group full">
+        <label>
+          掲載オプション
+        </label>
+
+        <label class="cast-setting-item">
+          <input
+            type="checkbox"
+            id="directTopAd"
+          >
+          <span>TOP広告</span>
+        </label>
+
+        <label class="cast-setting-item">
+          <input
+            type="checkbox"
+            id="directNewJob"
+          >
+          <span>新着求人掲載</span>
+        </label>
+      </div>
+
+      <div class="ad-form-group full">
+        <label for="directAdminNote">
+          管理者メモ
+        </label>
+        <textarea
+          id="directAdminNote"
+          placeholder="管理者用メモ"
+        ></textarea>
+      </div>
+
+      <div class="ad-card-actions">
+        <button
+          type="button"
+          id="createDirectStoreButton"
+          class="admin-button"
+        >
+          店舗を直接登録
+        </button>
+      </div>
+
+      <p
+        id="directStoreStatus"
+        class="save-status"
+      ></p>
+
+    </div>
+
+  </div>
+
+</section>
         <!-- 登録済み店舗 -->
         <section class="admin-section">
 
@@ -1595,7 +1769,15 @@
 
     const castList =
       document.getElementById("castList");
+const createDirectStoreButton =
+  document.getElementById(
+    "createDirectStoreButton"
+  );
 
+const directStoreStatus =
+  document.getElementById(
+    "directStoreStatus"
+  );
     const AD_SLOT_COUNT = 6;
 
     let currentAdminUser = null;
@@ -1635,7 +1817,184 @@
     }
 
     initializeAdminPage();
+createDirectStoreButton.addEventListener(
+  "click",
+  async () => {
+    const storeName =
+      document
+        .getElementById("directStoreName")
+        .value
+        .trim();
 
+    const ownerId =
+      document
+        .getElementById("directOwnerId")
+        .value
+        .trim();
+
+    const contractStartAt =
+      document
+        .getElementById(
+          "directContractStartAt"
+        )
+        .value;
+
+    const contractEndAt =
+      document
+        .getElementById(
+          "directContractEndAt"
+        )
+        .value;
+
+    if (!storeName) {
+      directStoreStatus.textContent =
+        "店舗名を入力してください。";
+      return;
+    }
+
+    if (
+      !contractStartAt ||
+      !contractEndAt
+    ) {
+      directStoreStatus.textContent =
+        "契約開始日と終了日を入力してください。";
+      return;
+    }
+
+    createDirectStoreButton.disabled =
+      true;
+
+    directStoreStatus.textContent =
+      "店舗を登録しています...";
+        try {
+      const businessScope =
+        document.getElementById(
+          "directBusinessScope"
+        ).value;
+
+      const businessType =
+        document.getElementById(
+          "directBusinessType"
+        ).value.trim();
+
+      const area =
+        document.getElementById(
+          "directArea"
+        ).value.trim();
+
+      const contactName =
+        document.getElementById(
+          "directContactName"
+        ).value.trim();
+
+      const planCode =
+        document.getElementById(
+          "directPlanCode"
+        ).value;
+
+      const paymentStatus =
+        document.getElementById(
+          "directPaymentStatus"
+        ).value;
+
+      const topAdEnabled =
+        document.getElementById(
+          "directTopAd"
+        ).checked;
+
+      const newJobEnabled =
+        document.getElementById(
+          "directNewJob"
+        ).checked;
+
+      const adminNote =
+        document.getElementById(
+          "directAdminNote"
+        ).value.trim();
+
+      const storeRef =
+        doc(
+          collection(db, "stores")
+        );
+const finalOwnerId =
+  ownerId || storeRef.id;
+      await setDoc(
+        storeRef,
+        {
+          storeName,
+          ownerId: finalOwnerId,
+          businessScope,
+          businessType,
+          area,
+          contactName,
+          isPublic: true,
+          source: "admin_direct",
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        }
+      );
+
+      await setDoc(
+        doc(
+          db,
+          "storeContracts",
+          storeRef.id
+        ),
+        {
+          storeUid: storeRef.id,
+          ownerId,
+          planCode,
+          contractStartAt:
+            new Date(
+              `${contractStartAt}T00:00:00+09:00`
+            ),
+          contractEndAt:
+            new Date(
+              `${contractEndAt}T23:59:59+09:00`
+            ),
+          paymentStatus,
+          listingStatus:
+            paymentStatus === "paid"
+              ? "active"
+              : "pending",
+          options: {
+            top_ad: {
+              enabled: topAdEnabled
+            },
+            new_job: {
+              enabled: newJobEnabled
+            }
+          },
+          adminNote,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        }
+      );
+
+      directStoreStatus.textContent =
+        "店舗を直接登録しました。";
+
+      await Promise.all([
+        loadRegisteredStores(),
+        loadPublicJobs()
+      ]);
+
+      createDirectStoreButton.disabled =
+        false;
+    } catch (error) {
+      console.error(
+        "店舗の直接登録に失敗しました。",
+        error
+      );
+
+      directStoreStatus.textContent =
+        "店舗を登録できませんでした。";
+
+      createDirectStoreButton.disabled =
+        false;
+    }
+  }
+);
     /* =========================
        共通関数
     ========================= */
@@ -1972,6 +2331,75 @@
       return application.status || "状態不明";
     }
 
+    async function deleteRegisteredStoreData(
+  store,
+  button
+) {
+  const storeName =
+    store.storeName || "店舗名未設定";
+
+  const confirmed = confirm(
+    `「${storeName}」の店舗情報と契約情報を削除しますか？\n\n` +
+    "求人情報と会員アカウントは削除されません。"
+  );
+
+  if (!confirmed) {
+    return;
+  }
+
+  const finalConfirmed = confirm(
+    "この操作は元に戻せません。\n本当に削除しますか？"
+  );
+
+  if (!finalConfirmed) {
+    return;
+  }
+
+  button.disabled = true;
+  button.textContent = "削除中...";
+
+  try {
+    await Promise.all([
+      deleteDoc(
+        doc(
+          db,
+          "stores",
+          store.id
+        )
+      ),
+      deleteDoc(
+        doc(
+          db,
+          "storeContracts",
+          store.id
+        )
+      )
+    ]);
+
+    await Promise.all([
+      loadRegisteredStores(),
+      loadPublicJobs()
+    ]);
+
+    alert(
+      `「${storeName}」の店舗情報と契約情報を削除しました。`
+    );
+  } catch (error) {
+    console.error(
+      "店舗データの削除に失敗しました。",
+      error
+    );
+
+    alert(
+      "店舗データを削除できませんでした。"
+    );
+
+    button.disabled = false;
+    button.textContent =
+      "店舗データを削除";
+  }
+}
+
     async function loadStoreApplicationHistory() {
       try {
         const snapshot = await getDocs(
@@ -2009,7 +2437,45 @@
             <p>担当者：${escapeHTML(application.contactName || "-")}</p>
             <p>状態：${escapeHTML(storeApplicationStateLabel(application))}</p>
           `;
-          storeApplicationHistoryList.append(card);
+          const buttonRow =
+  document.createElement("div");
+
+buttonRow.className =
+  "admin-btn-row";
+
+const deleteButton =
+  document.createElement("button");
+
+deleteButton.type = "button";
+deleteButton.className =
+  "admin-button danger";
+
+deleteButton.textContent =
+  "履歴を削除";
+
+deleteButton.addEventListener(
+  "click",
+  () => {
+    deleteStoreApplicationHistory(
+      application.id,
+      application.storeName ||
+        "店舗名未設定",
+      deleteButton
+    );
+  }
+);
+
+buttonRow.appendChild(
+  deleteButton
+);
+
+card.appendChild(
+  buttonRow
+);
+
+storeApplicationHistoryList.append(
+  card
+);
         });
       } catch {
         storeApplicationHistoryList.innerHTML =
@@ -2105,6 +2571,39 @@
           timestampDateInput(contract?.contractEndAt || store.contractEndAt) || "-"
         )}</p>
       `;
+      const buttonRow =
+  document.createElement("div");
+
+buttonRow.className =
+  "admin-btn-row";
+
+const deleteButton =
+  document.createElement("button");
+
+deleteButton.type = "button";
+deleteButton.className =
+  "admin-button danger";
+
+deleteButton.textContent =
+  "店舗データを削除";
+
+deleteButton.addEventListener(
+  "click",
+  () => {
+    deleteRegisteredStoreData(
+      store,
+      deleteButton
+    );
+  }
+);
+
+buttonRow.appendChild(
+  deleteButton
+);
+
+card.appendChild(
+  buttonRow
+);
       return card;
     }
 
@@ -2176,6 +2675,13 @@
           <button type="button" class="admin-button sub" data-contract-action="pause">一時停止</button>
           <button type="button" class="admin-button sub" data-contract-action="suspend">強制停止</button>
           <button type="button" class="admin-button sub" data-contract-action="resume">再開</button>
+          <button
+  type="button"
+  class="admin-button danger"
+  data-store-delete
+>
+  店舗・契約データ削除
+</button>
         </div>
         <p class="admin-message" data-contract-status></p>
       `;
@@ -2191,6 +2697,20 @@
           )
         );
       });
+      const deleteButton =
+  card.querySelector(
+    "[data-store-delete]"
+  );
+
+deleteButton.addEventListener(
+  "click",
+  () => {
+    deleteRegisteredStoreData(
+      store,
+      deleteButton
+    );
+  }
+);
       return card;
     }
 

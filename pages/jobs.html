@@ -595,9 +595,13 @@
               ...jobDoc.data()
             };
 
-            if (job.status !== "approved") {
-              return;
-            }
+           if (job.status !== "approved") {
+  return;
+}
+
+if (job.contractListingStatus !== "active") {
+  return;
+}
 
             const textCheck = `
               ${job.storeName || ""}
