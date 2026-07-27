@@ -859,9 +859,13 @@ async function loadTopJobs(){
           return;
         }
 
-        if(job.topFeatured !== true){
-          return;
-        }
+       if (
+  job.status !== "approved" ||
+  job.isPublic !== true ||
+  job.contractListingStatus !== "active"
+) {
+  return;
+}
 
         const searchText = [
           job.storeName,
