@@ -564,30 +564,32 @@ async function loadJob(){
 
     await recordJobView(data);
 
-    let images=[];
+   let images = [];
 
-    if(
-      Array.isArray(data.images)
-    ){
+if (
+  Array.isArray(data.imageUrls)
+) {
+  images =
+    data.imageUrls.filter(Boolean);
 
-      images =
-        data.images.filter(Boolean);
+} else if (
+  Array.isArray(data.images)
+) {
+  images =
+    data.images.filter(Boolean);
 
-    }else if(data.imageUrl){
-
-      images=[
-        data.imageUrl
-      ];
-
-    }
-
-    if(images.length===0){
-
-      images=[
-        "../images/nox.jpg"
-      ];
-
-    }
+} else if (
+  data.imageUrl
+) {
+  images = [
+    data.imageUrl
+  ];
+}
+ if (images.length === 0) {
+  images = [
+    "../images/nox.jpg"
+  ];
+}   
 
     let gallery="";
 
