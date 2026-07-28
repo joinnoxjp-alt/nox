@@ -1466,19 +1466,6 @@
     店舗名で検索
   */
 
-        if (jobDocs.length === 0 && currentStoreName) {
-          const nameQuery = query(
-            collection(db, "jobs"),
-            where("storeName", "==", currentStoreName),
-          );
-
-          const nameSnap = await getDocs(nameQuery);
-
-          nameSnap.forEach((jobDoc) => {
-            jobDocs.push(jobDoc);
-          });
-        }
-
         document.getElementById("jobCount").textContent = jobDocs.length;
 
         list.innerHTML = "";
