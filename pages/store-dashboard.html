@@ -1,1213 +1,1441 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NOX 店舗管理画面</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NOX 店舗管理画面</title>
 
-<style>
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial,"Hiragino Kaku Gothic ProN",Meiryo,sans-serif;background:#080808;color:#fff}
-.wrap{display:flex;min-height:100vh}
-.side{width:240px;background:#050505;border-right:1px solid #222;padding:24px 16px;position:fixed;height:100vh}
-.logo{font-size:28px;font-weight:bold;color:#d6a84f;margin-bottom:6px}
-.sub{font-size:12px;color:#aaa;margin-bottom:28px}
-.menu button{width:100%;background:none;border:0;color:#ddd;text-align:left;padding:14px;border-radius:12px;font-size:15px;margin-bottom:6px}
-.menu button:hover,.menu button.active{background:#151515;color:#d6a84f}
-.main{margin-left:240px;padding:28px;width:100%}
-h1{font-size:24px;margin:0 0 6px}
-.desc{color:#aaa;margin-bottom:24px}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:24px}
-.card{background:#111;border:1px solid #222;border-radius:18px;padding:20px}
-.card p{color:#aaa;margin:0 0 10px;font-size:13px}
-.card strong{font-size:28px;color:#d6a84f}
-.panel{background:#111;border:1px solid #222;border-radius:18px;padding:20px;margin-bottom:20px}
-.panel h2{margin:0 0 16px;font-size:18px}
-input,textarea,select{width:100%;background:#080808;border:1px solid #333;color:#fff;border-radius:10px;padding:12px;margin-bottom:12px}
-textarea{min-height:90px}
-.btn{background:#d6a84f;color:#000;border:0;border-radius:12px;padding:10px 14px;font-weight:bold;cursor:pointer;text-decoration:none;display:inline-block}
-.btn.gray{background:#222;color:#fff}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-table{width:100%;border-collapse:collapse}
-th,td{border-bottom:1px solid #222;padding:12px;text-align:left;font-size:14px;vertical-align:top}
-th{color:#aaa}
-.tag{display:inline-block;padding:5px 10px;border-radius:999px;background:#1b1b1b;color:#d6a84f;font-size:12px}
-.hidden{display:none}
-.actionBtns{display:flex;gap:8px;flex-wrap:wrap}
-.mediaGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
-.mediaCard{background:#090909;border:1px solid #2b2b2b;border-radius:14px;padding:14px}
-.mediaCard img{width:100%;height:180px;object-fit:cover;border-radius:10px;background:#050505;margin-bottom:12px}
-.mediaCard .logoPreview,.mediaCard .profilePreview{object-fit:contain}
-.mediaStatus{min-height:20px;color:#aaa;font-size:13px;margin-top:10px}
-.galleryGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-top:14px}
-.galleryItem{background:#090909;border:1px solid #2b2b2b;border-radius:12px;padding:10px}
-.galleryItem img{width:100%;height:130px;object-fit:cover;border-radius:8px;margin-bottom:8px}
-.contractGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
-.contractItem{padding:14px;border:1px solid #2b2b2b;border-radius:12px;background:#090909}
-.contractItem dt{margin-bottom:7px;color:#aaa;font-size:12px}
-.contractItem dd{margin:0;font-weight:700;line-height:1.5}
-.contractMessage{color:#ccc;line-height:1.7}
-@media(max-width:800px){
-.wrap{display:block}
-.side{position:relative;width:100%;height:auto}
-.main{margin-left:0;padding:18px}
-.row{grid-template-columns:1fr}
-table{font-size:12px}
-}
-</style>
-</head>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: Arial, "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+        background: #080808;
+        color: #fff;
+      }
+      .wrap {
+        display: flex;
+        min-height: 100vh;
+      }
+      .side {
+        width: 240px;
+        background: #050505;
+        border-right: 1px solid #222;
+        padding: 24px 16px;
+        position: fixed;
+        height: 100vh;
+      }
+      .logo {
+        font-size: 28px;
+        font-weight: bold;
+        color: #d6a84f;
+        margin-bottom: 6px;
+      }
+      .sub {
+        font-size: 12px;
+        color: #aaa;
+        margin-bottom: 28px;
+      }
+      .menu button {
+        width: 100%;
+        background: none;
+        border: 0;
+        color: #ddd;
+        text-align: left;
+        padding: 14px;
+        border-radius: 12px;
+        font-size: 15px;
+        margin-bottom: 6px;
+      }
+      .menu button:hover,
+      .menu button.active {
+        background: #151515;
+        color: #d6a84f;
+      }
+      .main {
+        margin-left: 240px;
+        padding: 28px;
+        width: 100%;
+      }
+      h1 {
+        font-size: 24px;
+        margin: 0 0 6px;
+      }
+      .desc {
+        color: #aaa;
+        margin-bottom: 24px;
+      }
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+      .card {
+        background: #111;
+        border: 1px solid #222;
+        border-radius: 18px;
+        padding: 20px;
+      }
+      .card p {
+        color: #aaa;
+        margin: 0 0 10px;
+        font-size: 13px;
+      }
+      .card strong {
+        font-size: 28px;
+        color: #d6a84f;
+      }
+      .panel {
+        background: #111;
+        border: 1px solid #222;
+        border-radius: 18px;
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+      .panel h2 {
+        margin: 0 0 16px;
+        font-size: 18px;
+      }
+      input,
+      textarea,
+      select {
+        width: 100%;
+        background: #080808;
+        border: 1px solid #333;
+        color: #fff;
+        border-radius: 10px;
+        padding: 12px;
+        margin-bottom: 12px;
+      }
+      textarea {
+        min-height: 90px;
+      }
+      .btn {
+        background: #d6a84f;
+        color: #000;
+        border: 0;
+        border-radius: 12px;
+        padding: 10px 14px;
+        font-weight: bold;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+      }
+      .btn.gray {
+        background: #222;
+        color: #fff;
+      }
+      .row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        border-bottom: 1px solid #222;
+        padding: 12px;
+        text-align: left;
+        font-size: 14px;
+        vertical-align: top;
+      }
+      th {
+        color: #aaa;
+      }
+      .tag {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 999px;
+        background: #1b1b1b;
+        color: #d6a84f;
+        font-size: 12px;
+      }
+      .hidden {
+        display: none;
+      }
+      .actionBtns {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .mediaGrid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 16px;
+      }
+      .mediaCard {
+        background: #090909;
+        border: 1px solid #2b2b2b;
+        border-radius: 14px;
+        padding: 14px;
+      }
+      .mediaCard img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        border-radius: 10px;
+        background: #050505;
+        margin-bottom: 12px;
+      }
+      .mediaCard .logoPreview,
+      .mediaCard .profilePreview {
+        object-fit: contain;
+      }
+      .mediaStatus {
+        min-height: 20px;
+        color: #aaa;
+        font-size: 13px;
+        margin-top: 10px;
+      }
+      .galleryGrid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 12px;
+        margin-top: 14px;
+      }
+      .galleryItem {
+        background: #090909;
+        border: 1px solid #2b2b2b;
+        border-radius: 12px;
+        padding: 10px;
+      }
+      .galleryItem img {
+        width: 100%;
+        height: 130px;
+        object-fit: cover;
+        border-radius: 8px;
+        margin-bottom: 8px;
+      }
+      .contractGrid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+        gap: 12px;
+      }
+      .contractItem {
+        padding: 14px;
+        border: 1px solid #2b2b2b;
+        border-radius: 12px;
+        background: #090909;
+      }
+      .contractItem dt {
+        margin-bottom: 7px;
+        color: #aaa;
+        font-size: 12px;
+      }
+      .contractItem dd {
+        margin: 0;
+        font-weight: 700;
+        line-height: 1.5;
+      }
+      .contractMessage {
+        color: #ccc;
+        line-height: 1.7;
+      }
+      @media (max-width: 800px) {
+        .wrap {
+          display: block;
+        }
+        .side {
+          position: relative;
+          width: 100%;
+          height: auto;
+        }
+        .main {
+          margin-left: 0;
+          padding: 18px;
+        }
+        .row {
+          grid-template-columns: 1fr;
+        }
+        table {
+          font-size: 12px;
+        }
+      }
+    </style>
+  </head>
 
-<body>
-<div class="wrap">
-<aside class="side">
-<div class="logo">NOX</div>
-<div class="sub">店舗管理画面</div>
+  <body>
+    <div class="wrap">
+      <aside class="side">
+        <div class="logo">NOX</div>
+        <div class="sub">店舗管理画面</div>
 
-<div class="menu">
-<button class="active" onclick="showPage('dashboard', this)">🏠 ダッシュボード</button>
-<button onclick="showPage('jobs', this)">📝 求人管理</button>
-<button onclick="showPage('apps', this)">📨 応募管理</button>
-<button onclick="showPage('store', this)">🏪 店舗情報</button>
-<button onclick="showPage('pay', this)">💰 お支払い</button>
-<button onclick="showPage('support', this)">❓ サポート</button>
-<button onclick="logout()">🚪 ログアウト</button>
-</div>
-</aside>
+        <div class="menu">
+          <button class="active" onclick="showPage('dashboard', this)">
+            🏠 ダッシュボード
+          </button>
+          <button onclick="showPage('jobs', this)">📝 求人管理</button>
+          <button onclick="showPage('apps', this)">📨 応募管理</button>
+          <button onclick="showPage('store', this)">🏪 店舗情報</button>
+          <button onclick="showPage('pay', this)">💰 お支払い</button>
+          <button onclick="showPage('support', this)">❓ サポート</button>
+          <button onclick="logout()">🚪 ログアウト</button>
+        </div>
+      </aside>
 
-<main class="main">
-<section id="dashboard">
-<h1>ダッシュボード</h1>
-<div class="desc">店舗の掲載状況・応募状況を確認できます。</div>
+      <main class="main">
+        <section id="dashboard">
+          <h1>ダッシュボード</h1>
+          <div class="desc">店舗の掲載状況・応募状況を確認できます。</div>
 
-<div class="cards">
-<div class="card">
-<p>今日の閲覧数</p>
-<strong id="viewCount">0</strong>
-</div>
+          <div class="cards">
+            <div class="card">
+              <p>今日の閲覧数</p>
+              <strong id="viewCount">0</strong>
+            </div>
 
-<div class="card">
-<p>今月の応募数</p>
-<strong id="applyCount">0</strong>
-</div>
+            <div class="card">
+              <p>今月の応募数</p>
+              <strong id="applyCount">0</strong>
+            </div>
 
-<div class="card">
-<p>求人掲載数</p>
-<strong id="jobCount">0</strong>
-</div>
+            <div class="card">
+              <p>求人掲載数</p>
+              <strong id="jobCount">0</strong>
+            </div>
 
-<div class="card">
-<p>契約状況</p>
-<strong id="dashboardContractStatus">確認中</strong>
-</div>
-</div>
+            <div class="card">
+              <p>契約状況</p>
+              <strong id="dashboardContractStatus">確認中</strong>
+            </div>
+          </div>
 
-<div class="panel">
-<h2>掲載状況</h2>
-<p>現在：<span id="storePublicationStatus" class="tag">確認中</span></p>
-<p id="storePublicationMessage" style="color:#aaa;">
-  契約と掲載状態を確認しています。
-</p>
-</div>
-</section>
-<section id="jobs" class="hidden">
-<p><a class="btn" href="./job-create.html">新規求人掲載申請</a></p>
-<h1>求人管理</h1>
+          <div class="panel">
+            <h2>掲載状況</h2>
+            <p>
+              現在：<span id="storePublicationStatus" class="tag">確認中</span>
+            </p>
+            <p id="storePublicationMessage" style="color: #aaa">
+              契約と掲載状態を確認しています。
+            </p>
+          </div>
+        </section>
+        <section id="jobs" class="hidden">
+          <p><a class="btn" href="./job-create.html">新規求人掲載申請</a></p>
+          <h1>求人管理</h1>
 
-<div class="panel">
-<h2>求人一覧</h2>
-<table>
-<thead>
-<tr>
-<th>求人名</th>
-<th>給与</th>
-<th>状態</th>
-</tr>
-</thead>
-<tbody id="jobList">
-<tr>
-<td colspan="3" style="text-align:center;color:#888;">読み込み中...</td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
+          <div class="panel">
+            <h2>求人一覧</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>求人名</th>
+                  <th>給与</th>
+                  <th>状態</th>
+                </tr>
+              </thead>
+              <tbody id="jobList">
+                <tr>
+                  <td colspan="3" style="text-align: center; color: #888">
+                    読み込み中...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
 
-<section id="apps" class="hidden">
-<h1>応募管理</h1>
-<div class="desc">応募者一覧・連絡状況を管理できます。</div>
+        <section id="apps" class="hidden">
+          <h1>応募管理</h1>
+          <div class="desc">応募者一覧・連絡状況を管理できます。</div>
 
-<div class="panel">
-<h2>応募一覧</h2>
+          <div class="panel">
+            <h2>応募一覧</h2>
 
-<table>
-<thead>
-<tr>
-<th>名前</th>
-<th>電話番号</th>
-<th>応募求人</th>
-<th>状態</th>
-<th>操作</th>
-</tr>
-</thead>
+            <table>
+              <thead>
+                <tr>
+                  <th>名前</th>
+                  <th>電話番号</th>
+                  <th>応募求人</th>
+                  <th>状態</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
 
-<tbody id="applicationList">
-<tr>
-<td colspan="5" style="text-align:center;color:#888;">
-読み込み中...
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
+              <tbody id="applicationList">
+                <tr>
+                  <td colspan="5" style="text-align: center; color: #888">
+                    読み込み中...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
 
-<section id="store" class="hidden">
-<h1>店舗情報</h1>
-<div class="desc">サイトに表示される店舗情報です。</div>
+        <section id="store" class="hidden">
+          <h1>店舗情報</h1>
+          <div class="desc">サイトに表示される店舗情報です。</div>
 
-<div class="panel">
-<h2>基本情報</h2>
+          <div class="panel">
+            <h2>基本情報</h2>
 
-<input id="storeName" placeholder="店舗名">
-<input id="storeArea" placeholder="エリア">
-<input id="storePhone" placeholder="電話番号">
-<input id="storeLine" placeholder="公式LINE URL">
-<input id="storeInstagram" placeholder="Instagram URL">
+            <input id="storeName" placeholder="店舗名" />
+            <input id="storeArea" placeholder="エリア" />
+            <input id="storePhone" placeholder="電話番号" />
+            <input id="storeLine" placeholder="公式LINE URL" />
+            <input id="storeInstagram" placeholder="Instagram URL" />
 
-<textarea id="storeDescription" placeholder="店舗紹介"></textarea>
+            <textarea id="storeDescription" placeholder="店舗紹介"></textarea>
 
-<button class="btn" onclick="saveStoreInfo()">
-店舗情報を保存
-</button>
-</div>
+            <button class="btn" onclick="saveStoreInfo()">
+              店舗情報を保存
+            </button>
+          </div>
 
-<div class="panel">
-<h2>店舗画像</h2>
-<p style="color:#aaa;">JPEG・PNG・WebPのみ。画像は店舗アカウント本人だけが変更できます。</p>
+          <div class="panel">
+            <h2>店舗画像</h2>
+            <p style="color: #aaa">
+              JPEG・PNG・WebPのみ。画像は店舗アカウント本人だけが変更できます。
+            </p>
 
-<div class="mediaGrid">
-  <div class="mediaCard">
-    <h3>店舗ロゴ</h3>
-    <img id="logoPreview" class="logoPreview" alt="店舗ロゴ" hidden>
-    <input id="logoFile" type="file" accept="image/jpeg,image/png,image/webp">
-    <div class="actionBtns">
-      <button type="button" class="btn" data-upload-kind="logo">変更</button>
-      <button type="button" class="btn gray" data-delete-kind="logo">削除</button>
+            <div class="mediaGrid">
+              <div class="mediaCard">
+                <h3>店舗ロゴ</h3>
+                <img
+                  id="logoPreview"
+                  class="logoPreview"
+                  alt="店舗ロゴ"
+                  hidden
+                />
+                <input
+                  id="logoFile"
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                />
+                <div class="actionBtns">
+                  <button type="button" class="btn" data-upload-kind="logo">
+                    変更
+                  </button>
+                  <button
+                    type="button"
+                    class="btn gray"
+                    data-delete-kind="logo"
+                  >
+                    削除
+                  </button>
+                </div>
+              </div>
+
+              <div class="mediaCard">
+                <h3>カバー画像</h3>
+                <img id="coverPreview" alt="店舗カバー画像" hidden />
+                <input
+                  id="coverFile"
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                />
+                <div class="actionBtns">
+                  <button type="button" class="btn" data-upload-kind="cover">
+                    変更
+                  </button>
+                  <button
+                    type="button"
+                    class="btn gray"
+                    data-delete-kind="cover"
+                  >
+                    削除
+                  </button>
+                </div>
+              </div>
+
+              <div class="mediaCard">
+                <h3>プロフィール画像</h3>
+                <img
+                  id="storeProfilePreview"
+                  class="profilePreview"
+                  alt="店舗プロフィール画像"
+                  hidden
+                />
+                <input
+                  id="profileFile"
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                />
+                <div class="actionBtns">
+                  <button type="button" class="btn" data-upload-kind="profile">
+                    変更
+                  </button>
+                  <button
+                    type="button"
+                    class="btn gray"
+                    data-delete-kind="profile"
+                  >
+                    削除
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="mediaCard" style="margin-top: 16px">
+              <h3>ギャラリー（最大10枚）</h3>
+              <input
+                id="galleryFile"
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+              />
+              <button type="button" id="addGalleryButton" class="btn">
+                画像を追加
+              </button>
+              <div id="galleryGrid" class="galleryGrid"></div>
+            </div>
+
+            <p
+              id="mediaStatus"
+              class="mediaStatus"
+              role="status"
+              aria-live="polite"
+            ></p>
+          </div>
+        </section>
+
+        <section id="pay" class="hidden">
+          <h1>お支払い</h1>
+          <div class="desc">
+            NOX運営が登録した契約内容を確認できます。店舗側から変更はできません。
+          </div>
+
+          <div class="panel">
+            <h2>契約情報</h2>
+            <div id="contractContent" aria-live="polite">
+              <p class="contractMessage">契約情報を読み込んでいます。</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="support" class="hidden">
+          <h1>サポート</h1>
+          <div class="desc">お困りの場合はこちらからお問い合わせください。</div>
+
+          <div class="panel">
+            <h2>お問い合わせ</h2>
+            <p>公式LINEまたはDMよりお問い合わせください。</p>
+            <button class="btn">公式LINEを開く</button>
+          </div>
+        </section>
+      </main>
     </div>
-  </div>
 
-  <div class="mediaCard">
-    <h3>カバー画像</h3>
-    <img id="coverPreview" alt="店舗カバー画像" hidden>
-    <input id="coverFile" type="file" accept="image/jpeg,image/png,image/webp">
-    <div class="actionBtns">
-      <button type="button" class="btn" data-upload-kind="cover">変更</button>
-      <button type="button" class="btn gray" data-delete-kind="cover">削除</button>
-    </div>
-  </div>
+    <script type="module">
+      import { auth, db } from "./firebase.js";
+      import { formatJapaneseYen } from "./pricing.js";
 
-  <div class="mediaCard">
-    <h3>プロフィール画像</h3>
-    <img id="storeProfilePreview" class="profilePreview" alt="店舗プロフィール画像" hidden>
-    <input id="profileFile" type="file" accept="image/jpeg,image/png,image/webp">
-    <div class="actionBtns">
-      <button type="button" class="btn" data-upload-kind="profile">変更</button>
-      <button type="button" class="btn gray" data-delete-kind="profile">削除</button>
-    </div>
-  </div>
-</div>
+      import {
+        onAuthStateChanged,
+        signOut,
+      } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-<div class="mediaCard" style="margin-top:16px;">
-  <h3>ギャラリー（最大10枚）</h3>
-  <input id="galleryFile" type="file" accept="image/jpeg,image/png,image/webp">
-  <button type="button" id="addGalleryButton" class="btn">画像を追加</button>
-  <div id="galleryGrid" class="galleryGrid"></div>
-</div>
+      import {
+        doc,
+        getDoc,
+        setDoc,
+        collection,
+        getDocs,
+        query,
+        where,
+        orderBy,
+        updateDoc,
+        deleteDoc,
+        serverTimestamp,
+      } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-<p id="mediaStatus" class="mediaStatus" role="status" aria-live="polite"></p>
-</div>
-</section>
+      import {
+        getStorage,
+        ref as storageRef,
+        uploadBytes,
+        getDownloadURL,
+        deleteObject,
+      } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
-<section id="pay" class="hidden">
-<h1>お支払い</h1>
-<div class="desc">NOX運営が登録した契約内容を確認できます。店舗側から変更はできません。</div>
+      let currentUser = null;
+      let currentStoreName = "";
+      let currentJobIds = [];
+      let currentStoreMedia = {
+        logo: null,
+        cover: null,
+        profile: null,
+        gallery: [],
+      };
+      const storage = getStorage();
+      const ALLOWED_IMAGE_TYPES = new Set([
+        "image/jpeg",
+        "image/png",
+        "image/webp",
+      ]);
+      const MEDIA_CONFIG = {
+        logo: {
+          inputId: "logoFile",
+          previewId: "logoPreview",
+          directory: "logo",
+          maxBytes: 2 * 1024 * 1024,
+          urlField: "logoUrl",
+          pathField: "logoStoragePath",
+        },
+        cover: {
+          inputId: "coverFile",
+          previewId: "coverPreview",
+          directory: "cover",
+          maxBytes: 5 * 1024 * 1024,
+          urlField: "coverImageUrl",
+          pathField: "coverImageStoragePath",
+        },
+        profile: {
+          inputId: "profileFile",
+          previewId: "storeProfilePreview",
+          directory: "profile",
+          maxBytes: 2 * 1024 * 1024,
+          urlField: "profileImageUrl",
+          pathField: "profileImageStoragePath",
+        },
+      };
+      const PAYMENT_STATUS_LABELS = {
+        not_billed: "未請求",
+        awaiting_payment: "入金待ち",
+        paid: "入金確認済み",
+        expired: "契約期限切れ",
+        suspended: "停止中",
+      };
+      const LISTING_STATUS_LABELS = {
+        pending: "掲載準備中",
+        active: "掲載中",
+        paused: "一時停止",
+        expired: "契約期限切れ",
+        suspended: "強制停止",
+      };
+      const CONTRACT_UNAVAILABLE_MESSAGE =
+        "契約情報を確認できません。NOX運営へお問い合わせください。";
 
-<div class="panel">
-<h2>契約情報</h2>
-<div id="contractContent" aria-live="polite">
-  <p class="contractMessage">契約情報を読み込んでいます。</p>
-</div>
-</div>
-</section>
-
-<section id="support" class="hidden">
-<h1>サポート</h1>
-<div class="desc">お困りの場合はこちらからお問い合わせください。</div>
-
-<div class="panel">
-<h2>お問い合わせ</h2>
-<p>公式LINEまたはDMよりお問い合わせください。</p>
-<button class="btn">公式LINEを開く</button>
-</div>
-</section>
-
-</main>
-</div>
-
-<script type="module">
-
-import { auth, db } from "./firebase.js";
-import {
-  formatJapaneseYen
-} from "./pricing.js";
-
-import {
-  onAuthStateChanged,
-  signOut
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-import {
-  doc,
-  getDoc,
-  setDoc,
-  collection,
-  getDocs,
-  query,
-  where,
-  orderBy,
-  updateDoc,
-  deleteDoc,
-  serverTimestamp
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-import {
-  getStorage,
-  ref as storageRef,
-  uploadBytes,
-  getDownloadURL,
-  deleteObject
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
-
-let currentUser = null;
-let currentStoreName = "";
-let currentJobIds = [];
-let currentStoreMedia = {
-  logo: null,
-  cover: null,
-  profile: null,
-  gallery: []
-};
-const storage = getStorage();
-const ALLOWED_IMAGE_TYPES = new Set([
-  "image/jpeg",
-  "image/png",
-  "image/webp"
-]);
-const MEDIA_CONFIG = {
-  logo: {
-    inputId: "logoFile",
-    previewId: "logoPreview",
-    directory: "logo",
-    maxBytes: 2 * 1024 * 1024,
-    urlField: "logoUrl",
-    pathField: "logoStoragePath"
-  },
-  cover: {
-    inputId: "coverFile",
-    previewId: "coverPreview",
-    directory: "cover",
-    maxBytes: 5 * 1024 * 1024,
-    urlField: "coverImageUrl",
-    pathField: "coverImageStoragePath"
-  },
-  profile: {
-    inputId: "profileFile",
-    previewId: "storeProfilePreview",
-    directory: "profile",
-    maxBytes: 2 * 1024 * 1024,
-    urlField: "profileImageUrl",
-    pathField: "profileImageStoragePath"
-  }
-};
-const PAYMENT_STATUS_LABELS = {
-  not_billed: "未請求",
-  awaiting_payment: "入金待ち",
-  paid: "入金確認済み",
-  expired: "契約期限切れ",
-  suspended: "停止中"
-};
-const LISTING_STATUS_LABELS = {
-  pending: "掲載準備中",
-  active: "掲載中",
-  paused: "一時停止",
-  expired: "契約期限切れ",
-  suspended: "強制停止"
-};
-const CONTRACT_UNAVAILABLE_MESSAGE =
-  "契約情報を確認できません。NOX運営へお問い合わせください。";
-
-/* =========================
+      /* =========================
    共通処理
 ========================= */
 
-function escapeHtml(value = "") {
-  return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-function getJapanDateKey() {
-  const parts = new Intl.DateTimeFormat(
-    "ja-JP",
-    {
-      timeZone: "Asia/Tokyo",
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit"
-    }
-  ).formatToParts(new Date());
-
-  const year = parts.find(item => item.type === "year")?.value;
-  const month = parts.find(item => item.type === "month")?.value;
-  const day = parts.find(item => item.type === "day")?.value;
-
-  return `${year}-${month}-${day}`;
-}
-
-function isCurrentMonth(timestamp) {
-  if (!timestamp || typeof timestamp.toDate !== "function") {
-    return false;
-  }
-
-  const date = timestamp.toDate();
-
-  const formatter = new Intl.DateTimeFormat(
-    "ja-JP",
-    {
-      timeZone: "Asia/Tokyo",
-      year: "numeric",
-      month: "2-digit"
-    }
-  );
-
-  return formatter.format(date) === formatter.format(new Date());
-}
-
-function timestampToDate(value) {
-  if (!value || typeof value.toDate !== "function") return null;
-  const date = value.toDate();
-  return date instanceof Date && !Number.isNaN(date.getTime())
-    ? date
-    : null;
-}
-
-function formatDate(date) {
-  return new Intl.DateTimeFormat("ja-JP", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit"
-  }).format(date);
-}
-
-function calculateRemainingDays(contractEndAt) {
-  const millisecondsPerDay = 24 * 60 * 60 * 1000;
-  return Math.max(
-    0,
-    Math.ceil((contractEndAt.getTime() - Date.now()) / millisecondsPerDay)
-  );
-}
-
-function validateContract(data, uid) {
-  const startAt = timestampToDate(data?.contractStartAt);
-  const endAt = timestampToDate(data?.contractEndAt);
-  return data
-    && data.schemaVersion === 1
-    && data.storeId === uid
-    && data.ownerId === uid
-    && typeof data.planLabel === "string"
-    && data.planLabel.trim().length > 0
-    && Number.isInteger(data.listingAmount)
-    && data.listingAmount >= 0
-    && Number.isInteger(data.optionAmount)
-    && data.optionAmount >= 0
-    && Number.isInteger(data.totalAmount)
-    && data.totalAmount >= 0
-    && data.currency === "JPY"
-    && data.taxIncluded === true
-    && data.billingMethod === "prepaid"
-    && Object.hasOwn(PAYMENT_STATUS_LABELS, data.paymentStatus)
-    && Object.hasOwn(LISTING_STATUS_LABELS, data.listingStatus)
-    && startAt
-    && endAt
-    && endAt.getTime() >= startAt.getTime();
-}
-
-function contractOptionsText(options) {
-  if (!options || typeof options !== "object") {
-    return "なし";
-  }
-  const entries = Array.isArray(options)
-    ? options
-    : Object.values(options).filter(
-        (option) => option?.enabled === true
-      );
-  const labels = entries
-    .map((option) =>
-      typeof option.label === "string" ? option.label.trim() : ""
-    )
-    .filter(Boolean);
-  return labels.length > 0 ? labels.join("、") : "なし";
-}
-
-function addContractItem(container, label, value) {
-  const item = document.createElement("div");
-  item.className = "contractItem";
-  const term = document.createElement("dt");
-  term.textContent = label;
-  const description = document.createElement("dd");
-  description.textContent = value;
-  item.append(term, description);
-  container.append(item);
-}
-
-function showContractUnavailable() {
-  const content = document.getElementById("contractContent");
-  content.replaceChildren();
-  const message = document.createElement("p");
-  message.className = "contractMessage";
-  message.textContent = CONTRACT_UNAVAILABLE_MESSAGE;
-  content.append(message);
-  document.getElementById("dashboardContractStatus").textContent =
-    "確認できません";
-  document.getElementById("storePublicationStatus").textContent =
-    "確認できません";
-  document.getElementById("storePublicationMessage").textContent =
-    CONTRACT_UNAVAILABLE_MESSAGE;
-}
-
-function showContractMissing() {
-  const message =
-    "登録済み・契約未設定";
-  const content =
-    document.getElementById("contractContent");
-  content.replaceChildren();
-  const description =
-    document.createElement("p");
-  description.className = "contractMessage";
-  description.textContent =
-    "契約情報を確認できません。NOX運営へお問い合わせください。";
-  content.append(description);
-  document.getElementById(
-    "dashboardContractStatus"
-  ).textContent = message;
-  document.getElementById(
-    "storePublicationStatus"
-  ).textContent = message;
-  document.getElementById(
-    "storePublicationMessage"
-  ).textContent =
-    "店舗登録は完了していますが、掲載契約はまだ設定されていません。";
-}
-
-function updatePublicationStatus(
-  contract,
-  storeData
-) {
-  const now = new Date();
-  const startAt =
-    timestampToDate(contract.contractStartAt);
-  const endAt =
-    timestampToDate(contract.contractEndAt);
-  const isWithinPeriod =
-    startAt &&
-    endAt &&
-    startAt.getTime() <= now.getTime() &&
-    endAt.getTime() >= now.getTime();
-  const isPublic =
-    contract.paymentStatus === "paid" &&
-    contract.listingStatus === "active" &&
-    isWithinPeriod &&
-    storeData?.isPublic === true;
-  let label =
-    LISTING_STATUS_LABELS[
-      contract.listingStatus
-    ] || "確認できません";
-  let message =
-    "契約と掲載状態を確認してください。";
-
-  if (isPublic) {
-    label = "掲載中";
-    message =
-      "公開条件を満たしているため、掲載対象として公開されています。";
-  } else if (
-    contract.listingStatus === "expired" ||
-    (endAt && endAt.getTime() < now.getTime())
-  ) {
-    label = "契約期限切れ";
-    message =
-      "契約期限切れのため掲載停止中です。更新をご希望の場合はNOX運営へお問い合わせください。";
-  } else if (
-    contract.listingStatus === "suspended"
-  ) {
-    label = "強制停止中";
-    message =
-      "運営により掲載を停止しています。NOX運営へお問い合わせください。";
-  } else if (
-    contract.listingStatus === "paused"
-  ) {
-    label = "一時停止中";
-    message =
-      "現在、店舗と求人の掲載を一時停止しています。";
-  } else {
-    label = "掲載準備中";
-    message =
-      "入金確認・契約期間・公開設定の確認後に掲載を開始します。";
-  }
-
-  document.getElementById(
-    "storePublicationStatus"
-  ).textContent = label;
-  document.getElementById(
-    "storePublicationMessage"
-  ).textContent = message;
-}
-
-async function loadStoreContract(storeData) {
-  try {
-    const snapshot = await getDoc(
-      doc(db, "storeContracts", currentUser.uid)
-    );
-    if (!snapshot.exists()) {
-      showContractMissing();
-      return;
-    }
-
-    const data = snapshot.data();
-    if (!validateContract(data, currentUser.uid)) {
-      showContractUnavailable();
-      return;
-    }
-
-    const startAt = timestampToDate(data.contractStartAt);
-    const endAt = timestampToDate(data.contractEndAt);
-    const grid = document.createElement("dl");
-    grid.className = "contractGrid";
-
-    addContractItem(grid, "プラン名", data.planLabel);
-    addContractItem(grid, "契約開始日", formatDate(startAt));
-    addContractItem(grid, "契約終了日", formatDate(endAt));
-    addContractItem(
-      grid,
-      "契約残日数",
-      `${calculateRemainingDays(endAt)}日`
-    );
-    addContractItem(
-      grid,
-      "掲載料金",
-      formatJapaneseYen(data.listingAmount)
-    );
-    addContractItem(
-      grid,
-      "オプション",
-      contractOptionsText(data.options)
-    );
-    addContractItem(
-      grid,
-      "オプション料金",
-      formatJapaneseYen(data.optionAmount)
-    );
-    addContractItem(
-      grid,
-      "合計金額",
-      formatJapaneseYen(data.totalAmount)
-    );
-    addContractItem(
-      grid,
-      "支払状況",
-      PAYMENT_STATUS_LABELS[data.paymentStatus]
-    );
-    addContractItem(
-      grid,
-      "掲載状態",
-      LISTING_STATUS_LABELS[data.listingStatus]
-    );
-
-    document.getElementById("contractContent").replaceChildren(grid);
-    document.getElementById("dashboardContractStatus").textContent =
-      LISTING_STATUS_LABELS[data.listingStatus];
-    updatePublicationStatus(
-      data,
-      storeData
-    );
-  } catch {
-    showContractUnavailable();
-  }
-}
-
-function getOwnedStorePrefix() {
-  if (!currentUser) return "";
-  return `stores/${currentUser.uid}/`;
-}
-
-function isOwnedStoragePath(path, directory) {
-  return typeof path === "string"
-    && path.startsWith(`${getOwnedStorePrefix()}${directory}/`)
-    && !path.includes("..");
-}
-
-function setMediaStatus(message) {
-  document.getElementById("mediaStatus").textContent = message;
-}
-
-async function decodeImage(file) {
-  const objectUrl = URL.createObjectURL(file);
-  try {
-    await new Promise((resolve, reject) => {
-      const image = new Image();
-      image.onload = resolve;
-      image.onerror = reject;
-      image.src = objectUrl;
-    });
-  } finally {
-    URL.revokeObjectURL(objectUrl);
-  }
-}
-
-async function validateImageFile(file, maxBytes) {
-  if (!file || !ALLOWED_IMAGE_TYPES.has(file.type)) {
-    throw new Error("JPEG・PNG・WebP画像を選択してください。");
-  }
-  if (file.size <= 0 || file.size > maxBytes) {
-    throw new Error(`画像サイズは${Math.floor(maxBytes / 1024 / 1024)}MB以下にしてください。`);
-  }
-  try {
-    await decodeImage(file);
-  } catch {
-    throw new Error("画像として読み込めないファイルです。");
-  }
-}
-
-function makeStoragePath(directory, slot = null) {
-  const slotPart = slot === null ? "" : `${slot}/`;
-  return `${getOwnedStorePrefix()}${directory}/${slotPart}${crypto.randomUUID()}`;
-}
-
-async function resolveImageUrl(cachedUrl, path, directory) {
-  if (!isOwnedStoragePath(path, directory)) return "";
-
-  if (typeof cachedUrl === "string" && cachedUrl) {
-    const available = await new Promise(resolve => {
-      const image = new Image();
-      image.onload = () => resolve(true);
-      image.onerror = () => resolve(false);
-      image.src = cachedUrl;
-    });
-    if (available) return cachedUrl;
-  }
-
-  try {
-    return await getDownloadURL(storageRef(storage, path));
-  } catch {
-    return "";
-  }
-}
-
-function showPreview(element, url) {
-  if (!url) {
-    element.hidden = true;
-    element.removeAttribute("src");
-    return;
-  }
-  element.src = url;
-  element.hidden = false;
-}
-
-async function renderStoreMedia() {
-  for (const [kind, config] of Object.entries(MEDIA_CONFIG)) {
-    const item = currentStoreMedia[kind];
-    const url = item
-      ? await resolveImageUrl(item.url, item.storagePath, config.directory)
-      : "";
-    showPreview(document.getElementById(config.previewId), url);
-  }
-
-  const grid = document.getElementById("galleryGrid");
-  grid.replaceChildren();
-
-  for (const item of currentStoreMedia.gallery) {
-    if (!isOwnedStoragePath(item.storagePath, "gallery")) continue;
-    const url = await resolveImageUrl(item.url, item.storagePath, "gallery");
-    const card = document.createElement("div");
-    card.className = "galleryItem";
-    const image = document.createElement("img");
-    image.alt = "店舗ギャラリー画像";
-    if (url) image.src = url;
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "btn gray";
-    button.textContent = "削除";
-    button.addEventListener("click", () => deleteGalleryImage(item, button));
-    card.append(image, button);
-    grid.append(card);
-  }
-
-  document.getElementById("addGalleryButton").disabled =
-    currentStoreMedia.gallery.length >= 10;
-}
-
-function readStoreMedia(data) {
-  currentStoreMedia.logo =
-    isOwnedStoragePath(data.logoStoragePath, "logo")
-      ? { url: data.logoUrl || "", storagePath: data.logoStoragePath }
-      : null;
-  currentStoreMedia.cover =
-    isOwnedStoragePath(data.coverImageStoragePath, "cover")
-      ? { url: data.coverImageUrl || "", storagePath: data.coverImageStoragePath }
-      : null;
-  currentStoreMedia.profile =
-    isOwnedStoragePath(data.profileImageStoragePath, "profile")
-      ? { url: data.profileImageUrl || "", storagePath: data.profileImageStoragePath }
-      : null;
-  currentStoreMedia.gallery = [];
-}
-
-async function loadGalleryImages() {
-  const gallerySnapshot = await getDocs(
-    collection(db, "stores", currentUser.uid, "galleryImages")
-  );
-  currentStoreMedia.gallery = gallerySnapshot.docs
-    .map(imageDoc => ({ slot: imageDoc.id, ...imageDoc.data() }))
-    .filter(item =>
-      /^[0-9]$/.test(item.slot)
-      && isOwnedStoragePath(item.storagePath, `gallery/${item.slot}`)
-      && typeof item.url === "string"
-    )
-    .sort((a, b) => Number(a.slot) - Number(b.slot))
-    .slice(0, 10);
-}
-
-async function uploadSingleImage(kind, button) {
-  const config = MEDIA_CONFIG[kind];
-  const file = document.getElementById(config.inputId).files?.[0];
-  button.disabled = true;
-  let newPath = "";
-
-  try {
-    await validateImageFile(file, config.maxBytes);
-    newPath = makeStoragePath(config.directory);
-    await uploadBytes(storageRef(storage, newPath), file, {
-      contentType: file.type,
-      customMetadata: { ownerId: currentUser.uid, mediaKind: kind }
-    });
-    const newUrl = await getDownloadURL(storageRef(storage, newPath));
-    const previous = currentStoreMedia[kind];
-
-    await updateDoc(doc(db, "stores", currentUser.uid), {
-      [config.urlField]: newUrl,
-      [config.pathField]: newPath,
-      mediaUpdatedAt: serverTimestamp()
-    });
-
-    currentStoreMedia[kind] = { url: newUrl, storagePath: newPath };
-    await renderStoreMedia();
-
-    if (previous && isOwnedStoragePath(previous.storagePath, config.directory)) {
-      try {
-        await deleteObject(storageRef(storage, previous.storagePath));
-      } catch {
-        setMediaStatus("新しい画像は保存されましたが、旧画像の後処理に失敗しました。");
-        return;
+      function escapeHtml(value = "") {
+        return String(value)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
       }
-    }
-    setMediaStatus("画像を更新しました。");
-  } catch (error) {
-    if (newPath && isOwnedStoragePath(newPath, config.directory)) {
-      try {
-        await deleteObject(storageRef(storage, newPath));
-      } catch {
-        // Firestoreから参照されない孤立画像。機密情報をログへ出さない。
+
+      function getJapanDateKey() {
+        const parts = new Intl.DateTimeFormat("ja-JP", {
+          timeZone: "Asia/Tokyo",
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+        }).formatToParts(new Date());
+
+        const year = parts.find((item) => item.type === "year")?.value;
+        const month = parts.find((item) => item.type === "month")?.value;
+        const day = parts.find((item) => item.type === "day")?.value;
+
+        return `${year}-${month}-${day}`;
       }
-    }
-    setMediaStatus(error instanceof Error ? error.message : "画像を更新できませんでした。");
-  } finally {
-    button.disabled = false;
-  }
-}
 
-async function deleteSingleImage(kind, button) {
-  const config = MEDIA_CONFIG[kind];
-  const previous = currentStoreMedia[kind];
-  if (!previous || !isOwnedStoragePath(previous.storagePath, config.directory)) return;
-  button.disabled = true;
+      function isCurrentMonth(timestamp) {
+        if (!timestamp || typeof timestamp.toDate !== "function") {
+          return false;
+        }
 
-  try {
-    await updateDoc(doc(db, "stores", currentUser.uid), {
-      [config.urlField]: "",
-      [config.pathField]: "",
-      mediaUpdatedAt: serverTimestamp()
-    });
-    try {
-      await deleteObject(storageRef(storage, previous.storagePath));
-    } catch {
-      await updateDoc(doc(db, "stores", currentUser.uid), {
-        [config.urlField]: previous.url,
-        [config.pathField]: previous.storagePath,
-        mediaUpdatedAt: serverTimestamp()
+        const date = timestamp.toDate();
+
+        const formatter = new Intl.DateTimeFormat("ja-JP", {
+          timeZone: "Asia/Tokyo",
+          year: "numeric",
+          month: "2-digit",
+        });
+
+        return formatter.format(date) === formatter.format(new Date());
+      }
+
+      function timestampToDate(value) {
+        if (!value || typeof value.toDate !== "function") return null;
+        const date = value.toDate();
+        return date instanceof Date && !Number.isNaN(date.getTime())
+          ? date
+          : null;
+      }
+
+      function formatDate(date) {
+        return new Intl.DateTimeFormat("ja-JP", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+        }).format(date);
+      }
+
+      function calculateRemainingDays(contractEndAt) {
+        const millisecondsPerDay = 24 * 60 * 60 * 1000;
+        return Math.max(
+          0,
+          Math.ceil(
+            (contractEndAt.getTime() - Date.now()) / millisecondsPerDay,
+          ),
+        );
+      }
+
+      function validateContract(data, uid) {
+        const startAt = timestampToDate(data?.contractStartAt);
+        const endAt = timestampToDate(data?.contractEndAt);
+        return (
+          data &&
+          data.schemaVersion === 1 &&
+          data.storeId === uid &&
+          data.ownerId === uid &&
+          typeof data.planLabel === "string" &&
+          data.planLabel.trim().length > 0 &&
+          Number.isInteger(data.listingAmount) &&
+          data.listingAmount >= 0 &&
+          Number.isInteger(data.optionAmount) &&
+          data.optionAmount >= 0 &&
+          Number.isInteger(data.totalAmount) &&
+          data.totalAmount >= 0 &&
+          data.currency === "JPY" &&
+          data.taxIncluded === true &&
+          data.billingMethod === "prepaid" &&
+          Object.hasOwn(PAYMENT_STATUS_LABELS, data.paymentStatus) &&
+          Object.hasOwn(LISTING_STATUS_LABELS, data.listingStatus) &&
+          startAt &&
+          endAt &&
+          endAt.getTime() >= startAt.getTime()
+        );
+      }
+
+      function contractOptionsText(options) {
+        if (!options || typeof options !== "object") {
+          return "なし";
+        }
+        const entries = Array.isArray(options)
+          ? options
+          : Object.values(options).filter((option) => option?.enabled === true);
+        const labels = entries
+          .map((option) =>
+            typeof option.label === "string" ? option.label.trim() : "",
+          )
+          .filter(Boolean);
+        return labels.length > 0 ? labels.join("、") : "なし";
+      }
+
+      function addContractItem(container, label, value) {
+        const item = document.createElement("div");
+        item.className = "contractItem";
+        const term = document.createElement("dt");
+        term.textContent = label;
+        const description = document.createElement("dd");
+        description.textContent = value;
+        item.append(term, description);
+        container.append(item);
+      }
+
+      function showContractUnavailable() {
+        const content = document.getElementById("contractContent");
+        content.replaceChildren();
+        const message = document.createElement("p");
+        message.className = "contractMessage";
+        message.textContent = CONTRACT_UNAVAILABLE_MESSAGE;
+        content.append(message);
+        document.getElementById("dashboardContractStatus").textContent =
+          "確認できません";
+        document.getElementById("storePublicationStatus").textContent =
+          "確認できません";
+        document.getElementById("storePublicationMessage").textContent =
+          CONTRACT_UNAVAILABLE_MESSAGE;
+      }
+
+      function showContractMissing() {
+        const message = "登録済み・契約未設定";
+        const content = document.getElementById("contractContent");
+        content.replaceChildren();
+        const description = document.createElement("p");
+        description.className = "contractMessage";
+        description.textContent =
+          "契約情報を確認できません。NOX運営へお問い合わせください。";
+        content.append(description);
+        document.getElementById("dashboardContractStatus").textContent =
+          message;
+        document.getElementById("storePublicationStatus").textContent = message;
+        document.getElementById("storePublicationMessage").textContent =
+          "店舗登録は完了していますが、掲載契約はまだ設定されていません。";
+      }
+
+      function updatePublicationStatus(contract, storeData) {
+        const now = new Date();
+        const startAt = timestampToDate(contract.contractStartAt);
+        const endAt = timestampToDate(contract.contractEndAt);
+        const isWithinPeriod =
+          startAt &&
+          endAt &&
+          startAt.getTime() <= now.getTime() &&
+          endAt.getTime() >= now.getTime();
+        const isPublic =
+          contract.paymentStatus === "paid" &&
+          contract.listingStatus === "active" &&
+          isWithinPeriod &&
+          storeData?.isPublic === true;
+        let label =
+          LISTING_STATUS_LABELS[contract.listingStatus] || "確認できません";
+        let message = "契約と掲載状態を確認してください。";
+
+        if (isPublic) {
+          label = "掲載中";
+          message =
+            "公開条件を満たしているため、掲載対象として公開されています。";
+        } else if (
+          contract.listingStatus === "expired" ||
+          (endAt && endAt.getTime() < now.getTime())
+        ) {
+          label = "契約期限切れ";
+          message =
+            "契約期限切れのため掲載停止中です。更新をご希望の場合はNOX運営へお問い合わせください。";
+        } else if (contract.listingStatus === "suspended") {
+          label = "強制停止中";
+          message =
+            "運営により掲載を停止しています。NOX運営へお問い合わせください。";
+        } else if (contract.listingStatus === "paused") {
+          label = "一時停止中";
+          message = "現在、店舗と求人の掲載を一時停止しています。";
+        } else {
+          label = "掲載準備中";
+          message = "入金確認・契約期間・公開設定の確認後に掲載を開始します。";
+        }
+
+        document.getElementById("storePublicationStatus").textContent = label;
+        document.getElementById("storePublicationMessage").textContent =
+          message;
+      }
+
+      async function loadStoreContract(storeData) {
+        try {
+          const snapshot = await getDoc(
+            doc(db, "storeContracts", currentUser.uid),
+          );
+          if (!snapshot.exists()) {
+            showContractMissing();
+            return;
+          }
+
+          const data = snapshot.data();
+          if (!validateContract(data, currentUser.uid)) {
+            showContractUnavailable();
+            return;
+          }
+
+          const startAt = timestampToDate(data.contractStartAt);
+          const endAt = timestampToDate(data.contractEndAt);
+          const grid = document.createElement("dl");
+          grid.className = "contractGrid";
+
+          addContractItem(grid, "プラン名", data.planLabel);
+          addContractItem(grid, "契約開始日", formatDate(startAt));
+          addContractItem(grid, "契約終了日", formatDate(endAt));
+          addContractItem(
+            grid,
+            "契約残日数",
+            `${calculateRemainingDays(endAt)}日`,
+          );
+          addContractItem(
+            grid,
+            "掲載料金",
+            formatJapaneseYen(data.listingAmount),
+          );
+          addContractItem(
+            grid,
+            "オプション",
+            contractOptionsText(data.options),
+          );
+          addContractItem(
+            grid,
+            "オプション料金",
+            formatJapaneseYen(data.optionAmount),
+          );
+          addContractItem(
+            grid,
+            "合計金額",
+            formatJapaneseYen(data.totalAmount),
+          );
+          addContractItem(
+            grid,
+            "支払状況",
+            PAYMENT_STATUS_LABELS[data.paymentStatus],
+          );
+          addContractItem(
+            grid,
+            "掲載状態",
+            LISTING_STATUS_LABELS[data.listingStatus],
+          );
+
+          document.getElementById("contractContent").replaceChildren(grid);
+          document.getElementById("dashboardContractStatus").textContent =
+            LISTING_STATUS_LABELS[data.listingStatus];
+          updatePublicationStatus(data, storeData);
+        } catch {
+          showContractUnavailable();
+        }
+      }
+
+      function getOwnedStorePrefix() {
+        if (!currentUser) return "";
+        return `stores/${currentUser.uid}/`;
+      }
+
+      function isOwnedStoragePath(path, directory) {
+        return (
+          typeof path === "string" &&
+          path.startsWith(`${getOwnedStorePrefix()}${directory}/`) &&
+          !path.includes("..")
+        );
+      }
+
+      function setMediaStatus(message) {
+        document.getElementById("mediaStatus").textContent = message;
+      }
+
+      async function decodeImage(file) {
+        const objectUrl = URL.createObjectURL(file);
+        try {
+          await new Promise((resolve, reject) => {
+            const image = new Image();
+            image.onload = resolve;
+            image.onerror = reject;
+            image.src = objectUrl;
+          });
+        } finally {
+          URL.revokeObjectURL(objectUrl);
+        }
+      }
+
+      async function validateImageFile(file, maxBytes) {
+        if (!file || !ALLOWED_IMAGE_TYPES.has(file.type)) {
+          throw new Error("JPEG・PNG・WebP画像を選択してください。");
+        }
+        if (file.size <= 0 || file.size > maxBytes) {
+          throw new Error(
+            `画像サイズは${Math.floor(maxBytes / 1024 / 1024)}MB以下にしてください。`,
+          );
+        }
+        try {
+          await decodeImage(file);
+        } catch {
+          throw new Error("画像として読み込めないファイルです。");
+        }
+      }
+
+      function makeStoragePath(directory, slot = null) {
+        const slotPart = slot === null ? "" : `${slot}/`;
+        return `${getOwnedStorePrefix()}${directory}/${slotPart}${crypto.randomUUID()}`;
+      }
+
+      async function resolveImageUrl(cachedUrl, path, directory) {
+        if (!isOwnedStoragePath(path, directory)) return "";
+
+        if (typeof cachedUrl === "string" && cachedUrl) {
+          const available = await new Promise((resolve) => {
+            const image = new Image();
+            image.onload = () => resolve(true);
+            image.onerror = () => resolve(false);
+            image.src = cachedUrl;
+          });
+          if (available) return cachedUrl;
+        }
+
+        try {
+          return await getDownloadURL(storageRef(storage, path));
+        } catch {
+          return "";
+        }
+      }
+
+      function showPreview(element, url) {
+        if (!url) {
+          element.hidden = true;
+          element.removeAttribute("src");
+          return;
+        }
+        element.src = url;
+        element.hidden = false;
+      }
+
+      async function renderStoreMedia() {
+        for (const [kind, config] of Object.entries(MEDIA_CONFIG)) {
+          const item = currentStoreMedia[kind];
+          const url = item
+            ? await resolveImageUrl(
+                item.url,
+                item.storagePath,
+                config.directory,
+              )
+            : "";
+          showPreview(document.getElementById(config.previewId), url);
+        }
+
+        const grid = document.getElementById("galleryGrid");
+        grid.replaceChildren();
+
+        for (const item of currentStoreMedia.gallery) {
+          if (!isOwnedStoragePath(item.storagePath, "gallery")) continue;
+          const url = await resolveImageUrl(
+            item.url,
+            item.storagePath,
+            "gallery",
+          );
+          const card = document.createElement("div");
+          card.className = "galleryItem";
+          const image = document.createElement("img");
+          image.alt = "店舗ギャラリー画像";
+          if (url) image.src = url;
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "btn gray";
+          button.textContent = "削除";
+          button.addEventListener("click", () =>
+            deleteGalleryImage(item, button),
+          );
+          card.append(image, button);
+          grid.append(card);
+        }
+
+        document.getElementById("addGalleryButton").disabled =
+          currentStoreMedia.gallery.length >= 10;
+      }
+
+      function readStoreMedia(data) {
+        currentStoreMedia.logo = isOwnedStoragePath(
+          data.logoStoragePath,
+          "logo",
+        )
+          ? { url: data.logoUrl || "", storagePath: data.logoStoragePath }
+          : null;
+        currentStoreMedia.cover = isOwnedStoragePath(
+          data.coverImageStoragePath,
+          "cover",
+        )
+          ? {
+              url: data.coverImageUrl || "",
+              storagePath: data.coverImageStoragePath,
+            }
+          : null;
+        currentStoreMedia.profile = isOwnedStoragePath(
+          data.profileImageStoragePath,
+          "profile",
+        )
+          ? {
+              url: data.profileImageUrl || "",
+              storagePath: data.profileImageStoragePath,
+            }
+          : null;
+        currentStoreMedia.gallery = [];
+      }
+
+      async function loadGalleryImages() {
+        const gallerySnapshot = await getDocs(
+          collection(db, "stores", currentUser.uid, "galleryImages"),
+        );
+        currentStoreMedia.gallery = gallerySnapshot.docs
+          .map((imageDoc) => ({ slot: imageDoc.id, ...imageDoc.data() }))
+          .filter(
+            (item) =>
+              /^[0-9]$/.test(item.slot) &&
+              isOwnedStoragePath(item.storagePath, `gallery/${item.slot}`) &&
+              typeof item.url === "string",
+          )
+          .sort((a, b) => Number(a.slot) - Number(b.slot))
+          .slice(0, 10);
+      }
+
+      async function uploadSingleImage(kind, button) {
+        const config = MEDIA_CONFIG[kind];
+        const file = document.getElementById(config.inputId).files?.[0];
+        button.disabled = true;
+        let newPath = "";
+
+        try {
+          await validateImageFile(file, config.maxBytes);
+          newPath = makeStoragePath(config.directory);
+          await uploadBytes(storageRef(storage, newPath), file, {
+            contentType: file.type,
+            customMetadata: { ownerId: currentUser.uid, mediaKind: kind },
+          });
+          const newUrl = await getDownloadURL(storageRef(storage, newPath));
+          const previous = currentStoreMedia[kind];
+
+          await updateDoc(doc(db, "stores", currentUser.uid), {
+            [config.urlField]: newUrl,
+            [config.pathField]: newPath,
+            mediaUpdatedAt: serverTimestamp(),
+          });
+
+          currentStoreMedia[kind] = { url: newUrl, storagePath: newPath };
+          await renderStoreMedia();
+
+          if (
+            previous &&
+            isOwnedStoragePath(previous.storagePath, config.directory)
+          ) {
+            try {
+              await deleteObject(storageRef(storage, previous.storagePath));
+            } catch {
+              setMediaStatus(
+                "新しい画像は保存されましたが、旧画像の後処理に失敗しました。",
+              );
+              return;
+            }
+          }
+          setMediaStatus("画像を更新しました。");
+        } catch (error) {
+          if (newPath && isOwnedStoragePath(newPath, config.directory)) {
+            try {
+              await deleteObject(storageRef(storage, newPath));
+            } catch {
+              // Firestoreから参照されない孤立画像。機密情報をログへ出さない。
+            }
+          }
+          setMediaStatus(
+            error instanceof Error
+              ? error.message
+              : "画像を更新できませんでした。",
+          );
+        } finally {
+          button.disabled = false;
+        }
+      }
+
+      async function deleteSingleImage(kind, button) {
+        const config = MEDIA_CONFIG[kind];
+        const previous = currentStoreMedia[kind];
+        if (
+          !previous ||
+          !isOwnedStoragePath(previous.storagePath, config.directory)
+        )
+          return;
+        button.disabled = true;
+
+        try {
+          await updateDoc(doc(db, "stores", currentUser.uid), {
+            [config.urlField]: "",
+            [config.pathField]: "",
+            mediaUpdatedAt: serverTimestamp(),
+          });
+          try {
+            await deleteObject(storageRef(storage, previous.storagePath));
+          } catch {
+            await updateDoc(doc(db, "stores", currentUser.uid), {
+              [config.urlField]: previous.url,
+              [config.pathField]: previous.storagePath,
+              mediaUpdatedAt: serverTimestamp(),
+            });
+            throw new Error(
+              "画像を削除できなかったため、既存画像を維持しました。",
+            );
+          }
+          currentStoreMedia[kind] = null;
+          await renderStoreMedia();
+          setMediaStatus("画像を削除しました。");
+        } catch (error) {
+          setMediaStatus(
+            error instanceof Error
+              ? error.message
+              : "画像を削除できませんでした。",
+          );
+        } finally {
+          button.disabled = false;
+        }
+      }
+
+      async function addGalleryImage(button) {
+        const file = document.getElementById("galleryFile").files?.[0];
+        if (currentStoreMedia.gallery.length >= 10) {
+          setMediaStatus("ギャラリーは10枚までです。");
+          return;
+        }
+
+        button.disabled = true;
+        let newPath = "";
+        try {
+          await validateImageFile(file, 5 * 1024 * 1024);
+          const usedSlots = new Set(
+            currentStoreMedia.gallery.map((item) => item.slot),
+          );
+          const slot = Array.from({ length: 10 }, (_, index) =>
+            String(index),
+          ).find((candidate) => !usedSlots.has(candidate));
+          if (slot === undefined) {
+            throw new Error("ギャラリーは10枚までです。");
+          }
+          newPath = makeStoragePath("gallery", slot);
+          await uploadBytes(storageRef(storage, newPath), file, {
+            contentType: file.type,
+            customMetadata: { ownerId: currentUser.uid, mediaKind: "gallery" },
+          });
+          const newUrl = await getDownloadURL(storageRef(storage, newPath));
+          const newItem = { slot, url: newUrl, storagePath: newPath };
+          await setDoc(
+            doc(db, "stores", currentUser.uid, "galleryImages", slot),
+            {
+              url: newUrl,
+              storagePath: newPath,
+              createdAt: serverTimestamp(),
+              updatedAt: serverTimestamp(),
+            },
+          );
+          currentStoreMedia.gallery = [
+            ...currentStoreMedia.gallery,
+            newItem,
+          ].sort((a, b) => Number(a.slot) - Number(b.slot));
+          await renderStoreMedia();
+          setMediaStatus("ギャラリー画像を追加しました。");
+        } catch (error) {
+          if (newPath && isOwnedStoragePath(newPath, "gallery")) {
+            try {
+              await deleteObject(storageRef(storage, newPath));
+            } catch {
+              // Firestoreから参照されない孤立画像。機密情報をログへ出さない。
+            }
+          }
+          setMediaStatus(
+            error instanceof Error
+              ? error.message
+              : "画像を追加できませんでした。",
+          );
+        } finally {
+          button.disabled = currentStoreMedia.gallery.length >= 10;
+        }
+      }
+
+      async function deleteGalleryImage(item, button) {
+        if (!isOwnedStoragePath(item.storagePath, "gallery")) return;
+        button.disabled = true;
+        const previousGallery = [...currentStoreMedia.gallery];
+        const nextGallery = previousGallery.filter(
+          (image) => image.slot !== item.slot,
+        );
+
+        try {
+          await deleteDoc(
+            doc(db, "stores", currentUser.uid, "galleryImages", item.slot),
+          );
+          try {
+            await deleteObject(storageRef(storage, item.storagePath));
+          } catch {
+            await setDoc(
+              doc(db, "stores", currentUser.uid, "galleryImages", item.slot),
+              {
+                url: item.url,
+                storagePath: item.storagePath,
+                createdAt: serverTimestamp(),
+                updatedAt: serverTimestamp(),
+              },
+            );
+            throw new Error(
+              "画像を削除できなかったため、既存ギャラリーを維持しました。",
+            );
+          }
+          currentStoreMedia.gallery = nextGallery;
+          await renderStoreMedia();
+          setMediaStatus("ギャラリー画像を削除しました。");
+        } catch (error) {
+          setMediaStatus(
+            error instanceof Error
+              ? error.message
+              : "画像を削除できませんでした。",
+          );
+          button.disabled = false;
+        }
+      }
+
+      document.querySelectorAll("[data-upload-kind]").forEach((button) => {
+        button.addEventListener("click", () =>
+          uploadSingleImage(button.dataset.uploadKind, button),
+        );
       });
-      throw new Error("画像を削除できなかったため、既存画像を維持しました。");
-    }
-    currentStoreMedia[kind] = null;
-    await renderStoreMedia();
-    setMediaStatus("画像を削除しました。");
-  } catch (error) {
-    setMediaStatus(error instanceof Error ? error.message : "画像を削除できませんでした。");
-  } finally {
-    button.disabled = false;
-  }
-}
 
-async function addGalleryImage(button) {
-  const file = document.getElementById("galleryFile").files?.[0];
-  if (currentStoreMedia.gallery.length >= 10) {
-    setMediaStatus("ギャラリーは10枚までです。");
-    return;
-  }
-
-  button.disabled = true;
-  let newPath = "";
-  try {
-    await validateImageFile(file, 5 * 1024 * 1024);
-    const usedSlots = new Set(
-      currentStoreMedia.gallery.map(item => item.slot)
-    );
-    const slot = Array.from({ length: 10 }, (_, index) => String(index))
-      .find(candidate => !usedSlots.has(candidate));
-    if (slot === undefined) {
-      throw new Error("ギャラリーは10枚までです。");
-    }
-    newPath = makeStoragePath("gallery", slot);
-    await uploadBytes(storageRef(storage, newPath), file, {
-      contentType: file.type,
-      customMetadata: { ownerId: currentUser.uid, mediaKind: "gallery" }
-    });
-    const newUrl = await getDownloadURL(storageRef(storage, newPath));
-    const newItem = { slot, url: newUrl, storagePath: newPath };
-    await setDoc(doc(db, "stores", currentUser.uid, "galleryImages", slot), {
-      url: newUrl,
-      storagePath: newPath,
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp()
-    });
-    currentStoreMedia.gallery = [
-      ...currentStoreMedia.gallery,
-      newItem
-    ].sort((a, b) => Number(a.slot) - Number(b.slot));
-    await renderStoreMedia();
-    setMediaStatus("ギャラリー画像を追加しました。");
-  } catch (error) {
-    if (newPath && isOwnedStoragePath(newPath, "gallery")) {
-      try {
-        await deleteObject(storageRef(storage, newPath));
-      } catch {
-        // Firestoreから参照されない孤立画像。機密情報をログへ出さない。
-      }
-    }
-    setMediaStatus(error instanceof Error ? error.message : "画像を追加できませんでした。");
-  } finally {
-    button.disabled = currentStoreMedia.gallery.length >= 10;
-  }
-}
-
-async function deleteGalleryImage(item, button) {
-  if (!isOwnedStoragePath(item.storagePath, "gallery")) return;
-  button.disabled = true;
-  const previousGallery = [...currentStoreMedia.gallery];
-  const nextGallery = previousGallery.filter(image => image.slot !== item.slot);
-
-  try {
-    await deleteDoc(
-      doc(db, "stores", currentUser.uid, "galleryImages", item.slot)
-    );
-    try {
-      await deleteObject(storageRef(storage, item.storagePath));
-    } catch {
-      await setDoc(doc(db, "stores", currentUser.uid, "galleryImages", item.slot), {
-        url: item.url,
-        storagePath: item.storagePath,
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp()
+      document.querySelectorAll("[data-delete-kind]").forEach((button) => {
+        button.addEventListener("click", () =>
+          deleteSingleImage(button.dataset.deleteKind, button),
+        );
       });
-      throw new Error("画像を削除できなかったため、既存ギャラリーを維持しました。");
-    }
-    currentStoreMedia.gallery = nextGallery;
-    await renderStoreMedia();
-    setMediaStatus("ギャラリー画像を削除しました。");
-  } catch (error) {
-    setMediaStatus(error instanceof Error ? error.message : "画像を削除できませんでした。");
-    button.disabled = false;
-  }
-}
 
-document.querySelectorAll("[data-upload-kind]").forEach(button => {
-  button.addEventListener("click", () =>
-    uploadSingleImage(button.dataset.uploadKind, button)
-  );
-});
+      document
+        .getElementById("addGalleryButton")
+        .addEventListener("click", (event) => {
+          addGalleryImage(event.currentTarget);
+        });
 
-document.querySelectorAll("[data-delete-kind]").forEach(button => {
-  button.addEventListener("click", () =>
-    deleteSingleImage(button.dataset.deleteKind, button)
-  );
-});
-
-document.getElementById("addGalleryButton").addEventListener("click", event => {
-  addGalleryImage(event.currentTarget);
-});
-
-/* =========================
+      /* =========================
    ログイン確認
 ========================= */
 
-onAuthStateChanged(auth, async user => {
+      onAuthStateChanged(auth, async (user) => {
+        if (!user) {
+          location.href = "login.html";
+          return;
+        }
 
-  if (!user) {
-    location.href = "login.html";
-    return;
-  }
+        let verifiedStoreData = null;
 
-  let verifiedStoreData = null;
+        try {
+          const userRef = doc(db, "users", user.uid);
+          const [userSnap, storeSnap] = await Promise.all([
+            getDoc(userRef),
+            getDoc(doc(db, "stores", user.uid)),
+          ]);
+          const userData = userSnap.exists() ? userSnap.data() : null;
+          const storeData = storeSnap.exists() ? storeSnap.data() : null;
 
-  try {
-    const userRef = doc(db, "users", user.uid);
-    const [userSnap, storeSnap] = await Promise.all([
-      getDoc(userRef),
-      getDoc(doc(db, "stores", user.uid))
-    ]);
-    const userData = userSnap.exists()
-      ? userSnap.data()
-      : null;
-    const storeData = storeSnap.exists()
-      ? storeSnap.data()
-      : null;
+          if (
+            !userData ||
+            userData.role !== "store" ||
+            userData.status !== "active" ||
+            !storeData ||
+            storeData.ownerId !== user.uid
+          ) {
+            alert("有効な店舗アカウントのみアクセスできます");
+            location.href = "mypage.html";
+            return;
+          }
+          verifiedStoreData = storeData;
+        } catch (error) {
+          console.error("店舗権限の確認に失敗しました", error);
+          alert(error.message);
+          alert("店舗アカウント情報を確認できませんでした");
+          location.href = "login.html";
+          return;
+        }
 
-    if (
-      !userData ||
-      userData.role !== "store" ||
-      userData.status !== "active" ||
-      !storeData ||
-      storeData.ownerId !== user.uid
-    ) {
-      alert("有効な店舗アカウントのみアクセスできます");
-      location.href = "mypage.html";
-      return;
-    }
-    verifiedStoreData = storeData;
-  } catch (error) {
-    console.error("店舗権限の確認に失敗しました", error);
-    alert("店舗アカウント情報を確認できませんでした");
-    location.href = "login.html";
-    return;
-  }
+        currentUser = user;
 
-  currentUser = user;
+        await loadStoreInfo();
+        await loadStoreContract(verifiedStoreData);
 
-  await loadStoreInfo();
-  await loadStoreContract(
-    verifiedStoreData
-  );
+        const jobs = await loadJobs();
 
-  const jobs = await loadJobs();
+        currentJobIds = jobs.map((job) => job.id);
 
-  currentJobIds = jobs.map(job => job.id);
+        await loadTodayViews(currentJobIds);
+        await loadApplications(currentJobIds);
+      });
 
-  await loadTodayViews(currentJobIds);
-  await loadApplications(currentJobIds);
-
-});
-
-/* =========================
+      /* =========================
    ページ切り替え
 ========================= */
 
-window.showPage = function(id, btn) {
+      window.showPage = function (id, btn) {
+        const pages = ["dashboard", "jobs", "apps", "store", "pay", "support"];
 
-  const pages = [
-    "dashboard",
-    "jobs",
-    "apps",
-    "store",
-    "pay",
-    "support"
-  ];
+        pages.forEach((page) => {
+          document.getElementById(page).classList.add("hidden");
+        });
 
-  pages.forEach(page => {
-    document
-      .getElementById(page)
-      .classList
-      .add("hidden");
-  });
+        document.getElementById(id).classList.remove("hidden");
 
-  document
-    .getElementById(id)
-    .classList
-    .remove("hidden");
+        document.querySelectorAll(".menu button").forEach((button) => {
+          button.classList.remove("active");
+        });
 
-  document
-    .querySelectorAll(".menu button")
-    .forEach(button => {
-      button.classList.remove("active");
-    });
+        btn.classList.add("active");
+      };
 
-  btn.classList.add("active");
-};
-
-/* =========================
+      /* =========================
    店舗情報
 ========================= */
 
-async function loadStoreInfo() {
+      async function loadStoreInfo() {
+        const storeRef = doc(db, "stores", currentUser.uid);
 
-  const storeRef =
-    doc(db, "stores", currentUser.uid);
+        const storeSnap = await getDoc(storeRef);
 
-  const storeSnap =
-    await getDoc(storeRef);
+        if (storeSnap.exists()) {
+          const data = storeSnap.data();
 
-  if (storeSnap.exists()) {
+          currentStoreName = data.storeName || "";
 
-    const data = storeSnap.data();
+          document.getElementById("storeName").value = data.storeName || "";
 
-    currentStoreName =
-      data.storeName || "";
+          document.getElementById("storeArea").value = data.area || "";
 
-    document
-      .getElementById("storeName")
-      .value = data.storeName || "";
+          document.getElementById("storePhone").value = data.phone || "";
 
-    document
-      .getElementById("storeArea")
-      .value = data.area || "";
+          document.getElementById("storeLine").value = data.line || "";
 
-    document
-      .getElementById("storePhone")
-      .value = data.phone || "";
+          document.getElementById("storeInstagram").value =
+            data.instagram || "";
 
-    document
-      .getElementById("storeLine")
-      .value = data.line || "";
+          document.getElementById("storeDescription").value =
+            data.description || "";
 
-    document
-      .getElementById("storeInstagram")
-      .value = data.instagram || "";
+          readStoreMedia(data);
+          await loadGalleryImages();
+          await renderStoreMedia();
 
-    document
-      .getElementById("storeDescription")
-      .value = data.description || "";
+          return;
+        }
 
-    readStoreMedia(data);
-    await loadGalleryImages();
-    await renderStoreMedia();
-
-    return;
-  }
-
-  /*
+        /*
     storesにデータがない場合、
     usersから店舗名を探す
   */
 
-  const userSnap =
-    await getDoc(
-      doc(db, "users", currentUser.uid)
-    );
+        const userSnap = await getDoc(doc(db, "users", currentUser.uid));
 
-  if (userSnap.exists()) {
+        if (userSnap.exists()) {
+          const userData = userSnap.data();
 
-    const userData = userSnap.data();
+          currentStoreName = userData.storeName || userData.name || "";
+        }
+      }
 
-    currentStoreName =
-      userData.storeName ||
-      userData.name ||
-      "";
+      window.saveStoreInfo = async function () {
+        const storeName = document.getElementById("storeName").value.trim();
 
-  }
+        await setDoc(
+          doc(db, "stores", currentUser.uid),
+          {
+            ownerId: currentUser.uid,
+            storeName,
+            area: document.getElementById("storeArea").value.trim(),
 
-}
+            phone: document.getElementById("storePhone").value.trim(),
 
-window.saveStoreInfo = async function() {
+            line: document.getElementById("storeLine").value.trim(),
 
-  const storeName =
-    document
-      .getElementById("storeName")
-      .value
-      .trim();
+            instagram: document.getElementById("storeInstagram").value.trim(),
 
-  await setDoc(
-    doc(db, "stores", currentUser.uid),
-    {
-      ownerId: currentUser.uid,
-      storeName,
-      area:
-        document
-          .getElementById("storeArea")
-          .value
-          .trim(),
+            description: document
+              .getElementById("storeDescription")
+              .value.trim(),
+          },
+          {
+            merge: true,
+          },
+        );
 
-      phone:
-        document
-          .getElementById("storePhone")
-          .value
-          .trim(),
+        currentStoreName = storeName;
 
-      line:
-        document
-          .getElementById("storeLine")
-          .value
-          .trim(),
+        alert("店舗情報を保存しました");
 
-      instagram:
-        document
-          .getElementById("storeInstagram")
-          .value
-          .trim(),
+        const jobs = await loadJobs();
 
-      description:
-        document
-          .getElementById("storeDescription")
-          .value
-          .trim()
-    },
-    {
-      merge: true
-    }
-  );
+        currentJobIds = jobs.map((job) => job.id);
 
-  currentStoreName = storeName;
+        await loadTodayViews();
+        await loadApplications(currentJobIds);
+      };
 
-  alert("店舗情報を保存しました");
-
-  const jobs = await loadJobs();
-
-  currentJobIds = jobs.map(job => job.id);
-
-  await loadTodayViews();
-  await loadApplications(currentJobIds);
-
-};
-
-/* =========================
+      /* =========================
    求人一覧
 ========================= */
 
-async function legacyLoadJobs() {
+      async function legacyLoadJobs() {
+        const list = document.getElementById("jobList");
 
-  const list =
-    document.getElementById("jobList");
-
-  list.innerHTML = `
+        list.innerHTML = `
     <tr>
       <td colspan="3"
           style="text-align:center;color:#888;">
@@ -1216,61 +1444,47 @@ async function legacyLoadJobs() {
     </tr>
   `;
 
-  let jobDocs = [];
+        let jobDocs = [];
 
-  /*
+        /*
     まずownerIdで検索
   */
 
-  const ownerQuery = query(
-    collection(db, "jobs"),
-    where("ownerId", "==", currentUser.uid)
-  );
+        const ownerQuery = query(
+          collection(db, "jobs"),
+          where("ownerId", "==", currentUser.uid),
+        );
 
-  const ownerSnap =
-    await getDocs(ownerQuery);
+        const ownerSnap = await getDocs(ownerQuery);
 
-  ownerSnap.forEach(jobDoc => {
-    jobDocs.push(jobDoc);
-  });
+        ownerSnap.forEach((jobDoc) => {
+          jobDocs.push(jobDoc);
+        });
 
-  /*
+        /*
     ownerIdがない旧求人は
     店舗名で検索
   */
 
-  if (
-    jobDocs.length === 0 &&
-    currentStoreName
-  ) {
+        if (jobDocs.length === 0 && currentStoreName) {
+          const nameQuery = query(
+            collection(db, "jobs"),
+            where("storeName", "==", currentStoreName),
+          );
 
-    const nameQuery = query(
-      collection(db, "jobs"),
-      where(
-        "storeName",
-        "==",
-        currentStoreName
-      )
-    );
+          const nameSnap = await getDocs(nameQuery);
 
-    const nameSnap =
-      await getDocs(nameQuery);
+          nameSnap.forEach((jobDoc) => {
+            jobDocs.push(jobDoc);
+          });
+        }
 
-    nameSnap.forEach(jobDoc => {
-      jobDocs.push(jobDoc);
-    });
+        document.getElementById("jobCount").textContent = jobDocs.length;
 
-  }
+        list.innerHTML = "";
 
-  document
-    .getElementById("jobCount")
-    .textContent = jobDocs.length;
-
-  list.innerHTML = "";
-
-  if (jobDocs.length === 0) {
-
-    list.innerHTML = `
+        if (jobDocs.length === 0) {
+          list.innerHTML = `
       <tr>
         <td colspan="3"
             style="text-align:center;color:#888;">
@@ -1279,37 +1493,27 @@ async function legacyLoadJobs() {
       </tr>
     `;
 
-    return [];
-  }
+          return [];
+        }
 
-  const jobs = [];
+        const jobs = [];
 
-  jobDocs.forEach(jobDoc => {
+        jobDocs.forEach((jobDoc) => {
+          const data = jobDoc.data();
 
-    const data = jobDoc.data();
+          jobs.push({
+            id: jobDoc.id,
+            ...data,
+          });
 
-    jobs.push({
-      id: jobDoc.id,
-      ...data
-    });
-
-    list.innerHTML += `
+          list.innerHTML += `
       <tr>
         <td>
-          ${escapeHtml(
-            data.storeName ||
-            data.title ||
-            "-"
-          )}
+          ${escapeHtml(data.storeName || data.title || "-")}
         </td>
 
         <td>
-          ${escapeHtml(
-            data.salary ||
-            data.pay ||
-            data.salaryText ||
-            "-"
-          )}
+          ${escapeHtml(data.salary || data.pay || data.salaryText || "-")}
         </td>
 
         <td>
@@ -1319,63 +1523,54 @@ async function legacyLoadJobs() {
         </td>
       </tr>
     `;
+        });
 
-  });
+        return jobs;
+      }
 
-  return jobs;
-}
-
-/* =========================
+      /* =========================
    今日の閲覧数
 ========================= */
 
-async function loadTodayViews() {
+      async function loadTodayViews() {
+        const viewElement = document.getElementById("viewCount");
 
-  const viewElement =
-    document.getElementById("viewCount");
+        viewElement.textContent = "0";
 
-  viewElement.textContent = "0";
+        const dateKey = getJapanDateKey();
 
-  const dateKey = getJapanDateKey();
+        let storeName =
+          currentStoreName || document.getElementById("storeName").value.trim();
 
-  let storeName =
-    currentStoreName ||
-    document.getElementById("storeName").value.trim();
+        if (!storeName) {
+          return;
+        }
 
-  if (!storeName) {
-  return;
-}
+        const q = query(
+          collection(db, "jobViewStats"),
+          where("storeName", "==", storeName),
+          where("dateKey", "==", dateKey),
+        );
 
-  const q = query(
-    collection(db, "jobViewStats"),
-    where("storeName", "==", storeName),
-    where("dateKey", "==", dateKey)
-  );
+        const snap = await getDocs(q);
 
-  const snap = await getDocs(q);
+        let totalViews = 0;
 
-  let totalViews = 0;
+        snap.forEach((doc) => {
+          totalViews += Number(doc.data().count || 0);
+        });
 
-  snap.forEach(doc => {
-    totalViews += Number(doc.data().count || 0);
-  });
+        viewElement.textContent = totalViews;
+      }
 
-  viewElement.textContent = totalViews;
-
-}
-
-/* =========================
+      /* =========================
    応募一覧
 ========================= */
 
-async function legacyLoadApplications(jobIds) {
+      async function legacyLoadApplications(jobIds) {
+        const list = document.getElementById("applicationList");
 
-  const list =
-    document.getElementById(
-      "applicationList"
-    );
-
-  list.innerHTML = `
+        list.innerHTML = `
     <tr>
       <td colspan="5"
           style="text-align:center;color:#888;">
@@ -1384,133 +1579,101 @@ async function legacyLoadApplications(jobIds) {
     </tr>
   `;
 
-  const applications = [];
-  const foundIds = new Set();
+        const applications = [];
+        const foundIds = new Set();
 
-  /*
+        /*
     現在の応募フォームが保存している
     applicationsコレクションを読む
   */
 
-  for (const jobId of jobIds) {
+        for (const jobId of jobIds) {
+          const applicationQuery = query(
+            collection(db, "applications"),
+            where("jobId", "==", jobId),
+          );
 
-    const applicationQuery = query(
-      collection(db, "applications"),
-      where("jobId", "==", jobId)
-    );
+          const snap = await getDocs(applicationQuery);
 
-    const snap =
-      await getDocs(applicationQuery);
+          snap.forEach((applicationDoc) => {
+            if (foundIds.has(applicationDoc.id)) {
+              return;
+            }
 
-    snap.forEach(applicationDoc => {
+            foundIds.add(applicationDoc.id);
 
-      if (foundIds.has(applicationDoc.id)) {
-        return;
-      }
+            applications.push({
+              id: applicationDoc.id,
+              collectionName: "applications",
+              ...applicationDoc.data(),
+            });
+          });
+        }
 
-      foundIds.add(applicationDoc.id);
-
-      applications.push({
-        id: applicationDoc.id,
-        collectionName: "applications",
-        ...applicationDoc.data()
-      });
-
-    });
-
-  }
-
-  /*
+        /*
     求人IDが取得できない旧データ用
   */
 
-  if (
-    applications.length === 0 &&
-    currentStoreName
-  ) {
+        if (applications.length === 0 && currentStoreName) {
+          const storeQuery = query(
+            collection(db, "applications"),
+            where("storeName", "==", currentStoreName),
+          );
 
-    const storeQuery = query(
-      collection(db, "applications"),
-      where(
-        "storeName",
-        "==",
-        currentStoreName
-      )
-    );
+          const storeSnap = await getDocs(storeQuery);
 
-    const storeSnap =
-      await getDocs(storeQuery);
+          storeSnap.forEach((applicationDoc) => {
+            if (foundIds.has(applicationDoc.id)) {
+              return;
+            }
 
-    storeSnap.forEach(applicationDoc => {
+            foundIds.add(applicationDoc.id);
 
-      if (foundIds.has(applicationDoc.id)) {
-        return;
-      }
+            applications.push({
+              id: applicationDoc.id,
+              collectionName: "applications",
+              ...applicationDoc.data(),
+            });
+          });
+        }
 
-      foundIds.add(applicationDoc.id);
-
-      applications.push({
-        id: applicationDoc.id,
-        collectionName: "applications",
-        ...applicationDoc.data()
-      });
-
-    });
-
-  }
-
-  /*
+        /*
     過去にjobEntriesへ保存した応募も表示
   */
 
-  if (currentStoreName) {
+        if (currentStoreName) {
+          const oldQuery = query(
+            collection(db, "jobEntries"),
+            where("storeName", "==", currentStoreName),
+          );
 
-    const oldQuery = query(
-      collection(db, "jobEntries"),
-      where(
-        "storeName",
-        "==",
-        currentStoreName
-      )
-    );
+          const oldSnap = await getDocs(oldQuery);
 
-    const oldSnap =
-      await getDocs(oldQuery);
+          oldSnap.forEach((entryDoc) => {
+            if (foundIds.has(entryDoc.id)) {
+              return;
+            }
 
-    oldSnap.forEach(entryDoc => {
+            foundIds.add(entryDoc.id);
 
-      if (foundIds.has(entryDoc.id)) {
-        return;
-      }
+            applications.push({
+              id: entryDoc.id,
+              collectionName: "jobEntries",
+              ...entryDoc.data(),
+            });
+          });
+        }
 
-      foundIds.add(entryDoc.id);
+        const currentMonthCount = applications.filter((application) =>
+          isCurrentMonth(application.createdAt),
+        ).length;
 
-      applications.push({
-        id: entryDoc.id,
-        collectionName: "jobEntries",
-        ...entryDoc.data()
-      });
+        document.getElementById("applyCount").textContent = currentMonthCount;
 
-    });
+        list.innerHTML = "";
 
-  }
-
-  const currentMonthCount =
-    applications.filter(application =>
-      isCurrentMonth(
-        application.createdAt
-      )
-    ).length;
-
-  document
-    .getElementById("applyCount")
-    .textContent = currentMonthCount;
-
-  list.innerHTML = "";
-
-  if (applications.length === 0) {
-
-    list.innerHTML = `
+        if (applications.length === 0) {
+          list.innerHTML = `
       <tr>
         <td colspan="5"
             style="text-align:center;color:#888;">
@@ -1519,49 +1682,33 @@ async function legacyLoadApplications(jobIds) {
       </tr>
     `;
 
-    return;
-  }
+          return;
+        }
 
-  applications.sort((a, b) => {
+        applications.sort((a, b) => {
+          const aTime = a.createdAt?.toMillis?.() || 0;
 
-    const aTime =
-      a.createdAt?.toMillis?.() || 0;
+          const bTime = b.createdAt?.toMillis?.() || 0;
 
-    const bTime =
-      b.createdAt?.toMillis?.() || 0;
+          return bTime - aTime;
+        });
 
-    return bTime - aTime;
+        applications.forEach((application) => {
+          const status = application.status || "new";
 
-  });
-
-  applications.forEach(application => {
-
-    const status =
-      application.status || "new";
-
-    list.innerHTML += `
+          list.innerHTML += `
       <tr>
 
         <td>
-          ${escapeHtml(
-            application.applicantName ||
-            "-"
-          )}
+          ${escapeHtml(application.applicantName || "-")}
         </td>
 
         <td>
-          ${escapeHtml(
-            application.applicantPhone ||
-            "-"
-          )}
+          ${escapeHtml(application.applicantPhone || "-")}
         </td>
 
         <td>
-          ${escapeHtml(
-            application.storeName ||
-            application.jobName ||
-            "-"
-          )}
+          ${escapeHtml(application.storeName || application.jobName || "-")}
         </td>
 
         <td>
@@ -1603,9 +1750,7 @@ async function legacyLoadApplications(jobIds) {
               ? `
                 <a
                   class="btn"
-                  href="tel:${escapeHtml(
-                    application.applicantPhone
-                  )}"
+                  href="tel:${escapeHtml(application.applicantPhone)}"
                 >
                   電話
                 </a>
@@ -1617,92 +1762,92 @@ async function legacyLoadApplications(jobIds) {
 
       </tr>
     `;
+        });
+      }
 
-  });
-
-}
-
-/* =========================
+      /* =========================
    応募状態変更
 ========================= */
 
-const JOB_STATUS_LABELS = {
-  draft: "下書き",
-  pending: "初回承認待ち",
-  approved: "公開中",
-  paused: "一時停止",
-  reapproval_pending: "再公開承認待ち",
-  rejected: "非承認",
-  archived: "削除済み"
-};
+      const JOB_STATUS_LABELS = {
+        draft: "下書き",
+        pending: "初回承認待ち",
+        approved: "公開中",
+        paused: "一時停止",
+        reapproval_pending: "再公開承認待ち",
+        rejected: "非承認",
+        archived: "削除済み",
+      };
 
-function formatTimestamp(value) {
-  const date = value?.toDate?.();
-  return date
-    ? new Intl.DateTimeFormat("ja-JP", {
-        dateStyle: "medium",
-        timeStyle: "short"
-      }).format(date)
-    : "-";
-}
+      function formatTimestamp(value) {
+        const date = value?.toDate?.();
+        return date
+          ? new Intl.DateTimeFormat("ja-JP", {
+              dateStyle: "medium",
+              timeStyle: "short",
+            }).format(date)
+          : "-";
+      }
 
-function jobActionButtons(job) {
-  const editLink =
-    `<a class="btn gray" href="./job-edit.html?job=${encodeURIComponent(job.id)}">編集</a>`;
-  const action = (label, nextStatus) =>
-    `<button class="btn gray" data-job-id="${escapeHtml(job.id)}" ` +
-    `data-job-status="${nextStatus}">${label}</button>`;
+      function jobActionButtons(job) {
+        const editLink = `<a class="btn gray" href="./job-edit.html?job=${encodeURIComponent(job.id)}">編集</a>`;
+        const action = (label, nextStatus) =>
+          `<button class="btn gray" data-job-id="${escapeHtml(job.id)}" ` +
+          `data-job-status="${nextStatus}">${label}</button>`;
 
-  switch (job.status) {
-    case "draft":
-      return `${editLink}${action("申請", "pending")}${action("削除", "archived")}`;
-    case "approved":
-      return `${editLink}${action("一時停止", "paused")}`;
-    case "paused":
-      return `${editLink}${action("再公開申請", "reapproval_pending")}${action("削除", "archived")}`;
-    case "rejected":
-      return `${editLink}${action("再申請準備", "draft")}${action("削除", "archived")}`;
-    default:
-      return "閲覧のみ";
-  }
-}
+        switch (job.status) {
+          case "draft":
+            return `${editLink}${action("申請", "pending")}${action("削除", "archived")}`;
+          case "approved":
+            return `${editLink}${action("一時停止", "paused")}`;
+          case "paused":
+            return `${editLink}${action("再公開申請", "reapproval_pending")}${action("削除", "archived")}`;
+          case "rejected":
+            return `${editLink}${action("再申請準備", "draft")}${action("削除", "archived")}`;
+          default:
+            return "閲覧のみ";
+        }
+      }
 
-async function loadJobs() {
-  const list = document.getElementById("jobList");
-  list.innerHTML =
-    '<tr><td colspan="7" style="text-align:center;color:#888;">読み込み中...</td></tr>';
+      async function loadJobs() {
+        const list = document.getElementById("jobList");
+        list.innerHTML =
+          '<tr><td colspan="7" style="text-align:center;color:#888;">読み込み中...</td></tr>';
 
-  const snapshot = await getDocs(query(
-    collection(db, "jobs"),
-    where("ownerId", "==", currentUser.uid)
-  ));
-  const jobs = snapshot.docs.map((snapshotDocument) => ({
-    id: snapshotDocument.id,
-    ...snapshotDocument.data()
-  }));
+        const snapshot = await getDocs(
+          query(
+            collection(db, "jobs"),
+            where("ownerId", "==", currentUser.uid),
+          ),
+        );
+        const jobs = snapshot.docs.map((snapshotDocument) => ({
+          id: snapshotDocument.id,
+          ...snapshotDocument.data(),
+        }));
 
-  document.getElementById("jobCount").textContent =
-    String(jobs.filter((job) => job.status !== "archived").length);
-  list.replaceChildren();
-  const header = document.createElement("tr");
-  header.innerHTML =
-    "<th>求人タイトル</th><th>職種</th><th>給与</th><th>状態</th><th>更新日時</th><th>公開状態</th><th>操作</th>";
-  list.append(header);
-  if (jobs.length === 0) {
-    list.insertAdjacentHTML(
-      "beforeend",
-      '<tr><td colspan="7" style="text-align:center;color:#888;">求人はまだありません</td></tr>'
-    );
-    return [];
-  }
+        document.getElementById("jobCount").textContent = String(
+          jobs.filter((job) => job.status !== "archived").length,
+        );
+        list.replaceChildren();
+        const header = document.createElement("tr");
+        header.innerHTML =
+          "<th>求人タイトル</th><th>職種</th><th>給与</th><th>状態</th><th>更新日時</th><th>公開状態</th><th>操作</th>";
+        list.append(header);
+        if (jobs.length === 0) {
+          list.insertAdjacentHTML(
+            "beforeend",
+            '<tr><td colspan="7" style="text-align:center;color:#888;">求人はまだありません</td></tr>',
+          );
+          return [];
+        }
 
-  jobs.sort((a, b) =>
-    (b.updatedAt?.toMillis?.() || 0) -
-    (a.updatedAt?.toMillis?.() || 0)
-  );
-  for (const job of jobs) {
-    const row = document.createElement("tr");
-    row.innerHTML = `
+        jobs.sort(
+          (a, b) =>
+            (b.updatedAt?.toMillis?.() || 0) - (a.updatedAt?.toMillis?.() || 0),
+        );
+        for (const job of jobs) {
+          const row = document.createElement("tr");
+          row.innerHTML = `
       <td>${escapeHtml(job.title || "-")}</td>
       <td>${escapeHtml(job.position || "-")}</td>
       <td>${escapeHtml(job.salary || "-")}</td>
@@ -1710,105 +1855,113 @@ async function loadJobs() {
       <td>${escapeHtml(formatTimestamp(job.updatedAt))}</td>
       <td>${job.isPublic === true ? "公開" : "非公開"}</td>
       <td class="actionBtns">${jobActionButtons(job)}</td>`;
-    list.append(row);
-  }
+          list.append(row);
+        }
 
-  list.querySelectorAll("[data-job-status]").forEach((button) => {
-    button.addEventListener("click", () =>
-      updateJobStatus(button, button.dataset.jobId, button.dataset.jobStatus)
-    );
-  });
-  return jobs;
-}
+        list.querySelectorAll("[data-job-status]").forEach((button) => {
+          button.addEventListener("click", () =>
+            updateJobStatus(
+              button,
+              button.dataset.jobId,
+              button.dataset.jobStatus,
+            ),
+          );
+        });
+        return jobs;
+      }
 
-async function updateJobStatus(button, jobId, nextStatus) {
-  if (button.disabled) return;
-  const updates = {
-    status: nextStatus,
-    updatedAt: serverTimestamp(),
-    updatedBy: currentUser.uid
-  };
-  if (nextStatus === "paused") {
-    updates.pausedAt = serverTimestamp();
-    updates.pausedBy = currentUser.uid;
-  } else if (nextStatus === "reapproval_pending") {
-    updates.reapprovalRequestedAt = serverTimestamp();
-  } else if (nextStatus === "archived") {
-    updates.archivedAt = serverTimestamp();
-    updates.archivedBy = currentUser.uid;
-  }
-  button.disabled = true;
-  try {
-    await updateDoc(doc(db, "jobs", jobId), updates);
-    await loadJobs();
-  } catch (error) {
-    button.disabled = false;
-    alert("求人状態を更新できませんでした。");
-  }
-}
+      async function updateJobStatus(button, jobId, nextStatus) {
+        if (button.disabled) return;
+        const updates = {
+          status: nextStatus,
+          updatedAt: serverTimestamp(),
+          updatedBy: currentUser.uid,
+        };
+        if (nextStatus === "paused") {
+          updates.pausedAt = serverTimestamp();
+          updates.pausedBy = currentUser.uid;
+        } else if (nextStatus === "reapproval_pending") {
+          updates.reapprovalRequestedAt = serverTimestamp();
+        } else if (nextStatus === "archived") {
+          updates.archivedAt = serverTimestamp();
+          updates.archivedBy = currentUser.uid;
+        }
+        button.disabled = true;
+        try {
+          await updateDoc(doc(db, "jobs", jobId), updates);
+          await loadJobs();
+        } catch (error) {
+          button.disabled = false;
+          alert("求人状態を更新できませんでした。");
+        }
+      }
 
-const APPLICATION_STATUS_LABELS = {
-  new: "新着",
-  contacted: "連絡済み",
-  interview_scheduled: "面接予定",
-  hired: "採用",
-  rejected: "不採用"
-};
-const APPLICATION_TRANSITIONS = {
-  new: ["contacted", "rejected"],
-  contacted: ["interview_scheduled", "rejected"],
-  interview_scheduled: ["hired", "rejected"],
-  hired: [],
-  rejected: []
-};
-const APPLICATION_STATUS_TIMESTAMPS = {
-  contacted: "contactedAt",
-  interview_scheduled: "interviewScheduledAt",
-  hired: "hiredAt",
-  rejected: "rejectedAt"
-};
+      const APPLICATION_STATUS_LABELS = {
+        new: "新着",
+        contacted: "連絡済み",
+        interview_scheduled: "面接予定",
+        hired: "採用",
+        rejected: "不採用",
+      };
+      const APPLICATION_TRANSITIONS = {
+        new: ["contacted", "rejected"],
+        contacted: ["interview_scheduled", "rejected"],
+        interview_scheduled: ["hired", "rejected"],
+        hired: [],
+        rejected: [],
+      };
+      const APPLICATION_STATUS_TIMESTAMPS = {
+        contacted: "contactedAt",
+        interview_scheduled: "interviewScheduledAt",
+        hired: "hiredAt",
+        rejected: "rejectedAt",
+      };
 
-async function loadApplications() {
-  const list = document.getElementById("applicationList");
-  list.innerHTML =
-    '<tr><td colspan="7" style="text-align:center;color:#888;">読み込み中...</td></tr>';
-  const snapshot = await getDocs(query(
-    collection(db, "applications"),
-    where("storeId", "==", currentUser.uid),
-    orderBy("createdAt", "desc")
-  ));
-  const applications = snapshot.docs.map((snapshotDocument) => ({
-    id: snapshotDocument.id,
-    ...snapshotDocument.data()
-  }));
-  document.getElementById("applyCount").textContent = String(
-    applications.filter((application) =>
-      isCurrentMonth(application.createdAt)
-    ).length
-  );
-  list.replaceChildren();
-  const header = document.createElement("tr");
-  header.innerHTML =
-    "<th>名前</th><th>電話番号</th><th>応募求人</th><th>応募日時</th><th>メッセージ</th><th>状態</th><th>操作</th>";
-  list.append(header);
-  if (applications.length === 0) {
-    list.insertAdjacentHTML(
-      "beforeend",
-      '<tr><td colspan="7" style="text-align:center;color:#888;">応募はまだありません</td></tr>'
-    );
-    return;
-  }
+      async function loadApplications() {
+        const list = document.getElementById("applicationList");
+        list.innerHTML =
+          '<tr><td colspan="7" style="text-align:center;color:#888;">読み込み中...</td></tr>';
+        const snapshot = await getDocs(
+          query(
+            collection(db, "applications"),
+            where("storeId", "==", currentUser.uid),
+            orderBy("createdAt", "desc"),
+          ),
+        );
+        const applications = snapshot.docs.map((snapshotDocument) => ({
+          id: snapshotDocument.id,
+          ...snapshotDocument.data(),
+        }));
+        document.getElementById("applyCount").textContent = String(
+          applications.filter((application) =>
+            isCurrentMonth(application.createdAt),
+          ).length,
+        );
+        list.replaceChildren();
+        const header = document.createElement("tr");
+        header.innerHTML =
+          "<th>名前</th><th>電話番号</th><th>応募求人</th><th>応募日時</th><th>メッセージ</th><th>状態</th><th>操作</th>";
+        list.append(header);
+        if (applications.length === 0) {
+          list.insertAdjacentHTML(
+            "beforeend",
+            '<tr><td colspan="7" style="text-align:center;color:#888;">応募はまだありません</td></tr>',
+          );
+          return;
+        }
 
-  for (const application of applications) {
-    const nextStatuses = APPLICATION_TRANSITIONS[application.status] || [];
-    const options = [
-      `<option value="${application.status}">${APPLICATION_STATUS_LABELS[application.status] || application.status}</option>`,
-      ...nextStatuses.map((status) =>
-        `<option value="${status}">${APPLICATION_STATUS_LABELS[status]}</option>`
-      )
-    ].join("");
-    const row = document.createElement("tr");
-    row.innerHTML = `
+        for (const application of applications) {
+          const nextStatuses =
+            APPLICATION_TRANSITIONS[application.status] || [];
+          const options = [
+            `<option value="${application.status}">${APPLICATION_STATUS_LABELS[application.status] || application.status}</option>`,
+            ...nextStatuses.map(
+              (status) =>
+                `<option value="${status}">${APPLICATION_STATUS_LABELS[status]}</option>`,
+            ),
+          ].join("");
+          const row = document.createElement("tr");
+          row.innerHTML = `
       <td>${escapeHtml(application.name || "-")}</td>
       <td>${escapeHtml(application.phone || "-")}</td>
       <td>${escapeHtml(application.jobTitle || application.jobId || "-")}</td>
@@ -1816,80 +1969,70 @@ async function loadApplications() {
       <td>${escapeHtml(application.message || "-")}</td>
       <td><select data-application-id="${escapeHtml(application.id)}" data-current-status="${escapeHtml(application.status)}">${options}</select></td>
       <td class="actionBtns">${application.phone ? `<a class="btn" href="tel:${escapeHtml(application.phone)}">電話</a>` : ""}</td>`;
-    list.append(row);
-  }
-  list.querySelectorAll("[data-application-id]").forEach((select) => {
-    select.addEventListener("change", () =>
-      changeApplicationStatus(select)
-    );
-  });
-}
-
-async function changeApplicationStatus(select) {
-  const previousStatus = select.dataset.currentStatus;
-  const nextStatus = select.value;
-  if (
-    nextStatus === previousStatus ||
-    !(APPLICATION_TRANSITIONS[previousStatus] || []).includes(nextStatus)
-  ) {
-    select.value = previousStatus;
-    return;
-  }
-  const timestampField = APPLICATION_STATUS_TIMESTAMPS[nextStatus];
-  select.disabled = true;
-  try {
-    await updateDoc(
-      doc(db, "applications", select.dataset.applicationId),
-      {
-        status: nextStatus,
-        updatedAt: serverTimestamp(),
-        [timestampField]: serverTimestamp()
+          list.append(row);
+        }
+        list.querySelectorAll("[data-application-id]").forEach((select) => {
+          select.addEventListener("change", () =>
+            changeApplicationStatus(select),
+          );
+        });
       }
-    );
-    select.dataset.currentStatus = nextStatus;
-    await loadApplications();
-  } catch (error) {
-    select.value = previousStatus;
-    select.disabled = false;
-    alert("応募状態を更新できませんでした。");
-  }
-}
 
-async function legacyChangeStatus(
-  id,
-  status,
-  collectionName = "applications"
-) {
+      async function changeApplicationStatus(select) {
+        const previousStatus = select.dataset.currentStatus;
+        const nextStatus = select.value;
+        if (
+          nextStatus === previousStatus ||
+          !(APPLICATION_TRANSITIONS[previousStatus] || []).includes(nextStatus)
+        ) {
+          select.value = previousStatus;
+          return;
+        }
+        const timestampField = APPLICATION_STATUS_TIMESTAMPS[nextStatus];
+        select.disabled = true;
+        try {
+          await updateDoc(
+            doc(db, "applications", select.dataset.applicationId),
+            {
+              status: nextStatus,
+              updatedAt: serverTimestamp(),
+              [timestampField]: serverTimestamp(),
+            },
+          );
+          select.dataset.currentStatus = nextStatus;
+          await loadApplications();
+        } catch (error) {
+          select.value = previousStatus;
+          select.disabled = false;
+          alert("応募状態を更新できませんでした。");
+        }
+      }
 
-  await updateDoc(
-    doc(
-      db,
-      collectionName,
-      id
-    ),
-    {
-      status
-    }
-  );
+      async function legacyChangeStatus(
+        id,
+        status,
+        collectionName = "applications",
+      ) {
+        await updateDoc(doc(db, collectionName, id), {
+          status,
+        });
 
-  alert("状態を更新しました");
-};
+        alert("状態を更新しました");
+      }
 
-/* =========================
+      /* =========================
    ログアウト
 ========================= */
 
-window.logout = async function() {
+      window.logout = async function () {
+        if (!confirm("ログアウトしますか？")) {
+          return;
+        }
 
-  if (!confirm("ログアウトしますか？")) {
-    return;
-  }
+        await signOut(auth);
 
-  await signOut(auth);
-
-  location.href = "login.html";
-};
-
-</script>
-</body>
+        location.href = "login.html";
+      };
+    </script>
+  </body>
 </html>
