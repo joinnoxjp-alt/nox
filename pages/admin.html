@@ -1009,7 +1009,92 @@
               <p class="admin-message">契約情報を読み込み中...</p>
             </div>
           </section>
+          <!-- 管理者から求人を直接追加 -->
+          <section class="admin-section">
+            <h2 class="admin-section-title">➕ 管理者から求人を直接追加</h2>
 
+            <p class="admin-section-description">
+              店舗からの求人申請を通さず、管理者が求人情報を直接登録して公開できます。
+            </p>
+
+            <div class="admin-item-card">
+              <div class="ad-form">
+                <div class="ad-form-group full">
+                  <label for="directJobStoreName">店舗名</label>
+                  <input
+                    type="text"
+                    id="directJobStoreName"
+                    placeholder="例：フリージア"
+                  />
+                </div>
+
+                <div class="ad-form-group full">
+                  <label for="directJobOwnerId">ownerId</label>
+                  <input
+                    type="text"
+                    id="directJobOwnerId"
+                    placeholder="店舗アカウントのUID"
+                  />
+                </div>
+
+                <div class="ad-form-group full">
+                  <label for="directJobTitle">求人タイトル</label>
+                  <input
+                    type="text"
+                    id="directJobTitle"
+                    placeholder="例：新規スタッフ大募集"
+                  />
+                </div>
+
+                <div class="ad-form-group">
+                  <label for="directJobType">職種・業種</label>
+                  <input
+                    type="text"
+                    id="directJobType"
+                    placeholder="例：ガールズバー"
+                  />
+                </div>
+
+                <div class="ad-form-group">
+                  <label for="directJobArea">勤務地</label>
+                  <input
+                    type="text"
+                    id="directJobArea"
+                    placeholder="例：神奈川県相模原市"
+                  />
+                </div>
+
+                <div class="ad-form-group full">
+                  <label for="directJobSalary">給与</label>
+                  <input
+                    type="text"
+                    id="directJobSalary"
+                    placeholder="例：時給3,000円〜"
+                  />
+                </div>
+
+                <div class="ad-form-group full">
+                  <label for="directJobDescription">求人内容</label>
+                  <textarea
+                    id="directJobDescription"
+                    placeholder="仕事内容・待遇・応募条件などを入力"
+                  ></textarea>
+                </div>
+
+                <div class="ad-card-actions">
+                  <button
+                    type="button"
+                    id="createDirectJobButton"
+                    class="admin-button"
+                  >
+                    求人を直接登録・公開
+                  </button>
+                </div>
+
+                <p id="directJobStatus" class="save-status"></p>
+              </div>
+            </div>
+          </section>
           <!-- 求人掲載申請 -->
           <section class="admin-section">
             <h2 class="admin-section-title">📝 求人掲載申請一覧</h2>
@@ -1543,6 +1628,11 @@
       );
 
       const directStoreStatus = document.getElementById("directStoreStatus");
+      const createDirectJobButton = document.getElementById(
+        "createDirectJobButton",
+      );
+
+      const directJobStatus = document.getElementById("directJobStatus");
       const AD_SLOT_COUNT = 6;
 
       let currentAdminUser = null;
@@ -1577,7 +1667,67 @@
         ]);
       }
 
-      initializeAdminPage();
+      createDirectJobButton.addEventListener("click", async () => {
+        const storeName = document
+          .getElementById("directJobStoreName")
+          .value.trim();
+
+        const ownerId = document
+          .getElementById("directJobOwnerId")
+          .value.trim();
+
+        const title = document.getElementById("directJobTitle").value.trim();
+
+        const businessType = document
+          .getElementById("directJobType")
+          .value.trim();
+
+        const area = document.getElementById("directJobArea").value.trim();
+
+        const salary = document.getElementById("directJobSalary").value.trim();
+
+        const description = document
+          .getElementById("directJobDescription")
+          .value.trim();
+
+        if (!storeName || !ownerId || !title) {
+          directJobStatus.textContent =
+            "店舗名・ownerId・求人タイトルを入力してください。";
+          return;
+        }
+
+        createDirectJobButton.disabled = true;
+        directJobStatus.textContent = "求人を登録しています...";
+
+        try {
+          await addDoc(collection(db, "jobs"), {
+            storeName,
+            ownerId,
+            title,
+            businessType,
+            jobType: businessType,
+            area,
+            salary,
+            description,
+            businessScope: "night",
+            status: "approved",
+            isPublic: true,
+            contractListingStatus: "active",
+            source: "admin_direct",
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp(),
+          });
+
+          directJobStatus.textContent = "求人を登録・公開しました。";
+
+          await Promise.all([loadPublicJobs(), loadRegisteredStores()]);
+        } catch (error) {
+          console.error("求人の直接登録に失敗しました。", error);
+          directJobStatus.textContent = "求人を登録できませんでした。";
+        } finally {
+          createDirectJobButton.disabled = false;
+        }
+      });
       createDirectStoreButton.addEventListener("click", async () => {
         const storeName = document
           .getElementById("directStoreName")
