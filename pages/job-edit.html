@@ -301,7 +301,7 @@
           );
       });
       form.addEventListener("submit", async (event) => {
-        alert("保存処理は動いています");
+        alert("保存を開始します");
         event.preventDefault();
         if (saveButton.disabled) return;
         const files = Array.from(imageInput.files);
@@ -347,6 +347,7 @@
             updates.pausedBy = user.uid;
           }
           await updateDoc(doc(db, "jobs", jobId), updates);
+          alert("求人情報を保存しました");
           await Promise.allSettled(
             removedPaths.map((path) => deleteObject(ref(storage, path))),
           );
