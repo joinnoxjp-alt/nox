@@ -1066,7 +1066,20 @@
           const newUrl = await getDownloadURL(storageRef(storage, newPath));
           const previous = currentStoreMedia[kind];
 
-          await updateDoc(doc(db, "stores", currentUser.uid), {
+          const storeSnapshot = await getDocs(
+            query(
+              collection(db, "stores"),
+              where("ownerId", "==", currentUser.uid),
+            ),
+          );
+
+          if (storeSnapshot.empty) {
+            throw new Error("店舗データが見つかりません。");
+          }
+
+          const storeDocument = storeSnapshot.docs[0];
+
+          await updateDoc(doc(db, "stores", storeDocument.id), {
             [config.urlField]: newUrl,
             [config.pathField]: newPath,
             mediaUpdatedAt: serverTimestamp(),
