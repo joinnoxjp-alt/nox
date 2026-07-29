@@ -301,6 +301,7 @@
           );
       });
       form.addEventListener("submit", async (event) => {
+        alert("保存処理は動いています");
         event.preventDefault();
         if (saveButton.disabled) return;
         const files = Array.from(imageInput.files);
