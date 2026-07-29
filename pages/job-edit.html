@@ -162,8 +162,7 @@
         doc,
         getDoc,
         updateDoc,
-        addDoc,
-        collection,
+        setDoc,
         serverTimestamp,
       } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
       import {
@@ -349,15 +348,31 @@
             updates.pausedBy = user.uid;
           }
           await updateDoc(doc(db, "jobs", jobId), updates);
-          await addDoc(collection(db, "jobApplications"), {
-            jobId,
-            storeId: user.uid,
+          await setDoc(doc(db, "jobApplications", jobId), {
             ownerId: user.uid,
+            jobId,
+            submittedBy: user.uid,
+            storeId: user.uid,
             storeName: jobData.storeName || "",
-            title: updates.title || jobData.title || "",
-            type: "reapproval",
+
+            businessScope: jobData.businessScope || "night",
+            businessType: updates.category || jobData.businessType || "",
+            targetGender: updates.targetGender || jobData.targetGender || "",
+            jobType: updates.category || jobData.jobType || "",
+            position: updates.position || jobData.position || "",
+            area: updates.area || jobData.area || "",
+            address: updates.address || jobData.address || "",
+            station: updates.station || jobData.station || "",
+            businessHours: updates.businessHours || jobData.businessHours || "",
+            salary: updates.salary || jobData.salary || "",
+            trial: updates.trial || jobData.trial || "",
+            beginner: updates.beginner === true,
+
+            shopPR: updates.description || jobData.description || "",
+            imageStoragePaths: updates.imageStoragePaths || [],
+            imageUrls: updates.imageUrls || [],
+
             status: "pending",
-            requestedAt: serverTimestamp(),
             createdAt: serverTimestamp(),
           });
           alert("求人情報を保存しました");
