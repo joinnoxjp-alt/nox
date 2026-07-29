@@ -675,7 +675,14 @@ async function loadTopJobs() {
       </p>
     `;
 
-    const snapshot = await getDocs(collection(db, "jobs"));
+    const snapshot = await getDocs(
+      query(
+        collection(db, "jobs"),
+        where("status", "==", "approved"),
+        where("isPublic", "==", true),
+        where("contractListingStatus", "==", "active"),
+      ),
+    );
 
     const jobs = [];
 
