@@ -1224,7 +1224,7 @@
 
       async function deleteGalleryImage(item, button) {
         if (!isOwnedStoragePath(item.storagePath, "gallery")) return;
-        button.disabled = true;
+        button.disabled = false;
         const previousGallery = [...currentStoreMedia.gallery];
         const nextGallery = previousGallery.filter(
           (image) => image.slot !== item.slot,
@@ -1264,11 +1264,25 @@
       }
 
       document.querySelectorAll("[data-upload-kind]").forEach((button) => {
-        button.addEventListener("click", () =>
-          uploadSingleImage(button.dataset.uploadKind, button),
-        );
-      });
+        button.disabled = false;
 
+        button.onclick = async (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+
+          const kind = button.dataset.uploadKind;
+          const config = MEDIA_CONFIG[kind];
+          const input = document.getElementById(config.inputId);
+          const file = input?.files?.[0];
+
+          if (!file) {
+            alert("先に画像ファイルを選択してください。");
+            return;
+          }
+
+          await uploadSingleImage(kind, button);
+        };
+      });
       document.querySelectorAll("[data-delete-kind]").forEach((button) => {
         button.addEventListener("click", () =>
           deleteSingleImage(button.dataset.deleteKind, button),
@@ -1886,7 +1900,7 @@
           updates.archivedAt = serverTimestamp();
           updates.archivedBy = currentUser.uid;
         }
-        button.disabled = true;
+        button.disabled = false;
         try {
           await updateDoc(doc(db, "jobs", jobId), updates);
           await loadJobs();
