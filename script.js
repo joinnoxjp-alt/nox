@@ -838,8 +838,6 @@ function renderTopJobs() {
 
       const imageUrl = getJobImage(job);
 
-      console.log("TOP IMAGE URL", imageUrl);
-
       const genderLabel =
         job.resolvedPickupGender === "male" ? "MEN'S PICK UP" : "PICK UP";
 
