@@ -1342,12 +1342,27 @@
         await loadStoreInfo();
         await loadStoreContract(verifiedStoreData);
 
-        const jobs = await loadJobs();
+        let jobs = [];
 
-        currentJobIds = jobs.map((job) => job.id);
+        try {
+          jobs = await loadJobs();
+          currentJobIds = jobs.map((job) => job.id);
+        } catch (error) {
+          console.error("求人読み込みエラー:", error);
+          currentJobIds = [];
+        }
 
-        await loadTodayViews(currentJobIds);
-        // await loadApplications(currentJobIds);
+        try {
+          await loadTodayViews(currentJobIds);
+        } catch (error) {
+          console.error("閲覧数読み込みエラー:", error);
+        }
+
+        try {
+          await loadApplications(currentJobIds);
+        } catch (error) {
+          console.error("応募読み込みエラー:", error);
+        }
       });
 
       /* =========================
