@@ -268,25 +268,33 @@ export const updateStoreContract = onCall(
     const contractReference = firestore.doc(`storeContracts/${input.storeUid}`);
     const pricingReference = firestore.doc("pricingCatalog/current");
     const auditReference = firestore.collection("adminAuditLogs").doc();
-    const jobsQuery = firestore
-      .collection("jobs")
-      .where("ownerId", "==", input.storeUid);
 
     return firestore.runTransaction(async (transaction) => {
-      const [storeSnapshot, contractSnapshot, catalogSnapshot, jobsSnapshot] =
+      const [storeSnapshot, contractSnapshot, catalogSnapshot] =
         await Promise.all([
           transaction.get(storeReference),
           transaction.get(contractReference),
           transaction.get(pricingReference),
-          transaction.get(jobsQuery),
         ]);
 
-      if (
-        !storeSnapshot.exists ||
-        storeSnapshot.data()?.ownerId !== input.storeUid
-      ) {
+      if (!storeSnapshot.exists) {
         throw new HttpsError("not-found", "Store was not found.");
       }
+
+      const storeOwnerId = storeSnapshot.data()?.ownerId;
+
+      if (typeof storeOwnerId !== "string" || !storeOwnerId) {
+        throw new HttpsError(
+          "failed-precondition",
+          "Store ownerId is not configured.",
+        );
+      }
+      const jobsQuery = firestore
+        .collection("jobs")
+        .where("ownerId", "==", storeOwnerId);
+
+      const jobsSnapshot = await transaction.get(jobsQuery);
+
       if (
         !catalogSnapshot.exists ||
         catalogSnapshot.data()?.status !== "active"

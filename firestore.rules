@@ -497,10 +497,7 @@ service cloud.firestore {
      * Store names are display data and are never authorization identifiers.
      */
     match /stores/{storeId} {
-      allow get: if isActiveAdmin()
-        || (isActiveStore()
-          && request.auth.uid == storeId
-          && resource.data.ownerId == request.auth.uid);
+    allow get: if request.auth != null && (isActiveAdmin() || request.auth.uid == storeId);
       allow list: if isActiveAdmin();
 
       allow create: if isActiveAdmin();

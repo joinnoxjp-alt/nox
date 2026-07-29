@@ -1554,6 +1554,11 @@
       import { requireActiveAdmin } from "./admin-authorization.js";
 
       import {
+        getFunctions,
+        httpsCallable,
+      } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-functions.js";
+
+      import {
         getFirestore,
         collection,
         getDocs,
@@ -1702,22 +1707,19 @@
         directJobStatus.textContent = "求人を登録しています...";
 
         try {
-          await addDoc(collection(db, "jobs"), {
+          const createAdminJobCallable = httpsCallable(
+            functions,
+            "createAdminJob",
+          );
+
+          await createAdminJobCallable({
             storeName,
             ownerId,
             title,
             businessType,
-            jobType: businessType,
             area,
             salary,
             description,
-            businessScope: "night",
-            status: "approved",
-            isPublic: true,
-            contractListingStatus: "active",
-            source: "admin_direct",
-            createdAt: serverTimestamp(),
-            updatedAt: serverTimestamp(),
           });
 
           directJobStatus.textContent = "求人を登録・公開しました。";
