@@ -1339,8 +1339,17 @@
 
         currentUser = user;
 
-        await loadStoreInfo();
-        await loadStoreContract(verifiedStoreData);
+        try {
+          await loadStoreInfo();
+        } catch (error) {
+          console.error("店舗情報読み込みエラー:", error);
+        }
+
+        try {
+          await loadStoreContract(verifiedStoreData);
+        } catch (error) {
+          console.error("契約情報読み込みエラー:", error);
+        }
 
         let jobs = [];
 
