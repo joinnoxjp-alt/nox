@@ -1310,12 +1310,21 @@
 
         try {
           const userRef = doc(db, "users", user.uid);
-          const [userSnap, storeSnap] = await Promise.all([
+
+          const [userSnap, storeSnapshot] = await Promise.all([
             getDoc(userRef),
-            getDoc(doc(db, "stores", user.uid)),
+            getDocs(
+              query(
+                collection(db, "stores"),
+                where("ownerId", "==", user.uid),
+                limit(1),
+              ),
+            ),
           ]);
+
+          const storeSnap = storeSnapshot.empty ? null : storeSnapshot.docs[0];
           const userData = userSnap.exists() ? userSnap.data() : null;
-          const storeData = storeSnap.exists() ? storeSnap.data() : null;
+          const storeData = storeSnap ? storeSnap.data() : null;
 
           if (
             !userData ||
