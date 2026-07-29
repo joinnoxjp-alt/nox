@@ -1,1164 +1,1184 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>NOX | 求人詳細</title>
-
-<style>
-
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-}
-
-body{
-min-height:100vh;
-background:
-radial-gradient(circle at top,rgba(255,215,0,.18),transparent 35%),
-linear-gradient(180deg,#050505,#000);
-color:#fff;
-font-family:"Hiragino Mincho ProN","Yu Mincho",serif;
-}
-
-a{
-text-decoration:none;
-color:inherit;
-}
-
-.page{
-max-width:1100px;
-margin:auto;
-padding:30px 18px 80px;
-}
-
-.header{
-display:flex;
-justify-content:space-between;
-align-items:center;
-gap:16px;
-margin-bottom:30px;
-flex-wrap:wrap;
-}
-
-.logo{
-font-size:40px;
-font-weight:900;
-color:#FFD700;
-letter-spacing:4px;
-}
-
-.logo small{
-display:block;
-font-size:11px;
-color:#999;
-letter-spacing:5px;
-margin-top:5px;
-}
-
-.nav{
-display:flex;
-gap:12px;
-flex-wrap:wrap;
-}
-
-.btn{
-display:inline-flex;
-justify-content:center;
-align-items:center;
-padding:14px 24px;
-border-radius:999px;
-border:1px solid rgba(255,215,0,.35);
-background:rgba(255,255,255,.04);
-color:#FFD700;
-font-weight:bold;
-cursor:pointer;
-transition:.25s;
-}
-
-.btn:hover{
-transform:translateY(-2px);
-}
-
-.btn.gold{
-background:#FFD700;
-color:#000;
-}
-
-.hero{
-border:1px solid rgba(255,215,0,.35);
-border-radius:30px;
-padding:35px;
-background:
-radial-gradient(circle at top right,rgba(255,215,0,.18),transparent 40%),
-linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.02));
-box-shadow:0 20px 60px rgba(0,0,0,.55);
-margin-bottom:24px;
-}
-
-.hero img{
-width:100%;
-max-height:420px;
-object-fit:cover;
-border-radius:22px;
-margin-bottom:25px;
-}
-
-.kicker{
-font-size:12px;
-letter-spacing:5px;
-color:#FFD700;
-margin-bottom:12px;
-}
-
-.hero h1{
-font-size:clamp(40px,8vw,72px);
-color:#FFD700;
-margin-bottom:15px;
-line-height:1.1;
-}
-
-.hero p{
-color:#ddd;
-line-height:1.9;
-font-size:17px;
-}
-
-.salary{
-margin-top:28px;
-padding:25px;
-border-radius:22px;
-border:1px solid rgba(255,215,0,.45);
-background:rgba(255,215,0,.08);
-}
-
-.salary small{
-display:block;
-color:#aaa;
-font-size:14px;
-}
-
-.salary strong{
-display:block;
-font-size:48px;
-margin-top:10px;
-color:#FFD700;
-}
-
-.section{
-margin-top:22px;
-padding:25px;
-border-radius:26px;
-border:1px solid rgba(255,215,0,.28);
-background:
-linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.02));
-box-shadow:0 20px 50px rgba(0,0,0,.45);
-}
-
-.section h2{
-color:#FFD700;
-font-size:28px;
-margin-bottom:20px;
-}
-
-.grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
-gap:14px;
-}
-  .info-card{
-padding:18px;
-border-radius:18px;
-border:1px solid rgba(255,215,0,.18);
-background:rgba(255,255,255,.03);
-}
-
-.info-card span{
-display:block;
-font-size:13px;
-color:#999;
-margin-bottom:8px;
-}
-
-.info-card strong{
-font-size:17px;
-font-weight:bold;
-}
-
-.gallery{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-gap:16px;
-}
-
-.gallery img{
-width:100%;
-height:220px;
-object-fit:cover;
-border-radius:18px;
-border:1px solid rgba(255,215,0,.18);
-transition:.25s;
-cursor:pointer;
-}
-
-.gallery img:hover{
-transform:scale(1.02);
-}
-
-.pr{
-line-height:2;
-color:#ddd;
-white-space:pre-wrap;
-}
-
-.apply-box{
-margin-top:25px;
-padding:25px;
-border-radius:26px;
-border:1px solid rgba(255,215,0,.35);
-background:
-linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.02));
-}
-
-.apply-box h2{
-color:#FFD700;
-margin-bottom:18px;
-}
-
-.apply-box input,
-.apply-box textarea{
-width:100%;
-padding:15px;
-margin:10px 0;
-background:#080808;
-border:1px solid rgba(255,215,0,.25);
-border-radius:14px;
-color:#fff;
-font-size:16px;
-}
-
-.apply-box textarea{
-min-height:120px;
-resize:vertical;
-}
-
-.line-btn{
-display:flex;
-justify-content:center;
-align-items:center;
-width:100%;
-padding:18px;
-margin-top:15px;
-border-radius:999px;
-background:#06C755;
-color:#fff;
-font-weight:bold;
-font-size:18px;
-border:none;
-cursor:pointer;
-transition:.25s;
-}
-
-.line-btn:hover{
-transform:translateY(-2px);
-}
-
-.footer{
-display:flex;
-justify-content:center;
-gap:15px;
-flex-wrap:wrap;
-margin-top:35px;
-}
-
-.loading{
-padding:80px 20px;
-text-align:center;
-color:#ccc;
-}
-
-@media(max-width:760px){
-
-.hero{
-padding:24px;
-}
-
-.hero h1{
-font-size:42px;
-}
-
-.salary strong{
-font-size:38px;
-}
-
-.gallery img{
-height:180px;
-}
-
-}
-
-</style>
-
-</head>
-
-<body>
-
-<div class="page">
-
-<header class="header">
-
-<a href="../index.html" class="logo">
-NOX
-<small>Night Opens X</small>
-</a>
-
-<nav class="nav">
-
-<a href="./jobs.html" class="btn">
-求人一覧
-</a>
-
-<a href="../index.html" class="btn">
-TOP
-</a>
-
-<a href="./mypage.html" class="btn gold">
-マイページ
-</a>
-
-</nav>
-
-</header>
-
-<div id="jobDetail" class="loading">
-求人情報を読み込み中です...
-</div>
-<script type="module">
-
-import { db } from "./firebase-db.js";
-import { auth } from "./firebase.js";
-import {
-  doc,
-  getDoc,
-  collection,
-  addDoc,
-  setDoc,
-  updateDoc,
-  arrayUnion,
-  arrayRemove,
-  increment,
-  serverTimestamp
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-const params = new URLSearchParams(location.search);
-const id = params.get("id");
-
-const jobDetail =
-  document.getElementById("jobDetail");
-
-function value(v){
-  return v && String(v).trim()
-    ? v
-    : "未設定";
-}
-
-/* =========================
-   日本時間の日付を取得
-========================= */
-
-function getJapanDateKey(){
-
-  const parts =
-    new Intl.DateTimeFormat(
-      "ja-JP",
-      {
-        timeZone:"Asia/Tokyo",
-        year:"numeric",
-        month:"2-digit",
-        day:"2-digit"
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>NOX | 求人詳細</title>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
       }
-    )
-    .formatToParts(new Date());
 
-  const year =
-    parts.find(
-      item=>item.type==="year"
-    )?.value;
-
-  const month =
-    parts.find(
-      item=>item.type==="month"
-    )?.value;
-
-  const day =
-    parts.find(
-      item=>item.type==="day"
-    )?.value;
-
-  return `${year}-${month}-${day}`;
-
-}
-
-/* =========================
-   求人閲覧数を記録
-========================= */
-
-async function recordJobView(jobData){
-
-  if(!id){
-    return;
-  }
-
-  const dateKey =
-    getJapanDateKey();
-
-  const storageKey =
-    `nox_job_view_${id}_${dateKey}`;
-
-  /*
-    同じ端末・同じ求人は
-    1日1回だけカウント
-  */
-
-  if(
-    localStorage.getItem(storageKey)
-  ){
-    return;
-  }
-
-  const storeId =
-    jobData.storeId ||
-    jobData.ownerId ||
-    jobData.userId ||
-    "";
-
-  const storeName =
-    jobData.storeName ||
-    jobData.name ||
-    "";
-
-  try{
-
-    /*
-      求人ごと・日ごとの閲覧数
-    */
-
-    const dailyJobViewRef =
-      doc(
-        db,
-        "jobViewStats",
-        `${id}_${dateKey}`
-      );
-
-    await setDoc(
-      dailyJobViewRef,
-      {
-        jobId:id,
-        storeId:storeId,
-        storeName:storeName,
-        dateKey:dateKey,
-        count:increment(1),
-        updatedAt:serverTimestamp()
-      },
-      {
-        merge:true
+      body {
+        min-height: 100vh;
+        background:
+          radial-gradient(
+            circle at top,
+            rgba(255, 215, 0, 0.18),
+            transparent 35%
+          ),
+          linear-gradient(180deg, #050505, #000);
+        color: #fff;
+        font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
       }
-    );
 
-    /*
-      店舗全体の日ごとの閲覧数
-    */
+      a {
+        text-decoration: none;
+        color: inherit;
+      }
 
-    if(storeId){
+      .page {
+        max-width: 1100px;
+        margin: auto;
+        padding: 30px 18px 80px;
+      }
 
-      const dailyStoreViewRef =
-        doc(
-          db,
-          "storeViewStats",
-          `${storeId}_${dateKey}`
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+      }
+
+      .logo {
+        font-size: 40px;
+        font-weight: 900;
+        color: #ffd700;
+        letter-spacing: 4px;
+      }
+
+      .logo small {
+        display: block;
+        font-size: 11px;
+        color: #999;
+        letter-spacing: 5px;
+        margin-top: 5px;
+      }
+
+      .nav {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        padding: 14px 24px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 215, 0, 0.35);
+        background: rgba(255, 255, 255, 0.04);
+        color: #ffd700;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.25s;
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+      }
+
+      .btn.gold {
+        background: #ffd700;
+        color: #000;
+      }
+
+      .hero {
+        border: 1px solid rgba(255, 215, 0, 0.35);
+        border-radius: 30px;
+        padding: 35px;
+        background:
+          radial-gradient(
+            circle at top right,
+            rgba(255, 215, 0, 0.18),
+            transparent 40%
+          ),
+          linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0.08),
+            rgba(255, 255, 255, 0.02)
+          );
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
+        margin-bottom: 24px;
+      }
+
+      .hero img {
+        width: 100%;
+        max-height: 420px;
+        object-fit: cover;
+        border-radius: 22px;
+        margin-bottom: 25px;
+      }
+
+      .kicker {
+        font-size: 12px;
+        letter-spacing: 5px;
+        color: #ffd700;
+        margin-bottom: 12px;
+      }
+
+      .hero h1 {
+        font-size: clamp(40px, 8vw, 72px);
+        color: #ffd700;
+        margin-bottom: 15px;
+        line-height: 1.1;
+      }
+
+      .hero p {
+        color: #ddd;
+        line-height: 1.9;
+        font-size: 17px;
+      }
+
+      .salary {
+        margin-top: 28px;
+        padding: 25px;
+        border-radius: 22px;
+        border: 1px solid rgba(255, 215, 0, 0.45);
+        background: rgba(255, 215, 0, 0.08);
+      }
+
+      .salary small {
+        display: block;
+        color: #aaa;
+        font-size: 14px;
+      }
+
+      .salary strong {
+        display: block;
+        font-size: 48px;
+        margin-top: 10px;
+        color: #ffd700;
+      }
+
+      .section {
+        margin-top: 22px;
+        padding: 25px;
+        border-radius: 26px;
+        border: 1px solid rgba(255, 215, 0, 0.28);
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.07),
+          rgba(255, 255, 255, 0.02)
         );
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+      }
 
-      await setDoc(
-        dailyStoreViewRef,
-        {
-          storeId:storeId,
-          storeName:storeName,
-          dateKey:dateKey,
-          count:increment(1),
-          updatedAt:serverTimestamp()
-        },
-        {
-          merge:true
+      .section h2 {
+        color: #ffd700;
+        font-size: 28px;
+        margin-bottom: 20px;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+        gap: 14px;
+      }
+      .info-card {
+        padding: 18px;
+        border-radius: 18px;
+        border: 1px solid rgba(255, 215, 0, 0.18);
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      .info-card span {
+        display: block;
+        font-size: 13px;
+        color: #999;
+        margin-bottom: 8px;
+      }
+
+      .info-card strong {
+        font-size: 17px;
+        font-weight: bold;
+      }
+
+      .gallery {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 16px;
+      }
+
+      .gallery img {
+        width: 100%;
+        height: 220px;
+        object-fit: cover;
+        border-radius: 18px;
+        border: 1px solid rgba(255, 215, 0, 0.18);
+        transition: 0.25s;
+        cursor: pointer;
+      }
+
+      .gallery img:hover {
+        transform: scale(1.02);
+      }
+
+      .pr {
+        line-height: 2;
+        color: #ddd;
+        white-space: pre-wrap;
+      }
+
+      .apply-box {
+        margin-top: 25px;
+        padding: 25px;
+        border-radius: 26px;
+        border: 1px solid rgba(255, 215, 0, 0.35);
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.07),
+          rgba(255, 255, 255, 0.02)
+        );
+      }
+
+      .apply-box h2 {
+        color: #ffd700;
+        margin-bottom: 18px;
+      }
+
+      .apply-box input,
+      .apply-box textarea {
+        width: 100%;
+        padding: 15px;
+        margin: 10px 0;
+        background: #080808;
+        border: 1px solid rgba(255, 215, 0, 0.25);
+        border-radius: 14px;
+        color: #fff;
+        font-size: 16px;
+      }
+
+      .apply-box textarea {
+        min-height: 120px;
+        resize: vertical;
+      }
+
+      .line-btn {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        padding: 18px;
+        margin-top: 15px;
+        border-radius: 999px;
+        background: #06c755;
+        color: #fff;
+        font-weight: bold;
+        font-size: 18px;
+        border: none;
+        cursor: pointer;
+        transition: 0.25s;
+      }
+
+      .line-btn:hover {
+        transform: translateY(-2px);
+      }
+
+      .footer {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        flex-wrap: wrap;
+        margin-top: 35px;
+      }
+
+      .loading {
+        padding: 80px 20px;
+        text-align: center;
+        color: #ccc;
+      }
+
+      @media (max-width: 760px) {
+        .hero {
+          padding: 24px;
         }
-      );
 
-    }
-
-    /*
-      カウント成功後に保存
-    */
-
-    localStorage.setItem(
-      storageKey,
-      "viewed"
-    );
-
-  }catch(error){
-
-    console.error(
-      "閲覧数の記録に失敗しました:",
-      error
-    );
-
-  }
-
-}
-
-/* =========================
-   求人詳細を読み込む
-========================= */
-
-async function loadJob(){
-
-  if(!id){
-
-    jobDetail.innerHTML=`
-      <div class="section">
-        <h2>求人が見つかりません</h2>
-      </div>
-    `;
-
-    return;
-  }
-
-  try{
-
-    const snap =
-      await getDoc(
-        doc(
-          db,
-          "jobs",
-          id
-        )
-      );
-
-    if(!snap.exists()){
-
-      jobDetail.innerHTML=`
-        <div class="section">
-          <h2>求人情報がありません</h2>
-        </div>
-      `;
-
-      return;
-    }
-
-    const data =
-      snap.data();
-
-    /*
-      求人を読み込めたら閲覧数を記録
-    */
-
-    await recordJobView(data);
-
-   let images = [];
-
-if (
-  Array.isArray(data.imageUrls)
-) {
-  images =
-    data.imageUrls.filter(Boolean);
-
-} else if (
-  Array.isArray(data.images)
-) {
-  images =
-    data.images.filter(Boolean);
-
-} else if (
-  data.imageUrl
-) {
-  images = [
-    data.imageUrl
-  ];
-}
- if (images.length === 0) {
-  images = [
-    "../images/nox.jpg"
-  ];
-}   
-
-    let gallery="";
-
-    images.forEach((img)=>{
-
-      gallery+=`
-        <img
-          src="${img}"
-          loading="lazy"
-          alt="${value(
-            data.storeName ||
-            data.name
-          )} 店舗画像"
-        >
-      `;
-
-    });
-
-    jobDetail.className="";
-
-    jobDetail.innerHTML=`
-
-<section class="hero">
-
-<img
-  src="${images[0]}"
-  alt="${value(
-    data.storeName ||
-    data.name
-  )}"
->
-
-<p class="kicker">
-NOX JOB DETAIL
-</p>
-
-<h1>
-${value(
-  data.storeName ||
-  data.name
-)}
-</h1>
-
-<p>
-${value(data.area)}
-／
-${value(
-  data.genre ||
-  data.type ||
-  data.businessType
-)}
-</p>
-
-<div class="salary">
-
-<small>時給</small>
-
-<strong>
-${value(
-  data.salary ||
-  data.salaryText
-)}
-</strong>
-
-</div>
-<div
-  style="
-    margin-top:20px;
-    display:flex;
-    gap:12px;
-    flex-wrap:wrap;
-  "
->
-  <button
-    id="saveJobBtn"
-    type="button"
-    class="btn"
-  >
-    ♡ 求人を保存
-  </button>
-</div>
-</section>
-
-<section class="section">
-
-<h2>
-店舗写真
-</h2>
-
-<div class="gallery">
-
-${gallery}
-
-</div>
-
-</section>
-
-<section class="section">
-
-<h2>
-基本情報
-</h2>
-
-<div class="grid">
-
-<div class="info-card">
-<span>エリア</span>
-<strong>
-${value(data.area)}
-</strong>
-</div>
-
-<div class="info-card">
-<span>業種</span>
-<strong>
-${value(
-  data.businessType ||
-  data.genre ||
-  data.type ||
-  data.jobType
-)}
-</strong>
-</div>
-
-<div class="info-card">
-<span>住所</span>
-<strong>
-${value(data.address)}
-</strong>
-</div>
-
-<div class="info-card">
-<span>最寄駅</span>
-<strong>
-${value(data.station)}
-</strong>
-</div>
-
-<div class="info-card">
-<span>営業時間</span>
-<strong>
-${value(data.businessHours)}
-</strong>
-</div>
-
-<div class="info-card">
-<span>定休日</span>
-<strong>
-${value(data.closedDay)}
-</strong>
-</div>
-
-</div>
-
-</section>
-
-<section class="section">
-
-<h2>
-求人情報
-</h2>
-
-<div class="grid">
-
-<div class="info-card">
-<span>各種バック</span>
-<strong>
-${value(data.back)}
-</strong>
-</div>
-
-<div class="info-card">
-<span>日払い</span>
-<strong>
-${value(data.dailyPay)}
-</strong>
-</div>
-
-<div class="info-card">
-<span>体験入店</span>
-<strong>
-${value(data.trial)}
-</strong>
-</div>
-
-<div class="info-card">
-<span>未経験歓迎</span>
-<strong>
-${value(data.beginner)}
-</strong>
-</div>
-
-<div class="info-card">
-<span>採用年齢</span>
-<strong>
-${value(data.age)}
-</strong>
-</div>
-
-<div class="info-card">
-<span>シフト</span>
-<strong>
-${value(data.shift)}
-</strong>
-</div>
-
-</div>
-
-</section>
-
-<section class="section">
-
-<h2>
-店舗PR
-</h2>
-
-<div class="pr">
-${value(
-  data.pr ||
-  data.description
-)}
-</div>
-
-</section>
-
-<section
-  class="apply-box"
-  id="applyForm"
->
-
-<h2>
-応募フォーム
-</h2>
-
-<input
-  id="entryName"
-  type="text"
-  placeholder="お名前"
-  autocomplete="name"
->
-
-<input
-  id="entryPhone"
-  type="tel"
-  placeholder="電話番号"
-  autocomplete="tel"
->
-
-<textarea
-  id="entryMessage"
-  placeholder="質問や希望条件があれば入力してください"
-></textarea>
-
-<button
-  id="applyBtn"
-  class="line-btn"
->
-応募する
-</button>
-
-</section>
-`;
-
-    const applyBtn =
-      document.getElementById(
-        "applyBtn"
-      );
-
-    applyBtn.addEventListener(
-      "click",
-      async()=>{
-
-        const name =
-          document
-          .getElementById(
-            "entryName"
-          )
-          .value
-          .trim();
-
-        const phone =
-          document
-          .getElementById(
-            "entryPhone"
-          )
-          .value
-          .trim();
-
-        const message =
-          document
-          .getElementById(
-            "entryMessage"
-          )
-          .value
-          .trim();
-
-        if(!name||!phone){
-
-          alert(
-            "お名前と電話番号を入力してください。"
+        .hero h1 {
+          font-size: 42px;
+        }
+
+        .salary strong {
+          font-size: 38px;
+        }
+
+        .gallery img {
+          height: 180px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="page">
+      <header class="header">
+        <a href="../index.html" class="logo">
+          NOX
+          <small>Night Opens X</small>
+        </a>
+
+        <nav class="nav">
+          <a href="./jobs.html" class="btn"> 求人一覧 </a>
+
+          <a href="../index.html" class="btn"> TOP </a>
+
+          <a href="./mypage.html" class="btn gold"> マイページ </a>
+        </nav>
+      </header>
+
+      <div id="jobDetail" class="loading">求人情報を読み込み中です...</div>
+      <script type="module">
+
+                import { db } from "./firebase-db.js";
+                import { auth } from "./firebase.js";
+                import {
+                  doc,
+                  getDoc,
+                  collection,
+                  addDoc,
+                  setDoc,
+                  updateDoc,
+                  arrayUnion,
+                  arrayRemove,
+                  increment,
+                  serverTimestamp
+                } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+                const params = new URLSearchParams(location.search);
+                const id = params.get("id");
+
+                const jobDetail =
+                  document.getElementById("jobDetail");
+
+                function value(v){
+                  return v && String(v).trim()
+                    ? v
+                    : "未設定";
+                }
+
+                /* =========================
+                   日本時間の日付を取得
+                ========================= */
+
+                function getJapanDateKey(){
+
+                  const parts =
+                    new Intl.DateTimeFormat(
+                      "ja-JP",
+                      {
+                        timeZone:"Asia/Tokyo",
+                        year:"numeric",
+                        month:"2-digit",
+                        day:"2-digit"
+                      }
+                    )
+                    .formatToParts(new Date());
+
+                  const year =
+                    parts.find(
+                      item=>item.type==="year"
+                    )?.value;
+
+                  const month =
+                    parts.find(
+                      item=>item.type==="month"
+                    )?.value;
+
+                  const day =
+                    parts.find(
+                      item=>item.type==="day"
+                    )?.value;
+
+                  return `${year}-${month}-${day}`;
+
+                }
+
+                /* =========================
+                   求人閲覧数を記録
+                ========================= */
+
+                async function recordJobView(jobData){
+
+                  if(!id){
+                    return;
+                  }
+
+                  const dateKey =
+                    getJapanDateKey();
+
+                  const storageKey =
+                    `nox_job_view_${id}_${dateKey}`;
+
+                  /*
+                    同じ端末・同じ求人は
+                    1日1回だけカウント
+                  */
+
+                  if(
+                    localStorage.getItem(storageKey)
+                  ){
+                    return;
+                  }
+
+                  const storeId =
+                    jobData.storeId ||
+                    jobData.ownerId ||
+                    jobData.userId ||
+                    "";
+
+                  const storeName =
+                    jobData.storeName ||
+                    jobData.name ||
+                    "";
+
+                  try{
+
+                    /*
+                      求人ごと・日ごとの閲覧数
+                    */
+
+                    const dailyJobViewRef =
+                      doc(
+                        db,
+                        "jobViewStats",
+                        `${id}_${dateKey}`
+                      );
+
+                    await setDoc(
+                      dailyJobViewRef,
+                      {
+                        jobId:id,
+                        storeId:storeId,
+                        storeName:storeName,
+                        dateKey:dateKey,
+                        count:increment(1),
+                        updatedAt:serverTimestamp()
+                      },
+                      {
+                        merge:true
+                      }
+                    );
+
+                    /*
+                      店舗全体の日ごとの閲覧数
+                    */
+
+                    if(storeId){
+
+                      const dailyStoreViewRef =
+                        doc(
+                          db,
+                          "storeViewStats",
+                          `${storeId}_${dateKey}`
+                        );
+
+                      await setDoc(
+                        dailyStoreViewRef,
+                        {
+                          storeId:storeId,
+                          storeName:storeName,
+                          dateKey:dateKey,
+                          count:increment(1),
+                          updatedAt:serverTimestamp()
+                        },
+                        {
+                          merge:true
+                        }
+                      );
+
+                    }
+
+                    /*
+                      カウント成功後に保存
+                    */
+
+                    localStorage.setItem(
+                      storageKey,
+                      "viewed"
+                    );
+
+                  }catch(error){
+
+                    console.error(
+                      "閲覧数の記録に失敗しました:",
+                      error
+                    );
+
+                  }
+
+                }
+
+                /* =========================
+                   求人詳細を読み込む
+                ========================= */
+
+                async function loadJob(){
+
+                  if(!id){
+
+                    jobDetail.innerHTML=`
+                      <div class="section">
+                        <h2>求人が見つかりません</h2>
+                      </div>
+                    `;
+
+                    return;
+                  }
+
+                  try{
+
+                    const snap =
+                      await getDoc(
+                        doc(
+                          db,
+                          "jobs",
+                          id
+                        )
+                      );
+
+                    if(!snap.exists()){
+
+                      jobDetail.innerHTML=`
+                        <div class="section">
+                          <h2>求人情報がありません</h2>
+                        </div>
+                      `;
+
+                      return;
+                    }
+
+                    const data =
+                      snap.data();
+                      let storeData = {};
+                  let storeGalleryImages = [];
+                if (data.storeDocumentId) {
+          const storeSnap = await getDoc(
+            doc(db, "stores", data.storeDocumentId)
           );
 
-          return;
+          if (storeSnap.exists()) {
+            storeData = storeSnap.data();
+          }
 
-        }
-
-        applyBtn.disabled=true;
-        applyBtn.textContent=
-          "送信中...";
-
-        try{
-
-          await addDoc(
+          const gallerySnapshot = await getDocs(
             collection(
               db,
-              "applications"
-            ),
-            {
-              jobId:id,
-
-              storeId:
-                data.storeId ||
-                data.ownerId ||
-                data.userId ||
-                "",
-
-              storeName:
-                data.storeName ||
-                data.name ||
-                "",
-
-              applicantName:name,
-              applicantPhone:phone,
-              message:message,
-              status:"new",
-
-              createdAt:
-                serverTimestamp()
-            }
+              "stores",
+              data.storeDocumentId,
+              "galleryImages"
+            )
           );
 
-          alert(
-            "応募が完了しました！店舗からの連絡をお待ちください。"
-          );
-
-          document
-          .getElementById(
-            "entryName"
-          )
-          .value="";
-
-          document
-          .getElementById(
-            "entryPhone"
-          )
-          .value="";
-
-          document
-          .getElementById(
-            "entryMessage"
-          )
-          .value="";
-
-        }catch(error){
-
-          console.error(
-            "応募送信エラー:",
-            error
-          );
-
-          alert(
-            "応募の送信に失敗しました。時間を空けて再度お試しください。"
-          );
-
-        }finally{
-
-          applyBtn.disabled=false;
-          applyBtn.textContent=
-            "応募する";
-
+          storeGalleryImages = gallerySnapshot.docs
+            .sort((a, b) => Number(a.id) - Number(b.id))
+            .map(doc => doc.data().url)
+            .filter(Boolean);
         }
 
-      }
-    );
-const saveBtn =
-  document.getElementById(
-    "saveJobBtn"
-  );
+                    /*
+                      求人を読み込めたら閲覧数を記録
+                    */
 
-if(saveBtn){
+                    await recordJobView(data);
 
-  const user =
-    auth.currentUser;
+                   let images = [];
 
-  if(user){
+        const storeImages = [
+          storeData.profileImageUrl,
+          storeData.coverImageUrl,
+          storeData.logoUrl,
+          ...storeGalleryImages,
+        ].filter(Boolean);
 
-    const userRef =
-      doc(
-        db,
-        "users",
-        user.uid
-      );
 
-    const userSnap =
-      await getDoc(userRef);
 
-    const savedJobIds =
-      userSnap.exists() &&
-      Array.isArray(
-        userSnap.data().savedJobIds
-      )
-        ? userSnap.data().savedJobIds
-        : [];
+                if (
+                  Array.isArray(data.imageUrls)
+                ) {
+                  images =
+                    data.imageUrls.filter(Boolean);
 
-    if(savedJobIds.includes(id)){
+                } else if (
+                  Array.isArray(data.images)
+                ) {
+                  images =
+                    data.images.filter(Boolean);
 
-      saveBtn.textContent =
-        "♥ 保存済み";
+                } else if (
+                  data.imageUrl
+                ) {
+                  images = [
+                    data.imageUrl
+                  ];
+                }
 
-      saveBtn.classList.add("gold");
-    }
-  }
+                images = [...images, ...storeImages];
 
-  saveBtn.addEventListener(
-    "click",
-    async()=>{
+                if (images.length === 0) {
+                    images = [
+                        "../images/nox.jpg"
+                    ];
 
-      const currentUser =
-        auth.currentUser;
+                    let gallery="";
 
-      if(!currentUser){
+                    images.forEach((img)=>{
 
-        alert(
-          "求人を保存するにはログインが必要です。"
-        );
+                      gallery+=`
+                        <img
+                          src="${img}"
+                          loading="lazy"
+                          alt="${value(
+                            data.storeName ||
+                            data.name
+                          )} 店舗画像"
+                        >
+                      `;
 
-        location.href =
-          "./login.html";
+                    });
 
-        return;
-      }
+                    jobDetail.className="";
 
-      saveBtn.disabled = true;
+                    jobDetail.innerHTML=`
 
-      try{
+                <section class="hero">
 
-        const userRef =
-          doc(
-            db,
-            "users",
-            currentUser.uid
-          );
+                <img
+                  src="${images[0]}"
+                  alt="${value(
+                    data.storeName ||
+                    data.name
+                  )}"
+                >
 
-        const userSnap =
-          await getDoc(userRef);
+                <p class="kicker">
+                NOX JOB DETAIL
+                </p>
 
-        const savedJobIds =
-          userSnap.exists() &&
-          Array.isArray(
-            userSnap.data().savedJobIds
-          )
-            ? userSnap.data().savedJobIds
-            : [];
+                <h1>
+                ${value(
+                  data.storeName ||
+                  data.name
+                )}
+                </h1>
 
-        const isSaved =
-          savedJobIds.includes(id);
+                <p>
+                ${value(data.area)}
+                ／
+                ${value(
+                  data.genre ||
+                  data.type ||
+                  data.businessType
+                )}
+                </p>
 
-        await setDoc(
-          userRef,
-          {
-            savedJobIds:isSaved
-              ? arrayRemove(id)
-              : arrayUnion(id),
-            updatedAt:
-              serverTimestamp()
-          },
-          {
-            merge:true
-          }
-        );
+                <div class="salary">
 
-        if(isSaved){
+                <small>時給</small>
 
-          saveBtn.textContent =
-            "♡ 求人を保存";
+                <strong>
+                ${value(
+                  data.salary ||
+                  data.salaryText
+                )}
+                </strong>
 
-          saveBtn.classList.remove(
-            "gold"
-          );
+                </div>
+                <div
+                  style="
+                    margin-top:20px;
+                    display:flex;
+                    gap:12px;
+                    flex-wrap:wrap;
+                  "
+                >
+                  <button
+                    id="saveJobBtn"
+                    type="button"
+                    class="btn"
+                  >
+                    ♡ 求人を保存
+                  </button>
+                </div>
+                </section>
 
-          alert(
-            "保存を解除しました。"
-          );
+                <section class="section">
 
-        }else{
+                <h2>
+                店舗写真
+                </h2>
 
-          saveBtn.textContent =
-            "♥ 保存済み";
+                <div class="gallery">
 
-          saveBtn.classList.add(
-            "gold"
-          );
+                ${gallery}
 
-          alert(
-            "求人を保存しました。"
-          );
-        }
+                </div>
 
-      }catch(error){
+                </section>
 
-        console.error(
-          "求人保存エラー:",
-          error
-        );
+                <section class="section">
 
-        alert(
-          "求人の保存に失敗しました。"
-        );
+                <h2>
+                基本情報
+                </h2>
 
-      }finally{
+                <div class="grid">
 
-        saveBtn.disabled = false;
-      }
-    }
-  );
-}
-  }catch(error){
+                <div class="info-card">
+                <span>エリア</span>
+                <strong>
+                ${value(data.area)}
+                </strong>
+                </div>
 
-    console.error(
-      "求人読み込みエラー:",
-      error
-    );
+                <div class="info-card">
+                <span>業種</span>
+                <strong>
+                ${value(
+                  data.businessType ||
+                  data.genre ||
+                  data.type ||
+                  data.jobType
+                )}
+                </strong>
+                </div>
 
-    jobDetail.innerHTML=`
-      <div class="section">
-        <h2>読み込みに失敗しました</h2>
-        <p>
-          時間を空けて再度お試しください。
-        </p>
+                <div class="info-card">
+                <span>住所</span>
+                <strong>
+                ${value(data.address)}
+                </strong>
+                </div>
+
+                <div class="info-card">
+                <span>最寄駅</span>
+                <strong>
+                ${value(data.station)}
+                </strong>
+                </div>
+
+                <div class="info-card">
+                <span>営業時間</span>
+                <strong>
+                ${value(data.businessHours)}
+                </strong>
+                </div>
+
+                <div class="info-card">
+                <span>定休日</span>
+                <strong>
+                ${value(data.closedDay)}
+                </strong>
+                </div>
+
+                </div>
+
+                </section>
+
+                <section class="section">
+
+                <h2>
+                求人情報
+                </h2>
+
+                <div class="grid">
+
+                <div class="info-card">
+                <span>各種バック</span>
+                <strong>
+                ${value(data.back)}
+                </strong>
+                </div>
+
+                <div class="info-card">
+                <span>日払い</span>
+                <strong>
+                ${value(data.dailyPay)}
+                </strong>
+                </div>
+
+                <div class="info-card">
+                <span>体験入店</span>
+                <strong>
+                ${value(data.trial)}
+                </strong>
+                </div>
+
+                <div class="info-card">
+                <span>未経験歓迎</span>
+                <strong>
+                ${value(data.beginner)}
+                </strong>
+                </div>
+
+                <div class="info-card">
+                <span>採用年齢</span>
+                <strong>
+                ${value(data.age)}
+                </strong>
+                </div>
+
+                <div class="info-card">
+                <span>シフト</span>
+                <strong>
+                ${value(data.shift)}
+                </strong>
+                </div>
+
+                </div>
+
+                </section>
+
+                <section class="section">
+
+                <h2>
+                店舗PR
+                </h2>
+
+                <div class="pr">
+                ${value(
+                  data.pr ||
+                  data.description
+                )}
+                </div>
+
+                </section>
+
+                <section
+                  class="apply-box"
+                  id="applyForm"
+                >
+
+                <h2>
+                応募フォーム
+                </h2>
+
+                <input
+                  id="entryName"
+                  type="text"
+                  placeholder="お名前"
+                  autocomplete="name"
+                >
+
+                <input
+                  id="entryPhone"
+                  type="tel"
+                  placeholder="電話番号"
+                  autocomplete="tel"
+                >
+
+                <textarea
+                  id="entryMessage"
+                  placeholder="質問や希望条件があれば入力してください"
+                ></textarea>
+
+                <button
+                  id="applyBtn"
+                  class="line-btn"
+                >
+                応募する
+                </button>
+
+                </section>
+                `;
+
+                    const applyBtn =
+                      document.getElementById(
+                        "applyBtn"
+                      );
+
+                    applyBtn.addEventListener(
+                      "click",
+                      async()=>{
+
+                        const name =
+                          document
+                          .getElementById(
+                            "entryName"
+                          )
+                          .value
+                          .trim();
+
+                        const phone =
+                          document
+                          .getElementById(
+                            "entryPhone"
+                          )
+                          .value
+                          .trim();
+
+                        const message =
+                          document
+                          .getElementById(
+                            "entryMessage"
+                          )
+                          .value
+                          .trim();
+
+                        if(!name||!phone){
+
+                          alert(
+                            "お名前と電話番号を入力してください。"
+                          );
+
+                          return;
+
+                        }
+
+                        applyBtn.disabled=true;
+                        applyBtn.textContent=
+                          "送信中...";
+
+                        try{
+
+                          await addDoc(
+                            collection(
+                              db,
+                              "applications"
+                            ),
+                            {
+                              jobId:id,
+
+                              storeId:
+                                data.storeId ||
+                                data.ownerId ||
+                                data.userId ||
+                                "",
+
+                              storeName:
+                                data.storeName ||
+                                data.name ||
+                                "",
+
+                              applicantName:name,
+                              applicantPhone:phone,
+                              message:message,
+                              status:"new",
+
+                              createdAt:
+                                serverTimestamp()
+                            }
+                          );
+
+                          alert(
+                            "応募が完了しました！店舗からの連絡をお待ちください。"
+                          );
+
+                          document
+                          .getElementById(
+                            "entryName"
+                          )
+                          .value="";
+
+                          document
+                          .getElementById(
+                            "entryPhone"
+                          )
+                          .value="";
+
+                          document
+                          .getElementById(
+                            "entryMessage"
+                          )
+                          .value="";
+
+                        }catch(error){
+
+                          console.error(
+                            "応募送信エラー:",
+                            error
+                          );
+
+                          alert(
+                            "応募の送信に失敗しました。時間を空けて再度お試しください。"
+                          );
+
+                        }finally{
+
+                          applyBtn.disabled=false;
+                          applyBtn.textContent=
+                            "応募する";
+
+                        }
+
+                      }
+                    );
+                const saveBtn =
+                  document.getElementById(
+                    "saveJobBtn"
+                  );
+
+                if(saveBtn){
+
+                  const user =
+                    auth.currentUser;
+
+                  if(user){
+
+                    const userRef =
+                      doc(
+                        db,
+                        "users",
+                        user.uid
+                      );
+
+                    const userSnap =
+                      await getDoc(userRef);
+
+                    const savedJobIds =
+                      userSnap.exists() &&
+                      Array.isArray(
+                        userSnap.data().savedJobIds
+                      )
+                        ? userSnap.data().savedJobIds
+                        : [];
+
+                    if(savedJobIds.includes(id)){
+
+                      saveBtn.textContent =
+                        "♥ 保存済み";
+
+                      saveBtn.classList.add("gold");
+                    }
+                  }
+
+                  saveBtn.addEventListener(
+                    "click",
+                    async()=>{
+
+                      const currentUser =
+                        auth.currentUser;
+
+                      if(!currentUser){
+
+                        alert(
+                          "求人を保存するにはログインが必要です。"
+                        );
+
+                        location.href =
+                          "./login.html";
+
+                        return;
+                      }
+
+                      saveBtn.disabled = true;
+
+                      try{
+
+                        const userRef =
+                          doc(
+                            db,
+                            "users",
+                            currentUser.uid
+                          );
+
+                        const userSnap =
+                          await getDoc(userRef);
+
+                        const savedJobIds =
+                          userSnap.exists() &&
+                          Array.isArray(
+                            userSnap.data().savedJobIds
+                          )
+                            ? userSnap.data().savedJobIds
+                            : [];
+
+                        const isSaved =
+                          savedJobIds.includes(id);
+
+                        await setDoc(
+                          userRef,
+                          {
+                            savedJobIds:isSaved
+                              ? arrayRemove(id)
+                              : arrayUnion(id),
+                            updatedAt:
+                              serverTimestamp()
+                          },
+                          {
+                            merge:true
+                          }
+                        );
+
+                        if(isSaved){
+
+                          saveBtn.textContent =
+                            "♡ 求人を保存";
+
+                          saveBtn.classList.remove(
+                            "gold"
+                          );
+
+                          alert(
+                            "保存を解除しました。"
+                          );
+
+                        }else{
+
+                          saveBtn.textContent =
+                            "♥ 保存済み";
+
+                          saveBtn.classList.add(
+                            "gold"
+                          );
+
+                          alert(
+                            "求人を保存しました。"
+                          );
+                        }
+
+                      }catch(error){
+
+                        console.error(
+                          "求人保存エラー:",
+                          error
+                        );
+
+                        alert(
+                          "求人の保存に失敗しました。"
+                        );
+
+                      }finally{
+
+                        saveBtn.disabled = false;
+                      }
+                    }
+                  );
+                }
+                  }catch(error){
+
+                    console.error(
+                      "求人読み込みエラー:",
+                      error
+                    );
+
+                    jobDetail.innerHTML=`
+                      <div class="section">
+                        <h2>読み込みに失敗しました</h2>
+                        <p>
+                          時間を空けて再度お試しください。
+                        </p>
+                      </div>
+                    `;
+
+                  }
+
+                }
+
+                loadJob();
+      </script>
+
+      <div class="footer">
+        <a href="./jobs.html" class="btn"> 求人一覧へ戻る </a>
+
+        <a href="../index.html" class="btn gold"> TOPへ戻る </a>
       </div>
-    `;
-
-  }
-
-}
-
-loadJob();
-
-</script>
-
-<div class="footer">
-
-<a
-href="./jobs.html"
-class="btn"
->
-求人一覧へ戻る
-</a>
-
-<a
-href="../index.html"
-class="btn gold"
->
-TOPへ戻る
-</a>
-
-</div>
-
-</div>
-
-</body>
+    </div>
+  </body>
 </html>
