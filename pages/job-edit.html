@@ -1,189 +1,372 @@
 <!doctype html>
 <html lang="ja">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>求人編集 | NOX</title>
-  <style>
-    body{margin:0;background:#080808;color:#fff;font-family:Arial,Meiryo,sans-serif}
-    main{max-width:900px;margin:auto;padding:24px}
-    h1{color:#d6a84f}.card{background:#111;border:1px solid #292929;border-radius:16px;padding:20px}
-    label{display:block;margin:14px 0 6px;color:#ccc}
-    input,textarea,select{box-sizing:border-box;width:100%;padding:12px;background:#080808;color:#fff;border:1px solid #444;border-radius:9px}
-    textarea{min-height:110px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    .btn{margin-top:18px;padding:12px 18px;border:0;border-radius:10px;background:#d6a84f;font-weight:bold;cursor:pointer}
-    .message{margin:15px 0;color:#ddd}.images{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
-    .image{border:1px solid #333;padding:8px}.image img{width:100%;height:110px;object-fit:cover}
-    @media(max-width:650px){.grid{grid-template-columns:1fr}}
-  </style>
-</head>
-<body>
-<main>
-  <h1>求人編集</h1>
-  <p id="message" class="message">権限を確認しています...</p>
-  <form id="form" class="card" hidden>
-    <div class="grid">
-      <div><label for="title">求人タイトル</label><input id="title" required maxlength="160"></div>
-      <div><label for="category">業種</label><input id="category" maxlength="120"></div>
-      <div><label for="targetGender">対象</label><input id="targetGender" maxlength="30"></div>
-      <div><label for="position">職種</label><input id="position" maxlength="120"></div>
-      <div><label for="area">エリア</label><input id="area" maxlength="120"></div>
-      <div><label for="address">住所</label><input id="address" maxlength="240"></div>
-      <div><label for="station">最寄駅</label><input id="station" maxlength="160"></div>
-      <div><label for="businessHours">勤務時間</label><input id="businessHours" maxlength="500"></div>
-      <div><label for="salary">給与</label><input id="salary" maxlength="500"></div>
-      <div><label for="trial">体験入店</label><input id="trial" maxlength="500"></div>
-      <div><label for="beginner">未経験者歓迎</label><select id="beginner"><option value="true">はい</option><option value="false">いいえ</option></select></div>
-    </div>
-    <label for="description">仕事内容</label><textarea id="description" maxlength="5000"></textarea>
-    <label for="requirements">応募条件</label><textarea id="requirements" maxlength="3000"></textarea>
-    <label for="benefits">待遇</label><textarea id="benefits" maxlength="3000"></textarea>
-    <label for="images">追加画像（合計最大10枚、JPEG・PNG・WebP、各5MiB以下）</label>
-    <input id="images" type="file" accept="image/jpeg,image/png,image/webp" multiple>
-    <div id="imageList" class="images"></div>
-    <button id="saveButton" class="btn" type="submit">保存</button>
-  </form>
-</main>
-<script type="module">
-import { app, auth, db } from "./firebase-db.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { doc, getDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>求人編集 | NOX</title>
+    <style>
+      body {
+        margin: 0;
+        background: #080808;
+        color: #fff;
+        font-family: Arial, Meiryo, sans-serif;
+      }
+      main {
+        max-width: 900px;
+        margin: auto;
+        padding: 24px;
+      }
+      h1 {
+        color: #d6a84f;
+      }
+      .card {
+        background: #111;
+        border: 1px solid #292929;
+        border-radius: 16px;
+        padding: 20px;
+      }
+      label {
+        display: block;
+        margin: 14px 0 6px;
+        color: #ccc;
+      }
+      input,
+      textarea,
+      select {
+        box-sizing: border-box;
+        width: 100%;
+        padding: 12px;
+        background: #080808;
+        color: #fff;
+        border: 1px solid #444;
+        border-radius: 9px;
+      }
+      textarea {
+        min-height: 110px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      .btn {
+        margin-top: 18px;
+        padding: 12px 18px;
+        border: 0;
+        border-radius: 10px;
+        background: #d6a84f;
+        font-weight: bold;
+        cursor: pointer;
+      }
+      .message {
+        margin: 15px 0;
+        color: #ddd;
+      }
+      .images {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 10px;
+      }
+      .image {
+        border: 1px solid #333;
+        padding: 8px;
+      }
+      .image img {
+        width: 100%;
+        height: 110px;
+        object-fit: cover;
+      }
+      @media (max-width: 650px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>求人編集</h1>
+      <p id="message" class="message">権限を確認しています...</p>
+      <form id="form" class="card" hidden>
+        <div class="grid">
+          <div>
+            <label for="title">求人タイトル</label
+            ><input id="title" required maxlength="160" />
+          </div>
+          <div>
+            <label for="category">業種</label
+            ><input id="category" maxlength="120" />
+          </div>
+          <div>
+            <label for="targetGender">対象</label
+            ><input id="targetGender" maxlength="30" />
+          </div>
+          <div>
+            <label for="position">職種</label
+            ><input id="position" maxlength="120" />
+          </div>
+          <div>
+            <label for="area">エリア</label><input id="area" maxlength="120" />
+          </div>
+          <div>
+            <label for="address">住所</label
+            ><input id="address" maxlength="240" />
+          </div>
+          <div>
+            <label for="station">最寄駅</label
+            ><input id="station" maxlength="160" />
+          </div>
+          <div>
+            <label for="businessHours">勤務時間</label
+            ><input id="businessHours" maxlength="500" />
+          </div>
+          <div>
+            <label for="salary">給与</label
+            ><input id="salary" maxlength="500" />
+          </div>
+          <div>
+            <label for="trial">体験入店</label
+            ><input id="trial" maxlength="500" />
+          </div>
+          <div>
+            <label for="beginner">未経験者歓迎</label
+            ><select id="beginner">
+              <option value="true">はい</option>
+              <option value="false">いいえ</option>
+            </select>
+          </div>
+        </div>
+        <label for="description">仕事内容</label
+        ><textarea id="description" maxlength="5000"></textarea>
+        <label for="requirements">応募条件</label
+        ><textarea id="requirements" maxlength="3000"></textarea>
+        <label for="benefits">待遇</label
+        ><textarea id="benefits" maxlength="3000"></textarea>
+        <label for="images"
+          >追加画像（合計最大10枚、JPEG・PNG・WebP、各5MiB以下）</label
+        >
+        <input
+          id="images"
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          multiple
+        />
+        <div id="imageList" class="images"></div>
+        <button id="saveButton" class="btn" type="submit">保存</button>
+      </form>
+    </main>
+    <script type="module">
+      import { app, auth, db } from "./firebase-db.js";
+      import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+      import {
+        doc,
+        getDoc,
+        updateDoc,
+        serverTimestamp,
+      } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+      import {
+        getStorage,
+        ref,
+        uploadBytes,
+        getDownloadURL,
+        deleteObject,
+      } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
-const storage = getStorage(app);
-const form = document.getElementById("form");
-const message = document.getElementById("message");
-const imageList = document.getElementById("imageList");
-const imageInput = document.getElementById("images");
-const saveButton = document.getElementById("saveButton");
-const allowedTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
-const editable = ["title","category","targetGender","position","area","address","station","businessHours","salary","trial","description","requirements","benefits"];
-let user;
-let jobId;
-let jobData;
-let retainedPaths = [];
-let retainedUrls = [];
+      const storage = getStorage(app);
+      const form = document.getElementById("form");
+      const message = document.getElementById("message");
+      const imageList = document.getElementById("imageList");
+      const imageInput = document.getElementById("images");
+      const saveButton = document.getElementById("saveButton");
+      const allowedTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
+      const editable = [
+        "title",
+        "category",
+        "targetGender",
+        "position",
+        "area",
+        "address",
+        "station",
+        "businessHours",
+        "salary",
+        "trial",
+        "description",
+        "requirements",
+        "benefits",
+      ];
+      let user;
+      let jobId;
+      let jobData;
+      let retainedPaths = [];
+      let retainedUrls = [];
 
-function fail(text) {
-  message.textContent = text;
-  form.hidden = true;
-}
-function ownedPath(path) {
-  return typeof path === "string" &&
-    path.startsWith(`jobs/${user.uid}/${jobId}/`);
-}
-function renderImages() {
-  imageList.replaceChildren();
-  retainedPaths.forEach((path, index) => {
-    const box = document.createElement("div");
-    box.className = "image";
-    const image = document.createElement("img");
-    image.src = retainedUrls[index] || "";
-    image.alt = "求人画像";
-    const button = document.createElement("button");
-    button.type = "button";
-    button.textContent = "保存時に削除";
-    button.addEventListener("click", () => {
-      retainedPaths.splice(index, 1);
-      retainedUrls.splice(index, 1);
-      renderImages();
-    });
-    box.append(image, button);
-    imageList.append(box);
-  });
-}
-async function validateFile(file) {
-  if (!allowedTypes.has(file.type) || file.size <= 0 || file.size > 5 * 1024 * 1024) {
-    throw new Error("画像は5MiB以下のJPEG・PNG・WebPを選択してください。");
-  }
-  const bitmap = await createImageBitmap(file);
-  const valid = bitmap.width > 0 && bitmap.height > 0;
-  bitmap.close();
-  if (!valid) throw new Error("画像を読み取れませんでした。");
-}
-async function initialize(currentUser) {
-  user = currentUser;
-  jobId = new URLSearchParams(location.search).get("job") || "";
-  if (!jobId) return fail("求人が指定されていません。");
-  const [userSnapshot, storeSnapshot, jobSnapshot] = await Promise.all([
-    getDoc(doc(db, "users", user.uid)),
-    getDoc(doc(db, "stores", user.uid)),
-    getDoc(doc(db, "jobs", jobId))
-  ]);
-  const account = userSnapshot.data();
-  const store = storeSnapshot.data();
-  jobData = jobSnapshot.data();
-  if (!userSnapshot.exists() || account.role !== "store" || account.status !== "active" ||
-      !storeSnapshot.exists() || store.ownerId !== user.uid ||
-      !jobSnapshot.exists() || jobData.ownerId !== user.uid || jobData.storeId !== user.uid ||
-      jobData.status === "archived") {
-    return fail("この求人を編集する権限がありません。");
-  }
-  if (["pending", "reapproval_pending"].includes(jobData.status)) {
-    return fail("承認待ちの求人は編集できません。");
-  }
-  editable.forEach((field) => {
-    document.getElementById(field).value = jobData[field] ?? "";
-  });
-  document.getElementById("beginner").value = String(jobData.beginner === true);
-  retainedPaths = Array.isArray(jobData.imageStoragePaths)
-    ? jobData.imageStoragePaths.filter(ownedPath) : [];
-  retainedUrls = retainedPaths.map((path) => {
-    const index = (jobData.imageStoragePaths || []).indexOf(path);
-    return (jobData.imageUrls || [])[index] || "";
-  });
-  renderImages();
-  form.hidden = false;
-  message.textContent = jobData.status === "approved"
-    ? "公開中求人を変更すると一時停止になります。再公開には承認が必要です。"
-    : "編集内容を保存できます。";
-}
-onAuthStateChanged(auth, (currentUser) => {
-  if (!currentUser) location.replace("./login.html");
-  else initialize(currentUser).catch(() => fail("求人情報を確認できませんでした。"));
-});
-form.addEventListener("submit", async (event) => {
-  event.preventDefault();
-  if (saveButton.disabled) return;
-  const files = Array.from(imageInput.files);
-  if (retainedPaths.length + files.length > 10) return fail("求人画像は最大10枚です。");
-  saveButton.disabled = true;
-  const newPaths = [];
-  const newUrls = [];
-  const removedPaths = (jobData.imageStoragePaths || []).filter(
-    (path) => ownedPath(path) && !retainedPaths.includes(path)
-  );
-  try {
-    for (const file of files) {
-      await validateFile(file);
-      const extension = {"image/jpeg":"jpg","image/png":"png","image/webp":"webp"}[file.type];
-      const path = `jobs/${user.uid}/${jobId}/${crypto.randomUUID()}.${extension}`;
-      await uploadBytes(ref(storage, path), file, { contentType: file.type });
-      newPaths.push(path);
-      newUrls.push(await getDownloadURL(ref(storage, path)));
-    }
-    const updates = {
-      ...Object.fromEntries(editable.map((field) => [field, document.getElementById(field).value.trim()])),
-      beginner: document.getElementById("beginner").value === "true",
-      imageStoragePaths: [...retainedPaths, ...newPaths],
-      imageUrls: [...retainedUrls, ...newUrls],
-      updatedAt: serverTimestamp(),
-      updatedBy: user.uid
-    };
-    if (jobData.status === "approved") {
-      updates.status = "paused";
-      updates.pausedAt = serverTimestamp();
-      updates.pausedBy = user.uid;
-    }
-    await updateDoc(doc(db, "jobs", jobId), updates);
-    await Promise.allSettled(removedPaths.map((path) => deleteObject(ref(storage, path))));
-    location.replace("./store-dashboard.html");
-  } catch (error) {
-    await Promise.allSettled(newPaths.map((path) => deleteObject(ref(storage, path))));
-    message.textContent = error.message || "保存できませんでした。既存画像は維持されています。";
-    saveButton.disabled = false;
-  }
-});
-</script>
-</body>
+      function fail(text) {
+        message.textContent = text;
+        form.hidden = true;
+      }
+      function ownedPath(path) {
+        return (
+          typeof path === "string" &&
+          path.startsWith(`jobs/${user.uid}/${jobId}/`)
+        );
+      }
+      function renderImages() {
+        imageList.replaceChildren();
+        retainedPaths.forEach((path, index) => {
+          const box = document.createElement("div");
+          box.className = "image";
+          const image = document.createElement("img");
+          image.src = retainedUrls[index] || "";
+          image.alt = "求人画像";
+          const button = document.createElement("button");
+          button.type = "button";
+          button.textContent = "保存時に削除";
+          button.addEventListener("click", () => {
+            retainedPaths.splice(index, 1);
+            retainedUrls.splice(index, 1);
+            renderImages();
+          });
+          box.append(image, button);
+          imageList.append(box);
+        });
+      }
+      async function validateFile(file) {
+        if (
+          !allowedTypes.has(file.type) ||
+          file.size <= 0 ||
+          file.size > 5 * 1024 * 1024
+        ) {
+          throw new Error(
+            "画像は5MiB以下のJPEG・PNG・WebPを選択してください。",
+          );
+        }
+        const bitmap = await createImageBitmap(file);
+        const valid = bitmap.width > 0 && bitmap.height > 0;
+        bitmap.close();
+        if (!valid) throw new Error("画像を読み取れませんでした。");
+      }
+      async function initialize(currentUser) {
+        user = currentUser;
+        jobId = new URLSearchParams(location.search).get("job") || "";
+        if (!jobId) return fail("求人が指定されていません。");
+        const [userSnapshot, storeSnapshot, jobSnapshot] = await Promise.all([
+          getDoc(doc(db, "users", user.uid)),
+          getDoc(doc(db, "stores", user.uid)),
+          getDoc(doc(db, "jobs", jobId)),
+        ]);
+        const account = userSnapshot.data();
+        const store = storeSnapshot.data();
+        jobData = jobSnapshot.data();
+        if (
+          !userSnapshot.exists() ||
+          account.role !== "store" ||
+          account.status !== "active" ||
+          !storeSnapshot.exists() ||
+          store.ownerId !== user.uid ||
+          !jobSnapshot.exists() ||
+          jobData.ownerId !== user.uid ||
+          jobData.storeId !== user.uid ||
+          jobData.status === "archived"
+        ) {
+          return fail("この求人を編集する権限がありません。");
+        }
+        if (["pending", "reapproval_pending"].includes(jobData.status)) {
+          return fail("承認待ちの求人は編集できません。");
+        }
+        editable.forEach((field) => {
+          document.getElementById(field).value = jobData[field] ?? "";
+        });
+        document.getElementById("beginner").value = String(
+          jobData.beginner === true,
+        );
+        retainedPaths = Array.isArray(jobData.imageStoragePaths)
+          ? jobData.imageStoragePaths.filter(ownedPath)
+          : [];
+        retainedUrls = retainedPaths.map((path) => {
+          const index = (jobData.imageStoragePaths || []).indexOf(path);
+          return (jobData.imageUrls || [])[index] || "";
+        });
+        renderImages();
+        form.hidden = false;
+        message.textContent =
+          jobData.status === "approved"
+            ? "公開中求人を変更すると一時停止になります。再公開には承認が必要です。"
+            : "編集内容を保存できます。";
+      }
+      onAuthStateChanged(auth, (currentUser) => {
+        if (!currentUser) location.replace("./login.html");
+        else
+          initialize(currentUser).catch(() =>
+            fail("求人情報を確認できませんでした。"),
+          );
+      });
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        if (saveButton.disabled) return;
+        const files = Array.from(imageInput.files);
+        if (retainedPaths.length + files.length > 10)
+          return fail("求人画像は最大10枚です。");
+        saveButton.disabled = true;
+        const newPaths = [];
+        const newUrls = [];
+        const removedPaths = (jobData.imageStoragePaths || []).filter(
+          (path) => ownedPath(path) && !retainedPaths.includes(path),
+        );
+        try {
+          for (const file of files) {
+            await validateFile(file);
+            const extension = {
+              "image/jpeg": "jpg",
+              "image/png": "png",
+              "image/webp": "webp",
+            }[file.type];
+            const path = `jobs/${user.uid}/${jobId}/${crypto.randomUUID()}.${extension}`;
+            await uploadBytes(ref(storage, path), file, {
+              contentType: file.type,
+            });
+            newPaths.push(path);
+            newUrls.push(await getDownloadURL(ref(storage, path)));
+          }
+          const updates = {
+            ...Object.fromEntries(
+              editable.map((field) => [
+                field,
+                document.getElementById(field).value.trim(),
+              ]),
+            ),
+            beginner: document.getElementById("beginner").value === "true",
+            imageStoragePaths: [...retainedPaths, ...newPaths],
+            imageUrls: [...retainedUrls, ...newUrls],
+            updatedAt: serverTimestamp(),
+            updatedBy: user.uid,
+          };
+          if (jobData.status === "approved") {
+            updates.status = "paused";
+            updates.pausedAt = serverTimestamp();
+            updates.pausedBy = user.uid;
+          }
+          await updateDoc(doc(db, "jobs", jobId), updates);
+          await Promise.allSettled(
+            removedPaths.map((path) => deleteObject(ref(storage, path))),
+          );
+          location.replace("./store-dashboard.html");
+        } catch (error) {
+          await Promise.allSettled(
+            newPaths.map((path) => deleteObject(ref(storage, path))),
+          );
+
+          console.error("求人保存エラー:", error);
+
+          const errorMessage =
+            error?.message ||
+            "保存できませんでした。既存画像は維持されています。";
+
+          message.textContent = errorMessage;
+          alert(errorMessage);
+
+          saveButton.disabled = false;
+        }
+      });
+    </script>
+  </body>
 </html>
