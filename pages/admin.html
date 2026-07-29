@@ -1653,7 +1653,7 @@
 
           await setDoc(doc(db, "storeContracts", storeRef.id), {
             storeUid: storeRef.id,
-            ownerId,
+            ownerId: finalOwnerId,
             planCode,
             contractStartAt: new Date(`${contractStartAt}T00:00:00+09:00`),
             contractEndAt: new Date(`${contractEndAt}T23:59:59+09:00`),
@@ -2377,7 +2377,7 @@
                 createRegisteredStoreCard(
                   store,
                   contract,
-                  jobCounts.get(store.id) || 0,
+                  jobCounts.get(store.ownerId || store.id) || 0,
                 ),
               );
               storeContractList.append(createContractCard(store, contract));
@@ -3373,6 +3373,9 @@
               const data = snap.data();
 
               alert(`
+UID:
+${uid}
+
 名前:
 ${data.name || data.nickname || "未設定"}
 
