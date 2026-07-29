@@ -559,6 +559,12 @@ function getJobImage(job) {
   if (job.image) return job.image;
   if (job.logoUrl) return job.logoUrl;
   if (job.storeImage) return job.storeImage;
+  if (Array.isArray(job.imageUrls) && job.imageUrls.length > 0) {
+    const url = job.imageUrls.find(
+      (url) => typeof url === "string" && url.trim(),
+    );
+    if (url) return url;
+  }
 
   if (Array.isArray(job.images) && job.images.length > 0) {
     const validImage = job.images.find((image) => {
