@@ -335,169 +335,145 @@
 
       <div id="jobDetail" class="loading">求人情報を読み込み中です...</div>
       <script type="module">
-                import { db } from "./firebase-db.js";
-                import { auth } from "./firebase.js";
-                import {
-                  doc,
-                  getDoc,
-                  collection,
-                  getDocs,
-                  addDoc,
-                  setDoc,
-                  arrayUnion,
-                  arrayRemove,
-                  increment,
-                  serverTimestamp,
-                } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { db } from "./firebase-db.js";
+        import { auth } from "./firebase.js";
+        import {
+          doc,
+          getDoc,
+          collection,
+          getDocs,
+          addDoc,
+          setDoc,
+          arrayUnion,
+          arrayRemove,
+          increment,
+          serverTimestamp,
+        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-                const params = new URLSearchParams(location.search);
-                const id = params.get("id");
-                const jobDetail = document.getElementById("jobDetail");
+        const params = new URLSearchParams(location.search);
+        const id = params.get("id");
+        const jobDetail = document.getElementById("jobDetail");
 
-                function value(v) {
-                  return v !== undefined && v !== null && String(v).trim()
-                    ? String(v)
-                    : "未設定";
-                }
+        function value(v) {
+          return v !== undefined && v !== null && String(v).trim()
+            ? String(v)
+            : "未設定";
+        }
 
-                function getJapanDateKey() {
-                  const parts = new Intl.DateTimeFormat("ja-JP", {
-                    timeZone: "Asia/Tokyo",
-                    year: "numeric",
-                    month: "2-digit",
-                    day: "2-digit",
-                  }).formatToParts(new Date());
+        function getJapanDateKey() {
+          const parts = new Intl.DateTimeFormat("ja-JP", {
+            timeZone: "Asia/Tokyo",
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+          }).formatToParts(new Date());
 
-                  const year = parts.find((item) => item.type === "year")?.value;
-                  const month = parts.find((item) => item.type === "month")?.value;
-                  const day = parts.find((item) => item.type === "day")?.value;
+          const year = parts.find((item) => item.type === "year")?.value;
+          const month = parts.find((item) => item.type === "month")?.value;
+          const day = parts.find((item) => item.type === "day")?.value;
 
-                  return `${year}-${month}-${day}`;
-                }
+          return `${year}-${month}-${day}`;
+        }
 
-                async function recordJobView(jobData) {
-                  if (!id) return;
+        async function recordJobView(jobData) {
+          if (!id) return;
 
-                  const dateKey = getJapanDateKey();
-                  const storageKey = `nox_job_view_${id}_${dateKey}`;
+          const dateKey = getJapanDateKey();
+          const storageKey = `nox_job_view_${id}_${dateKey}`;
 
-                  if (localStorage.getItem(storageKey)) return;
+          if (localStorage.getItem(storageKey)) return;
 
-                  const storeId =
-                    jobData.storeId || jobData.ownerId || jobData.userId || "";
+          const storeId =
+            jobData.storeId || jobData.ownerId || jobData.userId || "";
 
-                  const storeName = jobData.storeName || jobData.name || "";
+          const storeName = jobData.storeName || jobData.name || "";
 
-                  try {
-                    await setDoc(
-                      doc(db, "jobViewStats", `${id}_${dateKey}`),
-                      {
-                        jobId: id,
-                        storeId,
-                        storeName,
-                        dateKey,
-                        count: increment(1),
-                        updatedAt: serverTimestamp(),
-                      },
-                      { merge: true },
-                    );
+          try {
+            await setDoc(
+              doc(db, "jobViewStats", `${id}_${dateKey}`),
+              {
+                jobId: id,
+                storeId,
+                storeName,
+                dateKey,
+                count: increment(1),
+                updatedAt: serverTimestamp(),
+              },
+              { merge: true },
+            );
 
-                    if (storeId) {
-                      await setDoc(
-                        doc(db, "storeViewStats", `${storeId}_${dateKey}`),
-                        {
-                          storeId,
-                          storeName,
-                          dateKey,
-                          count: increment(1),
-                          updatedAt: serverTimestamp(),
-                        },
-                        { merge: true },
-                      );
-                    }
+            if (storeId) {
+              await setDoc(
+                doc(db, "storeViewStats", `${storeId}_${dateKey}`),
+                {
+                  storeId,
+                  storeName,
+                  dateKey,
+                  count: increment(1),
+                  updatedAt: serverTimestamp(),
+                },
+                { merge: true },
+              );
+            }
 
-                    localStorage.setItem(storageKey, "viewed");
-                  } catch (error) {
-                    console.error("閲覧数の記録に失敗しました:", error);
-                  }
-                }
+            localStorage.setItem(storageKey, "viewed");
+          } catch (error) {
+            console.error("閲覧数の記録に失敗しました:", error);
+          }
+        }
 
-                async function loadStoreMedia(data) {
+        async function loadStoreMedia(data) {
           return {
             storeData: {},
-            galleryImages: []
+            galleryImages: [],
           };
         }
 
-                  try {
-                    const storeSnap = await getDoc(
-                      doc(db, "stores", data.storeDocumentId),
-                    );
+        function buildImageList(data, storeData, storeGalleryImages) {
+          let jobImages = [];
 
-                    if (storeSnap.exists()) {
-                      storeData = storeSnap.data();
-                    }
+          if (Array.isArray(data.imageUrls)) {
+            jobImages = data.imageUrls.filter(Boolean);
+          } else if (Array.isArray(data.images)) {
+            jobImages = data.images.filter(Boolean);
+          } else if (data.imageUrl) {
+            jobImages = [data.imageUrl];
+          }
 
-                    const gallerySnapshot = await getDocs(
-                      collection(db, "stores", data.storeDocumentId, "galleryImages"),
-                    );
+          const storeImages = [
+            storeData.profileImageUrl,
+            storeData.coverImageUrl,
+            storeData.logoUrl,
+            ...storeGalleryImages,
+          ].filter(Boolean);
 
-                    galleryImages = gallerySnapshot.docs
-                      .sort((a, b) => Number(a.id) - Number(b.id))
-                      .map((galleryDocument) => galleryDocument.data().url)
-                      .filter(Boolean);
-                  } catch (error) {
-                    console.error("店舗画像の読み込みに失敗しました:", error);
-                  }
+          return [...new Set([...jobImages, ...storeImages])];
+        }
 
-                  return { storeData, galleryImages };
-                }
-
-                function buildImageList(data, storeData, storeGalleryImages) {
-                  let jobImages = [];
-
-                  if (Array.isArray(data.imageUrls)) {
-                    jobImages = data.imageUrls.filter(Boolean);
-                  } else if (Array.isArray(data.images)) {
-                    jobImages = data.images.filter(Boolean);
-                  } else if (data.imageUrl) {
-                    jobImages = [data.imageUrl];
-                  }
-
-                  const storeImages = [
-                    storeData.profileImageUrl,
-                    storeData.coverImageUrl,
-                    storeData.logoUrl,
-                    ...storeGalleryImages,
-                  ].filter(Boolean);
-
-                  return [...new Set([...jobImages, ...storeImages])];
-                }
-
-                function renderJob(data, images) {
-                  const gallery = images
-                    .map(
-                      (img) => `
+        function renderJob(data, images) {
+          const gallery = images
+            .map(
+              (img) => `
                         <img
                           src="${img}"
                           loading="lazy"
                           alt="${value(data.storeName || data.name)} 店舗画像"
                         >
                       `,
-                    )
-                    .join("");
+            )
+            .join("");
 
-                  const heroImage = images[0]
-                    ? `
+          const heroImage = images[0]
+            ? `
                       <img
                         src="${images[0]}"
                         alt="${value(data.storeName || data.name)}"
                       >
                     `
-                    : "";
+            : "";
 
-                  jobDetail.className = "";
-                  jobDetail.innerHTML = `
+          jobDetail.className = "";
+          jobDetail.innerHTML = `
                     <section class="hero">
                       ${heroImage}
 
@@ -658,172 +634,172 @@
                       </button>
                     </section>
                   `;
-                }
+        }
 
-                async function setupApplication(data) {
-                  const applyBtn = document.getElementById("applyBtn");
-                  if (!applyBtn) return;
+        async function setupApplication(data) {
+          const applyBtn = document.getElementById("applyBtn");
+          if (!applyBtn) return;
 
-                  applyBtn.addEventListener("click", async () => {
-                    const name = document.getElementById("entryName").value.trim();
+          applyBtn.addEventListener("click", async () => {
+            const name = document.getElementById("entryName").value.trim();
 
-                    const phone = document.getElementById("entryPhone").value.trim();
+            const phone = document.getElementById("entryPhone").value.trim();
 
-                    const message = document
-                      .getElementById("entryMessage")
-                      .value.trim();
+            const message = document
+              .getElementById("entryMessage")
+              .value.trim();
 
-                    if (!name || !phone) {
-                      alert("お名前と電話番号を入力してください。");
-                      return;
-                    }
+            if (!name || !phone) {
+              alert("お名前と電話番号を入力してください。");
+              return;
+            }
 
-                    applyBtn.disabled = true;
-                    applyBtn.textContent = "送信中...";
+            applyBtn.disabled = true;
+            applyBtn.textContent = "送信中...";
 
-                    try {
-                      await addDoc(collection(db, "applications"), {
-                        jobId: id,
-                        storeId: data.storeId || data.ownerId || data.userId || "",
-                        storeName: data.storeName || data.name || "",
-                        applicantName: name,
-                        applicantPhone: phone,
-                        message,
-                        status: "new",
-                        createdAt: serverTimestamp(),
-                      });
+            try {
+              await addDoc(collection(db, "applications"), {
+                jobId: id,
+                storeId: data.storeId || data.ownerId || data.userId || "",
+                storeName: data.storeName || data.name || "",
+                applicantName: name,
+                applicantPhone: phone,
+                message,
+                status: "new",
+                createdAt: serverTimestamp(),
+              });
 
-                      alert("応募が完了しました！店舗からの連絡をお待ちください。");
+              alert("応募が完了しました！店舗からの連絡をお待ちください。");
 
-                      document.getElementById("entryName").value = "";
-                      document.getElementById("entryPhone").value = "";
-                      document.getElementById("entryMessage").value = "";
-                    } catch (error) {
-                      console.error("応募送信エラー:", error);
-                      alert(
-                        "応募の送信に失敗しました。時間を空けて再度お試しください。",
-                      );
-                    } finally {
-                      applyBtn.disabled = false;
-                      applyBtn.textContent = "応募する";
-                    }
-                  });
-                }
+              document.getElementById("entryName").value = "";
+              document.getElementById("entryPhone").value = "";
+              document.getElementById("entryMessage").value = "";
+            } catch (error) {
+              console.error("応募送信エラー:", error);
+              alert(
+                "応募の送信に失敗しました。時間を空けて再度お試しください。",
+              );
+            } finally {
+              applyBtn.disabled = false;
+              applyBtn.textContent = "応募する";
+            }
+          });
+        }
 
-                async function setupSaveButton() {
-                  const saveBtn = document.getElementById("saveJobBtn");
-                  if (!saveBtn) return;
+        async function setupSaveButton() {
+          const saveBtn = document.getElementById("saveJobBtn");
+          if (!saveBtn) return;
 
-                  const user = auth.currentUser;
+          const user = auth.currentUser;
 
-                  if (user) {
-                    const userSnap = await getDoc(doc(db, "users", user.uid));
+          if (user) {
+            const userSnap = await getDoc(doc(db, "users", user.uid));
 
-                    const savedJobIds =
-                      userSnap.exists() && Array.isArray(userSnap.data().savedJobIds)
-                        ? userSnap.data().savedJobIds
-                        : [];
+            const savedJobIds =
+              userSnap.exists() && Array.isArray(userSnap.data().savedJobIds)
+                ? userSnap.data().savedJobIds
+                : [];
 
-                    if (savedJobIds.includes(id)) {
-                      saveBtn.textContent = "♥ 保存済み";
-                      saveBtn.classList.add("gold");
-                    }
-                  }
+            if (savedJobIds.includes(id)) {
+              saveBtn.textContent = "♥ 保存済み";
+              saveBtn.classList.add("gold");
+            }
+          }
 
-                  saveBtn.addEventListener("click", async () => {
-                    const currentUser = auth.currentUser;
+          saveBtn.addEventListener("click", async () => {
+            const currentUser = auth.currentUser;
 
-                    if (!currentUser) {
-                      alert("求人を保存するにはログインが必要です。");
-                      location.href = "./login.html";
-                      return;
-                    }
+            if (!currentUser) {
+              alert("求人を保存するにはログインが必要です。");
+              location.href = "./login.html";
+              return;
+            }
 
-                    saveBtn.disabled = true;
+            saveBtn.disabled = true;
 
-                    try {
-                      const userRef = doc(db, "users", currentUser.uid);
-                      const userSnap = await getDoc(userRef);
+            try {
+              const userRef = doc(db, "users", currentUser.uid);
+              const userSnap = await getDoc(userRef);
 
-                      const savedJobIds =
-                        userSnap.exists() && Array.isArray(userSnap.data().savedJobIds)
-                          ? userSnap.data().savedJobIds
-                          : [];
+              const savedJobIds =
+                userSnap.exists() && Array.isArray(userSnap.data().savedJobIds)
+                  ? userSnap.data().savedJobIds
+                  : [];
 
-                      const isSaved = savedJobIds.includes(id);
+              const isSaved = savedJobIds.includes(id);
 
-                      await setDoc(
-                        userRef,
-                        {
-                          savedJobIds: isSaved ? arrayRemove(id) : arrayUnion(id),
-                          updatedAt: serverTimestamp(),
-                        },
-                        { merge: true },
-                      );
+              await setDoc(
+                userRef,
+                {
+                  savedJobIds: isSaved ? arrayRemove(id) : arrayUnion(id),
+                  updatedAt: serverTimestamp(),
+                },
+                { merge: true },
+              );
 
-                      if (isSaved) {
-                        saveBtn.textContent = "♡ 求人を保存";
-                        saveBtn.classList.remove("gold");
-                        alert("保存を解除しました。");
-                      } else {
-                        saveBtn.textContent = "♥ 保存済み";
-                        saveBtn.classList.add("gold");
-                        alert("求人を保存しました。");
-                      }
-                    } catch (error) {
-                      console.error("求人保存エラー:", error);
-                      alert("求人の保存に失敗しました。");
-                    } finally {
-                      saveBtn.disabled = false;
-                    }
-                  });
-                }
+              if (isSaved) {
+                saveBtn.textContent = "♡ 求人を保存";
+                saveBtn.classList.remove("gold");
+                alert("保存を解除しました。");
+              } else {
+                saveBtn.textContent = "♥ 保存済み";
+                saveBtn.classList.add("gold");
+                alert("求人を保存しました。");
+              }
+            } catch (error) {
+              console.error("求人保存エラー:", error);
+              alert("求人の保存に失敗しました。");
+            } finally {
+              saveBtn.disabled = false;
+            }
+          });
+        }
 
-                async function loadJob() {
-                  if (!id) {
-                    jobDetail.innerHTML = `
+        async function loadJob() {
+          if (!id) {
+            jobDetail.innerHTML = `
                       <div class="section">
                         <h2>求人が見つかりません</h2>
                       </div>
                     `;
-                    return;
-                  }
+            return;
+          }
 
-                  try {
-                    const snap = await getDoc(doc(db, "jobs", id));
+          try {
+            const snap = await getDoc(doc(db, "jobs", id));
 
-                    if (!snap.exists()) {
-                      jobDetail.innerHTML = `
+            if (!snap.exists()) {
+              jobDetail.innerHTML = `
                         <div class="section">
                           <h2>求人情報がありません</h2>
                         </div>
                       `;
-                      return;
-                    }
+              return;
+            }
 
-                    const data = snap.data();
-                    const { storeData, galleryImages } = await loadStoreMedia(data);
+            const data = snap.data();
+            const { storeData, galleryImages } = await loadStoreMedia(data);
 
-                    await recordJobView(data);
+            await recordJobView(data);
 
-                    const images = buildImageList(data, storeData, galleryImages);
+            const images = buildImageList(data, storeData, galleryImages);
 
-                    renderJob(data, images);
-                    await setupApplication(data);
-                    await setupSaveButton();
-                  } catch (error) {
-                    console.error("求人読み込みエラー:", error);
+            renderJob(data, images);
+            await setupApplication(data);
+            await setupSaveButton();
+          } catch (error) {
+            console.error("求人読み込みエラー:", error);
 
-                    jobDetail.innerHTML = `
+            jobDetail.innerHTML = `
                       <div class="section">
                         <h2>読み込みに失敗しました</h2>
                         <p>時間を空けて再度お試しください。</p>
                       </div>
                     `;
-                  }
-                }
+          }
+        }
 
-                loadJob();
+        loadJob();
       </script>
 
       <div class="footer">
