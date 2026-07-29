@@ -9,7 +9,7 @@ import {
   doc,
   getDoc,
   updateDoc,
-  increment
+  increment,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 /* ===========================
@@ -52,25 +52,20 @@ const header = document.querySelector(".site-header");
 
 window.addEventListener("scroll", () => {
   if (header) {
-    header.classList.toggle(
-      "scrolled",
-      window.scrollY > 40
-    );
+    header.classList.toggle("scrolled", window.scrollY > 40);
   }
 
   revealOnScroll();
 });
 
 function revealOnScroll() {
-  const reveals =
-    document.querySelectorAll(".reveal");
+  const reveals = document.querySelectorAll(".reveal");
 
   const windowHeight = window.innerHeight;
   const revealPoint = 90;
 
   reveals.forEach((item) => {
-    const itemTop =
-      item.getBoundingClientRect().top;
+    const itemTop = item.getBoundingClientRect().top;
 
     if (itemTop < windowHeight - revealPoint) {
       item.classList.add("active");
@@ -83,8 +78,7 @@ function revealOnScroll() {
 =========================== */
 
 function showNotice(message) {
-  const notice =
-    document.getElementById("notice");
+  const notice = document.getElementById("notice");
 
   if (!notice) {
     alert(message);
@@ -104,9 +98,7 @@ function showNotice(message) {
 =========================== */
 
 document.addEventListener("click", (event) => {
-  const button = event.target.closest(
-    ".btn, .job-card button, .sns-grid a"
-  );
+  const button = event.target.closest(".btn, .job-card button, .sns-grid a");
 
   if (!button) {
     return;
@@ -124,8 +116,7 @@ document.addEventListener("click", (event) => {
 =========================== */
 
 document.addEventListener("dblclick", (event) => {
-  const card =
-    event.target.closest(".job-card");
+  const card = event.target.closest(".job-card");
 
   if (!card) {
     return;
@@ -148,13 +139,10 @@ const noxAiQuestions = [
   "未経験か経験者か",
   "お酒は飲める？",
   "ノルマなし希望？",
-  "送り希望？"
+  "送り希望？",
 ];
 
-console.log(
-  "NOX AI Questions Ready:",
-  noxAiQuestions
-);
+console.log("NOX AI Questions Ready:", noxAiQuestions);
 
 /* ===========================
    HTML特殊文字処理
@@ -177,27 +165,17 @@ function isAdWithinPeriod(ad) {
   const now = new Date();
 
   if (ad.startDate) {
-    const startDate = new Date(
-      `${ad.startDate}T00:00:00`
-    );
+    const startDate = new Date(`${ad.startDate}T00:00:00`);
 
-    if (
-      !Number.isNaN(startDate.getTime()) &&
-      now < startDate
-    ) {
+    if (!Number.isNaN(startDate.getTime()) && now < startDate) {
       return false;
     }
   }
 
   if (ad.endDate) {
-    const endDate = new Date(
-      `${ad.endDate}T23:59:59`
-    );
+    const endDate = new Date(`${ad.endDate}T23:59:59`);
 
-    if (
-      !Number.isNaN(endDate.getTime()) &&
-      now > endDate
-    ) {
+    if (!Number.isNaN(endDate.getTime()) && now > endDate) {
       return false;
     }
   }
@@ -217,11 +195,10 @@ function createRecruitmentAd(slotNumber) {
     enabled: true,
     advertiserName: "NOX",
     title: "広告掲載企業・店舗様募集中",
-    description:
-      "あなたの企業・店舗・サービスをNOXでPRしませんか？",
+    description: "あなたの企業・店舗・サービスをNOXでPRしませんか？",
     buttonText: "広告掲載のご相談",
     linkUrl: AD_CONTACT_URL,
-    imageUrl: ""
+    imageUrl: "",
   };
 }
 
@@ -230,25 +207,8 @@ function createRecruitmentAd(slotNumber) {
 =========================== */
 
 async function countAdImpression(ad) {
-  if (!ad || ad.isRecruitment) {
-    return;
-  }
-
-  try {
-    await updateDoc(
-      doc(db, "ads", ad.id),
-      {
-        impressions: increment(1)
-      }
-    );
-  } catch (error) {
-    console.warn(
-      "広告表示回数を記録できませんでした",
-      error
-    );
-  }
+  return;
 }
-
 /* ===========================
    クリック数
 =========================== */
@@ -259,17 +219,11 @@ async function countAdClick(ad) {
   }
 
   try {
-    await updateDoc(
-      doc(db, "ads", ad.id),
-      {
-        clicks: increment(1)
-      }
-    );
+    await updateDoc(doc(db, "ads", ad.id), {
+      clicks: increment(1),
+    });
   } catch (error) {
-    console.warn(
-      "広告クリック数を記録できませんでした",
-      error
-    );
+    console.warn("広告クリック数を記録できませんでした", error);
   }
 }
 
@@ -280,10 +234,7 @@ async function countAdClick(ad) {
 function createContractAdSlide(ad, index) {
   const link = document.createElement("a");
 
-  link.className =
-    `nox-ad-slide ${
-      index === 0 ? "active" : ""
-    }`;
+  link.className = `nox-ad-slide ${index === 0 ? "active" : ""}`;
 
   link.href = ad.linkUrl || "#";
   link.target = "_blank";
@@ -294,9 +245,7 @@ function createContractAdSlide(ad, index) {
     link.innerHTML = `
       <img
         src="${escapeHtml(ad.imageUrl)}"
-        alt="${escapeHtml(
-          ad.title || `広告${ad.slot}`
-        )}"
+        alt="${escapeHtml(ad.title || `広告${ad.slot}`)}"
         loading="${index === 0 ? "eager" : "lazy"}"
       >
     `;
@@ -310,22 +259,16 @@ function createContractAdSlide(ad, index) {
 
         <div class="nox-ad-text">
           <strong>
-            ${escapeHtml(
-              ad.title || "広告掲載中"
-            )}
+            ${escapeHtml(ad.title || "広告掲載中")}
           </strong>
 
           <p>
-            ${escapeHtml(
-              ad.description || ""
-            )}
+            ${escapeHtml(ad.description || "")}
           </p>
         </div>
 
         <span class="nox-ad-button">
-          ${escapeHtml(
-            ad.buttonText || "詳しく見る"
-          )}
+          ${escapeHtml(ad.buttonText || "詳しく見る")}
         </span>
 
       </div>
@@ -350,10 +293,9 @@ function createContractAdSlide(ad, index) {
 function createRecruitmentAdSlide(ad, index) {
   const link = document.createElement("a");
 
-  link.className =
-    `nox-ad-slide nox-ad-recruitment ${
-      index === 0 ? "active" : ""
-    }`;
+  link.className = `nox-ad-slide nox-ad-recruitment ${
+    index === 0 ? "active" : ""
+  }`;
 
   link.href = AD_CONTACT_URL;
   link.target = "_blank";
@@ -399,16 +341,10 @@ function createRecruitmentAdSlide(ad, index) {
 
 function createAdSlide(ad, index) {
   if (ad.isRecruitment) {
-    return createRecruitmentAdSlide(
-      ad,
-      index
-    );
+    return createRecruitmentAdSlide(ad, index);
   }
 
-  return createContractAdSlide(
-    ad,
-    index
-  );
+  return createContractAdSlide(ad, index);
 }
 
 /* ===========================
@@ -416,17 +352,12 @@ function createAdSlide(ad, index) {
 =========================== */
 
 function createAdDot(index) {
-  const button =
-    document.createElement("button");
+  const button = document.createElement("button");
 
   button.type = "button";
-  button.className =
-    index === 0 ? "active" : "";
+  button.className = index === 0 ? "active" : "";
 
-  button.setAttribute(
-    "aria-label",
-    `広告${index + 1}を表示`
-  );
+  button.setAttribute("aria-label", `広告${index + 1}を表示`);
 
   button.addEventListener("click", () => {
     showAd(index);
@@ -441,21 +372,17 @@ function createAdDot(index) {
 =========================== */
 
 function showAd(index) {
-  const slider =
-    document.getElementById("noxAdSlider");
+  const slider = document.getElementById("noxAdSlider");
 
-  const dotsContainer =
-    document.getElementById("noxAdDots");
+  const dotsContainer = document.getElementById("noxAdDots");
 
   if (!slider || !dotsContainer) {
     return;
   }
 
-  const slides =
-    slider.querySelectorAll(".nox-ad-slide");
+  const slides = slider.querySelectorAll(".nox-ad-slide");
 
-  const dots =
-    dotsContainer.querySelectorAll("button");
+  const dots = dotsContainer.querySelectorAll("button");
 
   if (slides.length === 0) {
     return;
@@ -470,24 +397,16 @@ function showAd(index) {
   }
 
   slides.forEach((slide, slideIndex) => {
-    slide.classList.toggle(
-      "active",
-      slideIndex === index
-    );
+    slide.classList.toggle("active", slideIndex === index);
   });
 
   dots.forEach((dot, dotIndex) => {
-    dot.classList.toggle(
-      "active",
-      dotIndex === index
-    );
+    dot.classList.toggle("active", dotIndex === index);
   });
 
   currentAdIndex = index;
 
-  countAdImpression(
-    noxAds[currentAdIndex]
-  );
+  countAdImpression(noxAds[currentAdIndex]);
 }
 
 /* ===========================
@@ -499,9 +418,7 @@ function showNextAd() {
     return;
   }
 
-  const nextIndex =
-    (currentAdIndex + 1) %
-    noxAds.length;
+  const nextIndex = (currentAdIndex + 1) % noxAds.length;
 
   showAd(nextIndex);
 }
@@ -515,10 +432,7 @@ function startAdInterval() {
     return;
   }
 
-  adInterval = window.setInterval(
-    showNextAd,
-    AD_CHANGE_TIME
-  );
+  adInterval = window.setInterval(showNextAd, AD_CHANGE_TIME);
 }
 
 function restartAdInterval() {
@@ -534,14 +448,11 @@ function restartAdInterval() {
 =========================== */
 
 async function loadNoxAdvertisements() {
-  const adArea =
-    document.getElementById("noxAdArea");
+  const adArea = document.getElementById("noxAdArea");
 
-  const slider =
-    document.getElementById("noxAdSlider");
+  const slider = document.getElementById("noxAdSlider");
 
-  const dotsContainer =
-    document.getElementById("noxAdDots");
+  const dotsContainer = document.getElementById("noxAdDots");
 
   if (!adArea || !slider || !dotsContainer) {
     return;
@@ -558,32 +469,22 @@ async function loadNoxAdvertisements() {
   try {
     const completedSlots = [];
 
-    for (
-      let slotNumber = 1;
-      slotNumber <= AD_SLOT_COUNT;
-      slotNumber++
-    ) {
+    for (let slotNumber = 1; slotNumber <= AD_SLOT_COUNT; slotNumber++) {
       const adId = `slot${slotNumber}`;
 
-      const adSnapshot = await getDoc(
-        doc(db, "ads", adId)
-      );
+      const adSnapshot = await getDoc(doc(db, "ads", adId));
 
       if (adSnapshot.exists()) {
         const adData = {
           id: adSnapshot.id,
           slot: slotNumber,
-          ...adSnapshot.data()
+          ...adSnapshot.data(),
         };
 
-        const hasContent =
-          Boolean(adData.imageUrl) ||
-          Boolean(adData.title);
+        const hasContent = Boolean(adData.imageUrl) || Boolean(adData.title);
 
         const canDisplay =
-          adData.enabled === true &&
-          hasContent &&
-          isAdWithinPeriod(adData);
+          adData.enabled === true && hasContent && isAdWithinPeriod(adData);
 
         if (canDisplay) {
           completedSlots.push(adData);
@@ -591,9 +492,7 @@ async function loadNoxAdvertisements() {
         }
       }
 
-      completedSlots.push(
-        createRecruitmentAd(slotNumber)
-      );
+      completedSlots.push(createRecruitmentAd(slotNumber));
     }
 
     noxAds = completedSlots;
@@ -602,49 +501,31 @@ async function loadNoxAdvertisements() {
     dotsContainer.innerHTML = "";
 
     noxAds.forEach((ad, index) => {
-      slider.appendChild(
-        createAdSlide(ad, index)
-      );
+      slider.appendChild(createAdSlide(ad, index));
 
-      dotsContainer.appendChild(
-        createAdDot(index)
-      );
+      dotsContainer.appendChild(createAdDot(index));
     });
 
     currentAdIndex = 0;
 
     showAd(0);
     startAdInterval();
-
   } catch (error) {
-    console.error(
-      "広告読み込みエラー",
-      error
-    );
+    console.error("広告読み込みエラー", error);
 
     noxAds = [];
 
-    for (
-      let slotNumber = 1;
-      slotNumber <= AD_SLOT_COUNT;
-      slotNumber++
-    ) {
-      noxAds.push(
-        createRecruitmentAd(slotNumber)
-      );
+    for (let slotNumber = 1; slotNumber <= AD_SLOT_COUNT; slotNumber++) {
+      noxAds.push(createRecruitmentAd(slotNumber));
     }
 
     slider.innerHTML = "";
     dotsContainer.innerHTML = "";
 
     noxAds.forEach((ad, index) => {
-      slider.appendChild(
-        createAdSlide(ad, index)
-      );
+      slider.appendChild(createAdSlide(ad, index));
 
-      dotsContainer.appendChild(
-        createAdDot(index)
-      );
+      dotsContainer.appendChild(createAdDot(index));
     });
 
     showAd(0);
@@ -656,18 +537,15 @@ async function loadNoxAdvertisements() {
    タブ非表示中の自動切替停止
 =========================== */
 
-document.addEventListener(
-  "visibilitychange",
-  () => {
-    if (document.hidden) {
-      if (adInterval) {
-        window.clearInterval(adInterval);
-      }
-    } else {
-      restartAdInterval();
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) {
+    if (adInterval) {
+      window.clearInterval(adInterval);
     }
+  } else {
+    restartAdInterval();
   }
-);
+});
 
 /* ===========================
    求人画像取得
@@ -680,17 +558,10 @@ function getJobImage(job) {
   if (job.logoUrl) return job.logoUrl;
   if (job.storeImage) return job.storeImage;
 
-  if (
-    Array.isArray(job.images) &&
-    job.images.length > 0
-  ) {
-    const validImage =
-      job.images.find((image) => {
-        return (
-          typeof image === "string" &&
-          image.trim() !== ""
-        );
-      });
+  if (Array.isArray(job.images) && job.images.length > 0) {
+    const validImage = job.images.find((image) => {
+      return typeof image === "string" && image.trim() !== "";
+    });
 
     if (validImage) {
       return validImage;
@@ -704,52 +575,39 @@ function getJobImage(job) {
    TOP 注目求人
 ========================== */
 
-const topJobs =
-  document.getElementById("topNewJobs");
+const topJobs = document.getElementById("topNewJobs");
 
-const pickupFemaleButton =
-  document.getElementById(
-    "pickupFemaleButton"
-  );
+const pickupFemaleButton = document.getElementById("pickupFemaleButton");
 
-const pickupMaleButton =
-  document.getElementById(
-    "pickupMaleButton"
-  );
+const pickupMaleButton = document.getElementById("pickupMaleButton");
 
 let allTopFeaturedJobs = [];
 let selectedPickupGender = "female";
 
-if(topJobs){
+if (topJobs) {
   loadTopJobs();
 }
 
-function getPickupGender(job){
+function getPickupGender(job) {
+  const targetGender = String(
+    job.targetGender || job.jobAudience || job.gender || job.audience || "",
+  ).toLowerCase();
 
-  const targetGender =
-    String(
-      job.targetGender ||
-      job.jobAudience ||
-      job.gender ||
-      job.audience ||
-      ""
-    ).toLowerCase();
-
-  if(
+  if (
     targetGender === "male" ||
     targetGender === "men" ||
     targetGender === "男性" ||
     targetGender === "男性向け"
-  ){
+  ) {
     return "male";
   }
 
-  if(
+  if (
     targetGender === "female" ||
     targetGender === "women" ||
     targetGender === "女性" ||
     targetGender === "女性向け"
-  ){
+  ) {
     return "female";
   }
 
@@ -759,7 +617,7 @@ function getPickupGender(job){
     job.position,
     job.title,
     job.storeName,
-    job.shopName
+    job.shopName,
   ]
     .filter(Boolean)
     .join(" ")
@@ -774,151 +632,114 @@ function getPickupGender(job){
     "内勤",
     "幹部候補",
     "店長候補",
-    "ドライバー"
+    "ドライバー",
   ];
 
-  const isMaleJob =
-    maleKeywords.some(
-      (keyword) =>
-        maleSearchText.includes(
-          keyword.toLowerCase()
-        )
-    );
+  const isMaleJob = maleKeywords.some((keyword) =>
+    maleSearchText.includes(keyword.toLowerCase()),
+  );
 
-  return isMaleJob
-    ? "male"
-    : "female";
+  return isMaleJob ? "male" : "female";
 }
 
-function setPickupGender(gender){
-
+function setPickupGender(gender) {
   selectedPickupGender = gender;
 
-  if(pickupFemaleButton){
+  if (pickupFemaleButton) {
+    pickupFemaleButton.classList.toggle("gold", gender === "female");
 
-    pickupFemaleButton.classList.toggle(
-      "gold",
-      gender === "female"
-    );
-
-    pickupFemaleButton.classList.toggle(
-      "ghost",
-      gender !== "female"
-    );
+    pickupFemaleButton.classList.toggle("ghost", gender !== "female");
   }
 
-  if(pickupMaleButton){
+  if (pickupMaleButton) {
+    pickupMaleButton.classList.toggle("gold", gender === "male");
 
-    pickupMaleButton.classList.toggle(
-      "gold",
-      gender === "male"
-    );
-
-    pickupMaleButton.classList.toggle(
-      "ghost",
-      gender !== "male"
-    );
+    pickupMaleButton.classList.toggle("ghost", gender !== "male");
   }
 
   renderTopJobs();
 
-  if(topJobs){
+  if (topJobs) {
     topJobs.scrollTo({
-      left:0,
-      behavior:"smooth"
+      left: 0,
+      behavior: "smooth",
     });
   }
 }
 
-async function loadTopJobs(){
-
-  try{
-
+async function loadTopJobs() {
+  try {
     topJobs.innerHTML = `
       <p class="jobs-loading">
         注目求人を読み込んでいます...
       </p>
     `;
 
-    const snapshot =
-      await getDocs(
-        collection(db,"jobs")
-      );
+    const snapshot = await getDocs(collection(db, "jobs"));
 
     const jobs = [];
 
-    snapshot.forEach(
-      (documentSnapshot) => {
+    snapshot.forEach((documentSnapshot) => {
+      const job = {
+        id: documentSnapshot.id,
+        ...documentSnapshot.data(),
+      };
 
-        const job = {
-          id:documentSnapshot.id,
-          ...documentSnapshot.data()
-        };
-
-        if(job.status !== "approved"){
-          return;
-        }
-
-       if (
-  job.status !== "approved" ||
-  job.isPublic !== true ||
-  job.contractListingStatus !== "active"
-) {
-  return;
-}
-
-        const searchText = [
-          job.storeName,
-          job.name,
-          job.title,
-          job.shopName,
-          job.storeTitle
-        ]
-          .filter(Boolean)
-          .join(" ")
-          .toLowerCase();
-
-        if(searchText.includes("テスト")){
-          return;
-        }
-
-        if(searchText.includes("test")){
-          return;
-        }
-
-        if(searchText.includes("dummy")){
-          return;
-        }
-
-        if(searchText.includes("nox店舗")){
-          return;
-        }
-
-        if(searchText.includes("nox確認店")){
-          return;
-        }
-
-        jobs.push({
-          ...job,
-          resolvedPickupGender:
-            getPickupGender(job)
-        });
+      if (job.status !== "approved") {
+        return;
       }
-    );
 
-    jobs.sort((jobA,jobB) => {
+      if (
+        job.status !== "approved" ||
+        job.isPublic !== true ||
+        job.contractListingStatus !== "active"
+      ) {
+        return;
+      }
 
-      const orderA =
-        typeof jobA.topOrder === "number"
-          ? jobA.topOrder
-          : 9999;
+      const searchText = [
+        job.storeName,
+        job.name,
+        job.title,
+        job.shopName,
+        job.storeTitle,
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
 
-      const orderB =
-        typeof jobB.topOrder === "number"
-          ? jobB.topOrder
-          : 9999;
+      if (searchText.includes("テスト")) {
+        return;
+      }
 
-      if(orderA !== orderB){
+      if (searchText.includes("test")) {
+        return;
+      }
+
+      if (searchText.includes("dummy")) {
+        return;
+      }
+
+      if (searchText.includes("nox店舗")) {
+        return;
+      }
+
+      if (searchText.includes("nox確認店")) {
+        return;
+      }
+
+      jobs.push({
+        ...job,
+        resolvedPickupGender: getPickupGender(job),
+      });
+    });
+
+    jobs.sort((jobA, jobB) => {
+      const orderA = typeof jobA.topOrder === "number" ? jobA.topOrder : 9999;
+
+      const orderB = typeof jobB.topOrder === "number" ? jobB.topOrder : 9999;
+
+      if (orderA !== orderB) {
         return orderA - orderB;
       }
 
@@ -940,13 +761,8 @@ async function loadTopJobs(){
     allTopFeaturedJobs = jobs;
 
     renderTopJobs();
-
-  }catch(error){
-
-    console.error(
-      "TOP注目求人の読み込みエラー:",
-      error
-    );
+  } catch (error) {
+    console.error("TOP注目求人の読み込みエラー:", error);
 
     topJobs.innerHTML = `
       <p class="top-jobs-error">
@@ -956,27 +772,18 @@ async function loadTopJobs(){
   }
 }
 
-function renderTopJobs(){
-
-  if(!topJobs){
+function renderTopJobs() {
+  if (!topJobs) {
     return;
   }
 
-  const featuredJobs =
-    allTopFeaturedJobs
-      .filter(
-        (job) =>
-          job.resolvedPickupGender ===
-          selectedPickupGender
-      )
-      .slice(0,6);
+  const featuredJobs = allTopFeaturedJobs
+    .filter((job) => job.resolvedPickupGender === selectedPickupGender)
+    .slice(0, 6);
 
-  if(featuredJobs.length === 0){
-
+  if (featuredJobs.length === 0) {
     const genderLabel =
-      selectedPickupGender === "male"
-        ? "男性向け"
-        : "女性向け";
+      selectedPickupGender === "male" ? "男性向け" : "女性向け";
 
     topJobs.innerHTML = `
       <div
@@ -996,39 +803,30 @@ function renderTopJobs(){
     return;
   }
 
-  topJobs.innerHTML =
-    featuredJobs
-      .map((job) => {
+  topJobs.innerHTML = featuredJobs
+    .map((job) => {
+      const storeName =
+        job.storeName ||
+        job.shopName ||
+        job.storeTitle ||
+        job.name ||
+        "店舗名未設定";
 
-        const storeName =
-          job.storeName ||
-          job.shopName ||
-          job.storeTitle ||
-          job.name ||
-          "店舗名未設定";
+      const area = job.area || job.prefecture || job.location || "エリア未設定";
 
-        const area =
-          job.area ||
-          job.prefecture ||
-          job.location ||
-          "エリア未設定";
+      const salary =
+        job.salary ||
+        job.salaryText ||
+        job.hourlyWage ||
+        job.hourlyPay ||
+        "給与は詳細ページをご確認ください";
 
-        const salary =
-          job.salary ||
-          job.salaryText ||
-          job.hourlyWage ||
-          job.hourlyPay ||
-          "給与は詳細ページをご確認ください";
+      const imageUrl = getJobImage(job);
 
-        const imageUrl =
-          getJobImage(job);
+      const genderLabel =
+        job.resolvedPickupGender === "male" ? "MEN'S PICK UP" : "PICK UP";
 
-        const genderLabel =
-          job.resolvedPickupGender === "male"
-            ? "MEN'S PICK UP"
-            : "PICK UP";
-
-        return `
+      return `
           <div
             class="top-job-card"
             style="
@@ -1073,56 +871,40 @@ function renderTopJobs(){
 
           </div>
         `;
-      })
-      .join("");
+    })
+    .join("");
 }
 
-if(pickupFemaleButton){
-
-  pickupFemaleButton.addEventListener(
-    "click",
-    () => {
-      setPickupGender("female");
-    }
-  );
+if (pickupFemaleButton) {
+  pickupFemaleButton.addEventListener("click", () => {
+    setPickupGender("female");
+  });
 }
 
-if(pickupMaleButton){
-
-  pickupMaleButton.addEventListener(
-    "click",
-    () => {
-      setPickupGender("male");
-    }
-  );
+if (pickupMaleButton) {
+  pickupMaleButton.addEventListener("click", () => {
+    setPickupGender("male");
+  });
 }
 /* ===========================
    TOP キャスト
 =========================== */
 
 async function loadTopCasts() {
-
-  const container =
-    document.getElementById("topCastList");
+  const container = document.getElementById("topCastList");
 
   if (!container) {
     return;
   }
 
-  container.innerHTML =
-    "<p>キャストを読み込んでいます...</p>";
+  container.innerHTML = "<p>キャストを読み込んでいます...</p>";
 
   try {
-
-    const snapshot =
-      await getDocs(
-        collection(db, "casts")
-      );
+    const snapshot = await getDocs(collection(db, "casts"));
 
     const casts = [];
 
     snapshot.forEach((docSnap) => {
-
       const data = docSnap.data();
 
       if (data.visible !== true) {
@@ -1135,18 +917,15 @@ async function loadTopCasts() {
 
       casts.push({
         id: docSnap.id,
-        ...data
+        ...data,
       });
-
     });
 
     casts.sort((a, b) => {
-      return (a.topDisplayOrder || 9999)
-        - (b.topDisplayOrder || 9999);
+      return (a.topDisplayOrder || 9999) - (b.topDisplayOrder || 9999);
     });
 
     if (casts.length === 0) {
-
       container.innerHTML = `
         <p style="width:100%;text-align:center;color:#aaa;">
           現在表示できるキャストはいません。
@@ -1156,10 +935,10 @@ async function loadTopCasts() {
       return;
     }
 
-    container.innerHTML =
-      casts
-        .slice(0, 10)
-        .map((cast) => `
+    container.innerHTML = casts
+      .slice(0, 10)
+      .map(
+        (cast) => `
           <a
             href="pages/cast-detail.html?id=${cast.id}"
             style="
@@ -1190,25 +969,41 @@ gap:6px;
 margin-bottom:12px;
 ">
 
-${cast.pickup ? `
+${
+  cast.pickup
+    ? `
 <span style="background:#d4af37;color:#000;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:bold;">
 👑 PICK UP
-</span>` : ""}
+</span>`
+    : ""
+}
 
-${cast.isNew ? `
+${
+  cast.isNew
+    ? `
 <span style="background:#d4af37;color:#000;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:bold;">
 🆕 NEW
-</span>` : ""}
+</span>`
+    : ""
+}
 
-${cast.popular ? `
+${
+  cast.popular
+    ? `
 <span style="background:#d4af37;color:#000;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:bold;">
 🔥 人気
-</span>` : ""}
+</span>`
+    : ""
+}
 
-${cast.verified ? `
+${
+  cast.verified
+    ? `
 <span style="background:#d4af37;color:#000;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:bold;">
 ✅ NOX認証
-</span>` : ""}
+</span>`
+    : ""
+}
 
 </div>
               <h3 style="margin:0 0 8px;">
@@ -1222,11 +1017,10 @@ ${cast.verified ? `
             </div>
 
           </a>
-        `)
-        .join("");
-
+        `,
+      )
+      .join("");
   } catch (error) {
-
     console.error(error);
 
     container.innerHTML = `
@@ -1234,9 +1028,7 @@ ${cast.verified ? `
         キャストを読み込めませんでした。
       </p>
     `;
-
   }
-
 }
 /* ===========================
    初期実行
@@ -1248,102 +1040,52 @@ loadTopCasts();
    MEMBER LOUNGE
 ========================== */
 
+const memberLoungeSection = document.getElementById("memberLoungeSection");
 
-const memberLoungeSection =
-  document.getElementById(
-    "memberLoungeSection"
-  );
+const memberWelcomeTitle = document.getElementById("memberWelcomeTitle");
+const savedJobsCount = document.getElementById("savedJobsCount");
 
-const memberWelcomeTitle =
-  document.getElementById(
-    "memberWelcomeTitle"
-  );
-const savedJobsCount =
-  document.getElementById(
-    "savedJobsCount"
-  );
+const offersCount = document.getElementById("offersCount");
 
-const offersCount =
-  document.getElementById(
-    "offersCount"
-  );
-
-const applicationsCount =
-  document.getElementById(
-    "applicationsCount"
-  );
-onAuthStateChanged(
-  auth,
-  async (user) => {
-
-    if(!memberLoungeSection){
-      return;
-    }
-
-    if(!user){
-
-      memberLoungeSection.style.display =
-        "none";
-
-      return;
-    }
-
-    memberLoungeSection.style.display =
-      "block";
-
-    let displayName =
-      user.displayName ||
-      "会員";
-
-    try{
-
-      const userSnapshot =
-        await getDoc(
-          doc(
-            db,
-            "users",
-            user.uid
-          )
-        );
-const userData =
-  userSnapshot.exists()
-    ? userSnapshot.data()
-    : {};
-
-const savedJobIds =
-  Array.isArray(
-    userData.savedJobIds
-  )
-    ? userData.savedJobIds
-    : [];
-
-if(savedJobsCount){
-
-  savedJobsCount.textContent =
-    `${savedJobIds.length}件`;
-
-}
-      if(userSnapshot.exists()){
-
-        displayName =
-          userData.displayName ||
-          userData.name ||
-          userData.nickname ||
-          displayName;
-      }
-
-    }catch(error){
-
-      console.error(
-        "会員情報読み込みエラー:",
-        error
-      );
-    }
-
-    if(memberWelcomeTitle){
-
-      memberWelcomeTitle.textContent =
-        `${displayName}さん、おかえりなさい`;
-    }
+const applicationsCount = document.getElementById("applicationsCount");
+onAuthStateChanged(auth, async (user) => {
+  if (!memberLoungeSection) {
+    return;
   }
-);
+
+  if (!user) {
+    memberLoungeSection.style.display = "none";
+
+    return;
+  }
+
+  memberLoungeSection.style.display = "block";
+
+  let displayName = user.displayName || "会員";
+
+  try {
+    const userSnapshot = await getDoc(doc(db, "users", user.uid));
+    const userData = userSnapshot.exists() ? userSnapshot.data() : {};
+
+    const savedJobIds = Array.isArray(userData.savedJobIds)
+      ? userData.savedJobIds
+      : [];
+
+    if (savedJobsCount) {
+      savedJobsCount.textContent = `${savedJobIds.length}件`;
+    }
+    if (userSnapshot.exists()) {
+      displayName =
+        userData.displayName ||
+        userData.name ||
+        userData.nickname ||
+        displayName;
+    }
+  } catch (error) {
+    console.error("会員情報読み込みエラー:", error);
+  }
+
+  if (memberWelcomeTitle) {
+    memberWelcomeTitle.textContent = `${displayName}さん、おかえりなさい`;
+  }
+});
