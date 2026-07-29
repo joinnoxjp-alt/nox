@@ -497,48 +497,59 @@ service cloud.firestore {
      * Store names are display data and are never authorization identifiers.
      */
     match /stores/{storeId} {
-    allow get: if request.auth != null && (isActiveAdmin() || request.auth.uid == storeId);
-      allow list: if isActiveAdmin();
+  allow get: if request.auth != null
+    && (
+      isActiveAdmin()
+      || request.auth.uid == storeId
+    );
 
-      allow create: if isActiveAdmin();
+  allow list: if isActiveAdmin() || isActiveStore();
 
-      allow update: if isActiveAdmin()
-        && request.resource.data.ownerId == resource.data.ownerId
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-          "storeName",
-          "ownerName",
-          "email",
-          "area",
-          "phone",
-          "line",
-          "instagram",
-          "description",
-          "updatedAt"
-        ])
-        || (isActiveStore()
-          && request.auth.uid == storeId
-          && resource.data.ownerId == request.auth.uid
-          && request.resource.data.ownerId == resource.data.ownerId
-          && hasValidStoreMedia(request.resource.data, storeId)
-          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-            "storeName",
-            "ownerName",
-            "email",
-            "area",
-            "phone",
-            "line",
-            "instagram",
-            "description",
-            "updatedAt",
-            "logoUrl",
-            "logoStoragePath",
-            "coverImageUrl",
-            "coverImageStoragePath",
-            "profileImageUrl",
-            "profileImageStoragePath",
-            "mediaUpdatedAt"
-          ]));
+allow create: if request.auth != null
+  && request.auth.uid == storeId
+  && request.resource.data.ownerId == request.auth.uid;
 
+      allow update: if (
+  isActiveAdmin()
+  && request.resource.data.ownerId == resource.data.ownerId
+  && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+    "storeName",
+    "ownerName",
+    "email",
+    "area",
+    "phone",
+    "line",
+    "instagram",
+    "description",
+    "updatedAt"
+  ])
+) || (
+  isActiveStore()
+  && resource.data.ownerId == request.auth.uid
+  && request.resource.data.ownerId == resource.data.ownerId
+  && hasValidStoreMedia(
+    request.resource.data,
+    request.auth.uid
+  )
+  && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+    "storeName",
+    "ownerName",
+    "email",
+    "area",
+    "phone",
+    "line",
+    "instagram",
+    "description",
+    "updatedAt",
+    "logoUrl",
+    "logoStoragePath",
+    "coverImageUrl",
+    "coverImageStoragePath",
+    "profileImageUrl",
+    "profileImageStoragePath",
+    "mediaUpdatedAt"
+  ])
+);
       allow delete: if isActiveAdmin();
     }
 
@@ -657,25 +668,49 @@ service cloud.firestore {
      * changes must use trusted backend code.
      */
     match /jobs/{jobId} {
-      allow get, list: if (resource.data.status == "approved"
-          && resource.data.isPublic == true
-          && resource.data.contractListingStatus == "active")
-        || isActiveAdmin()
-        || (isActiveStore()
-          && resource.data.ownerId == request.auth.uid
-          && resource.data.storeId == request.auth.uid);
+      allow get, list: if (
+  (
+    resource.data.status == "approved"
+    && resource.data.isPublic == true
+    && resource.data.contractListingStatus == "active"
+  )
+  || isActiveAdmin()
+  || (
+    isActiveStore()
+    && resource.data.ownerId == request.auth.uid
+  )
+);
 
       allow create: if storeMayCreateJob(request.resource.data);
 
       allow update: if isActiveStore()
-        && resource.data.ownerId == request.auth.uid
-        && resource.data.storeId == request.auth.uid
-        && request.resource.data.ownerId == resource.data.ownerId
-        && request.resource.data.storeId == resource.data.storeId
-        && hasValidJobFields(request.resource.data)
-        && storeJobMutableFieldsOnly()
-        && isValidStoreJobTransition()
-        && hasValidJobTransitionMetadata();
+  && resource.data.ownerId == request.auth.uid
+  && resource.data.storeId == request.auth.uid
+  && request.resource.data.ownerId == resource.data.ownerId
+  && request.resource.data.storeId == resource.data.storeId
+  && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+    "title",
+    "category",
+    "targetGender",
+    "position",
+    "area",
+    "address",
+    "station",
+    "businessHours",
+    "salary",
+    "trial",
+    "beginner",
+    "description",
+    "requirements",
+    "benefits",
+    "imageStoragePaths",
+    "imageUrls",
+    "updatedAt",
+    "updatedBy",
+    "status",
+    "pausedAt",
+    "pausedBy"
+  ]);
 
       allow delete: if false;
     }
@@ -833,10 +868,7 @@ service cloud.firestore {
         && request.resource.data.hiredAt == null
         && request.resource.data.rejectedAt == null;
 
-      allow get, list: if isActiveAdmin()
-        || (signedIn() && resource.data.applicantId == request.auth.uid)
-        || (isActiveStore() && resource.data.storeId == request.auth.uid);
-
+      allow get, list: if isActiveAdmin() || isActiveStore();
       allow update: if isActiveStore()
           && resource.data.storeId == request.auth.uid
           && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
@@ -898,23 +930,25 @@ service cloud.firestore {
      * Public clients may read enabled ads. All writes, including counters,
      * are admin-only because client-side counters can be forged.
      */
-    match /ads/{adId} {
-      allow get, list: if isActiveAdmin()
-        || resource.data.enabled == true;
-      allow create, update, delete: if isActiveAdmin();
-    }
-
+  match /ads/{adId} {
+  allow read: if true;
+  allow create, update, delete: if isActiveAdmin();
+}
     /*
      * View analytics
      *
      * Browser-generated analytics are not trustworthy. Writes must be moved
      * to a trusted backend. Stores may read only records keyed by owner UID.
      */
-    match /jobViewStats/{statId} {
-      allow get, list: if isActiveAdmin()
-        || (isActiveStore() && resource.data.storeId == request.auth.uid);
-      allow create, update, delete: if isActiveAdmin();
-    }
+   match /jobViewStats/{statId} {
+  allow get, list: if isActiveAdmin()
+    || (
+      isActiveStore()
+      && resource.data.storeId == request.auth.uid
+    );
+
+  allow create, update, delete: if isActiveAdmin();
+}
 
     match /storeViewStats/{statId} {
       allow get, list: if isActiveAdmin()

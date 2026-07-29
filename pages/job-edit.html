@@ -162,6 +162,8 @@
         doc,
         getDoc,
         updateDoc,
+        addDoc,
+        collection,
         serverTimestamp,
       } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
       import {
@@ -347,6 +349,17 @@
             updates.pausedBy = user.uid;
           }
           await updateDoc(doc(db, "jobs", jobId), updates);
+          await addDoc(collection(db, "jobApplications"), {
+            jobId,
+            storeId: user.uid,
+            ownerId: user.uid,
+            storeName: jobData.storeName || "",
+            title: updates.title || jobData.title || "",
+            type: "reapproval",
+            status: "pending",
+            requestedAt: serverTimestamp(),
+            createdAt: serverTimestamp(),
+          });
           alert("求人情報を保存しました");
           await Promise.allSettled(
             removedPaths.map((path) => deleteObject(ref(storage, path))),
