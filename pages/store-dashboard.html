@@ -1086,6 +1086,28 @@
             mediaUpdatedAt: serverTimestamp(),
           });
 
+          if (kind === "cover") {
+            const jobsSnapshot = await getDocs(
+              query(
+                collection(db, "jobs"),
+                where("ownerId", "==", currentUser.uid),
+              ),
+            );
+
+            const updatePromises = [];
+
+            jobsSnapshot.forEach((jobDocument) => {
+              updatePromises.push(
+                updateDoc(doc(db, "jobs", jobDocument.id), {
+                  imageUrls: [newUrl],
+                  updatedAt: serverTimestamp(),
+                }),
+              );
+            });
+
+            await Promise.all(updatePromises);
+          }
+
           currentStoreMedia[kind] = { url: newUrl, storagePath: newPath };
           await renderStoreMedia();
 

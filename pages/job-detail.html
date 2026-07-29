@@ -423,10 +423,35 @@
         }
 
         async function loadStoreMedia(data) {
-          return {
-            storeData: {},
-            galleryImages: [],
-          };
+          let storeData = {};
+          let galleryImages = [];
+
+          if (!data.storeDocumentId) {
+            return { storeData, galleryImages };
+          }
+
+          try {
+            const storeSnap = await getDoc(
+              doc(db, "stores", data.storeDocumentId),
+            );
+
+            if (storeSnap.exists()) {
+              storeData = storeSnap.data();
+            }
+
+            const gallerySnapshot = await getDocs(
+              collection(db, "stores", data.storeDocumentId, "galleryImages"),
+            );
+
+            galleryImages = gallerySnapshot.docs
+              .sort((a, b) => Number(a.id) - Number(b.id))
+              .map((galleryDocument) => galleryDocument.data().url)
+              .filter(Boolean);
+          } catch (error) {
+            console.error("店舗画像の読み込みに失敗しました:", error);
+          }
+
+          return { storeData, galleryImages };
         }
 
         function buildImageList(data, storeData, storeGalleryImages) {
@@ -454,186 +479,186 @@
           const gallery = images
             .map(
               (img) => `
-                        <img
-                          src="${img}"
-                          loading="lazy"
-                          alt="${value(data.storeName || data.name)} 店舗画像"
-                        >
-                      `,
+                <img
+                  src="${img}"
+                  loading="lazy"
+                  alt="${value(data.storeName || data.name)} 店舗画像"
+                >
+              `,
             )
             .join("");
 
           const heroImage = images[0]
             ? `
-                      <img
-                        src="${images[0]}"
-                        alt="${value(data.storeName || data.name)}"
-                      >
-                    `
+              <img
+                src="${images[0]}"
+                alt="${value(data.storeName || data.name)}"
+              >
+            `
             : "";
 
           jobDetail.className = "";
           jobDetail.innerHTML = `
-                    <section class="hero">
-                      ${heroImage}
+            <section class="hero">
+              ${heroImage}
 
-                      <p class="kicker">NOX JOB DETAIL</p>
+              <p class="kicker">NOX JOB DETAIL</p>
 
-                      <h1>${value(data.storeName || data.name)}</h1>
+              <h1>${value(data.storeName || data.name)}</h1>
 
-                      <p>
-                        ${value(data.area)}
-                        ／
-                        ${value(data.genre || data.type || data.businessType)}
-                      </p>
+              <p>
+                ${value(data.area)}
+                ／
+                ${value(data.genre || data.type || data.businessType)}
+              </p>
 
-                      <div class="salary">
-                        <small>給与</small>
-                        <strong>${value(data.salary || data.salaryText)}</strong>
-                      </div>
+              <div class="salary">
+                <small>給与</small>
+                <strong>${value(data.salary || data.salaryText)}</strong>
+              </div>
 
-                      <div
-                        style="
-                          margin-top:20px;
-                          display:flex;
-                          gap:12px;
-                          flex-wrap:wrap;
-                        "
-                      >
-                        <button
-                          id="saveJobBtn"
-                          type="button"
-                          class="btn"
-                        >
-                          ♡ 求人を保存
-                        </button>
-                      </div>
-                    </section>
+              <div
+                style="
+                  margin-top:20px;
+                  display:flex;
+                  gap:12px;
+                  flex-wrap:wrap;
+                "
+              >
+                <button
+                  id="saveJobBtn"
+                  type="button"
+                  class="btn"
+                >
+                  ♡ 求人を保存
+                </button>
+              </div>
+            </section>
 
-                    ${
-                      images.length
-                        ? `
-                          <section class="section">
-                            <h2>店舗写真</h2>
-                            <div class="gallery">${gallery}</div>
-                          </section>
-                        `
-                        : ""
-                    }
+            ${
+              images.length
+                ? `
+                  <section class="section">
+                    <h2>店舗写真</h2>
+                    <div class="gallery">${gallery}</div>
+                  </section>
+                `
+                : ""
+            }
 
-                    <section class="section">
-                      <h2>基本情報</h2>
+            <section class="section">
+              <h2>基本情報</h2>
 
-                      <div class="grid">
-                        <div class="info-card">
-                          <span>エリア</span>
-                          <strong>${value(data.area)}</strong>
-                        </div>
+              <div class="grid">
+                <div class="info-card">
+                  <span>エリア</span>
+                  <strong>${value(data.area)}</strong>
+                </div>
 
-                        <div class="info-card">
-                          <span>業種</span>
-                          <strong>
-                            ${value(
-                              data.businessType ||
-                                data.genre ||
-                                data.type ||
-                                data.jobType,
-                            )}
-                          </strong>
-                        </div>
+                <div class="info-card">
+                  <span>業種</span>
+                  <strong>
+                    ${value(
+                      data.businessType ||
+                        data.genre ||
+                        data.type ||
+                        data.jobType,
+                    )}
+                  </strong>
+                </div>
 
-                        <div class="info-card">
-                          <span>住所</span>
-                          <strong>${value(data.address)}</strong>
-                        </div>
+                <div class="info-card">
+                  <span>住所</span>
+                  <strong>${value(data.address)}</strong>
+                </div>
 
-                        <div class="info-card">
-                          <span>最寄駅</span>
-                          <strong>${value(data.station)}</strong>
-                        </div>
+                <div class="info-card">
+                  <span>最寄駅</span>
+                  <strong>${value(data.station)}</strong>
+                </div>
 
-                        <div class="info-card">
-                          <span>営業時間</span>
-                          <strong>${value(data.businessHours)}</strong>
-                        </div>
+                <div class="info-card">
+                  <span>営業時間</span>
+                  <strong>${value(data.businessHours)}</strong>
+                </div>
 
-                        <div class="info-card">
-                          <span>定休日</span>
-                          <strong>${value(data.closedDay)}</strong>
-                        </div>
-                      </div>
-                    </section>
+                <div class="info-card">
+                  <span>定休日</span>
+                  <strong>${value(data.closedDay)}</strong>
+                </div>
+              </div>
+            </section>
 
-                    <section class="section">
-                      <h2>求人情報</h2>
+            <section class="section">
+              <h2>求人情報</h2>
 
-                      <div class="grid">
-                        <div class="info-card">
-                          <span>各種バック</span>
-                          <strong>${value(data.back)}</strong>
-                        </div>
+              <div class="grid">
+                <div class="info-card">
+                  <span>各種バック</span>
+                  <strong>${value(data.back)}</strong>
+                </div>
 
-                        <div class="info-card">
-                          <span>日払い</span>
-                          <strong>${value(data.dailyPay)}</strong>
-                        </div>
+                <div class="info-card">
+                  <span>日払い</span>
+                  <strong>${value(data.dailyPay)}</strong>
+                </div>
 
-                        <div class="info-card">
-                          <span>体験入店</span>
-                          <strong>${value(data.trial)}</strong>
-                        </div>
+                <div class="info-card">
+                  <span>体験入店</span>
+                  <strong>${value(data.trial)}</strong>
+                </div>
 
-                        <div class="info-card">
-                          <span>未経験歓迎</span>
-                          <strong>${value(data.beginner)}</strong>
-                        </div>
+                <div class="info-card">
+                  <span>未経験歓迎</span>
+                  <strong>${value(data.beginner)}</strong>
+                </div>
 
-                        <div class="info-card">
-                          <span>採用年齢</span>
-                          <strong>${value(data.age)}</strong>
-                        </div>
+                <div class="info-card">
+                  <span>採用年齢</span>
+                  <strong>${value(data.age)}</strong>
+                </div>
 
-                        <div class="info-card">
-                          <span>シフト</span>
-                          <strong>${value(data.shift)}</strong>
-                        </div>
-                      </div>
-                    </section>
+                <div class="info-card">
+                  <span>シフト</span>
+                  <strong>${value(data.shift)}</strong>
+                </div>
+              </div>
+            </section>
 
-                    <section class="section">
-                      <h2>店舗PR</h2>
-                      <div class="pr">
-                        ${value(data.pr || data.description)}
-                      </div>
-                    </section>
+            <section class="section">
+              <h2>店舗PR</h2>
+              <div class="pr">
+                ${value(data.pr || data.description)}
+              </div>
+            </section>
 
-                    <section class="apply-box" id="applyForm">
-                      <h2>応募フォーム</h2>
+            <section class="apply-box" id="applyForm">
+              <h2>応募フォーム</h2>
 
-                      <input
-                        id="entryName"
-                        type="text"
-                        placeholder="お名前"
-                        autocomplete="name"
-                      >
+              <input
+                id="entryName"
+                type="text"
+                placeholder="お名前"
+                autocomplete="name"
+              >
 
-                      <input
-                        id="entryPhone"
-                        type="tel"
-                        placeholder="電話番号"
-                        autocomplete="tel"
-                      >
+              <input
+                id="entryPhone"
+                type="tel"
+                placeholder="電話番号"
+                autocomplete="tel"
+              >
 
-                      <textarea
-                        id="entryMessage"
-                        placeholder="質問や希望条件があれば入力してください"
-                      ></textarea>
+              <textarea
+                id="entryMessage"
+                placeholder="質問や希望条件があれば入力してください"
+              ></textarea>
 
-                      <button id="applyBtn" class="line-btn">
-                        応募する
-                      </button>
-                    </section>
-                  `;
+              <button id="applyBtn" class="line-btn">
+                応募する
+              </button>
+            </section>
+          `;
         }
 
         async function setupApplication(data) {
@@ -758,10 +783,10 @@
         async function loadJob() {
           if (!id) {
             jobDetail.innerHTML = `
-                      <div class="section">
-                        <h2>求人が見つかりません</h2>
-                      </div>
-                    `;
+              <div class="section">
+                <h2>求人が見つかりません</h2>
+              </div>
+            `;
             return;
           }
 
@@ -770,10 +795,10 @@
 
             if (!snap.exists()) {
               jobDetail.innerHTML = `
-                        <div class="section">
-                          <h2>求人情報がありません</h2>
-                        </div>
-                      `;
+                <div class="section">
+                  <h2>求人情報がありません</h2>
+                </div>
+              `;
               return;
             }
 
@@ -791,11 +816,11 @@
             console.error("求人読み込みエラー:", error);
 
             jobDetail.innerHTML = `
-                      <div class="section">
-                        <h2>読み込みに失敗しました</h2>
-                        <p>時間を空けて再度お試しください。</p>
-                      </div>
-                    `;
+              <div class="section">
+                <h2>読み込みに失敗しました</h2>
+                <p>時間を空けて再度お試しください。</p>
+              </div>
+            `;
           }
         }
 
