@@ -423,35 +423,14 @@
         }
 
         async function loadStoreMedia(data) {
-          let storeData = {};
-          let galleryImages = [];
-
-          if (!data.storeDocumentId) {
-            return { storeData, galleryImages };
-          }
-
-          try {
-            const storeSnap = await getDoc(
-              doc(db, "stores", data.storeDocumentId),
-            );
-
-            if (storeSnap.exists()) {
-              storeData = storeSnap.data();
-            }
-
-            const gallerySnapshot = await getDocs(
-              collection(db, "stores", data.storeDocumentId, "galleryImages"),
-            );
-
-            galleryImages = gallerySnapshot.docs
-              .sort((a, b) => Number(a.id) - Number(b.id))
-              .map((galleryDocument) => galleryDocument.data().url)
-              .filter(Boolean);
-          } catch (error) {
-            console.error("店舗画像の読み込みに失敗しました:", error);
-          }
-
-          return { storeData, galleryImages };
+          return {
+            storeData: {
+              profileImageUrl: "",
+              coverImageUrl: "",
+              logoUrl: "",
+            },
+            galleryImages: [],
+          };
         }
 
         function buildImageList(data, storeData, storeGalleryImages) {
@@ -792,7 +771,6 @@
 
           try {
             const snap = await getDoc(doc(db, "jobs", id));
-
             if (!snap.exists()) {
               jobDetail.innerHTML = `
                 <div class="section">
@@ -805,7 +783,11 @@
             const data = snap.data();
             const { storeData, galleryImages } = await loadStoreMedia(data);
 
-            await recordJobView(data);
+            try {
+              await recordJobView(data);
+            } catch (error) {
+              console.warn("閲覧数の記録をスキップしました:", error);
+            }
 
             const images = buildImageList(data, storeData, galleryImages);
 
