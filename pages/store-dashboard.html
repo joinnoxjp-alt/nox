@@ -540,6 +540,7 @@
         getDocs,
         query,
         where,
+        limit,
         orderBy,
         updateDoc,
         deleteDoc,
@@ -1374,10 +1375,19 @@
 ========================= */
 
       async function loadStoreInfo() {
-        const storeRef = doc(db, "stores", currentUser.uid);
+        const storeSnapshot = await getDocs(
+          query(
+            collection(db, "stores"),
+            where("ownerId", "==", currentUser.uid),
+            limit(1),
+          ),
+        );
 
-        const storeSnap = await getDoc(storeRef);
+        if (storeSnapshot.empty) {
+          throw new Error("店舗データが見つかりません。");
+        }
 
+        const storeSnap = storeSnapshot.docs[0];
         if (storeSnap.exists()) {
           const data = storeSnap.data();
 
