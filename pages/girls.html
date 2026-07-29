@@ -550,8 +550,9 @@
       import {
         collection,
         getDocs,
+        query,
+        where,
       } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
       const jobsList = document.getElementById("jobsList");
 
       const statusText = document.getElementById("statusText");
@@ -690,7 +691,14 @@
         jobsList.innerHTML = "";
 
         try {
-          const snapshot = await getDocs(collection(db, "jobs"));
+          const jobsQuery = query(
+            collection(db, "jobs"),
+            where("status", "==", "approved"),
+            where("isPublic", "==", true),
+            where("contractListingStatus", "==", "active"),
+          );
+
+          const snapshot = await getDocs(jobsQuery);
 
           jobs = [];
 
