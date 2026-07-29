@@ -915,20 +915,18 @@ async function loadTopCasts() {
   container.innerHTML = "<p>キャストを読み込んでいます...</p>";
 
   try {
-    const snapshot = await getDocs(collection(db, "casts"));
+    const snapshot = await getDocs(
+      query(
+        collection(db, "casts"),
+        where("visible", "==", true),
+        where("topFeatured", "==", true),
+      ),
+    );
 
     const casts = [];
 
     snapshot.forEach((docSnap) => {
       const data = docSnap.data();
-
-      if (data.visible !== true) {
-        return;
-      }
-
-      if (data.topFeatured !== true) {
-        return;
-      }
 
       casts.push({
         id: docSnap.id,
