@@ -1,1103 +1,872 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
 
-<head>
-  <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
+    <title>店舗アカウント登録 | NOX</title>
 
-  <title>店舗アカウント登録 | NOX</title>
+    <meta
+      name="description"
+      content="NOX店舗専用アカウントの登録ページです。"
+    />
 
-  <meta
-    name="description"
-    content="NOX店舗専用アカウントの登録ページです。"
-  >
+    <meta name="theme-color" content="#050505" />
 
-  <meta
-    name="theme-color"
-    content="#050505"
-  >
-
-  <style>
-    *{
-      box-sizing:border-box;
-      margin:0;
-      padding:0;
-    }
-
-    html{
-      scroll-behavior:smooth;
-    }
-
-    body{
-      min-height:100vh;
-      overflow-x:hidden;
-      background:
-        radial-gradient(
-          circle at top,
-          rgba(214,168,79,.2),
-          transparent 38%
-        ),
-        linear-gradient(
-          180deg,
-          #080808,
-          #000
-        );
-      color:#fff;
-      font-family:
-        Arial,
-        "Hiragino Kaku Gothic ProN",
-        Meiryo,
-        sans-serif;
-    }
-
-    a{
-      color:inherit;
-      text-decoration:none;
-    }
-
-    button,
-    input{
-      font:inherit;
-    }
-
-    button{
-      -webkit-tap-highlight-color:transparent;
-    }
-
-    .page{
-      width:100%;
-      min-height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:34px 18px;
-    }
-
-    .register-card{
-      width:100%;
-      max-width:560px;
-      border:1px solid rgba(214,168,79,.42);
-      border-radius:28px;
-      padding:34px;
-      background:
-        radial-gradient(
-          circle at top right,
-          rgba(214,168,79,.14),
-          transparent 34%
-        ),
-        linear-gradient(
-          160deg,
-          rgba(255,255,255,.075),
-          rgba(255,255,255,.025)
-        );
-      box-shadow:
-        0 25px 70px rgba(0,0,0,.62);
-      backdrop-filter:blur(12px);
-    }
-
-    .brand{
-      text-align:center;
-      margin-bottom:30px;
-    }
-
-    .brand-logo{
-      display:inline-block;
-      color:#d6a84f;
-      font-size:44px;
-      font-weight:900;
-      letter-spacing:7px;
-      line-height:1;
-    }
-
-    .brand-logo small{
-      display:block;
-      margin-top:10px;
-      color:#aaa;
-      font-size:10px;
-      letter-spacing:5px;
-    }
-
-    .register-header{
-      text-align:center;
-      margin-bottom:28px;
-    }
-
-    .register-header span{
-      display:block;
-      margin-bottom:10px;
-      color:#d6a84f;
-      font-size:12px;
-      font-weight:800;
-      letter-spacing:4px;
-    }
-
-    .register-header h1{
-      margin-bottom:12px;
-      color:#fff;
-      font-size:30px;
-      line-height:1.35;
-    }
-
-    .register-header p{
-      color:#aaa;
-      font-size:14px;
-      line-height:1.8;
-    }
-
-    .notice{
-      margin-bottom:24px;
-      padding:16px;
-      border:1px solid rgba(214,168,79,.24);
-      border-radius:15px;
-      background:rgba(214,168,79,.07);
-      color:#ddd;
-      font-size:13px;
-      line-height:1.75;
-    }
-
-    .form-group{
-      margin-bottom:18px;
-    }
-
-    .form-group label{
-      display:block;
-      margin-bottom:8px;
-      color:#d6a84f;
-      font-size:13px;
-      font-weight:800;
-    }
-
-    .form-group input{
-      width:100%;
-      min-height:56px;
-      border:1px solid #353535;
-      border-radius:14px;
-      padding:0 16px;
-      outline:none;
-      background:#090909;
-      color:#fff;
-      font-size:16px;
-      transition:.2s;
-    }
-
-    .form-group input::placeholder{
-      color:#666;
-    }
-
-    .form-group input:focus{
-      border-color:#d6a84f;
-      box-shadow:
-        0 0 0 3px rgba(214,168,79,.11);
-    }
-
-    .form-group input:read-only{
-      color:#ddd;
-      background:#101010;
-      border-color:rgba(214,168,79,.26);
-    }
-
-    .password-wrap{
-      position:relative;
-    }
-
-    .password-wrap input{
-      padding-right:78px;
-    }
-
-    .password-toggle{
-      position:absolute;
-      top:50%;
-      right:10px;
-      transform:translateY(-50%);
-      border:0;
-      border-radius:10px;
-      padding:9px 11px;
-      background:#1b1b1b;
-      color:#d6a84f;
-      font-size:12px;
-      font-weight:800;
-      cursor:pointer;
-    }
-
-    .hint{
-      margin-top:7px;
-      color:#777;
-      font-size:12px;
-      line-height:1.6;
-    }
-
-    .agreement{
-      display:flex;
-      align-items:flex-start;
-      gap:10px;
-      margin:20px 0;
-      color:#aaa;
-      font-size:13px;
-      line-height:1.7;
-    }
-
-    .agreement input{
-      width:19px;
-      height:19px;
-      margin-top:2px;
-      accent-color:#d6a84f;
-      flex:0 0 auto;
-    }
-
-    .agreement a{
-      color:#d6a84f;
-      text-decoration:underline;
-    }
-
-    .submit-button{
-      width:100%;
-      min-height:60px;
-      border:0;
-      border-radius:16px;
-      background:
-        linear-gradient(
-          135deg,
-          #b98625,
-          #f2cf6a
-        );
-      color:#090909;
-      font-size:16px;
-      font-weight:900;
-      cursor:pointer;
-      transition:.25s;
-    }
-
-    .submit-button:hover{
-      transform:translateY(-2px);
-      filter:brightness(1.05);
-    }
-
-    .submit-button:disabled{
-      opacity:.48;
-      cursor:not-allowed;
-      transform:none;
-      filter:none;
-    }
-
-    .message{
-      display:none;
-      margin-top:18px;
-      border-radius:14px;
-      padding:14px;
-      text-align:center;
-      font-size:13px;
-      line-height:1.7;
-      overflow-wrap:anywhere;
-    }
-
-    .message.show{
-      display:block;
-    }
-
-    .message.error{
-      border:1px solid rgba(255,92,92,.42);
-      background:rgba(120,0,0,.22);
-      color:#ffadad;
-    }
-
-    .message.success{
-      border:1px solid rgba(95,214,127,.42);
-      background:rgba(0,100,38,.2);
-      color:#a8efb9;
-    }
-
-    .message.info{
-      border:1px solid rgba(214,168,79,.35);
-      background:rgba(214,168,79,.08);
-      color:#e8ca83;
-    }
-
-    .bottom-links{
-      display:flex;
-      justify-content:center;
-      gap:12px;
-      flex-wrap:wrap;
-      margin-top:25px;
-    }
-
-    .bottom-link{
-      border:1px solid #333;
-      border-radius:999px;
-      padding:11px 17px;
-      color:#bbb;
-      font-size:13px;
-      transition:.2s;
-    }
-
-    .bottom-link:hover{
-      border-color:#d6a84f;
-      color:#d6a84f;
-    }
-
-    @media(max-width:600px){
-      .page{
-        align-items:flex-start;
-        padding:20px 14px 44px;
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
       }
 
-      .register-card{
-        padding:27px 20px;
-        border-radius:23px;
+      html {
+        scroll-behavior: smooth;
       }
 
-      .brand-logo{
-        font-size:38px;
+      body {
+        min-height: 100vh;
+        overflow-x: hidden;
+        background:
+          radial-gradient(
+            circle at top,
+            rgba(214, 168, 79, 0.2),
+            transparent 38%
+          ),
+          linear-gradient(180deg, #080808, #000);
+        color: #fff;
+        font-family: Arial, "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
       }
 
-      .register-header h1{
-        font-size:26px;
+      a {
+        color: inherit;
+        text-decoration: none;
       }
-    }
-  </style>
-</head>
-<body>
 
-  <div class="page">
+      button,
+      input {
+        font: inherit;
+      }
 
-    <div class="register-card">
+      button {
+        -webkit-tap-highlight-color: transparent;
+      }
 
-      <div class="brand">
-        <div class="brand-logo">
-          NOX
-          <small>STORE ACCOUNT</small>
+      .page {
+        width: 100%;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 34px 18px;
+      }
+
+      .register-card {
+        width: 100%;
+        max-width: 560px;
+        border: 1px solid rgba(214, 168, 79, 0.42);
+        border-radius: 28px;
+        padding: 34px;
+        background:
+          radial-gradient(
+            circle at top right,
+            rgba(214, 168, 79, 0.14),
+            transparent 34%
+          ),
+          linear-gradient(
+            160deg,
+            rgba(255, 255, 255, 0.075),
+            rgba(255, 255, 255, 0.025)
+          );
+        box-shadow: 0 25px 70px rgba(0, 0, 0, 0.62);
+        backdrop-filter: blur(12px);
+      }
+
+      .brand {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      .brand-logo {
+        display: inline-block;
+        color: #d6a84f;
+        font-size: 44px;
+        font-weight: 900;
+        letter-spacing: 7px;
+        line-height: 1;
+      }
+
+      .brand-logo small {
+        display: block;
+        margin-top: 10px;
+        color: #aaa;
+        font-size: 10px;
+        letter-spacing: 5px;
+      }
+
+      .register-header {
+        text-align: center;
+        margin-bottom: 28px;
+      }
+
+      .register-header span {
+        display: block;
+        margin-bottom: 10px;
+        color: #d6a84f;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 4px;
+      }
+
+      .register-header h1 {
+        margin-bottom: 12px;
+        color: #fff;
+        font-size: 30px;
+        line-height: 1.35;
+      }
+
+      .register-header p {
+        color: #aaa;
+        font-size: 14px;
+        line-height: 1.8;
+      }
+
+      .notice {
+        margin-bottom: 24px;
+        padding: 16px;
+        border: 1px solid rgba(214, 168, 79, 0.24);
+        border-radius: 15px;
+        background: rgba(214, 168, 79, 0.07);
+        color: #ddd;
+        font-size: 13px;
+        line-height: 1.75;
+      }
+
+      .form-group {
+        margin-bottom: 18px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: #d6a84f;
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .form-group input {
+        width: 100%;
+        min-height: 56px;
+        border: 1px solid #353535;
+        border-radius: 14px;
+        padding: 0 16px;
+        outline: none;
+        background: #090909;
+        color: #fff;
+        font-size: 16px;
+        transition: 0.2s;
+      }
+
+      .form-group input::placeholder {
+        color: #666;
+      }
+
+      .form-group input:focus {
+        border-color: #d6a84f;
+        box-shadow: 0 0 0 3px rgba(214, 168, 79, 0.11);
+      }
+
+      .form-group input:read-only {
+        color: #ddd;
+        background: #101010;
+        border-color: rgba(214, 168, 79, 0.26);
+      }
+
+      .password-wrap {
+        position: relative;
+      }
+
+      .password-wrap input {
+        padding-right: 78px;
+      }
+
+      .password-toggle {
+        position: absolute;
+        top: 50%;
+        right: 10px;
+        transform: translateY(-50%);
+        border: 0;
+        border-radius: 10px;
+        padding: 9px 11px;
+        background: #1b1b1b;
+        color: #d6a84f;
+        font-size: 12px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      .hint {
+        margin-top: 7px;
+        color: #777;
+        font-size: 12px;
+        line-height: 1.6;
+      }
+
+      .agreement {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        margin: 20px 0;
+        color: #aaa;
+        font-size: 13px;
+        line-height: 1.7;
+      }
+
+      .agreement input {
+        width: 19px;
+        height: 19px;
+        margin-top: 2px;
+        accent-color: #d6a84f;
+        flex: 0 0 auto;
+      }
+
+      .agreement a {
+        color: #d6a84f;
+        text-decoration: underline;
+      }
+
+      .submit-button {
+        width: 100%;
+        min-height: 60px;
+        border: 0;
+        border-radius: 16px;
+        background: linear-gradient(135deg, #b98625, #f2cf6a);
+        color: #090909;
+        font-size: 16px;
+        font-weight: 900;
+        cursor: pointer;
+        transition: 0.25s;
+      }
+
+      .submit-button:hover {
+        transform: translateY(-2px);
+        filter: brightness(1.05);
+      }
+
+      .submit-button:disabled {
+        opacity: 0.48;
+        cursor: not-allowed;
+        transform: none;
+        filter: none;
+      }
+
+      .message {
+        display: none;
+        margin-top: 18px;
+        border-radius: 14px;
+        padding: 14px;
+        text-align: center;
+        font-size: 13px;
+        line-height: 1.7;
+        overflow-wrap: anywhere;
+      }
+
+      .message.show {
+        display: block;
+      }
+
+      .message.error {
+        border: 1px solid rgba(255, 92, 92, 0.42);
+        background: rgba(120, 0, 0, 0.22);
+        color: #ffadad;
+      }
+
+      .message.success {
+        border: 1px solid rgba(95, 214, 127, 0.42);
+        background: rgba(0, 100, 38, 0.2);
+        color: #a8efb9;
+      }
+
+      .message.info {
+        border: 1px solid rgba(214, 168, 79, 0.35);
+        background: rgba(214, 168, 79, 0.08);
+        color: #e8ca83;
+      }
+
+      .bottom-links {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 25px;
+      }
+
+      .bottom-link {
+        border: 1px solid #333;
+        border-radius: 999px;
+        padding: 11px 17px;
+        color: #bbb;
+        font-size: 13px;
+        transition: 0.2s;
+      }
+
+      .bottom-link:hover {
+        border-color: #d6a84f;
+        color: #d6a84f;
+      }
+
+      @media (max-width: 600px) {
+        .page {
+          align-items: flex-start;
+          padding: 20px 14px 44px;
+        }
+
+        .register-card {
+          padding: 27px 20px;
+          border-radius: 23px;
+        }
+
+        .brand-logo {
+          font-size: 38px;
+        }
+
+        .register-header h1 {
+          font-size: 26px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div class="register-card">
+        <div class="brand">
+          <div class="brand-logo">
+            NOX
+            <small>STORE ACCOUNT</small>
+          </div>
         </div>
-      </div>
 
-      <div class="register-header">
-        <span>STORE REGISTER</span>
+        <div class="register-header">
+          <span>STORE REGISTER</span>
 
-        <h1>
-          店舗アカウント登録
-        </h1>
+          <h1>店舗アカウント登録</h1>
 
-        <p>
-          NOXの店舗専用ダッシュボードを<br>
-          ご利用いただくための登録ページです。
-        </p>
-      </div>
-
-      <div class="notice">
-        店舗掲載が承認された店舗様のみ登録できます。<br>
-        管理者から届いた専用招待URLから登録してください。
-      </div>
-
-      <div class="notice">
-        掲載区分：<strong id="businessScopeLabel">招待確認後に表示</strong><br>
-        招待先：<strong id="emailHintLabel">招待確認後に表示</strong>
-      </div>
-
-      <form id="registerForm">
-
-        <div class="form-group">
-          <label for="storeName">
-            店舗名
-          </label>
-
-          <input
-            type="text"
-            id="storeName"
-            placeholder="店舗名"
-            autocomplete="organization"
-            required
-            readonly
-          >
+          <p>
+            NOXの店舗専用ダッシュボードを<br />
+            ご利用いただくための登録ページです。
+          </p>
         </div>
 
-        <div class="form-group">
-          <label for="ownerName">
-            担当者名
-          </label>
-
-          <input
-            type="text"
-            id="ownerName"
-            placeholder="例：山田 太郎"
-            autocomplete="name"
-            required
-          >
+        <div class="notice">
+          店舗掲載が承認された店舗様のみ登録できます。<br />
+          管理者から届いた専用招待URLから登録してください。
         </div>
 
-        <div class="form-group">
-          <label for="email">
-            メールアドレス
-          </label>
-
-          <input
-            type="email"
-            id="email"
-            placeholder="example@gmail.com"
-            autocomplete="email"
-            required
-          >
+        <div class="notice">
+          掲載区分：<strong id="businessScopeLabel">招待確認後に表示</strong
+          ><br />
+          招待先：<strong id="emailHintLabel">招待確認後に表示</strong>
         </div>
 
-        <div class="form-group">
-          <label for="password">
-            パスワード
-          </label>
-
-          <div class="password-wrap">
+        <form id="registerForm">
+          <div class="form-group">
+            <label for="storeName"> 店舗名 </label>
 
             <input
-              type="password"
-              id="password"
-              placeholder="8文字以上"
-              autocomplete="new-password"
-              minlength="8"
+              type="text"
+              id="storeName"
+              placeholder="店舗名"
+              autocomplete="organization"
               required
-            >
+              readonly
+            />
+          </div>
 
+          <div class="form-group">
+            <label for="ownerName"> 担当者名 </label>
+
+            <input
+              type="text"
+              id="ownerName"
+              placeholder="例：山田 太郎"
+              autocomplete="name"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="email"> メールアドレス </label>
+
+            <input
+              type="email"
+              id="email"
+              placeholder="example@gmail.com"
+              autocomplete="email"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="password"> パスワード </label>
+
+            <div class="password-wrap">
+              <input
+                type="password"
+                id="password"
+                placeholder="8文字以上"
+                autocomplete="new-password"
+                minlength="8"
+                required
+              />
+
+              <button type="button" class="password-toggle" id="togglePassword">
+                表示
+              </button>
+            </div>
+
+            <div class="hint">半角英数字を含む8文字以上を推奨します。</div>
+          </div>
+          <div class="agreement">
+            <input type="checkbox" id="agree" required />
+
+            <label for="agree">
+              利用規約・プライバシーポリシーに同意します。
+            </label>
+          </div>
+
+          <button class="submit-button" id="submitBtn" type="submit" disabled>
+            招待情報を確認中...
+          </button>
+
+          <button class="submit-button" id="loginBtn" type="button" disabled>
+            既存アカウントでログインして続行
+          </button>
+
+          <div id="verificationActions" hidden>
             <button
+              class="submit-button"
+              id="resendVerificationBtn"
               type="button"
-              class="password-toggle"
-              id="togglePassword"
             >
-              表示
+              確認メールを再送
             </button>
 
+            <button
+              class="submit-button"
+              id="completeRegistrationBtn"
+              type="button"
+            >
+              メール認証を確認して登録を完了
+            </button>
           </div>
-
-          <div class="hint">
-            半角英数字を含む8文字以上を推奨します。
-          </div>
-        </div>
-                <div class="agreement">
-
-          <input
-            type="checkbox"
-            id="agree"
-            required
-          >
-
-          <label for="agree">
-            利用規約・プライバシーポリシーに同意します。
-          </label>
-
-        </div>
-
-        <button
-          class="submit-button"
-          id="submitBtn"
-          type="submit"
-          disabled
-        >
-          招待情報を確認中...
-        </button>
-
-        <button
-          class="submit-button"
-          id="loginBtn"
-          type="button"
-          disabled
-        >
-          既存アカウントでログインして続行
-        </button>
-
-        <div id="verificationActions" hidden>
-          <button
-            class="submit-button"
-            id="resendVerificationBtn"
-            type="button"
-          >
-            確認メールを再送
-          </button>
 
           <button
             class="submit-button"
-            id="completeRegistrationBtn"
+            id="logoutForInviteBtn"
             type="button"
+            hidden
           >
-            メール認証を確認して登録を完了
+            ログアウトして招待メールで続行
           </button>
+
+          <div id="message" class="message info show">
+            招待情報を確認しています...
+          </div>
+        </form>
+
+        <div class="bottom-links">
+          <a class="bottom-link" href="./login.html"> ログイン </a>
+
+          <a class="bottom-link" href="../index.html"> トップへ戻る </a>
         </div>
-
-        <button
-          class="submit-button"
-          id="logoutForInviteBtn"
-          type="button"
-          hidden
-        >
-          ログアウトして招待メールで続行
-        </button>
-
-        <div
-          id="message"
-          class="message info show"
-        >
-          招待情報を確認しています...
-        </div>
-
-      </form>
-
-      <div class="bottom-links">
-
-        <a
-          class="bottom-link"
-          href="./login.html"
-        >
-          ログイン
-        </a>
-
-        <a
-          class="bottom-link"
-          href="../index.html"
-        >
-          トップへ戻る
-        </a>
-
       </div>
-
     </div>
 
-  </div>
+    <script type="module">
+      import { auth, db } from "./firebase.js";
 
-  <script type="module">
+      import {
+        createUserWithEmailAndPassword,
+        getIdToken,
+        onAuthStateChanged,
+        reload,
+        sendEmailVerification,
+        signInWithEmailAndPassword,
+        signOut,
+      } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-    import {
-      auth,
-      db
-    } from "./firebase.js";
+      import {
+        doc,
+        getDoc,
+        setDoc,
+        serverTimestamp,
+      } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    import {
-      createUserWithEmailAndPassword,
-      getIdToken,
-      onAuthStateChanged,
-      reload,
-      sendEmailVerification,
-      signInWithEmailAndPassword,
-      signOut
-    }
-    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+      import {
+        getFunctions,
+        httpsCallable,
+      } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-functions.js";
 
-    import {
-      doc,
-      getDoc,
-      setDoc,
-      serverTimestamp
-    }
-    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+      const functions = getFunctions(auth.app, "asia-northeast1");
 
-    import {
-      getFunctions,
-      httpsCallable
-    }
-    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-functions.js";
-
-    const functions = getFunctions(
-      auth.app,
-      "asia-northeast1"
-    );
-
-    const getStoreInvitePreview =
-      httpsCallable(
+      const getStoreInvitePreview = httpsCallable(
         functions,
-        "getStoreInvitePreview"
+        "getStoreInvitePreview",
       );
 
-    const redeemStoreInvite =
-      httpsCallable(
-        functions,
-        "redeemStoreInvite"
+      const redeemStoreInvite = httpsCallable(functions, "redeemStoreInvite");
+
+      const inviteToken = new URLSearchParams(location.search).get("invite");
+
+      const inviteTokenPattern = /^[A-Za-z0-9_-]{43}$/;
+
+      const businessScopeLabels = {
+        night: "夜職求人",
+        general: "一般求人",
+        both: "夜職求人・一般求人の両方",
+      };
+
+      let previewReady = false;
+      let processing = false;
+      let sessionEmailMismatch = false;
+      let invitePreview = null;
+
+      const form = document.getElementById("registerForm");
+
+      const submitBtn = document.getElementById("submitBtn");
+
+      const message = document.getElementById("message");
+      const storeNameInput = document.getElementById("storeName");
+
+      const ownerNameInput = document.getElementById("ownerName");
+
+      const businessScopeLabel = document.getElementById("businessScopeLabel");
+
+      const emailHintLabel = document.getElementById("emailHintLabel");
+
+      const emailInput = document.getElementById("email");
+
+      const passwordInput = document.getElementById("password");
+
+      const agreeInput = document.getElementById("agree");
+
+      const togglePasswordButton = document.getElementById("togglePassword");
+
+      const loginBtn = document.getElementById("loginBtn");
+
+      const verificationActions = document.getElementById(
+        "verificationActions",
       );
 
-    const inviteToken =
-      new URLSearchParams(
-        location.search
-      ).get("invite");
-
-    const inviteTokenPattern =
-      /^[A-Za-z0-9_-]{43}$/;
-
-    const businessScopeLabels = {
-      night: "夜職求人",
-      general: "一般求人",
-      both: "夜職求人・一般求人の両方"
-    };
-
-    let previewReady = false;
-    let processing = false;
-    let sessionEmailMismatch = false;
-
-    const form =
-      document.getElementById("registerForm");
-
-    const submitBtn =
-      document.getElementById("submitBtn");
-
-    const message =
-      document.getElementById("message");
-        const storeNameInput =
-      document.getElementById("storeName");
-
-    const ownerNameInput =
-      document.getElementById("ownerName");
-
-    const businessScopeLabel =
-      document.getElementById("businessScopeLabel");
-
-    const emailHintLabel =
-      document.getElementById("emailHintLabel");
-
-    const emailInput =
-      document.getElementById("email");
-
-    const passwordInput =
-      document.getElementById("password");
-
-    const agreeInput =
-      document.getElementById("agree");
-
-    const togglePasswordButton =
-      document.getElementById("togglePassword");
-
-    const loginBtn =
-      document.getElementById("loginBtn");
-
-    const verificationActions =
-      document.getElementById(
-        "verificationActions"
+      const resendVerificationBtn = document.getElementById(
+        "resendVerificationBtn",
       );
 
-    const resendVerificationBtn =
-      document.getElementById(
-        "resendVerificationBtn"
+      const completeRegistrationBtn = document.getElementById(
+        "completeRegistrationBtn",
       );
 
-    const completeRegistrationBtn =
-      document.getElementById(
-        "completeRegistrationBtn"
-      );
+      const logoutForInviteBtn = document.getElementById("logoutForInviteBtn");
 
-    const logoutForInviteBtn =
-      document.getElementById(
-        "logoutForInviteBtn"
-      );
+      function showMessage(text, type = "info") {
+        message.className = `message ${type} show`;
 
-    function showMessage(
-      text,
-      type = "info"
-    ) {
-
-      message.className =
-        `message ${type} show`;
-
-      message.textContent = text;
-    }
-
-    function setProcessing(value) {
-      processing = value;
-
-      submitBtn.disabled =
-        value ||
-        !previewReady ||
-        sessionEmailMismatch;
-      loginBtn.disabled =
-        value ||
-        !previewReady ||
-        sessionEmailMismatch;
-      resendVerificationBtn.disabled =
-        value;
-      completeRegistrationBtn.disabled =
-        value;
-      logoutForInviteBtn.disabled =
-        value;
-    }
-
-    function disableRegistration(text) {
-      previewReady = false;
-      setProcessing(false);
-      submitBtn.textContent =
-        "登録できません";
-      showMessage(text, "error");
-    }
-
-    function enableRegistration() {
-      previewReady = true;
-      setProcessing(false);
-
-      submitBtn.textContent =
-        "店舗アカウントを作成";
-      loginBtn.textContent =
-        "既存アカウントでログインして続行";
-    }
-
-    function showVerificationActions() {
-      sessionEmailMismatch = false;
-      verificationActions.hidden = false;
-      submitBtn.hidden = true;
-      loginBtn.hidden = true;
-      logoutForInviteBtn.hidden = true;
-      showMessage(
-        "確認メール内のリンクを開いた後、「メール認証を確認して登録を完了」を押してください。",
-        "info"
-      );
-    }
-
-    function showMismatchedSession() {
-      sessionEmailMismatch = true;
-      verificationActions.hidden = true;
-      submitBtn.hidden = false;
-      loginBtn.hidden = false;
-      logoutForInviteBtn.hidden = false;
-      setProcessing(false);
-      showMessage(
-        "現在ログイン中のアカウントは、この招待の対象ではありません。一度ログアウトして、招待されたメールアドレスで登録またはログインしてください。",
-        "error"
-      );
-    }
-
-    async function authenticatedEmailMatchesInvite(
-      user
-    ) {
-      if (!user) {
-        return false;
+        message.textContent = text;
       }
 
-      await getIdToken(user, true);
+      function setProcessing(value) {
+        processing = value;
 
-      const response =
-        await getStoreInvitePreview({
-          inviteToken
+        submitBtn.disabled = value || !previewReady || sessionEmailMismatch;
+        loginBtn.disabled = value || !previewReady || sessionEmailMismatch;
+        resendVerificationBtn.disabled = value;
+        completeRegistrationBtn.disabled = value;
+        logoutForInviteBtn.disabled = value;
+      }
+
+      function disableRegistration(text) {
+        previewReady = false;
+        setProcessing(false);
+        submitBtn.textContent = "登録できません";
+        showMessage(text, "error");
+      }
+
+      function enableRegistration() {
+        previewReady = true;
+        setProcessing(false);
+
+        submitBtn.textContent = "店舗アカウントを作成";
+        loginBtn.textContent = "既存アカウントでログインして続行";
+      }
+
+      function showVerificationActions() {
+        sessionEmailMismatch = false;
+        verificationActions.hidden = false;
+        submitBtn.hidden = true;
+        loginBtn.hidden = true;
+        logoutForInviteBtn.hidden = true;
+        showMessage(
+          "確認メール内のリンクを開いた後、「メール認証を確認して登録を完了」を押してください。",
+          "info",
+        );
+      }
+
+      function showMismatchedSession() {
+        sessionEmailMismatch = true;
+        verificationActions.hidden = true;
+        submitBtn.hidden = false;
+        loginBtn.hidden = false;
+        logoutForInviteBtn.hidden = false;
+        setProcessing(false);
+        showMessage(
+          "現在ログイン中のアカウントは、この招待の対象ではありません。一度ログアウトして、招待されたメールアドレスで登録またはログインしてください。",
+          "error",
+        );
+      }
+
+      async function authenticatedEmailMatchesInvite(user) {
+        if (!user) {
+          return false;
+        }
+
+        await getIdToken(user, true);
+
+        const response = await getStoreInvitePreview({
+          inviteToken,
         });
 
-      return (
-        response?.data
-          ?.emailMatchesAuthenticatedUser ===
-        true
-      );
-    }
-
-    function authErrorMessage(error) {
-      const messages = {
-        "auth/email-already-in-use":
-          "このメールは登録済みです。既存アカウントでログインして続行してください。",
-        "auth/weak-password":
-          "より安全なパスワードを設定してください。",
-        "auth/invalid-email":
-          "メールアドレスの形式を確認してください。",
-        "auth/invalid-credential":
-          "メールアドレスまたはパスワードを確認してください。",
-        "auth/too-many-requests":
-          "試行回数が多すぎます。時間を置いて再度お試しください。"
-      };
-
-      return (
-        messages[error?.code] ||
-        "認証処理を完了できませんでした。自動再試行せず、入力内容を確認してください。"
-      );
-    }
-
-    function redemptionErrorMessage(error) {
-      const reason =
-        typeof error?.details?.reason ===
-          "string"
-          ? error.details.reason
-          : "";
-
-      const reasonMessages = {
-        "email-not-verified":
-          "メール認証が完了していません。確認メール内のリンクを開いてください。",
-        "user-not-pending":
-          "このアカウントは店舗登録可能な状態ではありません。",
-        "invalid-invite":
-          "この招待は無効、期限切れ、または使用できません。",
-        "store-already-exists":
-          "このアカウントには既に店舗情報が存在します。",
-        "registration-data-integrity":
-          "登録情報に不整合があります。自動再試行せず管理者へ確認してください。"
-      };
-
-      if (reasonMessages[reason]) {
-        return reasonMessages[reason];
+        return response?.data?.emailMatchesAuthenticatedUser === true;
       }
 
-      const codeMessages = {
-        "functions/unauthenticated":
-          "ログイン状態を確認してください。",
-        "functions/permission-denied":
-          "この招待を利用する権限を確認できませんでした。",
-        "functions/invalid-argument":
-          "登録情報または招待URLが正しくありません。",
-        "functions/not-found":
-          "この招待は無効、期限切れ、または使用できません。",
-        "functions/failed-precondition":
-          "現在のアカウント状態では店舗登録を完了できません。",
-        "functions/already-exists":
-          "このアカウントには既に店舗情報が存在します。"
-      };
+      function authErrorMessage(error) {
+        const messages = {
+          "auth/email-already-in-use":
+            "このメールは登録済みです。既存アカウントでログインして続行してください。",
+          "auth/weak-password": "より安全なパスワードを設定してください。",
+          "auth/invalid-email": "メールアドレスの形式を確認してください。",
+          "auth/invalid-credential":
+            "メールアドレスまたはパスワードを確認してください。",
+          "auth/too-many-requests":
+            "試行回数が多すぎます。時間を置いて再度お試しください。",
+        };
 
-      return (
-        codeMessages[error?.code] ||
-        "店舗登録を完了できませんでした。自動再試行せず状態を確認してください。"
-      );
-    }
+        return (
+          messages[error?.code] ||
+          "認証処理を完了できませんでした。自動再試行せず、入力内容を確認してください。"
+        );
+      }
 
-    async function waitForInitialAuthState() {
-      return new Promise((resolve) => {
-        const unsubscribe =
-          onAuthStateChanged(
-            auth,
-            (user) => {
-              unsubscribe();
-              resolve(user);
-            }
-          );
-      });
-    }
+      function redemptionErrorMessage(error) {
+        const reason =
+          typeof error?.details?.reason === "string"
+            ? error.details.reason
+            : "";
 
-    async function ensurePendingUser(
-      user,
-      ownerName
-    ) {
-      const userReference =
-        doc(db, "users", user.uid);
-      const userSnapshot =
-        await getDoc(userReference);
+        const reasonMessages = {
+          "email-not-verified":
+            "メール認証が完了していません。確認メール内のリンクを開いてください。",
+          "user-not-pending":
+            "このアカウントは店舗登録可能な状態ではありません。",
+          "invalid-invite": "この招待は無効、期限切れ、または使用できません。",
+          "store-already-exists":
+            "このアカウントには既に店舗情報が存在します。",
+          "registration-data-integrity":
+            "登録情報に不整合があります。自動再試行せず管理者へ確認してください。",
+        };
 
-      if (!userSnapshot.exists()) {
-        await setDoc(
-          userReference,
-          {
-            name: ownerName,
+        if (reasonMessages[reason]) {
+          return reasonMessages[reason];
+        }
+
+        const codeMessages = {
+          "functions/unauthenticated": "ログイン状態を確認してください。",
+          "functions/permission-denied":
+            "この招待を利用する権限を確認できませんでした。",
+          "functions/invalid-argument":
+            "登録情報または招待URLが正しくありません。",
+          "functions/not-found":
+            "この招待は無効、期限切れ、または使用できません。",
+          "functions/failed-precondition":
+            "現在のアカウント状態では店舗登録を完了できません。",
+          "functions/already-exists":
+            "このアカウントには既に店舗情報が存在します。",
+        };
+
+        return (
+          codeMessages[error?.code] ||
+          "店舗登録を完了できませんでした。自動再試行せず状態を確認してください。"
+        );
+      }
+
+      async function waitForInitialAuthState() {
+        return new Promise((resolve) => {
+          const unsubscribe = onAuthStateChanged(auth, (user) => {
+            unsubscribe();
+            resolve(user);
+          });
+        });
+      }
+
+      async function ensurePendingUser(user, input) {
+        const userReference = doc(db, "users", user.uid);
+        const userSnapshot = await getDoc(userReference);
+
+        if (!userSnapshot.exists()) {
+          await setDoc(userReference, {
+            name: input.ownerName,
             email: user.email || "",
             role: "user",
             status: "pending",
-            createdAt:
-              serverTimestamp(),
-            updatedAt:
-              serverTimestamp()
-          }
-        );
-
-        return;
-      }
-
-      const userData =
-        userSnapshot.data();
-
-      if (
-        !(
-          userData.role === "user" &&
-          userData.status === "pending"
-        ) &&
-        !(
-          userData.role === "store" &&
-          userData.status === "active"
-        )
-      ) {
-        throw new Error(
-          "invalid-user-state"
-        );
-      }
-    }
-
-    async function verifyRegisteredStore(user) {
-      const [
-        userSnapshot,
-        storeSnapshot
-      ] = await Promise.all([
-        getDoc(doc(db, "users", user.uid)),
-        getDoc(doc(db, "stores", user.uid))
-      ]);
-
-      const userData =
-        userSnapshot.exists()
-          ? userSnapshot.data()
-          : null;
-      const storeData =
-        storeSnapshot.exists()
-          ? storeSnapshot.data()
-          : null;
-
-      return (
-        userData?.role === "store" &&
-        userData.status === "active" &&
-        storeData?.ownerId === user.uid &&
-        ["night", "general", "both"]
-          .includes(
-            storeData?.businessScope
-          )
-      );
-    }
-
-    togglePasswordButton
-      .addEventListener(
-        "click",
-        () => {
-
-          const isHidden =
-            passwordInput.type ===
-            "password";
-
-          passwordInput.type =
-            isHidden
-              ? "text"
-              : "password";
-
-          togglePasswordButton
-            .textContent =
-              isHidden
-                ? "非表示"
-                : "表示";
-        }
-      );
-
-    async function checkInvite() {
-
-      if (
-        typeof inviteToken !== "string" ||
-        !inviteTokenPattern.test(
-          inviteToken
-        )
-      ) {
-
-        disableRegistration(
-          "店舗登録用の招待コードがありません。管理者から届いた専用URLを開いてください。"
-        );
-
-        return;
-      }
-
-      showMessage(
-        "招待情報を確認しています...",
-        "info"
-      );
-
-      try {
-        const existingUser =
-          await waitForInitialAuthState();
-
-        const response =
-          await getStoreInvitePreview({
-            inviteToken
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp(),
           });
 
-        const preview =
-          response?.data;
+          return;
+        }
 
-        const invitedStoreName =
-          typeof preview?.storeName ===
-            "string"
-            ? preview.storeName.trim()
-            : "";
-        const businessScope =
-          preview?.businessScope;
-        const emailHint =
-          typeof preview?.emailHint ===
-            "string"
-            ? preview.emailHint
-            : "";
+        const userData = userSnapshot.data();
 
         if (
-          preview?.valid !== true ||
-          !invitedStoreName ||
-          !businessScopeLabels[
-            businessScope
-          ] ||
-          !emailHint
+          !(userData.role === "user" && userData.status === "pending") &&
+          !(userData.role === "store" && userData.status === "active")
         ) {
+          throw new Error("invalid-user-state");
+        }
+      }
 
+      async function verifyRegisteredStore(user) {
+        const [userSnapshot, storeSnapshot] = await Promise.all([
+          getDoc(doc(db, "users", user.uid)),
+          getDoc(doc(db, "stores", user.uid)),
+        ]);
+
+        const userData = userSnapshot.exists() ? userSnapshot.data() : null;
+        const storeData = storeSnapshot.exists() ? storeSnapshot.data() : null;
+
+        return (
+          userData?.role === "store" &&
+          userData.status === "active" &&
+          storeData?.ownerId === user.uid &&
+          ["night", "general", "both"].includes(storeData?.businessScope)
+        );
+      }
+
+      togglePasswordButton.addEventListener("click", () => {
+        const isHidden = passwordInput.type === "password";
+
+        passwordInput.type = isHidden ? "text" : "password";
+
+        togglePasswordButton.textContent = isHidden ? "非表示" : "表示";
+      });
+
+      async function checkInvite() {
+        if (
+          typeof inviteToken !== "string" ||
+          !inviteTokenPattern.test(inviteToken)
+        ) {
           disableRegistration(
-            "この招待URLは無効です。管理者へ確認してください。"
+            "店舗登録用の招待コードがありません。管理者から届いた専用URLを開いてください。",
           );
 
           return;
         }
 
-        storeNameInput.value =
-          invitedStoreName;
+        showMessage("招待情報を確認しています...", "info");
 
-        storeNameInput.readOnly = true;
+        try {
+          const existingUser = await waitForInitialAuthState();
 
-        businessScopeLabel.textContent =
-          businessScopeLabels[
-            businessScope
-          ];
+          const response = await getStoreInvitePreview({
+            inviteToken,
+          });
 
-        emailHintLabel.textContent =
-          emailHint;
+          const preview = response?.data;
+          invitePreview = preview;
 
-        showMessage(
-          "招待情報を確認しました。必要事項を入力して登録してください。",
-          "success"
-        );
+          const invitedStoreName =
+            typeof preview?.storeName === "string"
+              ? preview.storeName.trim()
+              : "";
+          const businessScope = preview?.businessScope;
+          const emailHint =
+            typeof preview?.emailHint === "string" ? preview.emailHint : "";
 
-        enableRegistration();
-
-        if (existingUser) {
           if (
-            preview
-              .emailMatchesAuthenticatedUser ===
-            true
+            preview?.valid !== true ||
+            !invitedStoreName ||
+            !businessScopeLabels[businessScope] ||
+            !emailHint
           ) {
-            emailInput.value =
-              existingUser.email || "";
-            showVerificationActions();
-          } else {
-            showMismatchedSession();
+            disableRegistration(
+              "この招待URLは無効です。管理者へ確認してください。",
+            );
+
+            return;
           }
+
+          storeNameInput.value = invitedStoreName;
+
+          storeNameInput.readOnly = true;
+
+          businessScopeLabel.textContent = businessScopeLabels[businessScope];
+
+          emailHintLabel.textContent = emailHint;
+
+          showMessage(
+            "招待情報を確認しました。必要事項を入力して登録してください。",
+            "success",
+          );
+
+          enableRegistration();
+
+          if (existingUser) {
+            if (preview.emailMatchesAuthenticatedUser === true) {
+              emailInput.value = existingUser.email || "";
+              showVerificationActions();
+            } else {
+              showMismatchedSession();
+            }
+          }
+        } catch {
+          disableRegistration(
+            "この招待は無効、期限切れ、または使用できません。",
+          );
         }
-      } catch {
-        disableRegistration(
-          "この招待は無効、期限切れ、または使用できません。"
-        );
-      }
-    }
-
-    function validatedInput() {
-      if (sessionEmailMismatch) {
-        throw new Error(
-          "session-email-mismatch"
-        );
       }
 
-      if (!previewReady) {
-        throw new Error(
-          "invalid-invite"
-        );
+      function validatedInput() {
+        if (sessionEmailMismatch) {
+          throw new Error("session-email-mismatch");
+        }
+
+        if (!previewReady) {
+          throw new Error("invalid-invite");
+        }
+
+        if (!form.checkValidity()) {
+          form.reportValidity();
+          throw new Error("invalid-form");
+        }
+
+        const ownerName = ownerNameInput.value.trim();
+
+        if (!ownerName) {
+          throw new Error("invalid-owner-name");
+        }
+
+        if (!agreeInput.checked) {
+          throw new Error("agreement-required");
+        }
+
+        return {
+          ownerName,
+          email: emailInput.value.trim(),
+          password: passwordInput.value,
+        };
       }
 
-      if (!form.checkValidity()) {
-        form.reportValidity();
-        throw new Error(
-          "invalid-form"
-        );
-      }
-
-      const ownerName =
-        ownerNameInput.value.trim();
-
-      if (!ownerName) {
-        throw new Error(
-          "invalid-owner-name"
-        );
-      }
-
-      if (!agreeInput.checked) {
-        throw new Error(
-          "agreement-required"
-        );
-      }
-
-      return {
-        ownerName,
-        email: emailInput.value.trim(),
-        password: passwordInput.value
-      };
-    }
-
-    form.addEventListener(
-      "submit",
-      async (event) => {
+      form.addEventListener("submit", async (event) => {
         event.preventDefault();
 
         if (processing) {
@@ -1107,33 +876,29 @@
         try {
           const input = validatedInput();
           setProcessing(true);
-          submitBtn.textContent =
-            "アカウント作成中...";
+          submitBtn.textContent = "アカウント作成中...";
 
-          const result =
-            await createUserWithEmailAndPassword(
-              auth,
-              input.email,
-              input.password
-            );
+          const result = await createUserWithEmailAndPassword(
+            auth,
+            input.email,
+            input.password,
+          );
 
-          if (
-            !await authenticatedEmailMatchesInvite(
-              result.user
-            )
-          ) {
+          if (!(await authenticatedEmailMatchesInvite(result.user))) {
             passwordInput.value = "";
             showMismatchedSession();
             return;
           }
 
-          await ensurePendingUser(
-            result.user,
-            input.ownerName
-          );
-          await sendEmailVerification(
-            result.user
-          );
+          await ensurePendingUser(result.user, input);
+          const verificationReturnUrl =
+            `${location.origin}/pages/store-register.html` +
+            `?invite=${encodeURIComponent(inviteToken)}`;
+
+          await sendEmailVerification(result.user, {
+            url: verificationReturnUrl,
+            handleCodeInApp: false,
+          });
 
           passwordInput.value = "";
           showVerificationActions();
@@ -1142,25 +907,18 @@
             ![
               "invalid-form",
               "invalid-owner-name",
-              "agreement-required"
+              "agreement-required",
             ].includes(error?.message)
           ) {
-            showMessage(
-              authErrorMessage(error),
-              "error"
-            );
+            showMessage(authErrorMessage(error), "error");
           }
         } finally {
           setProcessing(false);
-          submitBtn.textContent =
-            "店舗アカウントを作成";
+          submitBtn.textContent = "店舗アカウントを作成";
         }
-      }
-    );
+      });
 
-    loginBtn.addEventListener(
-      "click",
-      async () => {
+      loginBtn.addEventListener("click", async () => {
         if (processing) {
           return;
         }
@@ -1168,30 +926,21 @@
         try {
           const input = validatedInput();
           setProcessing(true);
-          loginBtn.textContent =
-            "ログイン中...";
+          loginBtn.textContent = "ログイン中...";
 
-          const result =
-            await signInWithEmailAndPassword(
-              auth,
-              input.email,
-              input.password
-            );
+          const result = await signInWithEmailAndPassword(
+            auth,
+            input.email,
+            input.password,
+          );
 
-          if (
-            !await authenticatedEmailMatchesInvite(
-              result.user
-            )
-          ) {
+          if (!(await authenticatedEmailMatchesInvite(result.user))) {
             passwordInput.value = "";
             showMismatchedSession();
             return;
           }
 
-          await ensurePendingUser(
-            result.user,
-            input.ownerName
-          );
+          await ensurePendingUser(result.user, input);
 
           passwordInput.value = "";
           showVerificationActions();
@@ -1200,196 +949,145 @@
             ![
               "invalid-form",
               "invalid-owner-name",
-              "agreement-required"
+              "agreement-required",
             ].includes(error?.message)
           ) {
-            showMessage(
-              authErrorMessage(error),
-              "error"
-            );
+            showMessage(authErrorMessage(error), "error");
           }
         } finally {
           setProcessing(false);
-          loginBtn.textContent =
-            "既存アカウントでログインして続行";
+          loginBtn.textContent = "既存アカウントでログインして続行";
         }
-      }
-      );
+      });
 
-    logoutForInviteBtn
-      .addEventListener(
-        "click",
-        async () => {
-          if (processing) {
-            return;
-          }
-
-          try {
-            setProcessing(true);
-            await signOut(auth);
-            location.reload();
-          } catch {
-            showMessage(
-              "ログアウトできませんでした。時間を置いて再度お試しください。",
-              "error"
-            );
-          } finally {
-            setProcessing(false);
-          }
+      logoutForInviteBtn.addEventListener("click", async () => {
+        if (processing) {
+          return;
         }
-      );
 
-    resendVerificationBtn
-      .addEventListener(
-        "click",
-        async () => {
-          if (
-            processing ||
-            !auth.currentUser
-          ) {
-            return;
-          }
-
-          try {
-            setProcessing(true);
-            await sendEmailVerification(
-              auth.currentUser
-            );
-            showMessage(
-              "確認メールを再送しました。",
-              "success"
-            );
-          } catch (error) {
-            showMessage(
-              authErrorMessage(error),
-              "error"
-            );
-          } finally {
-            setProcessing(false);
-          }
+        try {
+          setProcessing(true);
+          await signOut(auth);
+          location.reload();
+        } catch {
+          showMessage(
+            "ログアウトできませんでした。時間を置いて再度お試しください。",
+            "error",
+          );
+        } finally {
+          setProcessing(false);
         }
-      );
+      });
 
-    completeRegistrationBtn
-      .addEventListener(
-        "click",
-        async () => {
-          if (
-            processing ||
-            !previewReady
-          ) {
-            return;
-          }
+      resendVerificationBtn.addEventListener("click", async () => {
+        if (processing || !auth.currentUser) {
+          return;
+        }
 
-          const user =
-            auth.currentUser;
-          const ownerName =
-            ownerNameInput.value.trim();
+        try {
+          setProcessing(true);
+          const verificationReturnUrl =
+            `${location.origin}/pages/store-register.html` +
+            `?invite=${encodeURIComponent(inviteToken)}`;
 
-          if (!user || !ownerName) {
+          await sendEmailVerification(auth.currentUser, {
+            url: verificationReturnUrl,
+            handleCodeInApp: false,
+          });
+          showMessage("確認メールを再送しました。", "success");
+        } catch (error) {
+          showMessage(authErrorMessage(error), "error");
+        } finally {
+          setProcessing(false);
+        }
+      });
+
+      completeRegistrationBtn.addEventListener("click", async () => {
+        if (processing || !previewReady) {
+          return;
+        }
+
+        const user = auth.currentUser;
+        const ownerName = ownerNameInput.value.trim();
+
+        if (!user || !ownerName) {
+          showMessage("ログイン状態と担当者名を確認してください。", "error");
+          return;
+        }
+
+        try {
+          setProcessing(true);
+          completeRegistrationBtn.textContent = "メール認証を確認中...";
+
+          await reload(user);
+
+          if (!user.emailVerified) {
             showMessage(
-              "ログイン状態と担当者名を確認してください。",
-              "error"
+              "メール認証が完了していません。確認メール内のリンクを開いてください。",
+              "error",
             );
             return;
           }
 
-          try {
-            setProcessing(true);
-            completeRegistrationBtn
-              .textContent =
-              "メール認証を確認中...";
+          await getIdToken(user, true);
 
-            await reload(user);
-
-            if (!user.emailVerified) {
-              showMessage(
-                "メール認証が完了していません。確認メール内のリンクを開いてください。",
-                "error"
-              );
-              return;
-            }
-
-            await getIdToken(user, true);
-
-            if (
-              !await authenticatedEmailMatchesInvite(
-                user
-              )
-            ) {
-              showMismatchedSession();
-              return;
-            }
-
-            await ensurePendingUser(
-              user,
-              ownerName
-            );
-
-            completeRegistrationBtn
-              .textContent =
-              "店舗登録を完了中...";
-
-            await redeemStoreInvite({
-              inviteToken,
-              ownerName
-            });
-
-            const isRegistered =
-              await verifyRegisteredStore(
-                user
-              );
-
-            if (!isRegistered) {
-              throw new Error(
-                "registration-integrity"
-              );
-            }
-
-            showMessage(
-              "登録が完了しました。店舗ダッシュボードへ移動します。",
-              "success"
-            );
-
-            location.replace(
-              "./store-dashboard.html"
-            );
-          } catch (error) {
-            if (
-              error?.message ===
-              "invalid-user-state"
-            ) {
-              showMessage(
-                "このアカウントは店舗登録可能な状態ではありません。",
-                "error"
-              );
-            } else if (
-              error?.message ===
-              "registration-integrity"
-            ) {
-              showMessage(
-                "登録後の情報に不整合があります。管理者へ確認してください。",
-                "error"
-              );
-            } else {
-              showMessage(
-                redemptionErrorMessage(
-                  error
-                ),
-                "error"
-              );
-            }
-          } finally {
-            setProcessing(false);
-            completeRegistrationBtn
-              .textContent =
-              "メール認証を確認して登録を完了";
+          if (!(await authenticatedEmailMatchesInvite(user))) {
+            showMismatchedSession();
+            return;
           }
+
+          if (!invitePreview) {
+            throw new Error("invalid-invite");
+          }
+
+          await ensurePendingUser(user, {
+            ownerName,
+            storeName: invitePreview.storeName,
+            businessScope: invitePreview.businessScope,
+            email: user.email,
+          });
+
+          completeRegistrationBtn.textContent = "店舗登録を完了中...";
+
+          await redeemStoreInvite({
+            inviteToken,
+            ownerName,
+          });
+
+          const isRegistered = await verifyRegisteredStore(user);
+
+          if (!isRegistered) {
+            throw new Error("registration-integrity");
+          }
+
+          showMessage(
+            "登録が完了しました。店舗ダッシュボードへ移動します。",
+            "success",
+          );
+
+          location.replace("./store-dashboard.html");
+        } catch (error) {
+          if (error?.message === "invalid-user-state") {
+            showMessage(
+              "このアカウントは店舗登録可能な状態ではありません。",
+              "error",
+            );
+          } else if (error?.message === "registration-integrity") {
+            showMessage(
+              "登録後の情報に不整合があります。管理者へ確認してください。",
+              "error",
+            );
+          } else {
+            showMessage(redemptionErrorMessage(error), "error");
+          }
+        } finally {
+          setProcessing(false);
+          completeRegistrationBtn.textContent =
+            "メール認証を確認して登録を完了";
         }
-      );
+      });
 
-    checkInvite();
-  </script>
-
-</body>
+      checkInvite();
+    </script>
+  </body>
 </html>

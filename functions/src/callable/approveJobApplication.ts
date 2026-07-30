@@ -84,7 +84,14 @@ function targetHash(
 function isTimestamp(
   value: unknown
 ): value is Timestamp {
-  return value instanceof Timestamp;
+  return (
+    value !== null &&
+    typeof value === "object" &&
+    "toMillis" in value &&
+    typeof (
+      value as { toMillis?: unknown }
+    ).toMillis === "function"
+  );
 }
 
 function failedPrecondition(
@@ -129,28 +136,22 @@ function requireMatchingOwnership(
 }
 
 function requirePublishableContract(
-  store:
-    FirebaseFirestore.DocumentData,
-  contract:
-    FirebaseFirestore.DocumentData,
+  store: FirebaseFirestore.DocumentData,
+  contract: FirebaseFirestore.DocumentData,
   storeId: string,
   now: Timestamp
 ): void {
   if (
     store.ownerId !== storeId ||
     store.isPublic !== true ||
-    store.contractListingStatus !==
-      "active" ||
+    store.contractListingStatus !== "active" ||
     contract.ownerId !== storeId ||
-    contract.storeId !== storeId ||
     contract.paymentStatus !== "paid" ||
     contract.listingStatus !== "active" ||
     !isTimestamp(contract.contractStartAt) ||
     !isTimestamp(contract.contractEndAt) ||
-    contract.contractStartAt.toMillis() >
-      now.toMillis() ||
-    contract.contractEndAt.toMillis() <
-      now.toMillis()
+    contract.contractStartAt.toMillis() > now.toMillis() ||
+    contract.contractEndAt.toMillis() < now.toMillis()
   ) {
     throw failedPrecondition(
       "store-contract-not-publishable"
@@ -244,137 +245,150 @@ export const approveJobApplication =
                 job,
                 applicationId
               );
-            const storeReference =
-              firestore.doc(
-                `stores/${storeId}`
-              );
-            const contractReference =
-              firestore.doc(
-                `storeContracts/${storeId}`
-              );
-            const [
-              storeSnapshot,
-              contractSnapshot,
-              auditSnapshot
-            ] = await Promise.all([
-              transaction.get(storeReference),
-              transaction.get(contractReference),
-              transaction.get(auditReference)
-            ]);
+            const storeQuery = firestore
+  .collection("stores")
+  .where("ownerId", "==", storeId)
+  .limit(1);
 
-            if (
-              !storeSnapshot.exists ||
-              !contractSnapshot.exists
-            ) {
-              throw failedPrecondition(
-                "store-contract-missing"
-              );
-            }
+const contractReference =
+  firestore.doc(
+    `storeContracts/${storeId}`
+  );
 
-            const now = Timestamp.now();
-            requirePublishableContract(
-              storeSnapshot.data() ?? {},
-              contractSnapshot.data() ?? {},
-              storeId,
-              now
-            );
+const [
+  storeQuerySnapshot,
+  contractSnapshot,
+  auditSnapshot
+] = await Promise.all([
+  transaction.get(storeQuery),
+  transaction.get(contractReference),
+  transaction.get(auditReference)
+]);
 
-            if (
-              isFullyApproved(
-                application,
-                job
-              )
-            ) {
-              return {
-                approved: true,
-                idempotent: true
-              };
-            }
+const storeSnapshot =
+  storeQuerySnapshot.docs[0];
 
-            if (
-              ![
-                "pending",
-                "approved"
-              ].includes(application.status) ||
-              ![
-                "pending",
-                "reapproval_pending",
-                "approved"
-              ].includes(job.status)
-            ) {
-              throw failedPrecondition(
-                "approval-state-invalid"
-              );
-            }
+if (
+  storeQuerySnapshot.empty ||
+  !contractSnapshot.exists
+) {
+  throw failedPrecondition(
+    "store-contract-missing"
+  );
+}
 
-            transaction.update(
-              applicationReference,
-              {
-                status: "approved",
-                approvedAt:
-                  FieldValue.serverTimestamp(),
-                approvedBy: admin.uid,
-                updatedAt:
-                  FieldValue.serverTimestamp()
-              }
-            );
-            transaction.update(
-              jobReference,
-              {
-                status: "approved",
-                isPublic: true,
-                contractListingStatus:
-                  "active",
-                approvedAt:
-                  FieldValue.serverTimestamp(),
-                approvedBy: admin.uid,
-                updatedAt:
-                  FieldValue.serverTimestamp(),
-                updatedBy: admin.uid
-              }
-            );
+const now = Timestamp.now();
 
-            if (!auditSnapshot.exists) {
-              transaction.create(
-                auditReference,
-                {
-                  actionType:
-                    "approve_job_application",
-                  targetType: "job",
-                  targetHash: hash,
-                  before: {
-                    applicationStatus:
-                      application.status ?? null,
-                    jobStatus:
-                      job.status ?? null,
-                    isPublic:
-                      job.isPublic === true,
-                    contractListingStatus:
-                      job.contractListingStatus ??
-                      null
-                  },
-                  after: {
-                    applicationStatus:
-                      "approved",
-                    jobStatus: "approved",
-                    isPublic: true,
-                    contractListingStatus:
-                      "active"
-                  },
-                  createdAt:
-                    FieldValue.serverTimestamp(),
-                  actorType:
-                    "fixed_admin"
-                }
-              );
-            }
+requirePublishableContract(
+  storeSnapshot.data() ?? {},
+  contractSnapshot.data() ?? {},
+  storeId,
+  now
+);
 
+if (
+  isFullyApproved(
+    application,
+    job
+  )
+) {
+  return {
+    approved: true,
+    idempotent: true
+  };
+}
+
+if (
+  ![
+    "pending",
+    "approved"
+  ].includes(application.status) ||
+  ![
+    "pending",
+    "reapproval_pending",
+    "paused",
+    "approved"
+  ].includes(job.status)
+) {
+  throw failedPrecondition(
+    "approval-state-invalid"
+  );
+}
+
+transaction.update(
+  applicationReference,
+  {
+    status: "approved",
+    approvedAt:
+      FieldValue.serverTimestamp(),
+    approvedBy: admin.uid,
+    updatedAt:
+      FieldValue.serverTimestamp()
+  }
+);
+
+transaction.update(
+  jobReference,
+  {
+    status: "approved",
+    isPublic: true,
+    contractListingStatus:
+      "active",
+    approvedAt:
+      FieldValue.serverTimestamp(),
+    approvedBy: admin.uid,
+    updatedAt:
+      FieldValue.serverTimestamp(),
+    updatedBy: admin.uid
+  }
+);
+
+if (!auditSnapshot.exists) {
+  transaction.create(
+    auditReference,
+    {
+      actionType:
+        "approve_job_application",
+      targetType: "job",
+      targetHash: hash,
+      before: {
+        applicationStatus:
+          application.status ?? null,
+        jobStatus:
+          job.status ?? null,
+        isPublic:
+          job.isPublic === true,
+        contractListingStatus:
+          job.contractListingStatus ??
+          null
+      },
+      after: {
+        applicationStatus:
+          "approved",
+        jobStatus:
+          "approved",
+        isPublic: true,
+        contractListingStatus:
+          "active"
+      },
+      createdAt:
+        FieldValue.serverTimestamp(),
+      actorType:
+        "fixed_admin"
+    }
+  );
+}
+
+return {
+  approved: true,
+  idempotent: false
+};
+});
             return {
               approved: true,
               idempotent: false
             };
-          }
-        );
+          });
       } catch (error) {
         if (error instanceof HttpsError) {
           throw error;
