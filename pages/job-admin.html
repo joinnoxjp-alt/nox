@@ -430,9 +430,7 @@
       getDocs,
       getDoc,
       doc,
-      updateDoc,
-      deleteDoc,
-      serverTimestamp
+      deleteDoc
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     import {
@@ -457,6 +455,11 @@
       httpsCallable(
         functions,
         "approveJobApplication"
+      );
+    const manageAdminJobCallable =
+      httpsCallable(
+        functions,
+        "manageAdminJob"
       );
 
     const pendingJobList =
@@ -1127,6 +1130,14 @@
 
           <button
             type="button"
+            class="admin-action-button pause-button end-job-button"
+            data-job-id="${escapeHtml(job.id)}"
+          >
+            掲載終了
+          </button>
+
+          <button
+            type="button"
             class="admin-action-button delete-button delete-job-button"
             data-job-id="${escapeHtml(job.id)}"
           >
@@ -1509,6 +1520,15 @@
 
         if(
           target.classList.contains(
+            "end-job-button"
+          )
+        ){
+          await endJob(target);
+          return;
+        }
+
+        if(
+          target.classList.contains(
             "delete-job-button"
           )
         ){
@@ -1770,9 +1790,10 @@
     ? [mainImage]
     : [];
 
-        await updateDoc(
-          jobReference,
-          {
+        await manageAdminJobCallable({
+          action:"update",
+          jobId,
+          changes:{
             storeName,
             shopName:storeName,
             name:storeName,
@@ -1815,19 +1836,14 @@
             image:mainImage,
             images:updatedImages,
 
-            updatedAt:
-              serverTimestamp(),
-
-            updatedBy:
-              currentAdminUser?.uid || ""
           }
-        );
+        });
 
         statusElement.className =
           "edit-save-status success";
 
         statusElement.textContent =
-          "店舗情報を更新しました";
+          "求人情報を更新しました";
 
         imageInput.value = "";
 
@@ -2003,14 +2019,7 @@
         "停止中...";
 
       try{
-        await updateDoc(
-          doc(db,"jobs",jobId),
-          {
-            status:"paused",
-            pausedAt:
-              serverTimestamp()
-          }
-        );
+        await manageAdminJobCallable({ action:"pause", jobId });
 
         alert(
           "掲載を停止しました"
@@ -2052,14 +2061,7 @@
         "再掲載中...";
 
       try{
-        await updateDoc(
-          doc(db,"jobs",jobId),
-          {
-            status:"approved",
-            republishedAt:
-              serverTimestamp()
-          }
-        );
+        await manageAdminJobCallable({ action:"resume", jobId });
 
         alert(
           "再掲載しました"
@@ -2101,14 +2103,7 @@
         "設定中...";
 
       try{
-        await updateDoc(
-          doc(db,"jobs",jobId),
-          {
-            topFeatured:true,
-            topFeaturedAt:
-              serverTimestamp()
-          }
-        );
+        await manageAdminJobCallable({ action:"top-on", jobId });
 
         alert(
           "トップ掲載をONにしました"
@@ -2150,14 +2145,7 @@
         "解除中...";
 
       try{
-        await updateDoc(
-          doc(db,"jobs",jobId),
-          {
-            topFeatured:false,
-            topFeaturedRemovedAt:
-              serverTimestamp()
-          }
-        );
+        await manageAdminJobCallable({ action:"top-off", jobId });
 
         alert(
           "トップ掲載をOFFにしました"
@@ -2178,6 +2166,24 @@
         button.disabled = false;
         button.textContent =
           "トップ掲載OFF";
+      }
+    }
+
+    async function endJob(button){
+      const jobId = button.dataset.jobId;
+      if(!confirm("この求人の掲載を終了しますか？")) return;
+      button.disabled = true;
+      button.textContent = "終了処理中...";
+      try{
+        await manageAdminJobCallable({ action:"end", jobId });
+        alert("求人掲載を終了しました");
+        await loadPublishedJobs();
+      }catch(error){
+        console.error(error);
+        alert(error?.message || "求人掲載を終了できませんでした");
+      }finally{
+        button.disabled = false;
+        button.textContent = "掲載終了";
       }
     }
 
@@ -2211,9 +2217,7 @@
         "削除中...";
 
       try{
-        await deleteDoc(
-          doc(db,"jobs",jobId)
-        );
+        await manageAdminJobCallable({ action:"delete", jobId });
 
         alert(
           "掲載店舗を完全削除しました"

@@ -1597,6 +1597,10 @@
         functions,
         "approveJobApplication",
       );
+      const manageAdminStoreCallable = httpsCallable(
+        functions,
+        "manageAdminStore",
+      );
 
       const userList = document.getElementById("userList");
 
@@ -1742,8 +1746,8 @@
           "directContractEndAt",
         ).value;
 
-        if (!storeName) {
-          directStoreStatus.textContent = "店舗名を入力してください。";
+        if (!storeName || !ownerId) {
+          directStoreStatus.textContent = "店舗名と店舗アカウントのUIDを入力してください。";
           return;
         }
 
@@ -1785,40 +1789,23 @@
             .getElementById("directAdminNote")
             .value.trim();
 
-          const storeRef = doc(collection(db, "stores"));
-          const finalOwnerId = ownerId || storeRef.id;
-          await setDoc(storeRef, {
+          await manageAdminStoreCallable({
+            action: "create",
+            storeId: ownerId,
             storeName,
-            ownerId: finalOwnerId,
             businessScope,
             businessType,
             area,
             contactName,
-            isPublic: true,
-            source: "admin_direct",
-            createdAt: serverTimestamp(),
-            updatedAt: serverTimestamp(),
-          });
-
-          await setDoc(doc(db, "storeContracts", storeRef.id), {
-            storeUid: storeRef.id,
-            ownerId: finalOwnerId,
             planCode,
-            contractStartAt: new Date(`${contractStartAt}T00:00:00+09:00`),
-            contractEndAt: new Date(`${contractEndAt}T23:59:59+09:00`),
+            contractStartAt: `${contractStartAt}T00:00:00+09:00`,
+            contractEndAt: `${contractEndAt}T23:59:59+09:00`,
             paymentStatus,
-            listingStatus: paymentStatus === "paid" ? "active" : "pending",
-            options: {
-              top_ad: {
-                enabled: topAdEnabled,
-              },
-              new_job: {
-                enabled: newJobEnabled,
-              },
-            },
+            optionCodes: [
+              ...(topAdEnabled ? ["top_ad"] : []),
+              ...(newJobEnabled ? ["new_job"] : []),
+            ],
             adminNote,
-            createdAt: serverTimestamp(),
-            updatedAt: serverTimestamp(),
           });
 
           directStoreStatus.textContent = "店舗を直接登録しました。";
@@ -1829,7 +1816,8 @@
         } catch (error) {
           console.error("店舗の直接登録に失敗しました。", error);
 
-          directStoreStatus.textContent = "店舗を登録できませんでした。";
+          directStoreStatus.textContent =
+            error?.message || "店舗を登録できませんでした。";
 
           createDirectStoreButton.disabled = false;
         }
@@ -2118,7 +2106,7 @@
 
         const confirmed = confirm(
           `「${storeName}」の店舗情報と契約情報を削除しますか？\n\n` +
-            "求人情報と会員アカウントは削除されません。",
+            "関連求人は非公開・終了扱いになります。会員アカウントは削除されません。",
         );
 
         if (!confirmed) {
@@ -2137,10 +2125,10 @@
         button.textContent = "削除中...";
 
         try {
-          await Promise.all([
-            deleteDoc(doc(db, "stores", store.id)),
-            deleteDoc(doc(db, "storeContracts", store.id)),
-          ]);
+          await manageAdminStoreCallable({
+            action: "delete",
+            storeId: store.id,
+          });
 
           await Promise.all([loadRegisteredStores(), loadPublicJobs()]);
 
@@ -2310,6 +2298,31 @@
 
         buttonRow.className = "admin-btn-row";
 
+        const editButton = document.createElement("button");
+        editButton.type = "button";
+        editButton.className = "admin-button sub";
+        editButton.textContent = "店舗情報を編集";
+        editButton.addEventListener("click", async () => {
+          const storeName = prompt("店舗名", store.storeName || "");
+          if (storeName === null) return;
+          const area = prompt("地域", store.area || "");
+          if (area === null) return;
+          const businessType = prompt("業種", store.businessType || "");
+          if (businessType === null) return;
+          editButton.disabled = true;
+          try {
+            await manageAdminStoreCallable({
+              action: "update", storeId: store.id,
+              changes: { storeName: storeName.trim(), area: area.trim(), businessType: businessType.trim() },
+            });
+            alert("店舗情報を更新しました。");
+            await Promise.all([loadRegisteredStores(), loadPublicJobs()]);
+          } catch (error) {
+            alert(error?.message || "店舗情報を更新できませんでした。");
+            editButton.disabled = false;
+          }
+        });
+
         const deleteButton = document.createElement("button");
 
         deleteButton.type = "button";
@@ -2321,7 +2334,7 @@
           deleteRegisteredStoreData(store, deleteButton);
         });
 
-        buttonRow.appendChild(deleteButton);
+        buttonRow.append(editButton, deleteButton);
 
         card.appendChild(buttonRow);
         return card;
@@ -2395,8 +2408,9 @@
           </button>
           <button type="button" class="admin-button sub" data-contract-action="start">掲載開始</button>
           <button type="button" class="admin-button sub" data-contract-action="pause">一時停止</button>
-          <button type="button" class="admin-button sub" data-contract-action="suspend">強制停止</button>
           <button type="button" class="admin-button sub" data-contract-action="resume">再開</button>
+          <button type="button" class="admin-button sub" data-contract-action="end">掲載終了</button>
+          <button type="button" class="admin-button sub" data-contract-action="suspend">強制停止</button>
           <button
   type="button"
   class="admin-button danger"
@@ -2438,7 +2452,11 @@
           paymentSelect.value = "suspended";
           listingSelect.value = "suspended";
         } else if (action === "resume") {
+          paymentSelect.value = "paid";
           listingSelect.value = "active";
+        } else if (action === "end") {
+          paymentSelect.value = "expired";
+          listingSelect.value = "expired";
         }
 
         const startValue = field("contractStartAt").value;

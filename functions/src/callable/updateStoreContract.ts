@@ -332,7 +332,7 @@ export const updateStoreContract = onCall(
       const contractData = {
         schemaVersion: 1,
         storeId: input.storeUid,
-        ownerId: input.storeUid,
+        ownerId: storeOwnerId,
         planCode: plan.planCode,
         planLabel: plan.label,
         durationMonths: plan.durationMonths,
@@ -370,8 +370,10 @@ export const updateStoreContract = onCall(
             input.listingStatus === "active"
               ? "approved"
               : jobSnapshot.data().status,
-          isPublic: input.listingStatus === "active",
+          isPublic,
           contractListingStatus: input.listingStatus,
+          updatedAt: FieldValue.serverTimestamp(),
+          updatedBy: admin.uid,
         });
       });
 

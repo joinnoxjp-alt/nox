@@ -384,11 +384,6 @@ return {
   idempotent: false
 };
 });
-            return {
-              approved: true,
-              idempotent: false
-            };
-          });
       } catch (error) {
         if (error instanceof HttpsError) {
           throw error;

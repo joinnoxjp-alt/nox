@@ -163,7 +163,7 @@ export const createAdminJob = onCall(adminCallableOptions, async (request) => {
       schemaVersion: 1,
 
       ownerId: input.ownerId,
-      storeId: input.ownerId,
+      storeId: storeSnapshot.id,
       storeName: input.storeName,
 
       title: input.title,
