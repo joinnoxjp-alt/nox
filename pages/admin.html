@@ -133,6 +133,63 @@
         transform: none;
       }
 
+      .store-media-manager {
+        margin-top: 18px;
+        border-top: 1px solid rgba(212, 175, 55, 0.25);
+        padding-top: 14px;
+      }
+
+      .store-media-manager summary {
+        color: #f5d36b;
+        cursor: pointer;
+        font-weight: 800;
+      }
+
+      .store-media-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+        gap: 14px;
+        margin-top: 14px;
+      }
+
+      .store-media-item {
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 14px;
+        padding: 12px;
+        background: #090909;
+      }
+
+      .store-media-item h4 {
+        color: #f5d36b;
+        margin-bottom: 9px;
+      }
+
+      .store-media-preview {
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        object-fit: cover;
+        border-radius: 10px;
+        background: #161616;
+        margin-bottom: 10px;
+      }
+
+      .store-media-preview.is-square {
+        aspect-ratio: 1;
+      }
+
+      .store-media-item input[type="file"] {
+        width: 100%;
+        color: #ddd;
+        margin-bottom: 8px;
+      }
+
+      .store-media-status {
+        min-height: 1.5em;
+        color: #ccc;
+        font-size: 13px;
+        margin-top: 8px;
+      }
+
       /* 広告管理 */
 
       .ad-management-grid {
@@ -1549,6 +1606,7 @@
     </main>
 
     <script src="./admin-date.js"></script>
+    <script src="./admin-store-media.js"></script>
     <script type="module">
       import { auth } from "../firebase.js";
 
@@ -1601,6 +1659,10 @@
       const manageAdminStoreCallable = httpsCallable(
         functions,
         "manageAdminStore",
+      );
+      const manageAdminStoreMediaCallable = httpsCallable(
+        functions,
+        "manageAdminStoreMedia",
       );
 
       const userList = document.getElementById("userList");
@@ -2255,6 +2317,193 @@
           .join("");
       }
 
+      function readStoreMediaFile(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            const dataUrl = typeof reader.result === "string" ? reader.result : "";
+            const separator = dataUrl.indexOf(",");
+            if (separator < 0) {
+              reject(new Error("画像を読み込めませんでした。"));
+              return;
+            }
+            resolve({ dataUrl, imageBase64: dataUrl.slice(separator + 1) });
+          };
+          reader.onerror = () => reject(new Error("画像を読み込めませんでした。"));
+          reader.readAsDataURL(file);
+        });
+      }
+
+      function storeMediaErrorMessage(error) {
+        const code = error?.code || "";
+        if (code.includes("permission-denied")) return "管理者権限を確認できませんでした。";
+        if (code.includes("not-found")) return "対象の店舗または画像が見つかりません。";
+        if (code.includes("aborted")) return "別の画像操作が完了しています。画面を更新して再試行してください。";
+        if (code.includes("invalid-argument")) return error?.message || "画像または入力内容が正しくありません。";
+        return error?.message || "店舗画像を更新できませんでした。";
+      }
+
+      function createStoreMediaItem(store, kind, slot, initialMedia) {
+        const config = window.NoxAdminStoreMedia.MEDIA_CONFIG[kind];
+        const item = document.createElement("section");
+        item.className = "store-media-item";
+        let media = initialMedia;
+        let selectedFile = null;
+        let selectedBase64 = "";
+
+        const title = document.createElement("h4");
+        title.textContent = kind === "gallery" ? `${config.label} ${slot + 1}` : config.label;
+        const preview = document.createElement("img");
+        preview.className = `store-media-preview${kind === "logo" || kind === "profile" ? " is-square" : ""}`;
+        preview.alt = title.textContent;
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = "image/jpeg,image/png,image/webp";
+        const buttonRow = document.createElement("div");
+        buttonRow.className = "admin-btn-row";
+        const uploadButton = document.createElement("button");
+        uploadButton.type = "button";
+        uploadButton.className = "admin-button sub";
+        uploadButton.disabled = true;
+        const deleteButton = document.createElement("button");
+        deleteButton.type = "button";
+        deleteButton.className = "admin-button danger";
+        deleteButton.textContent = "削除";
+        const status = document.createElement("p");
+        status.className = "store-media-status";
+
+        function render() {
+          preview.hidden = !media?.url;
+          if (media?.url) preview.src = media.url;
+          else preview.removeAttribute("src");
+          uploadButton.textContent = media?.storagePath ? "選択画像に置換" : "アップロード";
+          uploadButton.disabled = !selectedFile;
+          deleteButton.disabled = !media?.storagePath;
+        }
+
+        input.addEventListener("change", async () => {
+          selectedFile = input.files?.[0] || null;
+          selectedBase64 = "";
+          status.textContent = "";
+          try {
+            window.NoxAdminStoreMedia.validateFile(selectedFile, kind);
+            const selected = await readStoreMediaFile(selectedFile);
+            selectedBase64 = selected.imageBase64;
+            preview.src = selected.dataUrl;
+            preview.hidden = false;
+            uploadButton.disabled = false;
+            status.textContent = "選択画像を確認してアップロードしてください。";
+          } catch (error) {
+            selectedFile = null;
+            input.value = "";
+            status.textContent = error.message;
+            render();
+          }
+        });
+
+        uploadButton.addEventListener("click", async () => {
+          if (!selectedFile || !selectedBase64) return;
+          input.disabled = true;
+          uploadButton.disabled = true;
+          deleteButton.disabled = true;
+          status.textContent = media ? "画像を置換しています..." : "画像をアップロードしています...";
+          try {
+            const request = window.NoxAdminStoreMedia.buildUploadRequest({
+              storeId: store.id, kind, slot, file: selectedFile,
+              imageBase64: selectedBase64,
+            });
+            const response = await manageAdminStoreMediaCallable(request);
+            media = { url: response.data.url, storagePath: response.data.storagePath };
+            selectedFile = null;
+            selectedBase64 = "";
+            input.value = "";
+            status.textContent = response.data.oldStorageCleanupPending
+              ? "新画像を保存しました。旧画像ファイルの削除は保留されています。"
+              : "画像を保存しました。";
+          } catch (error) {
+            status.textContent = storeMediaErrorMessage(error);
+          } finally {
+            input.disabled = false;
+            render();
+          }
+        });
+
+        deleteButton.addEventListener("click", async () => {
+          if (!media?.storagePath || !confirm(`${title.textContent}を削除しますか？`)) return;
+          input.disabled = true;
+          uploadButton.disabled = true;
+          deleteButton.disabled = true;
+          status.textContent = "画像を削除しています...";
+          try {
+            await manageAdminStoreMediaCallable(
+              window.NoxAdminStoreMedia.buildDeleteRequest({ storeId: store.id, kind, slot }),
+            );
+            media = null;
+            selectedFile = null;
+            selectedBase64 = "";
+            input.value = "";
+            status.textContent = "画像を削除しました。";
+          } catch (error) {
+            status.textContent = storeMediaErrorMessage(error);
+          } finally {
+            input.disabled = false;
+            render();
+          }
+        });
+
+        buttonRow.append(uploadButton, deleteButton);
+        item.append(title, preview, input, buttonRow, status);
+        render();
+        return item;
+      }
+
+      function createStoreMediaManager(store) {
+        const details = document.createElement("details");
+        details.className = "store-media-manager";
+        const summary = document.createElement("summary");
+        summary.textContent = "店舗画像を管理";
+        const content = document.createElement("div");
+        content.className = "store-media-grid";
+        let loaded = false;
+        details.append(summary, content);
+
+        details.addEventListener("toggle", async () => {
+          if (!details.open || loaded) return;
+          loaded = true;
+          content.textContent = "画像情報を読み込んでいます...";
+          try {
+            const gallerySnapshot = await getDocs(
+              collection(db, "stores", store.id, "galleryImages"),
+            );
+            const gallery = new Map();
+            gallerySnapshot.forEach((imageDocument) => {
+              const slot = Number(imageDocument.id);
+              const data = imageDocument.data();
+              if (Number.isInteger(slot) && slot >= 0 && slot <= 9) {
+                gallery.set(slot, {
+                  url: typeof data.url === "string" ? data.url : "",
+                  storagePath: typeof data.storagePath === "string" ? data.storagePath : "",
+                });
+              }
+            });
+            content.replaceChildren(
+              createStoreMediaItem(store, "logo", undefined,
+                store.logoStoragePath ? { url: store.logoUrl || "", storagePath: store.logoStoragePath } : null),
+              createStoreMediaItem(store, "cover", undefined,
+                store.coverImageStoragePath ? { url: store.coverImageUrl || "", storagePath: store.coverImageStoragePath } : null),
+              createStoreMediaItem(store, "profile", undefined,
+                store.profileImageStoragePath ? { url: store.profileImageUrl || "", storagePath: store.profileImageStoragePath } : null),
+              ...Array.from({ length: 10 }, (_, slot) =>
+                createStoreMediaItem(store, "gallery", slot, gallery.get(slot) || null)),
+            );
+          } catch (error) {
+            content.textContent = storeMediaErrorMessage(error);
+            loaded = false;
+          }
+        });
+        return details;
+      }
+
       function createRegisteredStoreCard(store, contract, jobCount) {
         const card = document.createElement("article");
         card.className = "admin-item-card";
@@ -2331,7 +2580,7 @@
 
         buttonRow.append(editButton, deleteButton);
 
-        card.appendChild(buttonRow);
+        card.append(createStoreMediaManager(store), buttonRow);
         return card;
       }
 
