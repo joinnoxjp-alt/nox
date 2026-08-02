@@ -712,6 +712,9 @@ async function loadTopJobs() {
         return;
       }
 
+      if (job.topFeatured !== true) {
+        return;
+      }
       const searchText = [
         job.storeName,
         job.name,
