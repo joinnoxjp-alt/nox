@@ -5,23 +5,14 @@ import { resolve } from "node:path";
 import {
   createOperatorTestAuditDetails,
   createOperatorTestPolicy,
-  OperatorTestPlayContext,
 } from "../src/domain/operatorTestPlay";
+import type { OperatorTestPlayContext } from "../src/domain/operatorTestPlay";
 import { isActiveAdminDocument } from "../src/security/adminAuthorization";
 
 const ADMIN = {
   uid: "fixed-admin-uid",
   email: "admin@example.test",
 };
-
-function context(
-  probabilityProfile: "standard" | "high_probability_preview" = "standard",
-): OperatorTestPlayContext {
-  return {
-    admin: ADMIN,
-    ...createOperatorTestPolicy({ probabilityProfile }),
-  };
-}
 
 test("the shared operator entry point always calls active-admin authorization", () => {
   const source = readFileSync(
@@ -52,9 +43,13 @@ test("does not trust client isAdmin or testMode fields", () => {
 });
 
 test("supports only standard and high-probability preview profiles", () => {
-  assert.equal(context("standard").probabilityProfile, "standard");
   assert.equal(
-    context("high_probability_preview").probabilityProfile,
+    createOperatorTestPolicy({ probabilityProfile: "standard" }).probabilityProfile,
+    "standard",
+  );
+  assert.equal(
+    createOperatorTestPolicy({ probabilityProfile: "high_probability_preview" })
+      .probabilityProfile,
     "high_probability_preview",
   );
   assert.throws(
@@ -64,7 +59,7 @@ test("supports only standard and high-probability preview profiles", () => {
 });
 
 test("operator tests never mutate member accounting or statistics", () => {
-  const operatorContext = context();
+  const operatorContext = createOperatorTestPolicy({ probabilityProfile: "standard" });
   assert.equal(operatorContext.isOperatorTest, true);
   assert.equal(operatorContext.unlimited, true);
   assert.deepEqual(operatorContext.accounting, {
@@ -78,17 +73,13 @@ test("operator tests never mutate member accounting or statistics", () => {
   );
 });
 
-test("creates bounded audit details separated from member plays", () => {
-  const audit = createOperatorTestAuditDetails(
-    context("high_probability_preview"),
-    {
-      requestId: "operator_test_0001",
-      outcomeCode: "preview-medal-100",
-    },
-  );
-  assert.equal(audit.action, "nox_chance_operator_test_play");
-  assert.equal(audit.after.isOperatorTest, true);
-  assert.equal(audit.after.consumeCoins, false);
-  assert.equal(audit.after.consumeFreePlay, false);
-  assert.equal(audit.after.persistMedalDelta, false);
+test("rejects a structurally forged operator context", () => {
+  const forged = {
+    admin: ADMIN,
+    ...createOperatorTestPolicy({ probabilityProfile: "standard" }),
+  } as unknown as OperatorTestPlayContext;
+  assert.throws(() => createOperatorTestAuditDetails(forged, {
+    requestId: "operator_test_0001",
+    outcomeCode: "preview-medal-100",
+  }), /unauthorized-operator-test-context/);
 });

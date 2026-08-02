@@ -9,7 +9,10 @@ export const OPERATOR_TEST_PROBABILITY_PROFILES = [
 export type OperatorTestProbabilityProfile =
   typeof OPERATOR_TEST_PROBABILITY_PROFILES[number];
 
+const AUTHORIZED_OPERATOR_TEST = Symbol("AUTHORIZED_OPERATOR_TEST");
+
 export interface OperatorTestPlayContext {
+  readonly [AUTHORIZED_OPERATOR_TEST]: true;
   admin: ActiveAdminIdentity;
   isOperatorTest: true;
   probabilityProfile: OperatorTestProbabilityProfile;
@@ -26,6 +29,11 @@ export interface OperatorTestPlayContext {
     includeInFreePlayUsage: false;
   };
 }
+
+export type OperatorTestPolicy = Omit<
+  OperatorTestPlayContext,
+  "admin" | typeof AUTHORIZED_OPERATOR_TEST
+>;
 
 type CallableAuth = Parameters<typeof assertActiveAdmin>[0];
 
@@ -47,7 +55,7 @@ function parseOperatorTestInput(value: unknown): OperatorTestProbabilityProfile 
 
 export function createOperatorTestPolicy(
   input: unknown,
-): Omit<OperatorTestPlayContext, "admin"> {
+): OperatorTestPolicy {
   const probabilityProfile = parseOperatorTestInput(input);
   return {
     isOperatorTest: true,
@@ -72,7 +80,21 @@ export async function authorizeOperatorTestPlay(
   input: unknown,
 ): Promise<OperatorTestPlayContext> {
   const admin = await assertActiveAdmin(auth);
-  return { admin, ...createOperatorTestPolicy(input) };
+  return {
+    [AUTHORIZED_OPERATOR_TEST]: true,
+    admin,
+    ...createOperatorTestPolicy(input),
+  };
+}
+
+export function isAuthorizedOperatorTestPlayContext(
+  value: unknown,
+): value is OperatorTestPlayContext {
+  return Boolean(
+    value &&
+    typeof value === "object" &&
+    (value as Partial<OperatorTestPlayContext>)[AUTHORIZED_OPERATOR_TEST] === true,
+  );
 }
 
 export function createOperatorTestAuditDetails(
@@ -84,6 +106,9 @@ export function createOperatorTestAuditDetails(
   targetId: string;
   after: Record<string, unknown>;
 } {
+  if (!isAuthorizedOperatorTestPlayContext(context)) {
+    throw new Error("unauthorized-operator-test-context");
+  }
   if (!/^[A-Za-z0-9_-]{8,128}$/.test(input.requestId) ||
       !/^[A-Za-z0-9_-]{1,80}$/.test(input.outcomeCode)) {
     throw new Error("invalid-operator-test-audit-details");
