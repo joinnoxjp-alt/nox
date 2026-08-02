@@ -1548,6 +1548,7 @@
       </section>
     </main>
 
+    <script src="./admin-date.js"></script>
     <script type="module">
       import { auth } from "../firebase.js";
 
@@ -1863,20 +1864,11 @@
       };
 
       function timestampDateInput(value) {
-        const date = value?.toDate?.();
-        return date && !Number.isNaN(date.getTime())
-          ? date.toISOString().slice(0, 10)
-          : "";
+        return window.NoxAdminDate.formatTokyoDateInput(value);
       }
 
       function defaultContractDates() {
-        const start = new Date();
-        const end = new Date(start);
-        end.setUTCMonth(end.getUTCMonth() + 1);
-        return {
-          start: start.toISOString().slice(0, 10),
-          end: end.toISOString().slice(0, 10),
-        };
+        return window.NoxAdminDate.defaultTokyoContractDates();
       }
 
       function contractErrorMessage(error) {
@@ -2267,8 +2259,10 @@
         const card = document.createElement("article");
         card.className = "admin-item-card";
         const registrationStatus = store.sourceStoreApplicationId
-          ? "登録完了"
-          : "登録元申請を確認できません";
+          ? "申請経由で登録完了"
+          : store.source === "admin_direct"
+            ? "管理者直接登録"
+            : "登録元不明";
         const contractStatus = contract
           ? `${paymentStatusLabels[contract.paymentStatus] || contract.paymentStatus || "不明"}／${
               listingStatusLabels[contract.listingStatus] ||
