@@ -131,6 +131,27 @@
         line-height: 1.1;
       }
 
+      .store-title-row {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 15px;
+      }
+
+      .store-title-row h1 {
+        margin-bottom: 0;
+      }
+
+      .store-brand-logo {
+        width: 72px;
+        height: 72px;
+        flex: 0 0 72px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 1px solid rgba(255, 215, 0, 0.45);
+        background: #111;
+      }
+
       .hero p {
         color: #ddd;
         line-height: 1.9;
@@ -225,6 +246,15 @@
         line-height: 2;
         color: #ddd;
         white-space: pre-wrap;
+      }
+
+      .store-profile-image {
+        width: min(100%, 360px);
+        max-height: 360px;
+        object-fit: cover;
+        border-radius: 20px;
+        margin-bottom: 18px;
+        border: 1px solid rgba(255, 215, 0, 0.25);
       }
 
       .apply-box {
@@ -334,6 +364,7 @@
       </header>
 
       <div id="jobDetail" class="loading">求人情報を読み込み中です...</div>
+      <script src="./job-detail-media.js"></script>
       <script type="module">
         import { db } from "./firebase-db.js";
         import { auth } from "./firebase.js";
@@ -349,10 +380,19 @@
           increment,
           serverTimestamp,
         } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import {
+          getFunctions,
+          httpsCallable,
+        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-functions.js";
 
         const params = new URLSearchParams(location.search);
         const id = params.get("id");
         const jobDetail = document.getElementById("jobDetail");
+        const functions = getFunctions(auth.app, "asia-northeast1");
+        const getPublicJobStoreMedia = httpsCallable(
+          functions,
+          "getPublicJobStoreMedia",
+        );
 
         function value(v) {
           return v !== undefined && v !== null && String(v).trim()
@@ -422,40 +462,21 @@
           }
         }
 
-        async function loadStoreMedia(data) {
-          return {
-            storeData: {
-              profileImageUrl: "",
-              coverImageUrl: "",
-              logoUrl: "",
-            },
-            galleryImages: [],
+        async function loadStoreMedia() {
+          const empty = {
+            logoUrl: "", coverImageUrl: "", profileImageUrl: "", galleryImages: [],
           };
-        }
-
-        function buildImageList(data, storeData, storeGalleryImages) {
-          let jobImages = [];
-
-          if (Array.isArray(data.imageUrls)) {
-            jobImages = data.imageUrls.filter(Boolean);
-          } else if (Array.isArray(data.images)) {
-            jobImages = data.images.filter(Boolean);
-          } else if (data.imageUrl) {
-            jobImages = [data.imageUrl];
+          try {
+            const response = await getPublicJobStoreMedia({ jobId: id });
+            return response.data || empty;
+          } catch (error) {
+            console.warn("店舗画像の読み込みをスキップしました:", error?.code || "unknown");
+            return empty;
           }
-
-          const storeImages = [
-            storeData.profileImageUrl,
-            storeData.coverImageUrl,
-            storeData.logoUrl,
-            ...storeGalleryImages,
-          ].filter(Boolean);
-
-          return [...new Set([...jobImages, ...storeImages])];
         }
 
-        function renderJob(data, images) {
-          const gallery = images
+        function renderJob(data, media) {
+          const gallery = media.galleryUrls
             .map(
               (img) => `
                 <img
@@ -467,13 +488,19 @@
             )
             .join("");
 
-          const heroImage = images[0]
+          const heroImage = media.heroUrl
             ? `
               <img
-                src="${images[0]}"
+                src="${media.heroUrl}"
                 alt="${value(data.storeName || data.name)}"
               >
             `
+            : "";
+          const storeLogo = media.logoUrl
+            ? `<img class="store-brand-logo" src="${media.logoUrl}" alt="店舗ロゴ">`
+            : "";
+          const profileImage = media.profileImageUrl
+            ? `<img class="store-profile-image" src="${media.profileImageUrl}" loading="lazy" alt="店舗プロフィール画像">`
             : "";
 
           jobDetail.className = "";
@@ -483,7 +510,10 @@
 
               <p class="kicker">NOX JOB DETAIL</p>
 
-              <h1>${value(data.storeName || data.name)}</h1>
+              <div class="store-title-row">
+                ${storeLogo}
+                <h1>${value(data.storeName || data.name)}</h1>
+              </div>
 
               <p>
                 ${value(data.area)}
@@ -515,7 +545,7 @@
             </section>
 
             ${
-              images.length
+              media.galleryUrls.length
                 ? `
                   <section class="section">
                     <h2>店舗写真</h2>
@@ -606,6 +636,7 @@
 
             <section class="section">
               <h2>店舗PR</h2>
+              ${profileImage}
               <div class="pr">
                 ${value(data.pr || data.description)}
               </div>
@@ -781,7 +812,7 @@
             }
 
             const data = snap.data();
-            const { storeData, galleryImages } = await loadStoreMedia(data);
+            const storeMedia = await loadStoreMedia();
 
             try {
               await recordJobView(data);
@@ -789,9 +820,9 @@
               console.warn("閲覧数の記録をスキップしました:", error);
             }
 
-            const images = buildImageList(data, storeData, galleryImages);
+            const media = window.NoxJobDetailMedia.compose(data, storeMedia);
 
-            renderJob(data, images);
+            renderJob(data, media);
             await setupApplication(data);
             await setupSaveButton();
           } catch (error) {
