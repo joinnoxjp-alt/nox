@@ -11,6 +11,10 @@ import {
   getAuth
 } from "firebase-admin/auth";
 
+import {
+  getStorage
+} from "firebase-admin/storage";
+
 const app =
   getApps()[0] ??
   initializeApp();
@@ -20,3 +24,7 @@ export const firestore =
 
 export const firebaseAuth =
   getAuth(app);
+
+export function getStorageBucket() {
+  return getStorage(app).bucket();
+}

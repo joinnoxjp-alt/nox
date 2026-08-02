@@ -11,7 +11,7 @@
     "build": "tsc",
     "build:test": "tsc --project tsconfig.test.json",
     "typecheck": "tsc --noEmit",
-    "test": "npm run build:test && node --test lib-test/test/inviteToken.test.js lib-test/test/discordMessages.test.js lib-test/test/adminStoreCreate.test.js lib-test/test/adminDate.test.js",
+    "test": "npm run build:test && node --test lib-test/test/inviteToken.test.js lib-test/test/discordMessages.test.js lib-test/test/adminStoreCreate.test.js lib-test/test/adminDate.test.js lib-test/test/adminStoreMedia.test.js",
     "test:integration": "npm run build:test && node --test lib-test/test/*.integration.test.js",
     "test:integration:invite-preview": "npm run build:test && node --test lib-test/test/getStoreInvitePreview.integration.test.js",
     "test:integration:admin-auth": "npm run build:test && node --test --test-concurrency=1 lib-test/test/approveStoreApplicationAndIssueInvite.integration.test.js lib-test/test/firestoreAdminAuthorization.rules.integration.test.js",
