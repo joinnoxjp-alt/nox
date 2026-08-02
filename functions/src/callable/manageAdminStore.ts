@@ -4,6 +4,10 @@ import { createAdminAuditLogDraft } from "../audit/adminAudit";
 import { adminCallableOptions } from "../config";
 import { firestore } from "../firebaseAdmin";
 import { assertActiveAdmin } from "../security/adminAuthorization";
+import {
+  assertAdminStoreIdAvailable,
+  resolveAdminStoreCreateIdentity,
+} from "../domain/adminStoreCreate";
 
 function object(value: unknown): Record<string, unknown> {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
@@ -34,9 +38,16 @@ export const manageAdminStore = onCall(adminCallableOptions, async (request) => 
   const admin = await assertActiveAdmin(request.auth);
   const input = object(request.data);
   const action = required(input.action, 20);
-  const storeId = required(input.storeId, 128);
-  const storeRef = firestore.doc(`stores/${storeId}`);
-  const contractRef = firestore.doc(`storeContracts/${storeId}`);
+  const requestedStoreId = action === "create"
+    ? optional(input.storeId, 128)
+    : required(input.storeId, 128);
+  const identity = resolveAdminStoreCreateIdentity(
+    requestedStoreId,
+    () => firestore.collection("stores").doc().id,
+  );
+  const { storeId } = identity;
+  const storeRef = firestore.doc(identity.storePath);
+  const contractRef = firestore.doc(identity.contractPath);
   const auditRef = firestore.collection("adminAuditLogs").doc();
 
   if (action === "create") {
@@ -82,7 +93,14 @@ export const manageAdminStore = onCall(adminCallableOptions, async (request) => 
       updatedAt: FieldValue.serverTimestamp(), updatedBy: admin.uid, statusChangedAt: FieldValue.serverTimestamp(),
     };
     await firestore.runTransaction(async (transaction) => {
-      if ((await transaction.get(storeRef)).exists) throw new HttpsError("already-exists", "同じUIDの店舗が既にあります。");
+      try {
+        assertAdminStoreIdAvailable((await transaction.get(storeRef)).exists);
+      } catch (error) {
+        if (error instanceof Error && error.message === "store-already-exists") {
+          throw new HttpsError("already-exists", "同じUIDの店舗が既にあります。");
+        }
+        throw error;
+      }
       transaction.create(storeRef, storeData); transaction.create(contractRef, contractData);
       transaction.create(auditRef, createAdminAuditLogDraft(admin, { action: "store_created", targetType: "store", targetId: storeId, after: { storeName: storeData.storeName, isPublic } }));
     });

@@ -912,11 +912,11 @@
                 </div>
 
                 <div class="ad-form-group full">
-                  <label for="directOwnerId"> ownerId </label>
+                  <label for="directOwnerId"> ownerId（任意） </label>
                   <input
                     type="text"
                     id="directOwnerId"
-                    placeholder="店舗アカウントのUID"
+                    placeholder="未入力時は店舗IDを自動発行"
                   />
                 </div>
 
@@ -1746,8 +1746,8 @@
           "directContractEndAt",
         ).value;
 
-        if (!storeName || !ownerId) {
-          directStoreStatus.textContent = "店舗名と店舗アカウントのUIDを入力してください。";
+        if (!storeName) {
+          directStoreStatus.textContent = "店舗名を入力してください。";
           return;
         }
 
@@ -1789,7 +1789,7 @@
             .getElementById("directAdminNote")
             .value.trim();
 
-          await manageAdminStoreCallable({
+          const result = await manageAdminStoreCallable({
             action: "create",
             storeId: ownerId,
             storeName,
@@ -1808,7 +1808,8 @@
             adminNote,
           });
 
-          directStoreStatus.textContent = "店舗を直接登録しました。";
+          directStoreStatus.textContent =
+            `店舗を直接登録しました。発行ID: ${result.data.storeId}`;
 
           await Promise.all([loadRegisteredStores(), loadPublicJobs()]);
 
