@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex,nofollow">
+  <title>NOX CHANCE</title>
+  <link rel="stylesheet" href="./nox-chance.css">
+</head>
+<body>
+  <main class="chance-page">
+    <section class="account-panel" aria-labelledby="account-title">
+      <div>
+        <p class="kicker">MEMBER PLAY</p>
+        <h1 id="account-title">NOX CHANCE</h1>
+      </div>
+      <div id="auth-message" class="auth-message" role="status" aria-live="polite">ログイン状態を確認しています…</div>
+      <a id="auth-action" class="text-link" href="./login.html?next=nox-chance.html" hidden>ログインする</a>
+    </section>
+
+    <section class="balance-panel" aria-label="NOX CHANCE利用状態">
+      <dl>
+        <div><dt>FREE</dt><dd><span id="free-count">—</span> 回</dd></div>
+        <div><dt>COINS</dt><dd><span id="coin-count">—</span></dd></div>
+        <div><dt>MEDALS</dt><dd><span id="balance-medals">—</span></dd></div>
+        <div><dt>NEXT</dt><dd id="next-play">確認中</dd></div>
+      </dl>
+      <p id="trial-notice" class="trial-notice" hidden>体験モードは通常プレイと確率が異なります</p>
+      <p id="frozen-notice" class="danger" hidden>アカウントが凍結中のためプレイできません。</p>
+    </section>
+
+    <section id="operator-panel" class="operator-panel" hidden>
+      <h2>運営テスト</h2>
+      <p>コイン・無料回数・メダルを消費せず、監査ログへ記録されます。</p>
+      <label><input type="radio" name="operator-profile" value="standard" checked> 通常確率テスト</label>
+      <label><input type="radio" name="operator-profile" value="high_probability_preview"> 高確率演出テスト</label>
+    </section>
+
+    <section id="machine" class="machine is-locked" aria-labelledby="machine-label">
+      <div class="machine-head">
+        <div>
+          <p class="kicker">ORIGINAL NIGHT ENTERTAINMENT</p>
+          <h2 id="machine-label">NOX</h2>
+        </div>
+        <div class="sound-controls">
+          <button id="sound-toggle" type="button" aria-pressed="true">SOUND ON</button>
+          <label for="volume-slider">VOL
+            <input id="volume-slider" type="range" min="0" max="100" value="35" aria-label="音量">
+            <output id="volume-value" for="volume-slider">35%</output>
+          </label>
+        </div>
+      </div>
+
+      <div id="chance-lamp" class="chance-lamp" aria-live="polite"><span>NOX</span> CHANCE</div>
+
+      <div class="reel-stage" aria-label="3リール">
+        <div class="reel-window"><div class="reel" data-reel="0" aria-label="左リール"></div></div>
+        <div class="reel-window"><div class="reel" data-reel="1" aria-label="中リール"></div></div>
+        <div class="reel-window"><div class="reel" data-reel="2" aria-label="右リール"></div></div>
+        <div class="payline" aria-hidden="true"></div>
+      </div>
+
+      <div class="stop-bank" aria-label="リール停止ボタン">
+        <button class="stop-button" type="button" data-stop="0" disabled><span>STOP</span><small>LEFT</small></button>
+        <button class="stop-button" type="button" data-stop="1" disabled><span>STOP</span><small>CENTER</small></button>
+        <button class="stop-button" type="button" data-stop="2" disabled><span>STOP</span><small>RIGHT</small></button>
+      </div>
+
+      <div class="lower-deck">
+        <div class="result-board">
+          <p id="game-status">準備中</p>
+          <p id="result-label">状態を確認しています</p>
+          <p id="result-medals">WIN <span>0</span> MEDALS</p>
+          <p id="bgm-status" hidden>♪ BGM PLAYING</p>
+          <button id="retry-result" type="button" hidden>同じ操作の結果を再確認</button>
+        </div>
+        <div class="lever-zone">
+          <p id="lever-hint">PULL TO START</p>
+          <div id="start-lever" class="start-lever is-locked" role="button" tabindex="-1"
+            aria-label="レバーを下に引いてスタート" aria-disabled="true">
+            <div class="lever-track" aria-hidden="true"><div class="lever-shaft"></div><div class="lever-knob">NOX</div></div>
+          </div>
+          <p class="mobile-hint">レバーを下に引く</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="terms-panel">
+      <p><b>1回10コイン</b>（無料体験終了後）／購入コインの有効期限は付与から180日です。</p>
+      <p>ゲーム内メダルは換金・譲渡およびコイン・商品・景品との交換ができません。月例プレゼントとは無関係です。</p>
+      <button type="button" disabled>コイン購入機能は準備中</button>
+    </section>
+  </main>
+  <script type="module" src="./nox-chance.js"></script>
+</body>
+</html>

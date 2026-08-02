@@ -1005,6 +1005,10 @@ allow create: if request.auth != null
       allow read, write: if false;
     }
 
+    match /slotPlays/{playId} {
+      allow read, write: if false;
+    }
+
     match /deletedAccountSafeguards/{phoneIdentity} {
       allow read, write: if false;
     }

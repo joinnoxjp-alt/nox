@@ -20,3 +20,5 @@ export { getPublicJobStoreMedia } from "./callable/getPublicJobStoreMedia";
 export { syncStoreCoverToJobs } from "./triggers/syncStoreCoverToJobs";
 export { syncPhoneIdentity } from "./callable/syncPhoneIdentity";
 export { preservePhoneIdentityOnUserDelete } from "./triggers/preservePhoneIdentityOnUserDelete";
+export { playNoxChanceSlot } from "./callable/playNoxChanceSlot";
+export { getNoxChanceStatus } from "./callable/getNoxChanceStatus";

@@ -70,6 +70,7 @@ after(async () => {
 for (const collection of [
   "phoneIdentities",
   "slotPlayerStates",
+  "slotPlays",
   "deletedAccountSafeguards",
   "coinWallets",
   "coinLots",
@@ -85,6 +86,8 @@ for (const collection of [
 }
 
 for (const collection of [
+  "slotPlayerStates",
+  "slotPlays",
   "coinWallets",
   "coinLots",
   "coinLedger",
