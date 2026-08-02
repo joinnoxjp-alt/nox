@@ -7,11 +7,17 @@ const getStatusCallable = httpsCallable(functions, "getNoxChanceStatus");
 const playCallable = httpsCallable(functions, "playNoxChanceSlot");
 const PENDING_KEY = "noxChancePendingPlayV1";
 const PENDING_MAX_AGE_MS = 15 * 60 * 1000;
-const SYMBOLS = new Set(["NOX", "★", "☾", "♛", "7", "BAR"]);
+const SERVER_REEL_SYMBOLS = new Set(["CHERRY", "STAR", "7", "BAR"]);
+const SERVER_REEL_TO_DISPLAY = Object.freeze({
+  CHERRY: "🍒",
+  STAR: "★",
+  "7": "7",
+  BAR: "BAR",
+});
 const REEL_STRIPS = [
-  ["NOX", "★", "BAR", "☾", "7", "♛", "★", "NOX", "☾", "BAR", "♛", "7"],
-  ["♛", "7", "NOX", "BAR", "★", "☾", "7", "♛", "NOX", "★", "BAR", "☾"],
-  ["☾", "BAR", "♛", "NOX", "7", "★", "BAR", "☾", "NOX", "♛", "★", "7"],
+  ["NOX", "★", "BAR", "☾", "7", "♛", "🍒", "NOX", "☾", "BAR", "♛", "7"],
+  ["♛", "7", "NOX", "BAR", "★", "☾", "7", "♛", "NOX", "🍒", "BAR", "☾"],
+  ["☾", "BAR", "♛", "NOX", "7", "★", "BAR", "☾", "NOX", "♛", "🍒", "7"],
 ];
 const RESULT_LABELS = { miss: "はずれ", small: "小当たり", medium: "中当たり", jackpot: "大当たり" };
 const AUTO_STOP_DELAYS = [2600, 3500, 4400];
@@ -131,8 +137,10 @@ function renderWindow(reelIndex, centerIndex) {
   }));
 }
 
-function renderTarget(reelIndex, symbol) {
-  const index = REEL_STRIPS[reelIndex].indexOf(symbol);
+function renderTarget(reelIndex, serverSymbol) {
+  const displaySymbol = SERVER_REEL_TO_DISPLAY[serverSymbol];
+  if (!displaySymbol) throw new Error("invalid-server-reel-symbol");
+  const index = REEL_STRIPS[reelIndex].indexOf(displaySymbol);
   if (index < 0) throw new Error("invalid-server-reel-symbol");
   renderWindow(reelIndex, index);
 }
@@ -141,7 +149,8 @@ function validatePlayResult(value) {
   if (!value || typeof value !== "object" || !/^[a-f0-9]{64}$/.test(String(value.playId)) ||
       !/^[A-Za-z0-9_-]{8,128}$/.test(String(value.requestId)) ||
       !Object.hasOwn(RESULT_LABELS, value.resultCode) || !Array.isArray(value.reelStops) ||
-      value.reelStops.length !== 3 || value.reelStops.some((symbol) => !SYMBOLS.has(symbol)) ||
+      value.reelStops.length !== 3 ||
+      value.reelStops.some((symbol) => !SERVER_REEL_SYMBOLS.has(symbol)) ||
       !Number.isSafeInteger(value.medalsAwarded) || value.medalsAwarded < 0 || value.medalsAwarded > 5000) {
     throw new Error("invalid-server-play-result");
   }
