@@ -1,24 +1,27 @@
 import { auth } from "./firebase-db.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-functions.js";
+import {
+  REEL_STRIPS,
+  SERVER_REEL_CODES,
+  chooseReelStop,
+  isServerReelCode,
+} from "./nox-chance-reel-control.mjs";
 
 const functions = getFunctions(auth.app, "asia-northeast1");
 const getStatusCallable = httpsCallable(functions, "getNoxChanceStatus");
 const playCallable = httpsCallable(functions, "playNoxChanceSlot");
 const PENDING_KEY = "noxChancePendingPlayV1";
 const PENDING_MAX_AGE_MS = 15 * 60 * 1000;
-const SERVER_REEL_SYMBOLS = new Set(["CHERRY", "STAR", "7", "BAR"]);
 const SERVER_REEL_TO_DISPLAY = Object.freeze({
   CHERRY: "🍒",
   STAR: "★",
   "7": "7",
   BAR: "BAR",
 });
-const REEL_STRIPS = [
-  ["NOX", "★", "BAR", "☾", "7", "♛", "🍒", "NOX", "☾", "BAR", "♛", "7"],
-  ["♛", "7", "NOX", "BAR", "★", "☾", "7", "♛", "NOX", "🍒", "BAR", "☾"],
-  ["☾", "BAR", "♛", "NOX", "7", "★", "BAR", "☾", "NOX", "♛", "🍒", "7"],
-];
+if (SERVER_REEL_CODES.some((code) => !Object.hasOwn(SERVER_REEL_TO_DISPLAY, code))) {
+  throw new Error("incomplete-server-reel-display-map");
+}
 const RESULT_LABELS = { miss: "はずれ", small: "小当たり", medium: "中当たり", jackpot: "大当たり" };
 const AUTO_STOP_DELAYS = [2600, 3500, 4400];
 const LEVER_MAX = 82;
@@ -132,17 +135,9 @@ function renderWindow(reelIndex, centerIndex) {
   reels[reelIndex].replaceChildren(...indexes.map((index) => {
     const symbol = document.createElement("span");
     symbol.className = "reel-symbol";
-    symbol.textContent = strip[index];
+    symbol.textContent = SERVER_REEL_TO_DISPLAY[strip[index]];
     return symbol;
   }));
-}
-
-function renderTarget(reelIndex, serverSymbol) {
-  const displaySymbol = SERVER_REEL_TO_DISPLAY[serverSymbol];
-  if (!displaySymbol) throw new Error("invalid-server-reel-symbol");
-  const index = REEL_STRIPS[reelIndex].indexOf(displaySymbol);
-  if (index < 0) throw new Error("invalid-server-reel-symbol");
-  renderWindow(reelIndex, index);
 }
 
 function validatePlayResult(value) {
@@ -150,7 +145,7 @@ function validatePlayResult(value) {
       !/^[A-Za-z0-9_-]{8,128}$/.test(String(value.requestId)) ||
       !Object.hasOwn(RESULT_LABELS, value.resultCode) || !Array.isArray(value.reelStops) ||
       value.reelStops.length !== 3 ||
-      value.reelStops.some((symbol) => !SERVER_REEL_SYMBOLS.has(symbol)) ||
+      value.reelStops.some((symbol) => !isServerReelCode(symbol)) ||
       !Number.isSafeInteger(value.medalsAwarded) || value.medalsAwarded < 0 || value.medalsAwarded > 5000) {
     throw new Error("invalid-server-play-result");
   }
@@ -248,7 +243,8 @@ async function requestPlay(request) {
 function beginReelPresentation(result) {
   currentRound = {
     phase: "spinning", result, states: ["spinning", "spinning", "spinning"],
-    positions: [1, 3, 5], intervals: [null, null, null], autoTimers: [null, null, null], finished: false,
+    positions: [1, 3, 5], stoppedSymbols: [null, null, null],
+    intervals: [null, null, null], autoTimers: [null, null, null], finished: false,
   };
   gameStatus.textContent = result.resultCode === "miss" ? "通常遊技" : "NOX CHANCE";
   resultLabel.textContent = "STOPボタンでリールを停止";
@@ -280,12 +276,36 @@ function stopReel(index, round) {
   clearTimer(round.intervals[index]); clearTimer(round.autoTimers[index]);
   reels[index].classList.remove("is-spinning"); reels[index].classList.add("is-braking");
   playStopSound(index);
-  schedule(() => {
+  const decision = chooseReelStop({
+    strip: REEL_STRIPS[index], currentIndex: round.positions[index],
+    resultCode: round.result.resultCode, targetSymbol: round.result.reelStops[index],
+    reelIndex: index, stoppedSymbols: round.stoppedSymbols,
+  });
+  const finishStop = () => {
     if (currentRound !== round) return;
-    renderTarget(index, round.result.reelStops[index]);
+    round.positions[index] = decision.stopIndex;
+    round.stoppedSymbols[index] = decision.symbol;
+    renderWindow(index, decision.stopIndex);
     reels[index].classList.remove("is-braking"); round.states[index] = "stopped";
     if (round.states.every((state) => state === "stopped")) finishPresentation(round);
-  }, reducedMotion.matches ? 40 : 260);
+  };
+  if (decision.slip === 0) {
+    schedule(finishStop, reducedMotion.matches ? 20 : 45);
+    return;
+  }
+  let completedSlip = 0;
+  const advanceSlip = () => {
+    if (currentRound !== round) return;
+    round.positions[index] = (round.positions[index] + 1) % REEL_STRIPS[index].length;
+    renderWindow(index, round.positions[index]);
+    completedSlip += 1;
+    if (completedSlip === decision.slip) {
+      finishStop();
+      return;
+    }
+    schedule(advanceSlip, reducedMotion.matches ? 18 : 50 + completedSlip * 28);
+  };
+  schedule(advanceSlip, reducedMotion.matches ? 18 : 50);
 }
 
 function finishPresentation(round) {
