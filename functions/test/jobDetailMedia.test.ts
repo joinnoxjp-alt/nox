@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import path from "node:path";
 import test from "node:test";
 
@@ -14,6 +15,22 @@ interface JobDetailMediaModule {
 const media = require(
   path.resolve(__dirname, "../../../pages/job-detail-media.js"),
 ) as JobDetailMediaModule;
+const detailSource = readFileSync(
+  path.resolve(__dirname, "../../../pages/job-detail.html"),
+  "utf8",
+);
+const jobsSource = readFileSync(
+  path.resolve(__dirname, "../../../pages/jobs.html"),
+  "utf8",
+);
+const menSource = readFileSync(
+  path.resolve(__dirname, "../../../pages/men.html"),
+  "utf8",
+);
+const girlsSource = readFileSync(
+  path.resolve(__dirname, "../../../pages/girls.html"),
+  "utf8",
+);
 
 test("keeps the first job-specific image as the main visual", () => {
   const result = media.compose(
@@ -48,4 +65,23 @@ test("preserves the existing no-image display when store media is empty", () => 
     profileImageUrl: "",
     galleryUrls: [],
   });
+});
+
+test("blocks unpublished jobs before loading store media on the public detail page", () => {
+  const visibilityCheck = detailSource.indexOf('data.status !== "approved"');
+  const mediaLoad = detailSource.indexOf("const storeMedia = await loadStoreMedia()");
+
+  assert.notEqual(visibilityCheck, -1);
+  assert.match(detailSource, /data\.isPublic !== true/);
+  assert.match(detailSource, /data\.contractListingStatus !== "active"/);
+  assert.match(detailSource, /現在この求人は掲載されていません/);
+  assert.ok(visibilityCheck < mediaLoad);
+});
+
+test("keeps all three publication checks in every public job list", () => {
+  for (const source of [jobsSource, menSource, girlsSource]) {
+    assert.match(source, /job\.status !== "approved"/);
+    assert.match(source, /job\.isPublic !== true/);
+    assert.match(source, /job\.contractListingStatus !== "active"/);
+  }
 });

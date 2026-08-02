@@ -595,7 +595,7 @@
               ...jobDoc.data()
             };
 
-           if (job.status !== "approved") {
+           if (job.status !== "approved" || job.isPublic !== true) {
   return;
 }
 

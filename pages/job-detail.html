@@ -812,6 +812,19 @@
             }
 
             const data = snap.data();
+            if (
+              data.status !== "approved" ||
+              data.isPublic !== true ||
+              data.contractListingStatus !== "active"
+            ) {
+              jobDetail.innerHTML = `
+                <div class="section">
+                  <h2>現在この求人は掲載されていません</h2>
+                </div>
+              `;
+              return;
+            }
+
             const storeMedia = await loadStoreMedia();
 
             try {
