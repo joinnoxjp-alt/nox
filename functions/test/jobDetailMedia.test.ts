@@ -85,3 +85,17 @@ test("keeps all three publication checks in every public job list", () => {
     assert.match(source, /job\.contractListingStatus !== "active"/);
   }
 });
+
+test("public job lists exclude only explicit test and dummy flags", () => {
+  for (const source of [jobsSource, menSource, girlsSource]) {
+    assert.match(source, /job\.isTest === true/);
+    assert.match(source, /job\.isDummy === true/);
+    assert.doesNotMatch(source, /textCheck\.includes\("(?:テスト|test|dummy)"\)/);
+  }
+});
+
+test("the male job list keeps its existing gender check", () => {
+  assert.match(menSource, /function isMaleJob\(job\)/);
+  assert.match(menSource, /targetValue === "female"/);
+  assert.match(menSource, /if\(!isMaleJob\(job\)\)/);
+});

@@ -603,22 +603,6 @@ if (job.contractListingStatus !== "active") {
   return;
 }
 
-            const textCheck = `
-              ${job.storeName || ""}
-              ${job.name || ""}
-              ${job.title || ""}
-              ${job.shopName || ""}
-              ${job.storeTitle || ""}
-            `.toLowerCase();
-
-            if (
-              textCheck.includes("テスト") ||
-              textCheck.includes("test") ||
-              textCheck.includes("dummy")
-            ) {
-              return;
-            }
-
             if (
               job.isTest === true ||
               job.isDummy === true
