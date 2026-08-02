@@ -26,7 +26,7 @@ const EMPTY_MEDIA: PublicStoreMediaOutput = {
 const PUBLIC_STORAGE_HOST = "firebasestorage.googleapis.com";
 const PUBLIC_STORAGE_PATH_PREFIX = "/v0/b/noxapp-29171.firebasestorage.app/o/";
 
-function safeImageUrl(value: unknown): string {
+export function safePublicStorageImageUrl(value: unknown): string {
   if (typeof value !== "string" || !value || value.length > 2048) return "";
   try {
     const url = new URL(value);
@@ -62,14 +62,14 @@ export async function loadPublicJobStoreMedia(
   const galleryImages = gallery
     .filter((item) => /^[0-9]$/.test(item.slot))
     .sort((a, b) => Number(a.slot) - Number(b.slot))
-    .map((item) => safeImageUrl(item.url))
+    .map((item) => safePublicStorageImageUrl(item.url))
     .filter(Boolean)
     .slice(0, 10);
 
   return {
-    logoUrl: safeImageUrl(store.logoUrl),
-    coverImageUrl: safeImageUrl(store.coverImageUrl),
-    profileImageUrl: safeImageUrl(store.profileImageUrl),
+    logoUrl: safePublicStorageImageUrl(store.logoUrl),
+    coverImageUrl: safePublicStorageImageUrl(store.coverImageUrl),
+    profileImageUrl: safePublicStorageImageUrl(store.profileImageUrl),
     galleryImages,
   };
 }

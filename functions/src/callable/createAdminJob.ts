@@ -9,6 +9,7 @@ import { adminCallableOptions } from "../config";
 import { firestore } from "../firebaseAdmin";
 
 import { assertActiveAdmin } from "../security/adminAuthorization";
+import { cachedStoreCoverUrl } from "../domain/storeCoverCache";
 
 type CreateAdminJobInput = {
   storeName: string;
@@ -186,6 +187,7 @@ export const createAdminJob = onCall(adminCallableOptions, async (request) => {
 
       imageStoragePaths: [],
       imageUrls: [],
+      storeCoverImageUrl: cachedStoreCoverUrl(store.coverImageUrl),
 
       status: "approved",
       isPublic: true,

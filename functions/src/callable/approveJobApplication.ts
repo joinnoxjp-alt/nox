@@ -28,6 +28,10 @@ import {
   assertActiveAdmin
 } from "../security/adminAuthorization";
 
+import {
+  cachedStoreCoverUrl
+} from "../domain/storeCoverCache";
+
 const APPLICATION_ID_PATTERN =
   /^[A-Za-z0-9]{20}$/;
 
@@ -334,6 +338,10 @@ transaction.update(
     isPublic: true,
     contractListingStatus:
       "active",
+    storeCoverImageUrl:
+      cachedStoreCoverUrl(
+        storeSnapshot.data()?.coverImageUrl
+      ),
     approvedAt:
       FieldValue.serverTimestamp(),
     approvedBy: admin.uid,

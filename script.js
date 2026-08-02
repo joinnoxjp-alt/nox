@@ -554,29 +554,11 @@ document.addEventListener("visibilitychange", () => {
 =========================== */
 
 function getJobImage(job) {
-  if (job.mainImage) return job.mainImage;
-  if (job.imageUrl) return job.imageUrl;
-  if (job.image) return job.image;
-  if (job.logoUrl) return job.logoUrl;
-  if (job.storeImage) return job.storeImage;
-  if (Array.isArray(job.imageUrls) && job.imageUrls.length > 0) {
-    const url = job.imageUrls.find(
-      (url) => typeof url === "string" && url.trim(),
-    );
-    if (url) return url;
-  }
-
-  if (Array.isArray(job.images) && job.images.length > 0) {
-    const validImage = job.images.find((image) => {
-      return typeof image === "string" && image.trim() !== "";
-    });
-
-    if (validImage) {
-      return validImage;
-    }
-  }
-
-  return "images/7240C21C-E2E7-47E1-9F48-6ECC3468406D.png";
+  const placeholder =
+    "images/7240C21C-E2E7-47E1-9F48-6ECC3468406D.png";
+  return typeof window.NoxJobCardMedia?.select === "function"
+    ? window.NoxJobCardMedia.select(job, placeholder)
+    : placeholder;
 }
 
 /* ==========================
