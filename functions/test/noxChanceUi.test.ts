@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { SLOT_PROBABILITY_TABLES } from "../src/domain/slotEngine";
 
 const page = readFileSync(resolve(__dirname, "../../../pages/nox-chance.html"), "utf8");
 const script = readFileSync(resolve(__dirname, "../../../pages/nox-chance.js"), "utf8");
@@ -35,6 +36,46 @@ test("member payload sends only a request ID", () => {
 test("production browser contains no outcome RNG or probability weights", () => {
   assert.doesNotMatch(script, /Math\.random|getRandomValues|weight\s*:|SLOT_PROBABILITY|probability table/i);
   assert.match(script, /crypto\.randomUUID/);
+});
+
+test("every server reel code has a fixed production display mapping", () => {
+  const serverCodes = new Set(
+    Object.values(SLOT_PROBABILITY_TABLES)
+      .flatMap((table) => table.flatMap((outcome) => outcome.reelStops)),
+  );
+  assert.deepEqual([...serverCodes].sort(), ["7", "BAR", "CHERRY", "STAR"]);
+  for (const code of serverCodes) {
+    assert.match(script, new RegExp(`\\b${code}:?\\s*[:]?\\s*`));
+  }
+  assert.match(script, /CHERRY:\s*"🍒"/);
+  assert.match(script, /STAR:\s*"★"/);
+  assert.match(script, /"7":\s*"7"/);
+  assert.match(script, /BAR:\s*"BAR"/);
+});
+
+test("all probability outcomes pass server validation and map before rendering", () => {
+  for (const table of Object.values(SLOT_PROBABILITY_TABLES)) {
+    for (const outcome of table) {
+      assert.equal(outcome.reelStops.length, 3);
+      assert.ok(outcome.reelStops.every((code) =>
+        ["CHERRY", "STAR", "7", "BAR"].includes(code)));
+    }
+  }
+  assert.match(script, /SERVER_REEL_SYMBOLS\.has\(symbol\)/);
+  assert.match(script, /const displaySymbol = SERVER_REEL_TO_DISPLAY\[serverSymbol\]/);
+  assert.match(script, /indexOf\(displaySymbol\)/);
+  assert.match(script, /renderTarget\(index, round\.result\.reelStops\[index\]\)/);
+  for (const displaySymbol of ["🍒", "★", "7", "BAR"]) {
+    const occurrences = script.split(`"${displaySymbol}"`).length - 1;
+    assert.ok(occurrences >= 4, `${displaySymbol} must be mapped and present on every reel`);
+  }
+  assert.doesNotMatch(script, /SERVER_REEL_TO_DISPLAY\[[^\]]+\]\s*\?\?/);
+});
+
+test("unknown server reel codes are rejected without a placeholder", () => {
+  assert.match(script, /if \(!displaySymbol\) throw new Error\("invalid-server-reel-symbol"\)/);
+  assert.match(script, /value\.reelStops\.some\(\(symbol\) => !SERVER_REEL_SYMBOLS\.has\(symbol\)\)/);
+  assert.doesNotMatch(script, /placeholder|UNKNOWN|\?\?\s*["'][^"']+["']/i);
 });
 
 test("uncertain requests are recoverable only with the same session request ID", () => {
