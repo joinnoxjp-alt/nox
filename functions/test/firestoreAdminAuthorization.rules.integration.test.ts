@@ -32,6 +32,7 @@ const FIRESTORE_EMULATOR_HOST =
 const PASSWORD = "Test-password-123!";
 const TARGET_UID = "adminRulesTargetUser";
 const WRONG_UID = "adminRulesWrongUser";
+const HISTORY_ID = "adminRulesStoreHistory";
 
 if (
   process.env.GCLOUD_PROJECT !== PROJECT_ID ||
@@ -98,6 +99,17 @@ async function readTarget(
   return response.status;
 }
 
+async function deleteStoreHistory(idToken?: string): Promise<number> {
+  const response = await fetch(
+    `http://${FIRESTORE_EMULATOR_HOST}/v1/projects/${PROJECT_ID}/databases/(default)/documents/storeApplications/${HISTORY_ID}`,
+    {
+      method: "DELETE",
+      headers: idToken ? { Authorization: `Bearer ${idToken}` } : {},
+    },
+  );
+  return response.status;
+}
+
 async function replaceFixedAdminAuth(
   options: {
     email: string;
@@ -132,7 +144,8 @@ after(async () => {
       .delete(),
     firestore
       .doc(`users/${TARGET_UID}`)
-      .delete()
+      .delete(),
+    firestore.doc(`storeApplications/${HISTORY_ID}`).delete()
   ]);
 
   await Promise.all(
@@ -248,3 +261,13 @@ test(
     );
   }
 );
+
+test("store application history cannot be deleted directly by any browser role", async () => {
+  await firestore.doc(`storeApplications/${HISTORY_ID}`).set({ status: "approved" });
+  await firestore.doc(`users/${FIXED_ADMIN_UID}`).set({ role: "admin", status: "active" });
+  const adminToken = await replaceFixedAdminAuth({ email: FIXED_ADMIN_EMAIL, emailVerified: true });
+
+  assert.equal(await deleteStoreHistory(), 401);
+  assert.equal(await deleteStoreHistory(adminToken), 403);
+  assert.equal((await firestore.doc(`storeApplications/${HISTORY_ID}`).get()).exists, true);
+});

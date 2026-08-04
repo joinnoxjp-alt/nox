@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SMS認証 | NOX CHANCE</title>
+  <link rel="stylesheet" href="../style.css">
+  <style>
+    body { visibility: hidden; }
+    .verification-card { max-width: 620px; margin: 0 auto; }
+    .verification-step { margin: 22px 0; }
+    .verification-row { display: flex; gap: 10px; align-items: end; }
+    .verification-row label { flex: 1; }
+    .verification-status { min-height: 1.5em; margin: 18px 0; text-align: center; }
+    .verification-status.error { color: #ff8d8d; }
+    .verification-status.success { color: #83df9b; }
+    #recaptchaContainer { display: flex; justify-content: center; margin: 18px 0; }
+    @media (max-width: 560px) { .verification-row { display: block; } }
+  </style>
+</head>
+<body class="register-body">
+  <main class="register-page">
+    <section class="register-section">
+      <div class="register-card verification-card">
+        <div class="register-step">
+          <span>NOX CHANCE</span>
+          <h2>SMS認証</h2>
+          <p>NOX CHANCEの利用には、現在の会員アカウントへの電話番号認証が必要です。通常の会員機能や求人応募には影響しません。</p>
+        </div>
+
+        <div id="verificationForm" hidden>
+          <div class="verification-step">
+            <div class="verification-row">
+              <label>携帯電話番号
+                <input id="phoneNumber" type="tel" inputmode="tel" autocomplete="tel" placeholder="090-1234-5678 または +819012345678">
+              </label>
+              <button id="sendCodeButton" type="button" class="gold-btn">SMSを送信</button>
+            </div>
+            <small>日本の番号は先頭の0を含む形式でも入力できます。送信時に+81形式へ統一します。</small>
+          </div>
+          <div id="recaptchaContainer"></div>
+          <div class="verification-step">
+            <div class="verification-row">
+              <label>確認コード
+                <input id="verificationCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="6桁のコード">
+              </label>
+              <button id="verifyButton" type="button" class="gold-btn" disabled>確認する</button>
+            </div>
+          </div>
+          <p id="resendMessage" class="verification-status" aria-live="polite"></p>
+        </div>
+
+        <p id="statusMessage" class="verification-status" aria-live="polite">ログイン状態を確認しています。</p>
+        <div class="header-actions">
+          <a href="./mypage.html" class="btn ghost">マイページへ戻る</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script type="module">
+    import { auth } from "./firebase-db.js";
+    import {
+      onAuthStateChanged,
+      RecaptchaVerifier,
+      PhoneAuthProvider,
+      linkWithCredential,
+      unlink,
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import {
+      getFunctions,
+      httpsCallable,
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-functions.js";
+    import {
+      describePhoneVerificationError,
+      normalizeJapanesePhoneNumber,
+      shouldRollbackLinkedPhoneCredential,
+    } from "./phone-verification.js";
+
+    const form = document.getElementById("verificationForm");
+    const phoneInput = document.getElementById("phoneNumber");
+    const codeInput = document.getElementById("verificationCode");
+    const sendButton = document.getElementById("sendCodeButton");
+    const verifyButton = document.getElementById("verifyButton");
+    const statusMessage = document.getElementById("statusMessage");
+    const resendMessage = document.getElementById("resendMessage");
+    const functions = getFunctions(auth.app, "asia-northeast1");
+    const syncPhoneIdentity = httpsCallable(functions, "syncPhoneIdentity");
+    let verificationId = "";
+    let recaptchaVerifier = null;
+    let resendTimer = null;
+    const SEND_WINDOW_MS = 15 * 60 * 1000;
+    const SEND_LIMIT = 3;
+
+    function showStatus(message, kind = "") {
+      statusMessage.textContent = message;
+      statusMessage.className = `verification-status ${kind}`.trim();
+    }
+
+    function startResendWait(seconds = 60) {
+      if (resendTimer) clearInterval(resendTimer);
+      let remaining = seconds;
+      sendButton.disabled = true;
+      resendMessage.textContent = `再送まで${remaining}秒お待ちください。`;
+      resendTimer = setInterval(() => {
+        remaining -= 1;
+        if (remaining <= 0) {
+          clearInterval(resendTimer);
+          resendTimer = null;
+          sendButton.disabled = false;
+          resendMessage.textContent = "SMSを再送できます。";
+          return;
+        }
+        resendMessage.textContent = `再送まで${remaining}秒お待ちください。`;
+      }, 1000);
+    }
+
+    function cleanupPageResources() {
+      if (resendTimer) {
+        clearInterval(resendTimer);
+        resendTimer = null;
+      }
+      recaptchaVerifier?.clear();
+      recaptchaVerifier = null;
+    }
+
+    function assertLocalSendLimit(uid) {
+      const key = `noxSmsSendAttempts:${uid}`;
+      const now = Date.now();
+      let attempts = [];
+      try {
+        attempts = JSON.parse(localStorage.getItem(key) || "[]")
+          .filter((value) => Number.isFinite(value) && now - value < SEND_WINDOW_MS);
+      } catch {
+        attempts = [];
+      }
+      if (attempts.length >= SEND_LIMIT) {
+        throw Object.assign(new Error("local-sms-rate-limit"), {
+          code: "nox/sms-rate-limit",
+        });
+      }
+      attempts.push(now);
+      localStorage.setItem(key, JSON.stringify(attempts));
+    }
+
+    function ensureRecaptcha() {
+      if (!recaptchaVerifier) {
+        recaptchaVerifier = new RecaptchaVerifier(auth, "recaptchaContainer", {
+          size: "normal",
+        });
+      }
+      return recaptchaVerifier;
+    }
+
+    onAuthStateChanged(auth, async (user) => {
+      document.body.style.visibility = "visible";
+      if (!user) {
+        location.replace("./login.html?next=phone-verification.html");
+        return;
+      }
+      if (user.phoneNumber) {
+        try {
+          const result = await syncPhoneIdentity({});
+          showStatus(`SMS認証済みです（${result.data.maskedPhoneNumber}）。`, "success");
+          return;
+        } catch (error) {
+          form.hidden = false;
+          showStatus(describePhoneVerificationError(error), "error");
+          return;
+        }
+      }
+      form.hidden = false;
+      showStatus("電話番号を入力し、SMSで届く確認コードを送信してください。");
+    });
+
+    sendButton.addEventListener("click", async () => {
+      sendButton.disabled = true;
+      try {
+        const user = auth.currentUser;
+        if (!user) throw Object.assign(new Error("signed-out"), { code: "auth/user-token-expired" });
+        assertLocalSendLimit(user.uid);
+        const phoneNumber = normalizeJapanesePhoneNumber(phoneInput.value);
+        const provider = new PhoneAuthProvider(auth);
+        verificationId = await provider.verifyPhoneNumber(phoneNumber, ensureRecaptcha());
+        recaptchaVerifier?.clear();
+        recaptchaVerifier = null;
+        verifyButton.disabled = false;
+        showStatus("SMSを送信しました。確認コードを入力してください。", "success");
+        startResendWait();
+      } catch (error) {
+        sendButton.disabled = false;
+        showStatus(describePhoneVerificationError(error), "error");
+        recaptchaVerifier?.clear();
+        recaptchaVerifier = null;
+      }
+    });
+
+    verifyButton.addEventListener("click", async () => {
+      const user = auth.currentUser;
+      const code = codeInput.value.trim();
+      if (!user || !verificationId || !/^\d{6}$/.test(code)) {
+        showStatus("6桁の確認コードを入力してください。", "error");
+        return;
+      }
+      verifyButton.disabled = true;
+      try {
+        const credential = PhoneAuthProvider.credential(verificationId, code);
+        const linkedUser = (await linkWithCredential(user, credential)).user;
+        let result;
+        try {
+          result = await syncPhoneIdentity({});
+        } catch (error) {
+          if (shouldRollbackLinkedPhoneCredential(error)) {
+            await unlink(linkedUser, PhoneAuthProvider.PROVIDER_ID)
+              .catch(() => undefined);
+          }
+          throw error;
+        }
+        form.hidden = true;
+        showStatus(`SMS認証が完了しました（${result.data.maskedPhoneNumber}）。`, "success");
+      } catch (error) {
+        verifyButton.disabled = false;
+        showStatus(describePhoneVerificationError(error), "error");
+      }
+    });
+
+    window.addEventListener("pagehide", cleanupPageResources, { once: true });
+  </script>
+</body>
+</html>

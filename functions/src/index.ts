@@ -18,3 +18,8 @@ export { manageAdminStore } from "./callable/manageAdminStore";
 export { manageAdminStoreMedia } from "./callable/manageAdminStoreMedia";
 export { getPublicJobStoreMedia } from "./callable/getPublicJobStoreMedia";
 export { syncStoreCoverToJobs } from "./triggers/syncStoreCoverToJobs";
+export { syncPhoneIdentity } from "./callable/syncPhoneIdentity";
+export { preservePhoneIdentityOnUserDelete } from "./triggers/preservePhoneIdentityOnUserDelete";
+export { playNoxChanceSlot } from "./callable/playNoxChanceSlot";
+export { getNoxChanceStatus } from "./callable/getNoxChanceStatus";
+export { deleteAdminStoreHistory } from "./callable/deleteAdminStoreHistory";

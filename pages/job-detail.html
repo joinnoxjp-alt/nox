@@ -142,14 +142,10 @@
         margin-bottom: 0;
       }
 
-      .store-brand-logo {
-        width: 72px;
-        height: 72px;
-        flex: 0 0 72px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 1px solid rgba(255, 215, 0, 0.45);
-        background: #111;
+      .job-title {
+        margin: 12px 0;
+        font-size: clamp(24px, 5vw, 38px);
+        color: #fff;
       }
 
       .hero p {
@@ -246,15 +242,6 @@
         line-height: 2;
         color: #ddd;
         white-space: pre-wrap;
-      }
-
-      .store-profile-image {
-        width: min(100%, 360px);
-        max-height: 360px;
-        object-fit: cover;
-        border-radius: 20px;
-        margin-bottom: 18px;
-        border: 1px solid rgba(255, 215, 0, 0.25);
       }
 
       .apply-box {
@@ -364,6 +351,7 @@
       </header>
 
       <div id="jobDetail" class="loading">求人情報を読み込み中です...</div>
+      <script src="./job-fields.js"></script>
       <script src="./job-detail-media.js"></script>
       <script type="module">
         import { db } from "./firebase-db.js";
@@ -476,13 +464,15 @@
         }
 
         function renderJob(data, media) {
+          const job = window.NoxJobFields.normalize(data);
+          const featureLabel = window.NoxJobFields.featureLabel;
           const gallery = media.galleryUrls
             .map(
               (img) => `
                 <img
                   src="${img}"
                   loading="lazy"
-                  alt="${value(data.storeName || data.name)} 店舗画像"
+                  alt="${value(job.storeName)} 店舗画像"
                 >
               `,
             )
@@ -492,17 +482,10 @@
             ? `
               <img
                 src="${media.heroUrl}"
-                alt="${value(data.storeName || data.name)}"
+                alt="${value(job.storeName)}"
               >
             `
             : "";
-          const storeLogo = media.logoUrl
-            ? `<img class="store-brand-logo" src="${media.logoUrl}" alt="店舗ロゴ">`
-            : "";
-          const profileImage = media.profileImageUrl
-            ? `<img class="store-profile-image" src="${media.profileImageUrl}" loading="lazy" alt="店舗プロフィール画像">`
-            : "";
-
           jobDetail.className = "";
           jobDetail.innerHTML = `
             <section class="hero">
@@ -511,19 +494,20 @@
               <p class="kicker">NOX JOB DETAIL</p>
 
               <div class="store-title-row">
-                ${storeLogo}
-                <h1>${value(data.storeName || data.name)}</h1>
+                <h1>${value(job.storeName)}</h1>
               </div>
 
+              <h2 class="job-title">${value(job.title)}</h2>
+
               <p>
-                ${value(data.area)}
+                ${value(job.area)}
                 ／
-                ${value(data.genre || data.type || data.businessType)}
+                ${value(job.businessType)}
               </p>
 
               <div class="salary">
                 <small>給与</small>
-                <strong>${value(data.salary || data.salaryText)}</strong>
+                <strong>${value(job.salary)}</strong>
               </div>
 
               <div
@@ -561,34 +545,29 @@
               <div class="grid">
                 <div class="info-card">
                   <span>エリア</span>
-                  <strong>${value(data.area)}</strong>
+                  <strong>${value(job.area)}</strong>
                 </div>
 
                 <div class="info-card">
                   <span>業種</span>
                   <strong>
-                    ${value(
-                      data.businessType ||
-                        data.genre ||
-                        data.type ||
-                        data.jobType,
-                    )}
+                    ${value(job.businessType)}
                   </strong>
                 </div>
 
                 <div class="info-card">
                   <span>住所</span>
-                  <strong>${value(data.address)}</strong>
+                  <strong>${value(job.address)}</strong>
                 </div>
 
                 <div class="info-card">
                   <span>最寄駅</span>
-                  <strong>${value(data.station)}</strong>
+                  <strong>${value(job.station)}</strong>
                 </div>
 
                 <div class="info-card">
                   <span>営業時間</span>
-                  <strong>${value(data.businessHours)}</strong>
+                  <strong>${value(job.workHours)}</strong>
                 </div>
 
                 <div class="info-card">
@@ -604,41 +583,53 @@
               <div class="grid">
                 <div class="info-card">
                   <span>各種バック</span>
-                  <strong>${value(data.back)}</strong>
+                  <strong>${value(job.back)}</strong>
                 </div>
 
                 <div class="info-card">
                   <span>日払い</span>
-                  <strong>${value(data.dailyPay)}</strong>
+                  <strong>${featureLabel(job.dailyPay)}</strong>
                 </div>
 
                 <div class="info-card">
                   <span>体験入店</span>
-                  <strong>${value(data.trial)}</strong>
+                  <strong>${featureLabel(job.trial, "体験入店あり")}</strong>
                 </div>
 
                 <div class="info-card">
                   <span>未経験歓迎</span>
-                  <strong>${value(data.beginner)}</strong>
+                  <strong>${featureLabel(job.beginner, "未経験歓迎")}</strong>
                 </div>
 
                 <div class="info-card">
                   <span>採用年齢</span>
-                  <strong>${value(data.age)}</strong>
+                  <strong>${value(job.age)}</strong>
                 </div>
 
                 <div class="info-card">
                   <span>シフト</span>
-                  <strong>${value(data.shift)}</strong>
+                  <strong>${value(job.shift)}</strong>
                 </div>
               </div>
             </section>
 
             <section class="section">
               <h2>店舗PR</h2>
-              ${profileImage}
               <div class="pr">
-                ${value(data.pr || data.description)}
+                ${value(job.description)}
+              </div>
+            </section>
+
+            <section class="section">
+              <h2>勤務・応募条件</h2>
+              <div class="grid">
+                <div class="info-card"><span>職種</span><strong>${value(job.position)}</strong></div>
+                <div class="info-card"><span>勤務時間</span><strong>${value(job.workHours)}</strong></div>
+                <div class="info-card"><span>応募条件・資格</span><strong>${value(job.requirements)}</strong></div>
+                <div class="info-card"><span>待遇・福利厚生</span><strong>${value(job.benefits)}</strong></div>
+                <div class="info-card"><span>対象性別</span><strong>${window.NoxJobFields.targetGenderLabel(job.targetGender)}</strong></div>
+                <div class="info-card"><span>掲載区分</span><strong>${window.NoxJobFields.businessScopeLabel(job.businessScope)}</strong></div>
+                <div class="info-card"><span>応募先URL・LINE等</span><strong>${value(job.applyUrl)}</strong></div>
               </div>
             </section>
 
