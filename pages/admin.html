@@ -1664,6 +1664,10 @@
         functions,
         "manageAdminStoreMedia",
       );
+      const deleteAdminStoreHistoryCallable = httpsCallable(
+        functions,
+        "deleteAdminStoreHistory",
+      );
 
       const userList = document.getElementById("userList");
 
@@ -2156,6 +2160,44 @@
         return application.status || "状態不明";
       }
 
+      function storeApplicationHistoryType(application) {
+        return application.registrationStatus === "completed"
+          ? "registration_completed"
+          : "invite_issued";
+      }
+
+      function storeHistoryDeleteErrorMessage(error) {
+        const code = String(error?.code || "");
+        if (code.includes("permission-denied")) return "管理者権限を確認できないため、履歴を削除できませんでした。再ログインしてください。";
+        if (code.includes("failed-precondition")) return "履歴の状態が更新されています。一覧を再読み込みして確認してください。";
+        if (code.includes("invalid-argument")) return "削除対象の履歴情報が正しくありません。一覧を再読み込みしてください。";
+        if (code.includes("unavailable")) return "通信できないため履歴を削除できませんでした。時間をおいて再試行してください。";
+        return "履歴を削除できませんでした。管理者ログを確認してください。";
+      }
+
+      async function deleteStoreApplicationHistory(application, card, button) {
+        const storeName = application.storeName || "店舗名未設定";
+        if (!confirm(`「${storeName}」の承認・登録履歴を一覧から削除しますか？\n店舗、求人、契約、ユーザー、招待は削除されません。`)) return;
+        if (button.disabled) return;
+        button.disabled = true;
+        button.textContent = "削除中...";
+        try {
+          await deleteAdminStoreHistoryCallable({
+            historyType: storeApplicationHistoryType(application),
+            historyId: application.id,
+          });
+          card.remove();
+          if (!storeApplicationHistoryList.querySelector(".admin-item-card")) {
+            storeApplicationHistoryList.innerHTML =
+              '<p class="admin-message">承認済み・登録完了の申請はありません。</p>';
+          }
+        } catch (error) {
+          alert(storeHistoryDeleteErrorMessage(error));
+          button.disabled = false;
+          button.textContent = "履歴を削除";
+        }
+      }
+
       async function deleteRegisteredStoreData(store, button) {
         const storeName = store.storeName || "店舗名未設定";
 
@@ -2208,8 +2250,9 @@
             }))
             .filter(
               (application) =>
-                application.status === "approved" ||
-                application.registrationStatus === "completed",
+                application.adminHistoryHidden !== true &&
+                (application.status === "approved" ||
+                  application.registrationStatus === "completed"),
             )
             .sort(
               (left, right) =>
@@ -2248,8 +2291,8 @@
 
             deleteButton.addEventListener("click", () => {
               deleteStoreApplicationHistory(
-                application.id,
-                application.storeName || "店舗名未設定",
+                application,
+                card,
                 deleteButton,
               );
             });
@@ -2353,6 +2396,11 @@
 
         const title = document.createElement("h4");
         title.textContent = kind === "gallery" ? `${config.label} ${slot + 1}` : config.label;
+        const description = document.createElement("p");
+        description.className = "admin-message";
+        description.textContent = kind === "gallery"
+          ? "求人詳細ページに表示される店内写真・店舗写真です。最大10枚まで登録できます"
+          : "PICK UP求人・TOP・求人一覧カードなどに表示される代表画像です";
         const preview = document.createElement("img");
         preview.className = `store-media-preview${kind === "logo" || kind === "profile" ? " is-square" : ""}`;
         preview.alt = title.textContent;
@@ -2452,7 +2500,7 @@
         });
 
         buttonRow.append(uploadButton, deleteButton);
-        item.append(title, preview, input, buttonRow, status);
+        item.append(title, description, preview, input, buttonRow, status);
         render();
         return item;
       }
@@ -2487,12 +2535,8 @@
               }
             });
             content.replaceChildren(
-              createStoreMediaItem(store, "logo", undefined,
-                store.logoStoragePath ? { url: store.logoUrl || "", storagePath: store.logoStoragePath } : null),
               createStoreMediaItem(store, "cover", undefined,
                 store.coverImageStoragePath ? { url: store.coverImageUrl || "", storagePath: store.coverImageStoragePath } : null),
-              createStoreMediaItem(store, "profile", undefined,
-                store.profileImageStoragePath ? { url: store.profileImageUrl || "", storagePath: store.profileImageStoragePath } : null),
               ...Array.from({ length: 10 }, (_, slot) =>
                 createStoreMediaItem(store, "gallery", slot, gallery.get(slot) || null)),
             );

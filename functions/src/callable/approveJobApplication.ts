@@ -31,6 +31,7 @@ import {
 import {
   cachedStoreCoverUrl
 } from "../domain/storeCoverCache";
+import { canonicalJobCompatibilityChanges } from "../domain/jobFields";
 
 const APPLICATION_ID_PATTERN =
   /^[A-Za-z0-9]{20}$/;
@@ -334,6 +335,7 @@ transaction.update(
 transaction.update(
   jobReference,
   {
+    ...canonicalJobCompatibilityChanges(job),
     status: "approved",
     isPublic: true,
     contractListingStatus:

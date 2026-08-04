@@ -16,9 +16,7 @@
       : [];
     return {
       heroUrl: ownImages[0] || storeMedia.coverImageUrl || "",
-      logoUrl: storeMedia.logoUrl || "",
-      profileImageUrl: storeMedia.profileImageUrl || "",
-      galleryUrls: uniqueUrls([...ownImages, ...galleryImages]),
+      galleryUrls: uniqueUrls(galleryImages),
     };
   }
 

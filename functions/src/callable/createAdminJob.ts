@@ -10,6 +10,7 @@ import { firestore } from "../firebaseAdmin";
 
 import { assertActiveAdmin } from "../security/adminAuthorization";
 import { cachedStoreCoverUrl } from "../domain/storeCoverCache";
+import { canonicalJobCompatibilityChanges } from "../domain/jobFields";
 
 type CreateAdminJobInput = {
   storeName: string;
@@ -160,12 +161,23 @@ export const createAdminJob = onCall(adminCallableOptions, async (request) => {
 
     const batch = firestore.batch();
 
+    const compatibleJobFields = canonicalJobCompatibilityChanges({
+      storeName: input.storeName,
+      title: input.title,
+      businessType: input.businessType,
+      area: input.area,
+      salary: input.salary,
+      description: input.description,
+      position: "キャスト",
+    });
+
     batch.create(jobReference, {
       schemaVersion: 1,
 
       ownerId: input.ownerId,
       storeId: storeSnapshot.id,
       storeName: input.storeName,
+      ...compatibleJobFields,
 
       title: input.title,
       category: input.businessType,

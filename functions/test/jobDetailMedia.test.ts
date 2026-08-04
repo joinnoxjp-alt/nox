@@ -6,8 +6,6 @@ import test from "node:test";
 interface JobDetailMediaModule {
   compose(data: Record<string, unknown>, storeMedia: Record<string, unknown>): {
     heroUrl: string;
-    logoUrl: string;
-    profileImageUrl: string;
     galleryUrls: string[];
   };
 }
@@ -44,8 +42,6 @@ test("keeps the first job-specific image as the main visual", () => {
   );
   assert.equal(result.heroUrl, "https://example.test/job-1.jpg");
   assert.deepEqual(result.galleryUrls, [
-    "https://example.test/job-1.jpg",
-    "https://example.test/job-2.jpg",
     "https://example.test/gallery.jpg",
   ]);
 });
@@ -61,10 +57,13 @@ test("uses the store cover only when the job has no image", () => {
 test("preserves the existing no-image display when store media is empty", () => {
   assert.deepEqual(media.compose({}, { galleryImages: [] }), {
     heroUrl: "",
-    logoUrl: "",
-    profileImageUrl: "",
     galleryUrls: [],
   });
+});
+
+test("public detail removes the independent store logo and legacy profile image", () => {
+  assert.doesNotMatch(detailSource, /media\.logoUrl/);
+  assert.doesNotMatch(detailSource, /media\.profileImageUrl/);
 });
 
 test("blocks unpublished jobs before loading store media on the public detail page", () => {

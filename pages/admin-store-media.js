@@ -1,10 +1,11 @@
 (function initializeAdminStoreMedia(globalObject) {
   const MEDIA_CONFIG = Object.freeze({
     logo: Object.freeze({ label: "店舗ロゴ", maxBytes: 2 * 1024 * 1024 }),
-    cover: Object.freeze({ label: "カバー画像", maxBytes: 5 * 1024 * 1024 }),
+    cover: Object.freeze({ label: "プロフィール画像", maxBytes: 5 * 1024 * 1024 }),
     profile: Object.freeze({ label: "プロフィール画像", maxBytes: 2 * 1024 * 1024 }),
-    gallery: Object.freeze({ label: "ギャラリー画像", maxBytes: 5 * 1024 * 1024 }),
+    gallery: Object.freeze({ label: "店舗画像", maxBytes: 5 * 1024 * 1024 }),
   });
+  const ADMIN_VISIBLE_MEDIA_KINDS = Object.freeze(["cover", "gallery"]);
   const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 
   function validateFile(file, kind) {
@@ -45,7 +46,10 @@
     return request;
   }
 
-  const api = { MEDIA_CONFIG, validateFile, buildUploadRequest, buildDeleteRequest };
+  const api = {
+    MEDIA_CONFIG, ADMIN_VISIBLE_MEDIA_KINDS,
+    validateFile, buildUploadRequest, buildDeleteRequest,
+  };
   globalObject.NoxAdminStoreMedia = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;
 })(typeof window !== "undefined" ? window : globalThis);

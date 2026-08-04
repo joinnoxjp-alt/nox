@@ -1,8 +1,10 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import path from "node:path";
 import test from "node:test";
 
 interface MediaUiModule {
+  ADMIN_VISIBLE_MEDIA_KINDS: readonly string[];
   validateFile(file: { name: string; type: string; size: number }, kind: string): void;
   buildUploadRequest(input: Record<string, unknown>): Record<string, unknown>;
   buildDeleteRequest(input: Record<string, unknown>): Record<string, unknown>;
@@ -59,4 +61,15 @@ test("builds deletion requests without client-controlled paths", () => {
     mediaUi.buildDeleteRequest({ storeId: "store-1", kind: "gallery", slot: 0 }),
     { operation: "delete", storeId: "store-1", kind: "gallery", slot: 0 },
   );
+});
+
+test("admin UI exposes only the representative profile and gallery controls", () => {
+  assert.deepEqual(mediaUi.ADMIN_VISIBLE_MEDIA_KINDS, ["cover", "gallery"]);
+  const adminSource = readFileSync(
+    path.resolve(__dirname, "../../../pages/admin.html"), "utf8",
+  );
+  assert.match(adminSource, /createStoreMediaItem\(store, "cover"/);
+  assert.match(adminSource, /createStoreMediaItem\(store, "gallery"/);
+  assert.doesNotMatch(adminSource, /createStoreMediaItem\(store, "logo"/);
+  assert.doesNotMatch(adminSource, /createStoreMediaItem\(store, "profile"/);
 });

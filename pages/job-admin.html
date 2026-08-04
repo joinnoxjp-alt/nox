@@ -416,6 +416,7 @@
 
   </main>
 
+  <script src="./job-fields.js"></script>
   <script type="module">
 
     import { auth } from "../firebase.js";
@@ -494,30 +495,15 @@
     }
 
     function getJobName(data){
-      return (
-        data.storeName ||
-        data.shopName ||
-        data.name ||
-        "店舗名未設定"
-      );
+      return window.NoxJobFields.normalize(data).storeName || "店舗名未設定";
     }
 
     function getJobArea(data){
-      return (
-        data.area ||
-        data.location ||
-        data.prefecture ||
-        "-"
-      );
+      return window.NoxJobFields.normalize(data).area || "-";
     }
 
     function getJobSalary(data){
-      return (
-        data.salary ||
-        data.salaryText ||
-        data.hourlyWage ||
-        "-"
-      );
+      return window.NoxJobFields.normalize(data).salary || "-";
     }
 
     function getJobImage(data){
@@ -538,14 +524,7 @@
     }
 
     function getJobDescription(data){
-      return (
-        data.description ||
-        data.jobDescription ||
-        data.storeDescription ||
-        data.selfPr ||
-        data.pr ||
-        ""
-      );
+      return window.NoxJobFields.normalize(data).description;
     }
 
     function getStatusLabel(status){
@@ -1192,6 +1171,13 @@
             </div>
 
             <div class="edit-form-group">
+              <label>職種</label>
+              <input type="text" id="editPosition-${escapeHtml(job.id)}"
+                value="${escapeHtml(window.NoxJobFields.normalize(job).position)}"
+                placeholder="キャスト・ホールスタッフなど">
+            </div>
+
+            <div class="edit-form-group">
               <label>
                 エリア
               </label>
@@ -1287,6 +1273,18 @@
               )}</textarea>
             </div>
 
+            <div class="edit-form-group">
+              <label>勤務地住所</label>
+              <input type="text" id="editAddress-${escapeHtml(job.id)}"
+                value="${escapeHtml(window.NoxJobFields.normalize(job).address)}">
+            </div>
+
+            <div class="edit-form-group">
+              <label>最寄り駅</label>
+              <input type="text" id="editStation-${escapeHtml(job.id)}"
+                value="${escapeHtml(window.NoxJobFields.normalize(job).station)}">
+            </div>
+
             <div class="edit-form-group full">
               <label>
                 待遇・福利厚生
@@ -1302,6 +1300,37 @@
                 ""
               )}</textarea>
             </div>
+
+            <div class="edit-form-group"><label>各種バック</label>
+              <input type="text" id="editBack-${escapeHtml(job.id)}" value="${escapeHtml(window.NoxJobFields.normalize(job).back)}"></div>
+            <div class="edit-form-group"><label>日払い</label>
+              <select id="editDailyPay-${escapeHtml(job.id)}">
+                <option value="">未設定</option><option value="true" ${job.dailyPay === true || job.dailyPay === "true" ? "selected" : ""}>対応あり</option><option value="false" ${job.dailyPay === false || job.dailyPay === "false" ? "selected" : ""}>対応なし</option>
+              </select></div>
+            <div class="edit-form-group"><label>体験入店</label>
+              <select id="editTrial-${escapeHtml(job.id)}">
+                <option value="">未設定</option><option value="true" ${job.trial === true || job.trial === "true" ? "selected" : ""}>体験入店あり</option><option value="false" ${job.trial === false || job.trial === "false" ? "selected" : ""}>対応なし</option>
+              </select></div>
+            <div class="edit-form-group"><label>未経験歓迎</label>
+              <select id="editBeginner-${escapeHtml(job.id)}">
+                <option value="">未設定</option><option value="true" ${job.beginner === true || job.beginner === "true" ? "selected" : ""}>未経験歓迎</option><option value="false" ${job.beginner === false || job.beginner === "false" ? "selected" : ""}>経験者向け</option>
+              </select></div>
+            <div class="edit-form-group"><label>採用年齢</label>
+              <input type="text" id="editAge-${escapeHtml(job.id)}" value="${escapeHtml(window.NoxJobFields.normalize(job).age)}"></div>
+            <div class="edit-form-group"><label>シフト</label>
+              <input type="text" id="editShift-${escapeHtml(job.id)}" value="${escapeHtml(window.NoxJobFields.normalize(job).shift)}"></div>
+            <div class="edit-form-group"><label>対象性別</label>
+              <select id="editTargetGender-${escapeHtml(job.id)}">
+                <option value="female" ${job.targetGender !== "male" && job.targetGender !== "all" ? "selected" : ""}>女性</option>
+                <option value="male" ${job.targetGender === "male" ? "selected" : ""}>男性</option>
+                <option value="all" ${job.targetGender === "all" ? "selected" : ""}>男女</option>
+              </select></div>
+            <div class="edit-form-group"><label>掲載区分</label>
+              <select id="editBusinessScope-${escapeHtml(job.id)}">
+                <option value="night" ${job.businessScope !== "general" && job.businessScope !== "both" ? "selected" : ""}>夜職</option>
+                <option value="general" ${job.businessScope === "general" ? "selected" : ""}>一般求人</option>
+                <option value="both" ${job.businessScope === "both" ? "selected" : ""}>両方</option>
+              </select></div>
 
             <div class="edit-form-group full">
               <label>
@@ -1638,6 +1667,8 @@
           `editBusinessType-${jobId}`
         ).value.trim();
 
+      const position = document.getElementById(`editPosition-${jobId}`).value.trim();
+
       const area =
         document.getElementById(
           `editArea-${jobId}`
@@ -1672,6 +1703,22 @@
         document.getElementById(
           `editBenefits-${jobId}`
         ).value.trim();
+
+      const address = document.getElementById(`editAddress-${jobId}`).value.trim();
+      const station = document.getElementById(`editStation-${jobId}`).value.trim();
+
+      const back = document.getElementById(`editBack-${jobId}`).value.trim();
+      const parseOptionalBoolean = (elementId) => {
+        const selected = document.getElementById(elementId).value;
+        return selected === "" ? "" : selected === "true";
+      };
+      const dailyPay = parseOptionalBoolean(`editDailyPay-${jobId}`);
+      const trial = parseOptionalBoolean(`editTrial-${jobId}`);
+      const beginner = parseOptionalBoolean(`editBeginner-${jobId}`);
+      const age = document.getElementById(`editAge-${jobId}`).value.trim();
+      const shift = document.getElementById(`editShift-${jobId}`).value.trim();
+      const targetGender = document.getElementById(`editTargetGender-${jobId}`).value;
+      const businessScope = document.getElementById(`editBusinessScope-${jobId}`).value;
 
       const applyUrl =
         document.getElementById(
@@ -1800,12 +1847,19 @@
 
             businessType,
             jobType:businessType,
+            category:businessType,
+            position,
 
             area,
             location:area,
 
             salary,
             salaryText:salary,
+
+            address,
+            workLocation:address,
+            station,
+            nearestStation:station,
 
             title,
             jobTitle:title,
@@ -1823,6 +1877,15 @@
 
             benefits,
             treatment:benefits,
+
+            back,
+            dailyPay,
+            trial,
+            beginner,
+            age,
+            shift,
+            targetGender,
+            businessScope,
 
             applyUrl,
             lineUrl:applyUrl,

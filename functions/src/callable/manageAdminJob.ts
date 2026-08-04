@@ -5,6 +5,7 @@ import { createAdminAuditLogDraft } from "../audit/adminAudit";
 import { adminCallableOptions } from "../config";
 import { firestore } from "../firebaseAdmin";
 import { assertActiveAdmin } from "../security/adminAuthorization";
+import { canonicalJobCompatibilityChanges } from "../domain/jobFields";
 
 const EDITABLE_FIELDS = new Set([
   "storeName", "shopName", "name", "businessType", "jobType", "area",
@@ -12,7 +13,11 @@ const EDITABLE_FIELDS = new Set([
   "jobDescription", "storeDescription", "selfPr", "workHours", "workingHours",
   "requirements", "qualification", "benefits", "treatment", "applyUrl",
   "lineUrl", "contactUrl", "topOrder", "status", "mainImage", "imageUrl",
-  "image", "images", "imageUrls", "topFeatured",
+  "image", "images", "imageUrls", "topFeatured", "category", "position",
+  "occupation", "address", "workLocation", "station", "nearestStation",
+  "back", "backs", "dailyPay", "trial", "trialEntry", "beginner",
+  "welcomeBeginners", "age", "hiringAge", "shift", "shiftDetails",
+  "targetGender", "businessScope", "pr",
 ]);
 const JOB_STATUSES = new Set([
   "draft", "pending", "approved", "paused", "reapproval_pending",
@@ -27,7 +32,14 @@ const STRING_LIMITS: Record<string, number> = {
   qualification: 5000, benefits: 5000, treatment: 5000,
   applyUrl: 2000, lineUrl: 2000, contactUrl: 2000,
   mainImage: 2000, imageUrl: 2000, image: 2000,
+  category: 120, position: 120, occupation: 120, address: 500,
+  workLocation: 500, station: 200, nearestStation: 200, back: 1000,
+  backs: 1000, age: 200, hiringAge: 200, shift: 1000,
+  shiftDetails: 1000, pr: 5000,
 };
+const BOOLEAN_FIELDS = new Set(["dailyPay", "trial", "trialEntry", "beginner", "welcomeBeginners"]);
+const TARGET_GENDERS = new Set(["female", "male", "all"]);
+const BUSINESS_SCOPES = new Set(["night", "general", "both"]);
 
 function record(value: unknown): Record<string, unknown> {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
@@ -97,6 +109,15 @@ export const manageAdminJob = onCall(adminCallableOptions, async (request) => {
         if (key === "topFeatured" && typeof value !== "boolean") {
           throw new HttpsError("invalid-argument", "TOP掲載状態が正しくありません。");
         }
+        if (BOOLEAN_FIELDS.has(key) && value !== "" && typeof value !== "boolean") {
+          throw new HttpsError("invalid-argument", `${key} must be a boolean or empty.`);
+        }
+        if (key === "targetGender" && (typeof value !== "string" || !TARGET_GENDERS.has(value))) {
+          throw new HttpsError("invalid-argument", "targetGender is invalid.");
+        }
+        if (key === "businessScope" && (typeof value !== "string" || !BUSINESS_SCOPES.has(value))) {
+          throw new HttpsError("invalid-argument", "businessScope is invalid.");
+        }
         if ((key === "images" || key === "imageUrls") &&
             (!Array.isArray(value) || value.length > 10 || value.some((item) => typeof item !== "string" || item.length > 2000))) {
           throw new HttpsError("invalid-argument", "求人画像が正しくありません。");
@@ -106,6 +127,7 @@ export const manageAdminJob = onCall(adminCallableOptions, async (request) => {
       if (typeof changes.title !== "string" || !changes.title.trim()) {
         throw new HttpsError("invalid-argument", "求人タイトルを入力してください。");
       }
+      changes = { ...changes, ...canonicalJobCompatibilityChanges({ ...before, ...changes }) };
       changes.isPublic = changes.status === "approved" && before.contractListingStatus === "active";
     } else if (action === "pause") {
       changes = { status: "paused", isPublic: false, pausedAt: FieldValue.serverTimestamp(), pausedBy: admin.uid };
