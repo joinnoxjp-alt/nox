@@ -4,7 +4,7 @@ import path from "node:path";
 import test from "node:test";
 import { canonicalJobCompatibilityChanges } from "../src/domain/jobFields";
 
-interface JobFieldsApi { normalize(data: Record<string, unknown>): Record<string, unknown>; featureLabel(value: unknown, enabled?: string): string; }
+interface JobFieldsApi { normalize(data: Record<string, unknown>): Record<string, unknown>; featureLabel(value: unknown, enabled?: string): string; applyTypeLabel(value: string): string; }
 const fields = require(path.resolve(__dirname, "../../../pages/job-fields.js")) as JobFieldsApi;
 
 test("canonical fields stay aligned without mixing area and business", () => {
@@ -38,4 +38,19 @@ test("manage function allowlists expanded fields and builds compatibility fields
   const source = readFileSync(path.resolve(__dirname, "../../src/callable/manageAdminJob.ts"), "utf8");
   for (const field of ["position", "back", "dailyPay", "trial", "beginner", "age", "shift", "targetGender", "businessScope"]) assert.match(source, new RegExp(`"${field}"`));
   assert.match(source, /canonicalJobCompatibilityChanges/);
+  assert.match(source, /"applyType"/);
+  assert.match(source, /Application URL must use HTTP or HTTPS/);
+});
+
+test("application destination normalizes canonical and legacy URL fields", () => {
+  assert.deepEqual(
+    Object.fromEntries(Object.entries(fields.normalize({ applyType: "instagram", applyUrl: "https://instagram.com/store" })).filter(([key]) => ["applyType", "applyUrl"].includes(key))),
+    { applyType: "instagram", applyUrl: "https://instagram.com/store" },
+  );
+  const legacyLine = fields.normalize({ lineUrl: "https://lin.ee/store" });
+  assert.equal(legacyLine.applyType, "line");
+  assert.equal(legacyLine.applyUrl, "https://lin.ee/store");
+  const legacyInstagram = fields.normalize({ instagramUrl: "https://instagram.com/legacy" });
+  assert.equal(legacyInstagram.applyType, "instagram");
+  assert.equal(legacyInstagram.applyUrl, "https://instagram.com/legacy");
 });

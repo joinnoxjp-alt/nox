@@ -17,7 +17,8 @@ const EDITABLE_FIELDS = new Set([
   "occupation", "address", "workLocation", "station", "nearestStation",
   "back", "backs", "dailyPay", "trial", "trialEntry", "beginner",
   "welcomeBeginners", "age", "hiringAge", "shift", "shiftDetails",
-  "targetGender", "businessScope", "pr",
+  "targetGender", "businessScope", "pr", "applyType", "instagramUrl",
+  "xUrl", "twitterUrl", "tiktokUrl",
 ]);
 const JOB_STATUSES = new Set([
   "draft", "pending", "approved", "paused", "reapproval_pending",
@@ -30,7 +31,8 @@ const STRING_LIMITS: Record<string, number> = {
   jobDescription: 5000, storeDescription: 5000, selfPr: 5000,
   workHours: 500, workingHours: 500, requirements: 5000,
   qualification: 5000, benefits: 5000, treatment: 5000,
-  applyUrl: 2000, lineUrl: 2000, contactUrl: 2000,
+  applyUrl: 2000, lineUrl: 2000, contactUrl: 2000, instagramUrl: 2000,
+  xUrl: 2000, twitterUrl: 2000, tiktokUrl: 2000,
   mainImage: 2000, imageUrl: 2000, image: 2000,
   category: 120, position: 120, occupation: 120, address: 500,
   workLocation: 500, station: 200, nearestStation: 200, back: 1000,
@@ -40,6 +42,17 @@ const STRING_LIMITS: Record<string, number> = {
 const BOOLEAN_FIELDS = new Set(["dailyPay", "trial", "trialEntry", "beginner", "welcomeBeginners"]);
 const TARGET_GENDERS = new Set(["female", "male", "all"]);
 const BUSINESS_SCOPES = new Set(["night", "general", "both"]);
+const APPLY_TYPES = new Set(["instagram", "line", "x", "tiktok", "other"]);
+
+function isSafeExternalUrl(value: string): boolean {
+  if (!value) return true;
+  try {
+    const parsed = new URL(value);
+    return parsed.protocol === "https:" || parsed.protocol === "http:";
+  } catch {
+    return false;
+  }
+}
 
 function record(value: unknown): Record<string, unknown> {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
@@ -117,6 +130,13 @@ export const manageAdminJob = onCall(adminCallableOptions, async (request) => {
         }
         if (key === "businessScope" && (typeof value !== "string" || !BUSINESS_SCOPES.has(value))) {
           throw new HttpsError("invalid-argument", "businessScope is invalid.");
+        }
+        if (key === "applyType" && (typeof value !== "string" || !APPLY_TYPES.has(value))) {
+          throw new HttpsError("invalid-argument", "applyType is invalid.");
+        }
+        if (["applyUrl", "lineUrl", "contactUrl", "instagramUrl", "xUrl", "twitterUrl", "tiktokUrl"].includes(key) &&
+            typeof value === "string" && !isSafeExternalUrl(value.trim())) {
+          throw new HttpsError("invalid-argument", "Application URL must use HTTP or HTTPS.");
         }
         if ((key === "images" || key === "imageUrls") &&
             (!Array.isArray(value) || value.length > 10 || value.some((item) => typeof item !== "string" || item.length > 2000))) {

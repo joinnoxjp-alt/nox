@@ -20,7 +20,10 @@ type CreateAdminJobInput = {
   area: string;
   salary: string;
   description: string;
+  applyType: "instagram" | "line" | "x" | "tiktok" | "other";
+  applyUrl: string;
 };
+const APPLY_TYPES = new Set(["instagram", "line", "x", "tiktok", "other"]);
 
 function publicError(
   code: "invalid-argument" | "not-found" | "failed-precondition" | "internal",
@@ -61,12 +64,28 @@ function optionalString(value: unknown, maximumLength: number): string {
   return result;
 }
 
+function safeOptionalUrl(value: unknown): string {
+  const result = optionalString(value, 2000);
+  if (!result) return "";
+  try {
+    const parsed = new URL(result);
+    if (parsed.protocol !== "https:" && parsed.protocol !== "http:") throw new Error("protocol");
+    return parsed.href;
+  } catch {
+    throw publicError("invalid-argument", "Application URL is invalid.");
+  }
+}
+
 function parseInput(value: unknown): CreateAdminJobInput {
   if (value === null || typeof value !== "object" || Array.isArray(value)) {
     throw publicError("invalid-argument", "Job input is invalid.");
   }
 
   const input = value as Record<string, unknown>;
+  const applyType = input.applyType ?? "other";
+  if (typeof applyType !== "string" || !APPLY_TYPES.has(applyType)) {
+    throw publicError("invalid-argument", "Application type is invalid.");
+  }
 
   return {
     storeName: requiredString(input.storeName, 120),
@@ -76,6 +95,8 @@ function parseInput(value: unknown): CreateAdminJobInput {
     area: optionalString(input.area, 120),
     salary: optionalString(input.salary, 500),
     description: optionalString(input.description, 5000),
+    applyType: applyType as CreateAdminJobInput["applyType"],
+    applyUrl: safeOptionalUrl(input.applyUrl),
   };
 }
 
@@ -169,6 +190,8 @@ export const createAdminJob = onCall(adminCallableOptions, async (request) => {
       salary: input.salary,
       description: input.description,
       position: "キャスト",
+      applyType: input.applyType,
+      applyUrl: input.applyUrl,
     });
 
     batch.create(jobReference, {

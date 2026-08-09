@@ -16,6 +16,19 @@
   }
 
   function normalize(data = {}) {
+    const requestedApplyType = first(data, ["applyType"]);
+    const explicitApplyType = ["instagram", "line", "x", "tiktok", "other"].includes(requestedApplyType)
+      ? requestedApplyType
+      : "";
+    const inferredApplyType = data.instagramUrl || data.Instagram
+      ? "instagram"
+      : data.lineUrl
+        ? "line"
+        : data.xUrl || data.twitterUrl
+          ? "x"
+          : data.tiktokUrl
+            ? "tiktok"
+            : "other";
     return {
       storeName: first(data, ["storeName", "shopName", "name"]),
       title: first(data, ["title", "jobTitle"]),
@@ -35,7 +48,8 @@
       beginner: first(data, ["beginner", "welcomeBeginners"]),
       age: first(data, ["age", "hiringAge"]),
       shift: first(data, ["shift", "shiftDetails"]),
-      applyUrl: first(data, ["applyUrl", "lineUrl", "contactUrl"]),
+      applyType: explicitApplyType || inferredApplyType,
+      applyUrl: first(data, ["applyUrl", "lineUrl", "instagramUrl", "Instagram", "xUrl", "twitterUrl", "tiktokUrl", "contactUrl"]),
       targetGender: first(data, ["targetGender"], "female"),
       businessScope: first(data, ["businessScope"], "night"),
     };
@@ -49,7 +63,11 @@
     return ({ night: "夜職", general: "一般求人", both: "両方" })[value] || "未設定";
   }
 
-  const api = Object.freeze({ first, featureLabel, normalize, targetGenderLabel, businessScopeLabel });
+  function applyTypeLabel(value) {
+    return ({ instagram: "Instagram", line: "LINE", x: "X", tiktok: "TikTok", other: "その他" })[value] || "その他";
+  }
+
+  const api = Object.freeze({ first, featureLabel, normalize, targetGenderLabel, businessScopeLabel, applyTypeLabel });
   globalObject.NoxJobFields = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;
 })(typeof window !== "undefined" ? window : globalThis);

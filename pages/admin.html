@@ -1138,6 +1138,22 @@
                   ></textarea>
                 </div>
 
+                <div class="ad-form-group">
+                  <label for="directJobApplyType">応募先SNS</label>
+                  <select id="directJobApplyType">
+                    <option value="instagram">Instagram</option>
+                    <option value="line">LINE</option>
+                    <option value="x">X</option>
+                    <option value="tiktok">TikTok</option>
+                    <option value="other">その他</option>
+                  </select>
+                </div>
+
+                <div class="ad-form-group full">
+                  <label for="directJobApplyUrl">応募先URL</label>
+                  <input type="url" id="directJobApplyUrl" placeholder="https://www.instagram.com/xxxxx/" />
+                </div>
+
                 <div class="ad-card-actions">
                   <button
                     type="button"
@@ -1762,10 +1778,16 @@
         const description = document
           .getElementById("directJobDescription")
           .value.trim();
+        const applyType = document.getElementById("directJobApplyType").value;
+        const applyUrl = document.getElementById("directJobApplyUrl").value.trim();
 
         if (!storeName || !ownerId || !title) {
           directJobStatus.textContent =
             "店舗名・ownerId・求人タイトルを入力してください。";
+          return;
+        }
+        if (applyUrl && !isValidHttpUrl(applyUrl)) {
+          directJobStatus.textContent = "応募先URLはhttp://またはhttps://で入力してください。";
           return;
         }
 
@@ -1786,6 +1808,8 @@
             area,
             salary,
             description,
+            applyType,
+            applyUrl,
           });
 
           directJobStatus.textContent = "求人を登録・公開しました。";
@@ -1901,6 +1925,15 @@
           .replaceAll(">", "&gt;")
           .replaceAll('"', "&quot;")
           .replaceAll("'", "&#039;");
+      }
+
+      function isValidHttpUrl(value) {
+        try {
+          const parsed = new URL(value);
+          return parsed.protocol === "https:" || parsed.protocol === "http:";
+        } catch {
+          return false;
+        }
       }
 
       function businessScopeLabel(value) {

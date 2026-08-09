@@ -111,10 +111,13 @@
 
       .hero img {
         width: 100%;
-        max-height: 420px;
-        object-fit: cover;
+        height: auto;
+        max-height: 620px;
+        object-fit: contain;
         border-radius: 22px;
         margin-bottom: 25px;
+        background: #050505;
+        cursor: zoom-in;
       }
 
       .kicker {
@@ -226,12 +229,26 @@
 
       .gallery img {
         width: 100%;
-        height: 220px;
-        object-fit: cover;
+        height: auto;
+        max-height: min(70vh, 680px);
+        object-fit: contain;
         border-radius: 18px;
         border: 1px solid rgba(255, 215, 0, 0.18);
         transition: 0.25s;
         cursor: pointer;
+        background: #050505;
+      }
+
+      .gallery-image-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 180px;
+        padding: 0;
+        border: 0;
+        border-radius: 18px;
+        background: #050505;
+        cursor: zoom-in;
       }
 
       .gallery img:hover {
@@ -242,7 +259,61 @@
         line-height: 2;
         color: #ddd;
         white-space: pre-wrap;
+        text-align: left;
+        overflow-wrap: anywhere;
+        max-width: 900px;
       }
+
+      .long-text {
+        display: block;
+        text-align: left;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+        line-height: 1.9;
+        font-weight: 600;
+      }
+
+      .info-card.full {
+        grid-column: 1 / -1;
+      }
+
+      .apply-note {
+        color: #bbb;
+        line-height: 1.8;
+        text-align: left;
+      }
+
+      .apply-modal {
+        width: min(92vw, 620px);
+        max-height: 90vh;
+        overflow: auto;
+        padding: 0;
+        border: 1px solid rgba(255, 215, 0, 0.45);
+        border-radius: 24px;
+        background: #0b0b0b;
+        color: #fff;
+      }
+
+      .apply-modal::backdrop { background: rgba(0, 0, 0, 0.82); }
+      .apply-modal-inner { padding: 26px; }
+      .apply-modal label { display: block; margin-top: 14px; color: #ddd; text-align: left; }
+      .apply-modal-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+      .apply-modal-close { min-width: 44px; min-height: 44px; border-radius: 50%; border: 1px solid #665722; background: #111; color: #fff; cursor: pointer; }
+      .apply-confirm { padding: 18px; border: 1px solid rgba(255, 215, 0, .25); border-radius: 16px; background: #080808; }
+      .apply-message { white-space: pre-wrap; text-align: left; overflow-wrap: anywhere; line-height: 1.8; }
+      .apply-actions { display: grid; gap: 10px; margin-top: 16px; }
+      .apply-status { min-height: 1.5em; color: #f5d36b; text-align: center; }
+
+      .image-dialog {
+        width: min(96vw, 1100px);
+        max-height: 94vh;
+        padding: 14px;
+        border: 1px solid rgba(255, 215, 0, .45);
+        border-radius: 20px;
+        background: #050505;
+      }
+      .image-dialog::backdrop { background: rgba(0, 0, 0, .9); }
+      .image-dialog img { display: block; width: 100%; height: auto; max-height: 86vh; object-fit: contain; }
 
       .apply-box {
         margin-top: 25px;
@@ -262,7 +333,8 @@
       }
 
       .apply-box input,
-      .apply-box textarea {
+      .apply-box textarea,
+      .apply-modal input {
         width: 100%;
         padding: 15px;
         margin: 10px 0;
@@ -299,6 +371,11 @@
         transform: translateY(-2px);
       }
 
+      .line-btn.is-disabled {
+        opacity: 0.45;
+        pointer-events: none;
+      }
+
       .footer {
         display: flex;
         justify-content: center;
@@ -326,9 +403,9 @@
           font-size: 38px;
         }
 
-        .gallery img {
-          height: 180px;
-        }
+        .gallery { grid-template-columns: 1fr; }
+        .gallery img { max-height: 72vh; }
+        .apply-modal-inner { padding: 20px; }
       }
     </style>
   </head>
@@ -359,9 +436,6 @@
         import {
           doc,
           getDoc,
-          collection,
-          getDocs,
-          addDoc,
           setDoc,
           arrayUnion,
           arrayRemove,
@@ -382,10 +456,28 @@
           "getPublicJobStoreMedia",
         );
 
+        function escapeHtml(v) {
+          return String(v).replace(/[&<>"']/g, (character) => ({
+            "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+          })[character]);
+        }
+
         function value(v) {
           return v !== undefined && v !== null && String(v).trim()
-            ? String(v)
+            ? escapeHtml(String(v))
             : "未設定";
+        }
+
+        function safeExternalUrl(value) {
+          if (typeof value !== "string" || !value.trim()) return "";
+          try {
+            const parsed = new URL(value.trim());
+            return parsed.protocol === "https:" || parsed.protocol === "http:"
+              ? parsed.href
+              : "";
+          } catch {
+            return "";
+          }
         }
 
         function getJapanDateKey() {
@@ -469,11 +561,9 @@
           const gallery = media.galleryUrls
             .map(
               (img) => `
-                <img
-                  src="${img}"
-                  loading="lazy"
-                  alt="${value(job.storeName)} 店舗画像"
-                >
+                <button type="button" class="gallery-image-button" data-full-image="${escapeHtml(img)}" aria-label="店舗画像を拡大表示">
+                  <img src="${escapeHtml(img)}" loading="lazy" alt="${value(job.storeName)} 店舗画像">
+                </button>
               `,
             )
             .join("");
@@ -481,8 +571,9 @@
           const heroImage = media.heroUrl
             ? `
               <img
-                src="${media.heroUrl}"
+                src="${escapeHtml(media.heroUrl)}"
                 alt="${value(job.storeName)}"
+                data-full-image="${escapeHtml(media.heroUrl)}"
               >
             `
             : "";
@@ -625,90 +716,159 @@
               <div class="grid">
                 <div class="info-card"><span>職種</span><strong>${value(job.position)}</strong></div>
                 <div class="info-card"><span>勤務時間</span><strong>${value(job.workHours)}</strong></div>
-                <div class="info-card"><span>応募条件・資格</span><strong>${value(job.requirements)}</strong></div>
-                <div class="info-card"><span>待遇・福利厚生</span><strong>${value(job.benefits)}</strong></div>
+                <div class="info-card full"><span>応募条件・資格</span><strong class="long-text">${value(job.requirements)}</strong></div>
+                <div class="info-card full"><span>待遇・福利厚生</span><strong class="long-text">${value(job.benefits)}</strong></div>
                 <div class="info-card"><span>対象性別</span><strong>${window.NoxJobFields.targetGenderLabel(job.targetGender)}</strong></div>
                 <div class="info-card"><span>掲載区分</span><strong>${window.NoxJobFields.businessScopeLabel(job.businessScope)}</strong></div>
-                <div class="info-card"><span>応募先URL・LINE等</span><strong>${value(job.applyUrl)}</strong></div>
               </div>
             </section>
 
-            <section class="apply-box" id="applyForm">
-              <h2>応募フォーム</h2>
-
-              <input
-                id="entryName"
-                type="text"
-                placeholder="お名前"
-                autocomplete="name"
-              >
-
-              <input
-                id="entryPhone"
-                type="tel"
-                placeholder="電話番号"
-                autocomplete="tel"
-              >
-
-              <textarea
-                id="entryMessage"
-                placeholder="質問や希望条件があれば入力してください"
-              ></textarea>
-
-              <button id="applyBtn" class="line-btn">
-                応募する
-              </button>
+            <section class="apply-box">
+              <h2>応募</h2>
+              <p class="apply-note">応募内容をコピーした後、店舗指定の${window.NoxJobFields.applyTypeLabel(job.applyType)}へ移動します。NOXに氏名・電話番号は保存されません。</p>
+              <button id="applyBtn" type="button" class="line-btn">応募する</button>
             </section>
+
+            <dialog id="applyDialog" class="apply-modal">
+              <div class="apply-modal-inner">
+                <div class="apply-modal-header"><h2>応募情報</h2><button id="closeApplyDialog" type="button" class="apply-modal-close" aria-label="閉じる">×</button></div>
+                <div id="applyEntryStep">
+                  <label for="entryName">名前</label><input id="entryName" type="text" maxlength="80" autocomplete="name" required>
+                  <label for="entryPhone">電話番号</label><input id="entryPhone" type="tel" maxlength="30" inputmode="tel" autocomplete="tel" required>
+                  <button id="confirmApplication" type="button" class="line-btn">応募先を確認する</button>
+                </div>
+                <div id="applyConfirmStep" hidden>
+                  <p>応募先：<strong>${value(job.storeName)}</strong></p>
+                  <p>応募先SNS：<strong>${window.NoxJobFields.applyTypeLabel(job.applyType)}</strong></p>
+                  <div id="applicationMessage" class="apply-confirm apply-message"></div>
+                  <div class="apply-actions">
+                    <button id="copyApplication" type="button" class="btn gold">応募内容をコピー</button>
+                    <button id="copyName" type="button" class="btn">名前だけコピー</button>
+                    <button id="copyPhone" type="button" class="btn">電話番号だけコピー</button>
+                    <a id="openApplicationUrl" class="line-btn is-disabled" target="_blank" rel="noopener noreferrer" aria-disabled="true"></a>
+                    <button id="backApplication" type="button" class="btn">入力へ戻る</button>
+                  </div>
+                  <p id="applyStatus" class="apply-status" role="status"></p>
+                </div>
+              </div>
+            </dialog>
+
+            <dialog id="imageDialog" class="image-dialog"><img id="fullImage" alt="拡大した店舗画像"></dialog>
           `;
         }
 
-        async function setupApplication(data) {
+        async function copyText(text, statusElement) {
+          try {
+            if (navigator.clipboard?.writeText) {
+              await navigator.clipboard.writeText(text);
+            } else {
+              const temporary = document.createElement("textarea");
+              temporary.value = text;
+              temporary.setAttribute("readonly", "");
+              temporary.style.position = "fixed";
+              temporary.style.opacity = "0";
+              document.body.appendChild(temporary);
+              temporary.select();
+              if (!document.execCommand("copy")) throw new Error("copy-failed");
+              temporary.remove();
+            }
+            statusElement.textContent = "コピーしました";
+            return true;
+          } catch {
+            statusElement.textContent = "コピーできませんでした。文章を選択してコピーしてください。";
+            return false;
+          }
+        }
+
+        function setupImagePreview() {
+          const dialog = document.getElementById("imageDialog");
+          const fullImage = document.getElementById("fullImage");
+          if (!dialog || !fullImage) return;
+          document.querySelectorAll("[data-full-image]").forEach((element) => {
+            element.addEventListener("click", () => {
+              fullImage.src = element.dataset.fullImage || "";
+              if (fullImage.src) dialog.showModal();
+            });
+          });
+          dialog.addEventListener("click", (event) => {
+            if (event.target === dialog) dialog.close();
+          });
+        }
+
+        function setupApplication(data) {
+          const job = window.NoxJobFields.normalize(data);
           const applyBtn = document.getElementById("applyBtn");
-          if (!applyBtn) return;
+          const dialog = document.getElementById("applyDialog");
+          const entryStep = document.getElementById("applyEntryStep");
+          const confirmStep = document.getElementById("applyConfirmStep");
+          const nameInput = document.getElementById("entryName");
+          const phoneInput = document.getElementById("entryPhone");
+          const status = document.getElementById("applyStatus");
+          const applicationMessage = document.getElementById("applicationMessage");
+          const destinationUrl = safeExternalUrl(job.applyUrl);
+          const destinationLabel = window.NoxJobFields.applyTypeLabel(job.applyType);
+          if (!applyBtn || !dialog) return;
 
-          applyBtn.addEventListener("click", async () => {
-            const name = document.getElementById("entryName").value.trim();
+          if (!destinationUrl) {
+            applyBtn.disabled = true;
+            applyBtn.textContent = "現在、この求人の応募先が設定されていません。";
+            return;
+          }
 
-            const phone = document.getElementById("entryPhone").value.trim();
+          const close = () => dialog.close();
+          document.getElementById("closeApplyDialog").addEventListener("click", close);
+          applyBtn.addEventListener("click", () => {
+            entryStep.hidden = false;
+            confirmStep.hidden = true;
+            status.textContent = "";
+            dialog.showModal();
+            nameInput.focus();
+          });
 
-            const message = document
-              .getElementById("entryMessage")
-              .value.trim();
-
-            if (!name || !phone) {
-              alert("お名前と電話番号を入力してください。");
+          document.getElementById("confirmApplication").addEventListener("click", () => {
+            const name = nameInput.value.trim();
+            const phone = phoneInput.value.trim();
+            const phoneDigits = phone.replace(/\D/g, "");
+            if (!name || name.length > 80) {
+              nameInput.setCustomValidity("名前を入力してください。");
+              nameInput.reportValidity();
               return;
             }
-
-            applyBtn.disabled = true;
-            applyBtn.textContent = "送信中...";
-
-            try {
-              await addDoc(collection(db, "applications"), {
-                jobId: id,
-                storeId: data.storeId || data.ownerId || data.userId || "",
-                storeName: data.storeName || data.name || "",
-                applicantName: name,
-                applicantPhone: phone,
-                message,
-                status: "new",
-                createdAt: serverTimestamp(),
-              });
-
-              alert("応募が完了しました！店舗からの連絡をお待ちください。");
-
-              document.getElementById("entryName").value = "";
-              document.getElementById("entryPhone").value = "";
-              document.getElementById("entryMessage").value = "";
-            } catch (error) {
-              console.error("応募送信エラー:", error);
-              alert(
-                "応募の送信に失敗しました。時間を空けて再度お試しください。",
-              );
-            } finally {
-              applyBtn.disabled = false;
-              applyBtn.textContent = "応募する";
+            nameInput.setCustomValidity("");
+            if (phoneDigits.length < 7 || phoneDigits.length > 15 || !/^[+0-9()\-\s]+$/.test(phone)) {
+              phoneInput.setCustomValidity("正しい電話番号を入力してください。");
+              phoneInput.reportValidity();
+              return;
             }
+            phoneInput.setCustomValidity("");
+            const message = `NOXを見て応募しました。\n名前：${name}\n電話番号：${phone}`;
+            applicationMessage.textContent = message;
+            entryStep.hidden = true;
+            confirmStep.hidden = false;
+            status.textContent = "";
+            const openLink = document.getElementById("openApplicationUrl");
+            openLink.textContent = `${destinationLabel}で応募する`;
+            openLink.removeAttribute("href");
+            openLink.classList.add("is-disabled");
+            openLink.setAttribute("aria-disabled", "true");
+            document.getElementById("copyApplication").onclick = async () => {
+              if (await copyText(message, status)) {
+                openLink.href = destinationUrl;
+                openLink.classList.remove("is-disabled");
+                openLink.removeAttribute("aria-disabled");
+              }
+            };
+            document.getElementById("copyName").onclick = () => copyText(name, status);
+            document.getElementById("copyPhone").onclick = () => copyText(phone, status);
+          });
+
+          document.getElementById("backApplication").addEventListener("click", () => {
+            confirmStep.hidden = true;
+            entryStep.hidden = false;
+            status.textContent = "";
+          });
+          dialog.addEventListener("click", (event) => {
+            if (event.target === dialog) close();
           });
         }
 
@@ -827,7 +987,8 @@
             const media = window.NoxJobDetailMedia.compose(data, storeMedia);
 
             renderJob(data, media);
-            await setupApplication(data);
+            setupImagePreview();
+            setupApplication(data);
             await setupSaveButton();
           } catch (error) {
             console.error("求人読み込みエラー:", error);

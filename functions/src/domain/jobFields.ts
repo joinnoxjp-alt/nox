@@ -1,4 +1,5 @@
 type JobData = Record<string, unknown>;
+const APPLY_TYPES = new Set(["instagram", "line", "x", "tiktok", "other"]);
 
 function firstText(data: JobData, keys: string[]): string {
   for (const key of keys) {
@@ -18,7 +19,14 @@ export function canonicalJobCompatibilityChanges(data: JobData): JobData {
   const workHours = firstText(data, ["workHours", "workingHours", "businessHours"]);
   const requirements = firstText(data, ["requirements", "qualification", "conditions"]);
   const benefits = firstText(data, ["benefits", "treatment", "features"]);
-  const applyUrl = firstText(data, ["applyUrl", "lineUrl", "contactUrl"]);
+  const requestedApplyType = firstText(data, ["applyType"]);
+  const explicitApplyType = APPLY_TYPES.has(requestedApplyType) ? requestedApplyType : "";
+  const applyType = explicitApplyType ||
+    (firstText(data, ["instagramUrl", "Instagram"]) ? "instagram" :
+      firstText(data, ["lineUrl"]) ? "line" :
+        firstText(data, ["xUrl", "twitterUrl"]) ? "x" :
+          firstText(data, ["tiktokUrl"]) ? "tiktok" : "other");
+  const applyUrl = firstText(data, ["applyUrl", "lineUrl", "instagramUrl", "Instagram", "xUrl", "twitterUrl", "tiktokUrl", "contactUrl"]);
   const position = firstText(data, ["position", "occupation"]);
   const back = firstText(data, ["back", "backs"]);
   const age = firstText(data, ["age", "hiringAge"]);
@@ -42,7 +50,11 @@ export function canonicalJobCompatibilityChanges(data: JobData): JobData {
     workHours, workingHours: workHours,
     requirements, qualification: requirements,
     benefits, treatment: benefits,
-    applyUrl, lineUrl: applyUrl, contactUrl: applyUrl,
+    applyType, applyUrl, contactUrl: applyUrl,
+    lineUrl: applyType === "line" ? applyUrl : firstText(data, ["lineUrl"]),
+    instagramUrl: applyType === "instagram" ? applyUrl : firstText(data, ["instagramUrl", "Instagram"]),
+    xUrl: applyType === "x" ? applyUrl : firstText(data, ["xUrl", "twitterUrl"]),
+    tiktokUrl: applyType === "tiktok" ? applyUrl : firstText(data, ["tiktokUrl"]),
     position, occupation: position,
     back, backs: back,
     age, hiringAge: age,

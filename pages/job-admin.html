@@ -1332,6 +1332,15 @@
                 <option value="both" ${job.businessScope === "both" ? "selected" : ""}>両方</option>
               </select></div>
 
+            <div class="edit-form-group">
+              <label>応募先SNS</label>
+              <select id="editApplyType-${escapeHtml(job.id)}">
+                ${["instagram", "line", "x", "tiktok", "other"].map((type) =>
+                  `<option value="${type}" ${window.NoxJobFields.normalize(job).applyType === type ? "selected" : ""}>${window.NoxJobFields.applyTypeLabel(type)}</option>`
+                ).join("")}
+              </select>
+            </div>
+
             <div class="edit-form-group full">
               <label>
                 応募・問い合わせリンク
@@ -1341,13 +1350,13 @@
                 type="url"
                 id="editApplyUrl-${escapeHtml(job.id)}"
                 value="${escapeHtml(
-                  job.applyUrl ||
-                  job.lineUrl ||
-                  job.contactUrl ||
-                  ""
+                  window.NoxJobFields.normalize(job).applyUrl
                 )}"
                 placeholder="https://lin.ee/..."
               >
+              ${validateUrl(window.NoxJobFields.normalize(job).applyUrl)
+                ? `<a class="edit-open-link" href="${escapeHtml(window.NoxJobFields.normalize(job).applyUrl)}" target="_blank" rel="noopener noreferrer">応募先を確認</a>`
+                : ""}
             </div>
 
             <div class="edit-form-group">
@@ -1724,6 +1733,7 @@
         document.getElementById(
           `editApplyUrl-${jobId}`
         ).value.trim();
+      const applyType = document.getElementById(`editApplyType-${jobId}`).value;
 
       const topOrder =
         Number(
@@ -1887,9 +1897,8 @@
             targetGender,
             businessScope,
 
+            applyType,
             applyUrl,
-            lineUrl:applyUrl,
-            contactUrl:applyUrl,
 
             topOrder,
             status,
