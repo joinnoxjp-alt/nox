@@ -1258,6 +1258,17 @@
             </div>
 
             <div class="edit-form-group full">
+              <label>定休日</label>
+              <input
+                type="text"
+                id="editClosedDay-${escapeHtml(job.id)}"
+                value="${escapeHtml(window.NoxJobFields.normalize(job).closedDay)}"
+                maxlength="200"
+                placeholder="例：日曜日・祝日"
+              >
+            </div>
+
+            <div class="edit-form-group full">
               <label>
                 応募条件
               </label>
@@ -1703,6 +1714,8 @@
           `editWorkHours-${jobId}`
         ).value.trim();
 
+      const closedDay = document.getElementById(`editClosedDay-${jobId}`).value.trim();
+
       const requirements =
         document.getElementById(
           `editRequirements-${jobId}`
@@ -1886,6 +1899,7 @@
 
             workHours,
             workingHours:workHours,
+            closedDay,
 
             requirements,
             qualification:requirements,

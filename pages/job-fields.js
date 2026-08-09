@@ -40,6 +40,9 @@
       salary: first(data, ["salary", "salaryText", "hourlyWage"]),
       description: first(data, ["description", "jobDescription", "storeDescription", "selfPr", "pr"]),
       workHours: first(data, ["workHours", "workingHours", "businessHours"]),
+      closedDay: Object.prototype.hasOwnProperty.call(data, "closedDay")
+        ? String(data.closedDay ?? "").trim()
+        : first(data, ["holiday", "holidays", "closedDays", "regularHoliday", "dayOff"]),
       requirements: first(data, ["requirements", "qualification", "conditions"]),
       benefits: first(data, ["benefits", "treatment", "features"]),
       back: first(data, ["back", "backs"]),

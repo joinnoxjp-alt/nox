@@ -1138,6 +1138,16 @@
                   ></textarea>
                 </div>
 
+                <div class="ad-form-group full">
+                  <label for="directJobClosedDay">定休日</label>
+                  <input
+                    type="text"
+                    id="directJobClosedDay"
+                    maxlength="200"
+                    placeholder="例：日曜日・祝日"
+                  />
+                </div>
+
                 <div class="ad-form-group">
                   <label for="directJobApplyType">応募先SNS</label>
                   <select id="directJobApplyType">
@@ -1775,6 +1785,8 @@
 
         const salary = document.getElementById("directJobSalary").value.trim();
 
+        const closedDay = document.getElementById("directJobClosedDay").value.trim();
+
         const description = document
           .getElementById("directJobDescription")
           .value.trim();
@@ -1807,6 +1819,7 @@
             businessType,
             area,
             salary,
+            closedDay,
             description,
             applyType,
             applyUrl,

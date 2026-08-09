@@ -18,7 +18,7 @@ const EDITABLE_FIELDS = new Set([
   "back", "backs", "dailyPay", "trial", "trialEntry", "beginner",
   "welcomeBeginners", "age", "hiringAge", "shift", "shiftDetails",
   "targetGender", "businessScope", "pr", "applyType", "instagramUrl",
-  "xUrl", "twitterUrl", "tiktokUrl",
+  "xUrl", "twitterUrl", "tiktokUrl", "closedDay",
 ]);
 const JOB_STATUSES = new Set([
   "draft", "pending", "approved", "paused", "reapproval_pending",
@@ -37,7 +37,7 @@ const STRING_LIMITS: Record<string, number> = {
   category: 120, position: 120, occupation: 120, address: 500,
   workLocation: 500, station: 200, nearestStation: 200, back: 1000,
   backs: 1000, age: 200, hiringAge: 200, shift: 1000,
-  shiftDetails: 1000, pr: 5000,
+  shiftDetails: 1000, pr: 5000, closedDay: 200,
 };
 const BOOLEAN_FIELDS = new Set(["dailyPay", "trial", "trialEntry", "beginner", "welcomeBeginners"]);
 const TARGET_GENDERS = new Set(["female", "male", "all"]);

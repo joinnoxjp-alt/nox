@@ -20,6 +20,7 @@ type CreateAdminJobInput = {
   area: string;
   salary: string;
   description: string;
+  closedDay: string;
   applyType: "instagram" | "line" | "x" | "tiktok" | "other";
   applyUrl: string;
 };
@@ -95,6 +96,7 @@ function parseInput(value: unknown): CreateAdminJobInput {
     area: optionalString(input.area, 120),
     salary: optionalString(input.salary, 500),
     description: optionalString(input.description, 5000),
+    closedDay: optionalString(input.closedDay, 200),
     applyType: applyType as CreateAdminJobInput["applyType"],
     applyUrl: safeOptionalUrl(input.applyUrl),
   };
@@ -189,6 +191,7 @@ export const createAdminJob = onCall(adminCallableOptions, async (request) => {
       area: input.area,
       salary: input.salary,
       description: input.description,
+      closedDay: input.closedDay,
       position: "キャスト",
       applyType: input.applyType,
       applyUrl: input.applyUrl,

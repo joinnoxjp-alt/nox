@@ -661,10 +661,12 @@
                   <strong>${value(job.workHours)}</strong>
                 </div>
 
-                <div class="info-card">
-                  <span>定休日</span>
-                  <strong>${value(data.closedDay)}</strong>
-                </div>
+                ${job.closedDay ? `
+                  <div class="info-card">
+                    <span>定休日</span>
+                    <strong>${value(job.closedDay)}</strong>
+                  </div>
+                ` : ""}
               </div>
             </section>
 

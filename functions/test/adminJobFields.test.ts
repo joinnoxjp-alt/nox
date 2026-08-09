@@ -24,9 +24,28 @@ test("legacy jobs normalize and booleans are not rendered as raw values", () => 
   assert.notEqual(fields.featureLabel(false), "false");
 });
 
+test("closed day uses the canonical field and supports legacy fallbacks", () => {
+  for (const closedDay of ["日曜日", "不定休", "年中無休", "月曜・祝日"]) {
+    assert.equal(fields.normalize({ closedDay }).closedDay, closedDay);
+    assert.equal(canonicalJobCompatibilityChanges({ closedDay }).closedDay, closedDay);
+  }
+  for (const legacyField of ["holiday", "holidays", "closedDays", "regularHoliday", "dayOff"]) {
+    assert.equal(fields.normalize({ [legacyField]: "日曜日" }).closedDay, "日曜日");
+    assert.equal(canonicalJobCompatibilityChanges({ [legacyField]: "日曜日" }).closedDay, "日曜日");
+  }
+  assert.equal(canonicalJobCompatibilityChanges({ closedDay: "", holiday: "日曜日" }).closedDay, "");
+  assert.equal(fields.normalize({ closedDay: "", holiday: "日曜日" }).closedDay, "");
+  assert.equal(fields.normalize({}).closedDay, "");
+  assert.equal(canonicalJobCompatibilityChanges({}).closedDay, "");
+});
+
 test("admin editing covers public detail fields and saves through manageAdminJob", () => {
   const admin = readFileSync(path.resolve(__dirname, "../../../pages/job-admin.html"), "utf8");
   const detail = readFileSync(path.resolve(__dirname, "../../../pages/job-detail.html"), "utf8");
+  const directCreate = readFileSync(path.resolve(__dirname, "../../../pages/admin.html"), "utf8");
+  assert.match(admin, /editClosedDay-/);
+  assert.match(directCreate, /directJobClosedDay/);
+  assert.match(detail, /job\.closedDay \?/);
   for (const id of ["editPosition-", "editAddress-", "editStation-", "editBack-", "editDailyPay-", "editTrial-", "editBeginner-", "editAge-", "editShift-", "editTargetGender-", "editBusinessScope-"]) assert.match(admin, new RegExp(id));
   assert.match(admin, /manageAdminJobCallable/);
   assert.match(admin, /await loadPublishedJobs\(\)/);
@@ -36,6 +55,7 @@ test("admin editing covers public detail fields and saves through manageAdminJob
 
 test("manage function allowlists expanded fields and builds compatibility fields", () => {
   const source = readFileSync(path.resolve(__dirname, "../../src/callable/manageAdminJob.ts"), "utf8");
+  assert.match(source, /"closedDay"/);
   for (const field of ["position", "back", "dailyPay", "trial", "beginner", "age", "shift", "targetGender", "businessScope"]) assert.match(source, new RegExp(`"${field}"`));
   assert.match(source, /canonicalJobCompatibilityChanges/);
   assert.match(source, /"applyType"/);
@@ -53,4 +73,14 @@ test("application destination normalizes canonical and legacy URL fields", () =>
   const legacyInstagram = fields.normalize({ instagramUrl: "https://instagram.com/legacy" });
   assert.equal(legacyInstagram.applyType, "instagram");
   assert.equal(legacyInstagram.applyUrl, "https://instagram.com/legacy");
+});
+
+test("direct admin creation validates and sends the canonical closed day", () => {
+  const admin = readFileSync(path.resolve(__dirname, "../../../pages/admin.html"), "utf8");
+  const source = readFileSync(path.resolve(__dirname, "../../src/callable/createAdminJob.ts"), "utf8");
+  assert.match(admin, /id="directJobClosedDay"/);
+  assert.match(admin, /const closedDay = document\.getElementById\("directJobClosedDay"\)/);
+  assert.match(admin, /createAdminJobCallable\(\{[\s\S]*closedDay,/);
+  assert.match(source, /closedDay: optionalString\(input\.closedDay, 200\)/);
+  assert.match(source, /closedDay: input\.closedDay/);
 });

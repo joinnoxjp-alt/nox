@@ -17,6 +17,9 @@ export function canonicalJobCompatibilityChanges(data: JobData): JobData {
   const salary = firstText(data, ["salary", "salaryText", "hourlyWage"]);
   const description = firstText(data, ["description", "jobDescription", "storeDescription", "selfPr", "pr"]);
   const workHours = firstText(data, ["workHours", "workingHours", "businessHours"]);
+  const closedDay = typeof data.closedDay === "string"
+    ? data.closedDay.trim()
+    : firstText(data, ["holiday", "holidays", "closedDays", "regularHoliday", "dayOff"]);
   const requirements = firstText(data, ["requirements", "qualification", "conditions"]);
   const benefits = firstText(data, ["benefits", "treatment", "features"]);
   const requestedApplyType = firstText(data, ["applyType"]);
@@ -48,6 +51,7 @@ export function canonicalJobCompatibilityChanges(data: JobData): JobData {
     description, jobDescription: description, storeDescription: description,
     selfPr: description, pr: description,
     workHours, workingHours: workHours,
+    closedDay,
     requirements, qualification: requirements,
     benefits, treatment: benefits,
     applyType, applyUrl, contactUrl: applyUrl,
