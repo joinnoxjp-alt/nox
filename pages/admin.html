@@ -2980,6 +2980,7 @@
           endDate: "",
           contractPrice: 0,
           paymentStatus: "unpaid",
+          displayOrder: null,
           impressions: 0,
           clicks: 0,
         };
@@ -3336,6 +3337,18 @@
             </label>
           </div>
 
+          <div class="ad-form-group">
+            <label for="adDisplayOrder${slotNumber}">表示順</label>
+            <input
+              type="number"
+              id="adDisplayOrder${slotNumber}"
+              value="${Number.isInteger(data.displayOrder) && data.displayOrder >= 1 ? data.displayOrder : ""}"
+              min="1"
+              step="1"
+              placeholder="例：1"
+            >
+          </div>
+
           <div class="ad-stats">
 
             <div class="ad-stat">
@@ -3510,6 +3523,14 @@
 
         let enabled = getCheckboxValue(`adEnabled${slotNumber}`);
 
+        const displayOrderValue = getInputValue(`adDisplayOrder${slotNumber}`);
+        const displayOrder = displayOrderValue ? Number(displayOrderValue) : null;
+
+        if (displayOrderValue && (!Number.isInteger(displayOrder) || displayOrder < 1)) {
+          alert("表示順は1以上の整数で入力してください");
+          return;
+        }
+
         if (startDate && endDate && startDate > endDate) {
           alert("掲載終了日は、掲載開始日より後に設定してください");
 
@@ -3582,6 +3603,7 @@
               imageUrl,
               storagePath,
               enabled,
+              displayOrder,
               startDate,
               endDate,
               contractPrice,
@@ -4608,7 +4630,10 @@ ${data.sns || "-"}
 
             topFeatured,
 
-            topDisplayOrder: topFeatured ? topDisplayOrder : 0,
+            topDisplayOrder:
+              Number.isInteger(topDisplayOrder) && topDisplayOrder >= 1
+                ? topDisplayOrder
+                : oldData.topDisplayOrder || null,
 
             favoriteCount: numberValue(oldData.favoriteCount),
 

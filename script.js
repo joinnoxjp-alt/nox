@@ -497,7 +497,14 @@ async function loadNoxAdvertisements() {
       completedSlots.push(createRecruitmentAd(slotNumber));
     }
 
-    noxAds = completedSlots;
+    noxAds = completedSlots.sort((adA, adB) => {
+      const orderDifference =
+        getPositiveDisplayOrder(adA.displayOrder) -
+        getPositiveDisplayOrder(adB.displayOrder);
+      return Number.isNaN(orderDifference)
+        ? adA.slot - adB.slot
+        : orderDifference || adA.slot - adB.slot;
+    });
 
     slider.innerHTML = "";
     dotsContainer.innerHTML = "";
@@ -559,6 +566,12 @@ function getJobImage(job) {
   return typeof window.NoxJobCardMedia?.select === "function"
     ? window.NoxJobCardMedia.select(job, placeholder)
     : placeholder;
+}
+
+function getPositiveDisplayOrder(value) {
+  return typeof value === "number" && Number.isInteger(value) && value >= 1
+    ? value
+    : Number.POSITIVE_INFINITY;
 }
 
 /* ==========================
@@ -735,9 +748,9 @@ async function loadTopJobs() {
     });
 
     jobs.sort((jobA, jobB) => {
-      const orderA = typeof jobA.topOrder === "number" ? jobA.topOrder : 9999;
+      const orderA = getPositiveDisplayOrder(jobA.topOrder);
 
-      const orderB = typeof jobB.topOrder === "number" ? jobB.topOrder : 9999;
+      const orderB = getPositiveDisplayOrder(jobB.topOrder);
 
       if (orderA !== orderB) {
         return orderA - orderB;
@@ -920,7 +933,15 @@ async function loadTopCasts() {
     });
 
     casts.sort((a, b) => {
-      return (a.topDisplayOrder || 9999) - (b.topDisplayOrder || 9999);
+      const orderDifference =
+        getPositiveDisplayOrder(a.topDisplayOrder) -
+        getPositiveDisplayOrder(b.topDisplayOrder);
+      if (!Number.isNaN(orderDifference) && orderDifference !== 0) {
+        return orderDifference;
+      }
+      const timeA = a.createdAt?.seconds ?? 0;
+      const timeB = b.createdAt?.seconds ?? 0;
+      return timeB - timeA || a.id.localeCompare(b.id);
     });
 
     if (casts.length === 0) {

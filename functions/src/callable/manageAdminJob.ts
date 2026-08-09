@@ -116,7 +116,7 @@ export const manageAdminJob = onCall(adminCallableOptions, async (request) => {
         if (key === "status" && (typeof value !== "string" || !JOB_STATUSES.has(value))) {
           throw new HttpsError("invalid-argument", "求人状態が正しくありません。");
         }
-        if (key === "topOrder" && (typeof value !== "number" || !Number.isInteger(value) || value < 0 || value > 999999)) {
+        if (key === "topOrder" && (typeof value !== "number" || !Number.isInteger(value) || value < 1 || value > 999999)) {
           throw new HttpsError("invalid-argument", "表示順が正しくありません。");
         }
         if (key === "topFeatured" && typeof value !== "boolean") {

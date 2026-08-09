@@ -1740,7 +1740,12 @@
           document.getElementById(
             `editTopOrder-${jobId}`
           ).value
-        ) || 999;
+        );
+
+      if (!Number.isInteger(topOrder) || topOrder < 1) {
+        alert("トップ掲載順は1以上の整数で入力してください");
+        return;
+      }
 
       const status =
         document.getElementById(
