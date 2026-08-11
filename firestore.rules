@@ -950,7 +950,8 @@ allow create: if request.auth != null
         ])
         && request.resource.data.storeId is string
         && request.resource.data.storeId.size() <= 128
-        && request.resource.data.storeId.matches("^[A-Za-z0-9_-]*$")
+        && (request.resource.data.storeId == ""
+          || request.resource.data.storeId.matches("^[A-Za-z0-9_-]+$"))
         && request.resource.data.storeName is string
         && request.resource.data.storeName.size() > 0
         && request.resource.data.storeName.size() <= 120

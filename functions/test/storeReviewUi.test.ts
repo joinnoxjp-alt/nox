@@ -17,6 +17,7 @@ test("public submission is always pending and hidden", () => {
   assert.match(rules, /request\.resource\.data\.status == "pending"/);
   assert.match(rules, /request\.resource\.data\.isPublic == false/);
   assert.match(rules, /request\.resource\.data\.featured == false/);
+  assert.match(rules, /request\.resource\.data\.storeId == ""/);
 });
 
 test("public pages request only approved and public reviews", () => {
