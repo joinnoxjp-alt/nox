@@ -1,0 +1,21 @@
+:root { --review-gold: #c9a64b; --review-black: #090909; }
+.review-shell { max-width: 1180px; margin: 0 auto; padding: 56px 20px; }
+.review-heading { text-align: center; margin-bottom: 30px; }
+.review-heading h1, .review-heading h2 { color: #fff; letter-spacing: .08em; }
+.review-heading p { color: #c8c8c8; line-height: 1.8; }
+.review-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.review-card { position: relative; display: flex; flex-direction: column; min-width: 0; padding: 24px; border: 1px solid rgba(201,166,75,.55); border-radius: 18px; color: #f7f3e8; background: linear-gradient(145deg,#171717,#070707); box-shadow: 0 16px 40px rgba(0,0,0,.3); }
+.review-pickup { position: absolute; top: 0; left: 20px; padding: 5px 11px; color: #080808; background: var(--review-gold); font-size: 11px; font-weight: 800; letter-spacing: .12em; }
+.review-store { display: flex; align-items: center; gap: 12px; margin: 8px 0 15px; }
+.review-logo { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; border: 1px solid var(--review-gold); background: #fff; }
+.review-store-name { margin: 0; font-size: 18px; overflow-wrap: anywhere; }
+.review-rating { color: var(--review-gold); font-size: 18px; letter-spacing: .06em; }
+.review-score { margin-left: 8px; color: #fff; font-weight: 700; }
+.review-comment { margin: 18px 0; line-height: 1.9; white-space: pre-wrap; overflow-wrap: anywhere; }
+.review-meta { margin: 4px 0; color: #d6d0c0; font-size: 13px; }
+.review-job-link { margin-top: auto; padding-top: 18px; color: var(--review-gold); text-decoration: none; font-weight: 700; }
+.review-more { display: inline; padding: 0; border: 0; color: var(--review-gold); background: transparent; cursor: pointer; }
+.review-empty, .review-error { grid-column: 1 / -1; text-align: center; color: #bbb; }
+.review-page-body { margin: 0; min-height: 100vh; color: #fff; background: #050505; font-family: "Noto Sans JP", sans-serif; }
+.review-back { color: var(--review-gold); text-decoration: none; }
+@media (max-width: 820px) { .review-grid { grid-template-columns: 1fr; } .review-shell { padding: 38px 16px; } }

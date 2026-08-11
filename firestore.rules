@@ -929,6 +929,66 @@ allow create: if request.auth != null
       allow delete: if isActiveAdmin();
     }
 
+    /* Store testimonials: public submissions are always pending and hidden. */
+    match /storeReviews/{reviewId} {
+      allow get, list: if isActiveAdmin()
+        || (resource.data.status == "approved" && resource.data.isPublic == true);
+
+      allow create: if request.resource.data.keys().hasAll([
+          "storeId", "storeName", "storeLogoUrl", "source", "reason",
+          "flowRating", "supportRating", "recommendation", "comment",
+          "improvement", "publishPermission", "status", "isPublic",
+          "featured", "displayOrder", "createdAt", "updatedAt",
+          "approvedAt", "approvedBy"
+        ])
+        && request.resource.data.keys().hasOnly([
+          "storeId", "storeName", "storeLogoUrl", "source", "reason",
+          "flowRating", "supportRating", "recommendation", "comment",
+          "improvement", "publishPermission", "status", "isPublic",
+          "featured", "displayOrder", "createdAt", "updatedAt",
+          "approvedAt", "approvedBy"
+        ])
+        && request.resource.data.storeId is string
+        && request.resource.data.storeId.size() <= 128
+        && request.resource.data.storeId.matches("^[A-Za-z0-9_-]*$")
+        && request.resource.data.storeName is string
+        && request.resource.data.storeName.size() > 0
+        && request.resource.data.storeName.size() <= 120
+        && request.resource.data.storeLogoUrl is string
+        && request.resource.data.storeLogoUrl.size() <= 2000
+        && request.resource.data.source in ["DM", "SNS", "紹介", "検索", "その他"]
+        && request.resource.data.reason is string
+        && request.resource.data.reason.size() > 0
+        && request.resource.data.reason.size() <= 1000
+        && request.resource.data.flowRating is int
+        && request.resource.data.flowRating >= 1
+        && request.resource.data.flowRating <= 5
+        && request.resource.data.supportRating is int
+        && request.resource.data.supportRating >= 1
+        && request.resource.data.supportRating <= 5
+        && request.resource.data.recommendation in ["ぜひおすすめしたい", "おすすめしたい", "どちらともいえない", "あまり思わない"]
+        && request.resource.data.comment is string
+        && request.resource.data.comment.size() > 0
+        && request.resource.data.comment.size() <= 2000
+        && request.resource.data.improvement is string
+        && request.resource.data.improvement.size() <= 2000
+        && request.resource.data.publishPermission in ["named", "anonymous", "none"]
+        && request.resource.data.status == "pending"
+        && request.resource.data.isPublic == false
+        && request.resource.data.featured == false
+        && request.resource.data.displayOrder == null
+        && request.resource.data.approvedAt == null
+        && request.resource.data.approvedBy == null
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time;
+
+      allow update: if isActiveAdmin()
+        && (request.resource.data.isPublic == false
+          || (request.resource.data.status == "approved"
+            && request.resource.data.publishPermission in ["named", "anonymous"]));
+      allow delete: if isActiveAdmin();
+    }
+
     /*
      * Advertisements
      *

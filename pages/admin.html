@@ -861,6 +861,7 @@
           grid-column: auto;
         }
       }
+      .review-admin-card{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.review-admin-title,.review-admin-card>p,.review-admin-card>details,.review-admin-card>.ad-card-actions{grid-column:1/-1}.review-admin-title{display:flex;align-items:center;gap:12px}.review-admin-title img{width:48px;height:48px;border-radius:50%;object-fit:cover}.review-admin-title h3{margin:0;flex:1}.review-admin-title strong{color:#b28a24}.review-admin-field{display:flex;flex-direction:column;gap:6px}.review-admin-field textarea{min-height:100px}.review-admin-check{display:flex;align-items:center;gap:8px}@media(max-width:768px){.review-admin-card{grid-template-columns:1fr}.review-admin-title,.review-admin-card>p,.review-admin-card>details,.review-admin-card>.ad-card-actions{grid-column:auto}}
     </style>
   </head>
 
@@ -1215,6 +1216,12 @@
             <div id="userList">
               <p class="admin-message">ユーザーを読み込み中...</p>
             </div>
+          </section>
+
+          <section class="admin-section" id="storeReviewAdminSection">
+            <h2 class="admin-section-title">💬 掲載店舗様の声・口コミ管理</h2>
+            <p class="admin-section-description">承認待ち <strong id="storeReviewPendingCount">0</strong>件。回答内容を確認・編集してから公開してください。</p>
+            <div id="storeReviewAdminList"><p class="admin-message">口コミを読み込み中...</p></div>
           </section>
 
           <!-- キャスト管理 -->
@@ -1637,6 +1644,7 @@
       import { auth } from "../firebase.js";
 
       import { requireActiveAdmin } from "./admin-authorization.js";
+      import { initializeStoreReviewAdmin } from "./admin-store-reviews.js";
 
       import {
         getFunctions,
@@ -1761,6 +1769,7 @@
           loadJobApplications(),
           loadPublicJobs(),
           loadCasts(),
+          initializeStoreReviewAdmin(db, user),
         ]);
       }
 
