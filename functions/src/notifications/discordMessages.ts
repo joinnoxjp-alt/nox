@@ -114,6 +114,32 @@ export function buildUserCreatedMessage(
   ].join("\n"));
 }
 
+export function buildStoreReviewCreatedMessage(
+  reviewId: string,
+  data: Record<string, unknown>,
+  eventTime: string
+): DiscordMessage {
+  const ratings = [data.flowRating, data.supportRating]
+    .filter((value): value is number => typeof value === "number");
+  const rating = ratings.length
+    ? (ratings.reduce((sum, value) => sum + value, 0) / ratings.length).toFixed(1)
+    : "未入力";
+  const author = data.publishPermission === "named"
+    ? safeText(data.authorName ?? data.nickname, "記名（氏名未入力）")
+    : "匿名";
+
+  return message([
+    "💬 NOX 新規口コミ",
+    `日時：${formatJapanTime(data.createdAt, eventTime)}`,
+    `店舗名：${safeText(data.storeName)}`,
+    `投稿者：${author}`,
+    `評価：${rating}`,
+    `口コミID：${safeText(reviewId)}`,
+    `承認状態：${safeText(data.status, "pending")}`,
+    `管理画面：${ADMIN_URL}`
+  ].join("\n"));
+}
+
 export function buildJobApplicationCreatedMessage(
   data: Record<string, unknown>,
   eventTime: string
@@ -135,6 +161,23 @@ export function buildJobApplicationCreatedMessage(
       eventTime
     )}`,
     "",
+    `管理画面：${ADMIN_URL}`
+  ].join("\n"));
+}
+
+export function buildApplicantCreatedMessage(
+  applicationId: string,
+  data: Record<string, unknown>,
+  eventTime: string
+): DiscordMessage {
+  return message([
+    "📨 NOX 新規求人応募",
+    `日時：${formatJapanTime(data.createdAt, eventTime)}`,
+    `求人名：${safeText(data.jobTitle ?? data.title)}`,
+    `店舗名：${safeText(data.storeName)}`,
+    `応募者：${safeText(data.applicantName ?? data.name, "匿名")}`,
+    `求人ID：${safeText(data.jobId)}`,
+    `応募ID：${safeText(applicationId)}`,
     `管理画面：${ADMIN_URL}`
   ].join("\n"));
 }

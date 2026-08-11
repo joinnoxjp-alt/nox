@@ -6,11 +6,19 @@ import {
 import {
   buildJobApplicationCreatedMessage,
   buildStoreApplicationCreatedMessage,
+  buildStoreReviewCreatedMessage,
   buildUserCreatedMessage
 } from "../src/notifications/discordMessages";
 
 const EVENT_TIME =
   "2026-07-26T00:00:00.000Z";
+
+test("review message contains moderation fields", () => {
+  const result = buildStoreReviewCreatedMessage("review-1", {storeName:"テスト店舗",flowRating:4,supportRating:5,publishPermission:"anonymous",status:"pending"}, EVENT_TIME);
+  assert.match(result.content, /NOX 新規口コミ/);
+  assert.match(result.content, /評価：4\.5/);
+  assert.match(result.content, /口コミID：review-1/);
+});
 
 test(
   "new user message contains only minimal member information",

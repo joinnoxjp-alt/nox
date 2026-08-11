@@ -2,11 +2,10 @@
 
 import { db } from "../pages/firebase-db.js";
 
+import "../analytics.js";
 import {
   doc,
-  getDoc,
-  updateDoc,
-  increment
+  getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 /* ===========================
@@ -98,19 +97,8 @@ async function countAdImpression(ad) {
     return;
   }
 
-  try {
-    await updateDoc(
-      doc(db, "ads", ad.id),
-      {
-        impressions: increment(1)
-      }
-    );
-  } catch (error) {
-    console.warn(
-      "昼職広告の表示回数を記録できませんでした",
-      error
-    );
-  }
+  const slide = document.querySelector(`.nox-ad-slide[data-ad-id="${CSS.escape(ad.id)}"]`);
+  window.noxAnalytics?.trackAdImpression(ad.id, slide);
 }
 
 /* ===========================
@@ -122,19 +110,7 @@ async function countAdClick(ad) {
     return;
   }
 
-  try {
-    await updateDoc(
-      doc(db, "ads", ad.id),
-      {
-        clicks: increment(1)
-      }
-    );
-  } catch (error) {
-    console.warn(
-      "昼職広告のクリック数を記録できませんでした",
-      error
-    );
-  }
+  await window.noxAnalytics?.trackAdClick(ad.id);
 }
 
 /* ===========================
@@ -153,6 +129,7 @@ function createContractAdSlide(ad, index) {
   link.target = "_blank";
   link.rel = "noopener noreferrer";
   link.dataset.index = String(index);
+  link.dataset.adId = ad.id;
 
   if (ad.imageUrl) {
     link.innerHTML = `

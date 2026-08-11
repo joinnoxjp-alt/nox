@@ -181,6 +181,7 @@ const DIAGNOSIS_URL = "https://joinnox.jp/ai-diagnosis.html";
 let currentRecommendedJobs = [];
 
 function startQuiz() {
+  window.noxAnalytics?.trackAiStart();
   currentQuestion = 0;
   totalScore = 0;
   scores = {};
@@ -251,6 +252,7 @@ function getTopType() {
 }
 
 function showResult() {
+  window.noxAnalytics?.trackAiComplete();
   document.getElementById("quizScreen").classList.remove("active");
   document.getElementById("resultScreen").classList.add("active");
 

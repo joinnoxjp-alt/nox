@@ -28,7 +28,7 @@ export const notifyDiscordOnUserCreated =
         sourceDocumentPath:
           event.data.ref.path,
         message: buildUserCreatedMessage(
-          event.data.data(),
+          { ...event.data.data(), uid: event.params.uid },
           event.time
         )
       });

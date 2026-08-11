@@ -1064,6 +1064,23 @@ allow create: if request.auth != null
       allow create, update, delete: if false;
     }
 
+    /* Analytics aggregates and deduplication state are backend-only. */
+    match /analyticsDaily/{document=**} {
+      allow read, write: if false;
+    }
+    match /adDailyStats/{document=**} {
+      allow read, write: if false;
+    }
+    match /analyticsEventDedupe/{document=**} {
+      allow read, write: if false;
+    }
+    match /analyticsConversionDedupe/{document=**} {
+      allow read, write: if false;
+    }
+    match /analyticsVisitors/{document=**} {
+      allow read, write: if false;
+    }
+
     /*
      * NOX CHANCE phone identities and player safeguards are trusted backend
      * state. Even the owner and browser administrator must use a callable.

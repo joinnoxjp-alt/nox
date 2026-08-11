@@ -3,13 +3,12 @@
 import { db } from "./pages/firebase-db.js";
 import { auth } from "./firebase.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import "./analytics.js";
 import {
   collection,
   getDocs,
   doc,
   getDoc,
-  updateDoc,
-  increment,
   query,
   where,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -209,7 +208,9 @@ function createRecruitmentAd(slotNumber) {
 =========================== */
 
 async function countAdImpression(ad) {
-  return;
+  if (!ad || ad.isRecruitment) return;
+  const slide = document.querySelector(`.nox-ad-slide[data-ad-id="${CSS.escape(ad.id)}"]`);
+  window.noxAnalytics?.trackAdImpression(ad.id, slide);
 }
 /* ===========================
    クリック数
@@ -220,13 +221,7 @@ async function countAdClick(ad) {
     return;
   }
 
-  try {
-    await updateDoc(doc(db, "ads", ad.id), {
-      clicks: increment(1),
-    });
-  } catch (error) {
-    console.warn("広告クリック数を記録できませんでした", error);
-  }
+  await window.noxAnalytics?.trackAdClick(ad.id);
 }
 
 /* ===========================
@@ -242,6 +237,7 @@ function createContractAdSlide(ad, index) {
   link.target = "_blank";
   link.rel = "noopener noreferrer";
   link.dataset.index = String(index);
+  link.dataset.adId = ad.id;
 
   if (ad.imageUrl) {
     link.innerHTML = `

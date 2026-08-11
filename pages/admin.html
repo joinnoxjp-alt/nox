@@ -71,6 +71,8 @@
         text-align: center;
       }
 
+      .dashboard-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}.dashboard-toolbar button[aria-pressed="true"]{background:#f5d36b;color:#111}.dashboard-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}.dashboard-card{border:1px solid rgba(212,175,55,.3);border-radius:15px;padding:16px;background:#0d0d0d}.dashboard-card span{display:block;color:#aaa;font-size:12px;min-height:2.5em}.dashboard-card strong{display:block;color:#f5d36b;font-size:25px;margin-top:7px}.dashboard-note{color:#999;font-size:12px;line-height:1.7;margin-top:14px}.dashboard-table{width:100%;border-collapse:collapse;margin-top:18px;color:#ddd}.dashboard-table th,.dashboard-table td{padding:10px;border-bottom:1px solid rgba(255,255,255,.1);text-align:right}.dashboard-table th:first-child,.dashboard-table td:first-child{text-align:left}
+
       .admin-item-card {
         border: 1px solid rgba(201, 163, 74, 0.5);
         border-radius: 18px;
@@ -874,6 +876,18 @@
             <h1>管理者ページ</h1>
             <p>求人・広告・会員・キャスト情報を管理できます。</p>
           </div>
+
+          <section class="admin-section" aria-labelledby="dashboardTitle">
+            <h2 id="dashboardTitle" class="admin-section-title">NOX運営ダッシュボード</h2>
+            <div class="dashboard-toolbar" id="dashboardPeriods">
+              <button class="admin-button sub" data-period="today">今日</button><button class="admin-button sub" data-period="7d">7日</button><button class="admin-button sub" data-period="30d" aria-pressed="true">30日</button><button class="admin-button sub" data-period="total">累計</button>
+            </div>
+            <div id="dashboardStatus" class="admin-message">指標を読み込み中...</div>
+            <div id="salesSummary" class="admin-item-card" hidden><h3>直近30日 営業用サマリー</h3><pre id="salesSummaryText"></pre><button id="copySalesSummary" class="admin-button sub" type="button">サマリーをコピー</button></div>
+            <h3>主要KPI</h3><div id="dashboardKpis" class="dashboard-grid" hidden></div>
+            <h3 style="margin-top:24px">詳細指標</h3><div id="dashboardGrid" class="dashboard-grid" hidden></div><div id="dashboardAds"></div>
+            <p id="dashboardMeasurementNote" class="dashboard-note"></p>
+          </section>
 
           <!-- 広告管理 -->
           <section class="admin-section">
@@ -1702,6 +1716,7 @@
         functions,
         "deleteAdminStoreHistory",
       );
+      const getAdminDashboardCallable = httpsCallable(functions, "getAdminDashboard");
 
       const userList = document.getElementById("userList");
 
@@ -1761,6 +1776,7 @@
         document.body.style.visibility = "visible";
 
         await Promise.all([
+          loadDashboard("30d"),
           loadAds(),
           loadUsers(),
           loadStoreApplications(),
@@ -1774,6 +1790,13 @@
       }
 
       initializeAdminPage();
+
+      const dashboardLabels={topPv:"TOPページPV",jobListPv:"求人一覧PV",jobDetailPv:"求人詳細PV",storeDetailPv:"店舗詳細PV",aiStarts:"AI診断開始",aiCompletes:"AI診断完了",memberRegistrations:"会員登録CV",jobApplications:"求人応募CV",storeApplications:"店舗掲載申請CV",reviewSubmissions:"口コミ投稿CV",totalUsers:"総会員数",totalJobs:"総求人件数",publicJobs:"公開中求人件数",totalReviews:"総口コミ数",pendingReviews:"承認待ち口コミ"};
+      const number=value=>Number(value||0).toLocaleString("ja-JP");
+      const card=(label,value,suffix="")=>`<article class="dashboard-card"><span>${label}</span><strong>${value}${suffix}</strong></article>`;
+      async function loadDashboard(period){const status=document.getElementById("dashboardStatus"),grid=document.getElementById("dashboardGrid"),kpis=document.getElementById("dashboardKpis");status.hidden=false;status.textContent="指標を読み込み中...";grid.hidden=true;kpis.hidden=true;try{const{data}=await getAdminDashboardCallable({period});const k=data.kpis;kpis.innerHTML=[card("PV",number(k.pv)),card("UU",number(k.uu)),card("広告IMP",number(k.impressions)),card("広告クリック",number(k.clicks)),card("CTR",Number(k.ctr).toFixed(2),"%"),card("CV",number(k.conversions)),card("CVR（CV ÷ UU）",Number(k.cvr).toFixed(2),"%")].join("");grid.innerHTML=Object.entries(dashboardLabels).map(([key,label])=>card(label,number(data.metrics[key]))).join("");document.getElementById("dashboardAds").innerHTML=`<h3 style="margin-top:24px">広告別</h3><table class="dashboard-table"><thead><tr><th>広告</th><th>IMP</th><th>クリック</th><th>CTR</th><th>状態</th></tr></thead><tbody>${data.ads.map(ad=>`<tr><td>${escapeHTML(String(ad.name))}</td><td>${number(ad.impressions)}</td><td>${number(ad.clicks)}</td><td>${Number(ad.ctr).toFixed(2)}%</td><td>${ad.enabled?"掲載中":"停止"}</td></tr>`).join("")}</tbody></table>`;const started=data.measurementStartDate?`${data.measurementStartDate}から計測`:"未計測（本番反映後、最初のイベント日から計測）";document.getElementById("dashboardMeasurementNote").textContent=`PV・UU・期間別広告・AI・CVは${started}。UUは匿名ブラウザIDを期間内で重複排除、CVRの分母はUUです。累計広告別のみ既存カウンターを含みます。`;status.hidden=true;grid.hidden=false;kpis.hidden=false;if(period==="30d"){const text=`NOX 直近30日\nPV：${number(k.pv)}\nUU：${number(k.uu)}\n広告IMP：${number(k.impressions)}\n広告クリック：${number(k.clicks)}\nCTR：${Number(k.ctr).toFixed(2)}%\nCV：${number(k.conversions)}\nCVR（CV ÷ UU）：${Number(k.cvr).toFixed(2)}%`;document.getElementById("salesSummaryText").textContent=text;document.getElementById("salesSummary").hidden=false}else document.getElementById("salesSummary").hidden=true}catch(error){console.error("Dashboard load failed",error);status.textContent="ダッシュボードを読み込めませんでした。"}}
+      document.getElementById("copySalesSummary").addEventListener("click",async()=>navigator.clipboard.writeText(document.getElementById("salesSummaryText").textContent));
+      document.getElementById("dashboardPeriods").addEventListener("click",event=>{const button=event.target.closest("[data-period]");if(!button)return;document.querySelectorAll("[data-period]").forEach(item=>item.setAttribute("aria-pressed",String(item===button)));loadDashboard(button.dataset.period)});
 
       createDirectJobButton.addEventListener("click", async () => {
         const storeName = document
