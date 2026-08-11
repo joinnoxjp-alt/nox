@@ -177,6 +177,9 @@ const options = [
   { label: "当てはまらない", point: 1 }
 ];
 
+const DIAGNOSIS_URL = "https://joinnox.jp/ai-diagnosis.html";
+let currentRecommendedJobs = [];
+
 function startQuiz() {
   currentQuestion = 0;
   totalScore = 0;
@@ -256,6 +259,7 @@ function showResult() {
 
   const result = buildResult(topType, totalScore + Math.abs(Math.round(scores[topTypeId] || 0)));
   const jobs = JOB_MATCH[topType.id] || [];
+  currentRecommendedJobs = jobs.slice();
 
   const resultImage = document.getElementById("resultImage");
   const resultEmoji = document.getElementById("resultEmoji");
@@ -304,25 +308,23 @@ function showResult() {
       block: "start"
     });
   }
+
+  const recommendedJobsLink = document.getElementById("recommendedJobsLink");
+  if (recommendedJobsLink) {
+    const jobsUrl = new URL("pages/girls.html", location.href);
+    if (jobs[0]) jobsUrl.searchParams.set("recommendedType", jobs[0]);
+    recommendedJobsLink.href = jobsUrl.href;
+  }
 }
 
-function shareResult() {
-  const text = document.getElementById("resultName").textContent;
-  const url = "https://joinnox.jp/ai-diagnosis.html";
-  const shareUrl =
-    `https://twitter.com/intent/tweet?text=${encodeURIComponent(text + "｜NOX TYPE 夜の性格診断")}&url=${encodeURIComponent(url)}`;
-  window.open(shareUrl, "_blank");
+function getShareText() {
+  const resultName = document.getElementById("resultName")?.textContent?.trim();
+  return `NOX AI夜職適性診断をやってみた🌙\n${resultName ? `私の診断結果は「${resultName}」でした！\n\n` : ""}あなたに向いている夜職も診断してみよう！\n\n#NOX #夜職適性診断 #AI診断`;
 }
 
-function copyResult() {
-  const resultName = document.getElementById("resultName").textContent;
-  const resultTitle = document.getElementById("resultTitle").textContent;
-
-  navigator.clipboard.writeText(
-    `${resultName}\n${resultTitle}\nNOX TYPE 夜の性格診断\nhttps://joinnox.jp/ai-diagnosis.html`
-  );
-
-  alert("診断結果をコピーしました");
+function setShareStatus(message) {
+  const status = document.getElementById("shareStatus");
+  if (status) status.textContent = message;
 }
 
 function restartQuiz() {
@@ -330,35 +332,105 @@ function restartQuiz() {
   document.getElementById("startScreen").classList.add("active");
 }
 
-// ↓ここから追加（332行目）
-
-async function saveResultImage() {
+function prepareShareCard() {
   const card = document.getElementById("shareCard");
-
   document.getElementById("shareImage").src =
     document.getElementById("resultImage").src;
-
   document.getElementById("shareName").textContent =
     document.getElementById("resultName").textContent;
-
   document.getElementById("shareTitle").textContent =
     document.getElementById("resultTitle").textContent;
-
   document.getElementById("shareStats").innerHTML =
     document.getElementById("statsArea").innerHTML;
 
+  const shareJobs = document.getElementById("shareJobs");
+  if (shareJobs) {
+    shareJobs.textContent = currentRecommendedJobs.length
+      ? `向いている職種：${currentRecommendedJobs.slice(0, 3).join(" / ")}`
+      : "あなたに向いている夜職をNOXでチェック";
+  }
+
+  return card;
+}
+
+async function createResultImageFile() {
+  const card = prepareShareCard();
+
   card.style.display = "block";
+  try {
+    const canvas = await html2canvas(card, {
+      backgroundColor: "#050505",
+      scale: 1,
+      useCORS: true
+    });
+    const blob = await new Promise((resolve, reject) => {
+      canvas.toBlob((value) => value ? resolve(value) : reject(new Error("画像生成に失敗しました")), "image/png");
+    });
+    return new File([blob], "NOX-AI-diagnosis-result.png", { type: "image/png" });
+  } finally {
+    card.style.display = "none";
+  }
+}
 
-  const canvas = await html2canvas(card, {
-    backgroundColor: "#050505",
-    scale: 2,
-    useCORS: true
-  });
-
-  card.style.display = "none";
-
+function downloadResultFile(file) {
+  const url = URL.createObjectURL(file);
   const link = document.createElement("a");
-  link.download = "NOX-TYPE.png";
-  link.href = canvas.toDataURL("image/png");
+  link.href = url;
+  link.download = file.name;
+  document.body.appendChild(link);
   link.click();
+  link.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+async function copyShareText(text) {
+  if (navigator.clipboard?.writeText) {
+    await navigator.clipboard.writeText(`${text}\n\n${DIAGNOSIS_URL}`);
+    return true;
+  }
+  return false;
+}
+
+async function shareDiagnosisResult() {
+  setShareStatus("共有画像を準備しています...");
+  const text = getShareText();
+  let file = null;
+
+  try {
+    file = await createResultImageFile();
+  } catch (error) {
+    console.warn("診断結果画像を生成できませんでした", error);
+  }
+
+  try {
+    if (navigator.share) {
+      if (file && navigator.canShare?.({ files: [file] })) {
+        try {
+          await navigator.share({ files: [file], text, url: DIAGNOSIS_URL, title: "NOX AI夜職適性診断" });
+          setShareStatus("共有先を開きました。");
+          return;
+        } catch (error) {
+          if (error?.name === "AbortError") { setShareStatus(""); return; }
+          console.warn("画像付き共有からテキスト共有へ切り替えます", error);
+        }
+      }
+
+      try {
+        await navigator.share({ text, url: DIAGNOSIS_URL, title: "NOX AI夜職適性診断" });
+        setShareStatus("共有先を開きました。");
+        return;
+      } catch (error) {
+        if (error?.name === "AbortError") { setShareStatus(""); return; }
+        console.warn("端末共有を利用できませんでした", error);
+      }
+    }
+
+    if (file) downloadResultFile(file);
+    let copied = false;
+    try { copied = await copyShareText(text); } catch (error) { console.warn("共有文をコピーできませんでした", error); }
+    setShareStatus(`${file ? "診断結果画像を保存しました。" : ""}${copied ? "共有用テキストをコピーしました。" : ""}お好きなSNSでシェアしてください。`);
+  } catch (error) {
+    console.error("診断結果を共有できませんでした", error);
+    setShareStatus("共有を開始できませんでした。時間をおいてもう一度お試しください。");
+  }
 }

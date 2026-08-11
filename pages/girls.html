@@ -745,6 +745,7 @@
           updateCategoryCounts();
           createFilterOptions();
           applyCategoryFromUrl();
+          applyRecommendationFromUrl();
           renderJobs();
         } catch (error) {
           console.error("求人読み込みエラー:", error);
@@ -899,6 +900,25 @@
         );
 
         createFilterOptions();
+      }
+
+      function applyRecommendationFromUrl() {
+        const value = new URLSearchParams(location.search)
+          .get("recommendedType")
+          ?.trim()
+          .slice(0, 80);
+
+        if (!value) return;
+
+        const exactTypeExists = jobs.some((job) => getJobType(job) === value);
+        if (exactTypeExists) {
+          typeSelect.value = value;
+          return;
+        }
+
+        const normalized = value.toLowerCase();
+        const relatedJobExists = jobs.some((job) => `${getJobType(job)} ${job.title || ""} ${job.description || ""}`.toLowerCase().includes(normalized));
+        if (relatedJobExists) keywordInput.value = value;
       }
 
       function renderJobs() {

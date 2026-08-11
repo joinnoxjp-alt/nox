@@ -9,12 +9,21 @@
     content="width=device-width, initial-scale=1.0"
   >
 
-  <title>NOX TYPE | 夜の性格診断</title>
+  <title>NOX AI夜職適性診断｜あなたに向いている夜職を診断</title>
 
   <meta
     name="description"
-    content="NOX TYPEは、40問からあなたの夜の才能を分析するNOXオリジナル性格診断です。"
+    content="40問からあなたの夜職適性を診断。あなたに向いている職種や働き方を無料でチェックできます。"
   >
+  <meta property="og:title" content="NOX AI夜職適性診断｜あなたに向いている夜職を診断">
+  <meta property="og:description" content="40問からあなたの夜職適性を診断。あなたに向いている職種や働き方を無料でチェックできます。">
+  <meta property="og:image" content="https://joinnox.jp/images/ai-match.jpg">
+  <meta property="og:url" content="https://joinnox.jp/ai-diagnosis.html">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="NOX AI夜職適性診断｜あなたに向いている夜職を診断">
+  <meta name="twitter:description" content="40問からあなたの夜職適性を診断。あなたに向いている職種や働き方を無料でチェックできます。">
+  <meta name="twitter:image" content="https://joinnox.jp/images/ai-match.jpg">
 
   <meta
     name="theme-color"
@@ -492,6 +501,10 @@
 
       color:#ffd700;
     }
+
+    .result-actions{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:30px}
+    .result-actions .main-btn,.result-actions .sub-btn{display:flex;align-items:center;justify-content:center;min-height:58px;margin-top:0;text-decoration:none}
+    .share-status{min-height:1.8em;margin-top:14px;color:#ffe08a;font-size:14px;line-height:1.7;text-align:center}
 
     .main-btn:hover,
     .sub-btn:hover,
@@ -1256,6 +1269,7 @@
       background:
         rgba(255,255,255,.055);
     }
+    #shareJobs{margin:22px auto 0;color:#f6df9a;font-size:25px;line-height:1.5}
 
     .share-footer{
       position:absolute;
@@ -1302,6 +1316,7 @@
         padding:
           27px 15px 38px;
       }
+      .result-actions{grid-template-columns:1fr;gap:12px;margin-top:24px}.result-actions .main-btn,.result-actions .sub-btn{min-height:60px;padding:16px 14px;font-size:16px}.result-card .desc{font-size:15px;line-height:1.9}.result-card #detailArea{font-size:15px;line-height:1.9}
 
       .hero h1{
         font-size:40px;
@@ -1600,6 +1615,7 @@
           <h2 id="shareTitle"></h2>
 
           <div id="shareStats"></div>
+          <div id="shareJobs"></div>
 
           <div class="share-footer">
 
@@ -1615,56 +1631,13 @@
 
         </div>
 
-       <button
-  type="button"
-  class="main-btn"
-  onclick="shareResultImage()"
->
-  Xで画像をシェア
-</button>
-
-        <button
-          type="button"
-          class="sub-btn"
-          onclick="copyResult()"
-        >
-          結果をコピー
-        </button>
-
-       <button
-  type="button"
-  class="sub-btn"
-  onclick="saveResultImage()"
->
-  📸 画像を保存・共有
-</button>
-
-        <a
-          href="pages/girls.html"
-          class="main-btn"
-        >
-          あなたに合う求人を見る
-        </a>
-
-        <button
-          type="button"
-          class="sub-btn"
-          onclick="restartQuiz()"
-        >
-          もう一度診断
-        </button>
-
-        <a
-          href="index.html"
-          class="sub-btn"
-          style="
-            display:flex;
-            align-items:center;
-            justify-content:center;
-          "
-        >
-          NOXトップへ戻る
-        </a>
+        <div class="result-actions">
+          <button type="button" class="main-btn" onclick="shareDiagnosisResult()">シェアする</button>
+          <a id="recommendedJobsLink" href="pages/girls.html" class="main-btn">あなたに合う求人を見る</a>
+          <button type="button" class="sub-btn" onclick="restartQuiz()">もう一度診断する</button>
+          <a href="index.html" class="sub-btn">NOXトップに戻る</a>
+        </div>
+        <p id="shareStatus" class="share-status" role="status" aria-live="polite"></p>
 
       </div>
 
@@ -2294,148 +2267,6 @@
       );
     }
      
-/*
-  画像を読み込み待ち
-*/
-function waitForImageLoad(image){
-
-  return new Promise((resolve,reject)=>{
-
-    if(image.complete && image.naturalWidth>0){
-      resolve();
-      return;
-    }
-
-    image.onload=()=>resolve();
-    image.onerror=()=>reject(new Error("画像読込失敗"));
-
-  });
-
-}
-
-
-/*
-  保存
-*/
-
-window.saveResultImage=async function(){
-
-  const resultImage=document.getElementById("resultImage");
-
-  if(!resultImage || !resultImage.src){
-    alert("画像がありません");
-    return;
-  }
-
-  try{
-
-    await waitForImageLoad(resultImage);
-
-    const response=await fetch(resultImage.src);
-    const blob=await response.blob();
-
-    const file=new File(
-      [blob],
-      "NOX-TYPE.png",
-      {type:blob.type}
-    );
-
-    if(
-      navigator.canShare &&
-      navigator.canShare({files:[file]})
-    ){
-
-      await navigator.share({
-        files:[file],
-        title:"NOX TYPE 診断結果"
-      });
-
-      return;
-    }
-
-    const url=URL.createObjectURL(blob);
-
-    const a=document.createElement("a");
-    a.href=url;
-    a.download="NOX-TYPE.png";
-    a.click();
-
-    setTimeout(()=>{
-      URL.revokeObjectURL(url);
-    },1000);
-
-  }catch(e){
-
-    console.error(e);
-
-    alert("画像を保存できませんでした。");
-
-  }
-
-};
-
-
-/*
-  X共有
-*/
-
-window.shareResultImage=async function(){
-
-  const resultImage=document.getElementById("resultImage");
-  const resultName=document.getElementById("resultName");
-
-  if(!resultImage || !resultImage.src){
-    alert("画像がありません");
-    return;
-  }
-
-  try{
-
-    await waitForImageLoad(resultImage);
-
-    const response=await fetch(resultImage.src);
-    const blob=await response.blob();
-
-    const file=new File(
-      [blob],
-      "NOX-TYPE.png",
-      {type:blob.type}
-    );
-
-    const text=
-`${resultName.textContent}
-
-NOX TYPE 夜の性格診断
-https://joinnox.jp/ai-diagnosis.html`;
-
-    if(
-      navigator.canShare &&
-      navigator.canShare({files:[file]})
-    ){
-
-      await navigator.share({
-        files:[file],
-        text:text
-      });
-
-      return;
-    }
-
-    window.open(
-      "https://twitter.com/intent/tweet?text="+
-      encodeURIComponent(text),
-      "_blank"
-    );
-
-  }catch(e){
-
-    console.error(e);
-
-    alert("共有できませんでした。");
-
-  }
-
-};
     /*
       ページ読み込み後に
       進捗・回答演出・最終解析を開始
