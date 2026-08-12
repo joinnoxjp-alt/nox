@@ -58,6 +58,7 @@ test("TOP and all public lists use the shared card image selector", () => {
   assert.match(sources["script.js"], /NoxJobCardMedia\.select/);
   assert.match(sources["script.js"], /typeof window\.NoxJobCardMedia\?\.select === "function"/);
   for (const file of files.slice(2)) {
+    assert.match(sources[file], /\.\/job-fields\.js/);
     assert.match(sources[file], /\.\/job-card-media\.js/);
     assert.match(sources[file], /NoxJobCardMedia\.select/);
     assert.match(sources[file], /class="job-card-image"/);
