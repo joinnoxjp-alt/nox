@@ -111,6 +111,8 @@ export const createAdminJob = onCall(adminCallableOptions, async (request) => {
       salary: input.salary,
       description: input.description,
       closedDay: input.closedDay,
+      address: input.address, station: input.station, workHours: input.workHours,
+      requirements: input.requirements, benefits: input.benefits, back: input.back,
       position: "キャスト",
       applyType: input.applyType,
       applyUrl: input.applyUrl,
@@ -130,21 +132,24 @@ export const createAdminJob = onCall(adminCallableOptions, async (request) => {
 
       title: input.title,
       category: input.businessType,
-      targetGender: "female",
+      targetGender: input.targetGender,
       position: "キャスト",
 
       area: input.area,
-      address: typeof store.address === "string" ? store.address : "",
-      station: "",
+      address: input.address || (typeof store.address === "string" ? store.address : ""),
+      station: input.station,
       businessHours: "",
 
       salary: input.salary,
       trial: "",
-      beginner: true,
+      dailyPay: input.dailyPay,
+      beginner: input.beginner === "" ? input.listingSource === "official" : input.beginner,
 
       description: input.description,
-      requirements: "",
-      benefits: "",
+      requirements: input.requirements,
+      benefits: input.benefits,
+      back: input.back,
+      workHours: input.workHours,
 
       imageStoragePaths: [],
       imageUrls: [],
@@ -154,7 +159,7 @@ export const createAdminJob = onCall(adminCallableOptions, async (request) => {
       isPublic: true,
       contractListingStatus: "active",
 
-      businessScope: "night",
+      businessScope: input.businessScope,
       businessType: input.businessType,
       jobType: input.businessType,
 

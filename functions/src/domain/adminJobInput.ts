@@ -6,11 +6,16 @@ export type AdminJobInput = {
   listingSource: AdminJobListingSource; storeName: string; ownerId: string;
   title: string; businessType: string; area: string; salary: string;
   description: string; closedDay: string;
+  address: string; station: string; workHours: string; requirements: string; benefits: string; back: string;
+  targetGender: "female" | "male" | "all" | ""; businessScope: "night" | "general" | "both"; dailyPay: boolean | "";
+  beginner: boolean | "";
   applyType: "instagram" | "line" | "x" | "tiktok" | "other";
   applyUrl: string; sourceUrl: string; sourceCheckedAt: string; adminSourceMemo: string;
 };
 const APPLY_TYPES = new Set(["instagram", "line", "x", "tiktok", "other"]);
 const LISTING_SOURCES = new Set(["official", "public_info"]);
+const TARGET_GENDERS = new Set(["female", "male", "all", ""]);
+const BUSINESS_SCOPES = new Set(["night", "general", "both"]);
 
 function invalid(message: string): HttpsError { return new HttpsError("invalid-argument", message); }
 function required(value: unknown, max: number, label: string): string {
@@ -46,6 +51,14 @@ export function parseAdminJobInput(value: unknown): AdminJobInput {
   const rawSourceCheckedAt = optional(input.sourceCheckedAt, 10, "情報確認日");
   const sourceCheckedAt = rawSourceCheckedAt.replaceAll("/", "-");
   if (sourceCheckedAt && !/^\d{4}-\d{2}-\d{2}$/.test(sourceCheckedAt)) throw invalid("情報確認日の形式が正しくありません。YYYY-MM-DDで入力してください。");
+  const targetGender = optional(input.targetGender, 10, "対象性別");
+  if (!TARGET_GENDERS.has(targetGender)) throw invalid("対象性別が正しくありません。");
+  const businessScope = optional(input.businessScope, 10, "掲載区分") || "night";
+  if (!BUSINESS_SCOPES.has(businessScope)) throw invalid("掲載区分が正しくありません。");
+  const dailyPay = input.dailyPay === "" || input.dailyPay === undefined ? "" : input.dailyPay;
+  if (dailyPay !== "" && typeof dailyPay !== "boolean") throw invalid("日払いの形式が正しくありません。");
+  const beginner = input.beginner === "" || input.beginner === undefined ? "" : input.beginner;
+  if (beginner !== "" && typeof beginner !== "boolean") throw invalid("未経験歓迎の形式が正しくありません。");
   return {
     listingSource: listingSource as AdminJobListingSource,
     storeName: required(input.storeName, 120, "店舗名"),
@@ -54,6 +67,10 @@ export function parseAdminJobInput(value: unknown): AdminJobInput {
     businessType: required(input.businessType, 120, "職種・業種"),
     area: optional(input.area, 120, "勤務地"), salary: optional(input.salary, 500, "給与"),
     description: optional(input.description, 5000, "求人内容"), closedDay: optional(input.closedDay, 200, "定休日"),
+    address: optional(input.address, 500, "勤務地住所"), station: optional(input.station, 200, "最寄り駅"),
+    workHours: optional(input.workHours, 500, "勤務時間"), requirements: optional(input.requirements, 5000, "応募条件"),
+    benefits: optional(input.benefits, 5000, "待遇"), back: optional(input.back, 1000, "各種バック"),
+    targetGender: targetGender as AdminJobInput["targetGender"], businessScope: businessScope as AdminJobInput["businessScope"], dailyPay, beginner,
     applyType: applyType as AdminJobInput["applyType"],
     applyUrl: optionalUrl(input.applyUrl, "応募先URL"), sourceUrl: optionalUrl(input.sourceUrl, "情報元URL"),
     sourceCheckedAt, adminSourceMemo: optional(input.adminSourceMemo, 2000, "管理メモ"),

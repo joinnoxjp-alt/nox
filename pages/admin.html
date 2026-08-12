@@ -1092,6 +1092,15 @@
             <div class="admin-item-card">
               <div class="ad-form">
                 <div class="ad-form-group full">
+                  <h3>かんたん求人登録</h3>
+                  <textarea id="easyJobSourceText" maxlength="50000" rows="14" placeholder="店舗から受け取った求人情報をそのまま貼り付けてください"></textarea>
+                  <div class="ad-card-actions">
+                    <button type="button" id="parseEasyJobButton" class="admin-button">求人情報を自動入力</button>
+                    <button type="button" id="clearEasyJobButton" class="admin-button danger">入力内容をクリア</button>
+                  </div>
+                  <p id="easyJobParseResult" class="save-status" aria-live="polite"></p>
+                </div>
+                <div class="ad-form-group full">
                   <label for="directJobListingSource">掲載区分</label>
                   <select id="directJobListingSource"><option value="official">NOX掲載店舗</option><option value="public_info">公開情報確認済</option></select>
                 </div>
@@ -1156,6 +1165,16 @@
                     placeholder="仕事内容・待遇・応募条件などを入力"
                   ></textarea>
                 </div>
+
+                <div class="ad-form-group full"><label for="directJobAddress">勤務地住所</label><input type="text" id="directJobAddress" maxlength="500" /></div>
+                <div class="ad-form-group"><label for="directJobStation">最寄り駅</label><input type="text" id="directJobStation" maxlength="200" /></div>
+                <div class="ad-form-group"><label for="directJobWorkHours">営業時間・勤務時間</label><input type="text" id="directJobWorkHours" maxlength="500" /></div>
+                <div class="ad-form-group full"><label for="directJobBack">各種バック</label><textarea id="directJobBack" maxlength="1000"></textarea></div>
+                <div class="ad-form-group full"><label for="directJobBenefits">待遇・福利厚生</label><textarea id="directJobBenefits" maxlength="5000"></textarea></div>
+                <div class="ad-form-group full"><label for="directJobRequirements">応募条件・必要書類</label><textarea id="directJobRequirements" maxlength="5000"></textarea></div>
+                <div class="ad-form-group"><label for="directJobTargetGender">対象性別</label><select id="directJobTargetGender"><option value="">未設定</option><option value="female" selected>女性</option><option value="male">男性</option><option value="all">男女</option></select></div>
+                <div class="ad-form-group"><label for="directJobBusinessScope">掲載区分</label><select id="directJobBusinessScope"><option value="night">夜職</option><option value="general">一般</option><option value="both">両方</option></select></div>
+                <div class="ad-form-group"><label for="directJobDailyPay">全額日払い</label><select id="directJobDailyPay"><option value="">未設定</option><option value="true">あり</option><option value="false">なし</option></select></div>
 
                 <div class="ad-form-group full">
                   <label for="directJobClosedDay">定休日</label>
@@ -1662,6 +1681,7 @@
 
     <script src="./admin-date.js"></script>
     <script src="./admin-store-media.js"></script>
+    <script src="./easy-job-parser.js"></script>
     <script type="module">
       import { auth } from "../firebase.js";
 
@@ -1817,6 +1837,40 @@
       directJobListingSource.addEventListener("change", syncDirectJobSourceFields);
       syncDirectJobSourceFields();
 
+      const easyJobSourceText = document.getElementById("easyJobSourceText");
+      const easyJobParseResult = document.getElementById("easyJobParseResult");
+      const setDirectJobValue = (id, value) => { document.getElementById(id).value = value ?? ""; };
+      document.getElementById("parseEasyJobButton").addEventListener("click", () => {
+        const parsed = window.NoxEasyJobParser.parse(easyJobSourceText.value);
+        directJobListingSource.value = "public_info";
+        syncDirectJobSourceFields();
+        setDirectJobValue("directJobStoreName", parsed.storeName);
+        setDirectJobValue("directJobTitle", parsed.title);
+        setDirectJobValue("directJobType", parsed.businessType);
+        setDirectJobValue("directJobArea", parsed.area);
+        setDirectJobValue("directJobSalary", parsed.salary);
+        setDirectJobValue("directJobAddress", parsed.address);
+        setDirectJobValue("directJobStation", parsed.station);
+        setDirectJobValue("directJobWorkHours", parsed.workHours);
+        setDirectJobValue("directJobClosedDay", parsed.closedDay);
+        setDirectJobValue("directJobDescription", parsed.description);
+        setDirectJobValue("directJobBack", parsed.backs);
+        setDirectJobValue("directJobBenefits", parsed.benefits);
+        setDirectJobValue("directJobRequirements", [parsed.requirements, parsed.identification && `身分証明書：${parsed.identification}`, parsed.trialIdentification && `体験時身分証：${parsed.trialIdentification}`].filter(Boolean).join("\n"));
+        setDirectJobValue("directJobTargetGender", parsed.targetGender);
+        setDirectJobValue("directJobBusinessScope", parsed.businessScope);
+        setDirectJobValue("directJobDailyPay", parsed.dailyPayValue);
+        setDirectJobValue("directJobApplyType", "line");
+        setDirectJobValue("directJobApplyUrl", "https://lin.ee/S7nF03G");
+        setDirectJobValue("directJobSourceCheckedAt", new Date().toISOString().slice(0, 10));
+        setDirectJobValue("directJobSourceMemo", "公開情報確認済求人。\nNOX正式掲載店舗・契約店舗ではないため、店舗・契約データは作成しない。\n提供された求人情報をもとに掲載。\n求人に関する問い合わせはNOX公式LINEで受付。");
+        easyJobParseResult.textContent = `店舗名：${parsed.storeName || "未検出"} / 業種：${parsed.businessType || "未検出"} / エリア：${parsed.area || "未検出"} / 給与：${parsed.salary || "未検出"} / 住所：${parsed.address ? "検出済み" : "未検出"} / 各種バック：${parsed.backs ? "検出済み" : "未検出"}`;
+      });
+      document.getElementById("clearEasyJobButton").addEventListener("click", () => {
+        easyJobSourceText.value = "";
+        easyJobParseResult.textContent = "";
+      });
+
       createDirectJobButton.addEventListener("click", async () => {
         const listingSource = document.getElementById("directJobListingSource").value;
         const storeName = document
@@ -1849,6 +1903,17 @@
         const sourceUrl = document.getElementById("directJobSourceUrl").value.trim();
         const sourceCheckedAt = document.getElementById("directJobSourceCheckedAt").value;
         const adminSourceMemo = document.getElementById("directJobSourceMemo").value.trim();
+        const address = document.getElementById("directJobAddress").value.trim();
+        const station = document.getElementById("directJobStation").value.trim();
+        const workHours = document.getElementById("directJobWorkHours").value.trim();
+        const back = document.getElementById("directJobBack").value.trim();
+        const benefits = document.getElementById("directJobBenefits").value.trim();
+        const requirements = document.getElementById("directJobRequirements").value.trim();
+        const targetGender = document.getElementById("directJobTargetGender").value;
+        const businessScope = document.getElementById("directJobBusinessScope").value;
+        const dailyPayValue = document.getElementById("directJobDailyPay").value;
+        const dailyPay = dailyPayValue === "" ? "" : dailyPayValue === "true";
+        const beginner = listingSource === "public_info" ? window.NoxEasyJobParser.parse(easyJobSourceText.value).beginner : "";
         if (!storeName || !title || (listingSource === "official" && !ownerId)) {
           directJobStatus.textContent =
             "店舗名・ownerId・求人タイトルを入力してください。";
@@ -1881,6 +1946,8 @@
             applyType,
             applyUrl,
             listingSource, sourceUrl, sourceCheckedAt, adminSourceMemo,
+            address, station, workHours, back, benefits, requirements,
+            targetGender, businessScope, dailyPay, beginner,
           });
 
           directJobStatus.textContent = "求人を登録・公開しました。";
