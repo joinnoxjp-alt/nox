@@ -28,3 +28,19 @@ test("collapse only changes hidden state and preserves rendered cards and listen
   assert.match(admin, /loadPublicJobs\(\)/);
   assert.match(admin, /NoxJobDuplicate\.find/);
 });
+
+test("all major admin sections share one collapse initializer", () => {
+  assert.match(admin, /document\.querySelectorAll\("\.admin-section"\)\.forEach/);
+  assert.match(admin, /initializeAdminSectionCollapses\(\)/);
+  assert.match(admin, /content\.hidden = true/);
+  assert.match(admin, /content\.hidden = !expanded/);
+  assert.match(admin, /section\.append\(toggle, content\)/);
+  assert.match(admin, /admin-section-collapse-content\[hidden\]/);
+  assert.equal((admin.match(/function initializeAdminSectionCollapses/g) || []).length, 1);
+});
+
+test("section collapsing moves existing nodes instead of cloning or rebuilding them", () => {
+  assert.match(admin, /content\.appendChild\(child\)/);
+  assert.doesNotMatch(admin, /cloneNode/);
+  assert.doesNotMatch(admin, /section\.innerHTML\s*=/);
+});

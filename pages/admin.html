@@ -137,6 +137,7 @@
 
       .admin-collapse-toggle { width:100%; min-height:48px; margin:10px 0 14px; border:1px solid rgba(212,175,55,.65); border-radius:12px; background:rgba(212,175,55,.08); color:#f5d36b; font:inherit; font-weight:800; cursor:pointer; }
       .admin-collapse-toggle:hover, .admin-collapse-toggle:focus-visible { background:rgba(212,175,55,.16); outline:2px solid rgba(245,211,107,.35); }
+      .admin-section-collapse-content[hidden] { display:none !important; }
 
       .store-media-manager {
         margin-top: 18px;
@@ -1795,6 +1796,38 @@
       const updatePublicJobToggle = configureCollapsible(publicJobToggle, publicJobList, "公開中求人");
       const updateJobApplicationCollapse = (count) => { jobApplicationHeadingCount.textContent = String(count); updateJobApplicationToggle(count); };
       const updatePublicJobCollapse = (count) => { publicJobHeadingCount.textContent = String(count); updatePublicJobToggle(count); };
+
+      function collapseLabelFromTitle(title) {
+        return title.textContent.replace(/[（(]\d+件[）)]/g, "").replace(/^[^\p{L}\p{N}]+/u, "").trim();
+      }
+
+      function initializeAdminSectionCollapses() {
+        document.querySelectorAll(".admin-section").forEach((section, index) => {
+          if (section.querySelector(":scope > .admin-collapse-toggle")) return;
+          const title = section.querySelector(":scope > .admin-section-title");
+          if (!title) return;
+          const label = collapseLabelFromTitle(title);
+          const content = document.createElement("div");
+          content.className = "admin-section-collapse-content";
+          content.id = `adminSectionContent${index}`;
+          content.hidden = true;
+          [...section.children].filter((child) => child !== title).forEach((child) => content.appendChild(child));
+          const toggle = document.createElement("button");
+          toggle.type = "button";
+          toggle.className = "admin-collapse-toggle";
+          toggle.setAttribute("aria-expanded", "false");
+          toggle.setAttribute("aria-controls", content.id);
+          toggle.textContent = `▼ ${label}を表示`;
+          toggle.addEventListener("click", () => {
+            const expanded = toggle.getAttribute("aria-expanded") !== "true";
+            toggle.setAttribute("aria-expanded", String(expanded));
+            content.hidden = !expanded;
+            toggle.textContent = `${expanded ? "▲" : "▼"} ${label}を${expanded ? "閉じる" : "表示"}`;
+          });
+          section.append(toggle, content);
+        });
+      }
+      initializeAdminSectionCollapses();
 
       const storeInviteResult = document.getElementById("storeInviteResult");
 
