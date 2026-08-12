@@ -764,7 +764,7 @@ async function loadTopJobs() {
         jobB.createdAt?.seconds ??
         0;
 
-      return timeB - timeA;
+      return timeB - timeA || jobA.id.localeCompare(jobB.id);
     });
 
     allTopFeaturedJobs = jobs;
@@ -786,9 +786,9 @@ function renderTopJobs() {
     return;
   }
 
-  const featuredJobs = allTopFeaturedJobs
-    .filter((job) => job.resolvedPickupGender === selectedPickupGender)
-    .slice(0, 6);
+  const featuredJobs = allTopFeaturedJobs.filter(
+    (job) => job.resolvedPickupGender === selectedPickupGender,
+  );
 
   if (featuredJobs.length === 0) {
     const genderLabel =

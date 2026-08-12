@@ -963,6 +963,14 @@
         });
 
         filteredJobs.sort((a, b) => {
+          const sourcePriority =
+            (a.listingSource === "public_info" ? 1 : 0) -
+            (b.listingSource === "public_info" ? 1 : 0);
+
+          if (sourcePriority !== 0) {
+            return sourcePriority;
+          }
+
           if (selectedSort === "salary") {
             return getSalaryNumber(b) - getSalaryNumber(a);
           }
