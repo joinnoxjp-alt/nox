@@ -566,7 +566,9 @@
 
       import {
         collection,
-        getDocs
+        getDocs,
+        query,
+        where
       } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
       const jobsList =
@@ -600,7 +602,12 @@
 
           const snap =
             await getDocs(
-              collection(db, "jobs")
+              query(
+                collection(db, "jobs"),
+                where("status", "==", "approved"),
+                where("isPublic", "==", true),
+                where("contractListingStatus", "==", "active")
+              )
             );
 
           jobs = [];
@@ -890,6 +897,7 @@ if (job.contractListingStatus !== "active") {
         }
 
         filteredJobs.forEach((job) => {
+          try {
 
           const storeName =
             job.storeName ||
@@ -970,6 +978,10 @@ if (job.contractListingStatus !== "active") {
           `;
 
           jobsList.appendChild(card);
+
+          } catch (error) {
+            console.warn("求人カードの描画をスキップしました:", job?.id || "unknown", error);
+          }
 
         });
       }

@@ -69,6 +69,28 @@ test("returns empty media when the linked store does not exist", async () => {
   );
 });
 
+test("returns empty media for a public-info job without store or owner IDs", async () => {
+  let storeReads = 0;
+  const deps = dependencies({
+    job: {
+      status: "approved",
+      isPublic: true,
+      contractListingStatus: "active",
+      listingSource: "public_info",
+      storeName: "Public Store",
+    },
+  });
+  deps.getStore = async () => { storeReads += 1; return null; };
+
+  assert.deepEqual(await loadPublicJobStoreMedia("job-1", deps), {
+    logoUrl: "",
+    coverImageUrl: "",
+    profileImageUrl: "",
+    galleryImages: [],
+  });
+  assert.equal(storeReads, 0);
+});
+
 test("returns empty media when the store has no images", async () => {
   assert.deepEqual(
     await loadPublicJobStoreMedia("job-1", dependencies()),

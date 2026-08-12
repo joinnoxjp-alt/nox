@@ -813,7 +813,8 @@ function renderTopJobs() {
   }
 
   topJobs.innerHTML = featuredJobs
-    .map((job) => {
+    .flatMap((job) => {
+      try {
       const storeName =
         job.storeName ||
         job.shopName ||
@@ -835,7 +836,7 @@ function renderTopJobs() {
       const genderLabel =
         job.resolvedPickupGender === "male" ? "MEN'S PICK UP" : "PICK UP";
 
-      return `
+      return [`
           <div
             class="top-job-card"
             style="
@@ -880,7 +881,11 @@ function renderTopJobs() {
             </div>
 
           </div>
-        `;
+        `];
+      } catch (error) {
+        console.warn("TOP求人カードの描画をスキップしました:", job?.id || "unknown", error);
+        return [];
+      }
     })
     .join("");
 }

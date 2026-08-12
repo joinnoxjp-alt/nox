@@ -4,7 +4,7 @@ import path from "node:path";
 import test from "node:test";
 
 interface JobDetailMediaModule {
-  compose(data: Record<string, unknown>, storeMedia: Record<string, unknown>): {
+  compose(data: Record<string, unknown>, storeMedia: Record<string, unknown>, placeholderUrl?: string): {
     heroUrl: string;
     galleryUrls: string[];
   };
@@ -61,6 +61,17 @@ test("preserves the existing no-image display when store media is empty", () => 
   });
 });
 
+test("uses the shared placeholder for a storeless public-info job", () => {
+  assert.deepEqual(
+    media.compose(
+      { listingSource: "public_info", storeName: "Public Store" },
+      { galleryImages: [] },
+      "placeholder.png",
+    ),
+    { heroUrl: "placeholder.png", galleryUrls: [] },
+  );
+});
+
 test("public detail removes the independent store logo and legacy profile image", () => {
   assert.doesNotMatch(detailSource, /media\.logoUrl/);
   assert.doesNotMatch(detailSource, /media\.profileImageUrl/);
@@ -82,6 +93,20 @@ test("keeps all three publication checks in every public job list", () => {
     assert.match(source, /job\.status !== "approved"/);
     assert.match(source, /job\.isPublic !== true/);
     assert.match(source, /job\.contractListingStatus !== "active"/);
+  }
+});
+
+test("every public job list constrains its Firestore query to fields allowed by rules", () => {
+  for (const source of [jobsSource, menSource, girlsSource]) {
+    assert.match(source, /where\("status",\s*"==",\s*"approved"\)/);
+    assert.match(source, /where\("isPublic",\s*"==",\s*true\)/);
+    assert.match(source, /where\("contractListingStatus",\s*"==",\s*"active"\)/);
+  }
+});
+
+test("public job cards isolate rendering errors per job", () => {
+  for (const source of [jobsSource, menSource, girlsSource]) {
+    assert.match(source, /求人カードの描画をスキップしました/);
   }
 });
 

@@ -11,6 +11,7 @@ import { firestore } from "../firebaseAdmin";
 import { assertActiveAdmin } from "../security/adminAuthorization";
 import { cachedStoreCoverUrl } from "../domain/storeCoverCache";
 import { canonicalJobCompatibilityChanges } from "../domain/jobFields";
+import { adminJobSourceFields } from "../domain/adminJobSource";
 
 type CreateAdminJobInput = {
   listingSource: "official" | "public_info";
@@ -104,7 +105,7 @@ function parseInput(value: unknown): CreateAdminJobInput {
   return {
     listingSource: listingSource as CreateAdminJobInput["listingSource"],
     storeName: requiredString(input.storeName, 120),
-    ownerId: listingSource === "official" ? requiredString(input.ownerId, 128) : optionalString(input.ownerId, 128),
+    ownerId: listingSource === "official" ? requiredString(input.ownerId, 128) : "",
     title: requiredString(input.title, 160),
     businessType: requiredString(input.businessType, 120),
     area: optionalString(input.area, 120),
@@ -163,6 +164,7 @@ export const createAdminJob = onCall(adminCallableOptions, async (request) => {
     }
 
     const storeSnapshot = storeQuerySnapshot?.docs[0];
+    const sourceFields = adminJobSourceFields(input.listingSource, input.ownerId, storeSnapshot?.id ?? "");
 
     const store = storeSnapshot?.data() ?? {};
 
@@ -215,13 +217,13 @@ export const createAdminJob = onCall(adminCallableOptions, async (request) => {
 
     batch.create(jobReference, {
       schemaVersion: 1,
-      listingSource: input.listingSource,
+      listingSource: sourceFields.listingSource,
       sourceUrl: input.sourceUrl,
       sourceCheckedAt: input.sourceCheckedAt || null,
       adminSourceMemo: input.adminSourceMemo,
 
-      ownerId: input.ownerId,
-      storeId: storeSnapshot?.id ?? "",
+      ownerId: sourceFields.ownerId,
+      storeId: sourceFields.storeId,
       storeName: input.storeName,
       ...compatibleJobFields,
 
@@ -270,8 +272,8 @@ export const createAdminJob = onCall(adminCallableOptions, async (request) => {
       archivedBy: null,
       sourceApplicationId: null,
 
-      source: input.listingSource === "public_info" ? "admin_public_info" : "admin_direct",
-      storeDocumentId: storeSnapshot?.id ?? "",
+      source: sourceFields.source,
+      storeDocumentId: sourceFields.storeDocumentId,
     });
 
     batch.create(auditReference, {

@@ -9,13 +9,13 @@
     return uniqueUrls([data.imageUrl]);
   }
 
-  function compose(data, storeMedia) {
+  function compose(data, storeMedia, placeholderUrl = "") {
     const ownImages = jobImages(data);
     const galleryImages = Array.isArray(storeMedia.galleryImages)
       ? storeMedia.galleryImages
       : [];
     return {
-      heroUrl: ownImages[0] || storeMedia.coverImageUrl || "",
+      heroUrl: ownImages[0] || storeMedia.coverImageUrl || placeholderUrl,
       galleryUrls: uniqueUrls(galleryImages),
     };
   }

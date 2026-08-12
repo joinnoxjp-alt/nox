@@ -1005,6 +1005,7 @@
         }
 
         filteredJobs.forEach((job) => {
+          try {
           const storeName =
             job.storeName ||
             job.name ||
@@ -1080,6 +1081,9 @@
         `;
 
           jobsList.appendChild(card);
+          } catch (error) {
+            console.warn("求人カードの描画をスキップしました:", job?.id || "unknown", error);
+          }
         });
       }
 

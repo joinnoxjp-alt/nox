@@ -561,7 +561,11 @@
           const isPublicInfo = data.listingSource === "public_info";
           const job = window.NoxJobFields.normalize(data);
           const featureLabel = window.NoxJobFields.featureLabel;
-          const gallery = media.galleryUrls
+          const galleryUrls = Array.isArray(media?.galleryUrls)
+            ? media.galleryUrls
+            : [];
+          const heroUrl = typeof media?.heroUrl === "string" ? media.heroUrl : "";
+          const gallery = galleryUrls
             .map(
               (img) => `
                 <button type="button" class="gallery-image-button" data-full-image="${escapeHtml(img)}" aria-label="店舗画像を拡大表示">
@@ -571,12 +575,12 @@
             )
             .join("");
 
-          const heroImage = media.heroUrl
+          const heroImage = heroUrl
             ? `
               <img
-                src="${escapeHtml(media.heroUrl)}"
+                src="${escapeHtml(heroUrl)}"
                 alt="${value(job.storeName)}"
-                data-full-image="${escapeHtml(media.heroUrl)}"
+                data-full-image="${escapeHtml(heroUrl)}"
               >
             `
             : "";
@@ -623,7 +627,7 @@
             </section>
 
             ${
-              media.galleryUrls.length
+              galleryUrls.length
                 ? `
                   <section class="section">
                     <h2>店舗写真</h2>
@@ -991,7 +995,11 @@
               console.warn("閲覧数の記録をスキップしました:", error);
             }
 
-            const media = window.NoxJobDetailMedia.compose(data, storeMedia);
+            const media = window.NoxJobDetailMedia.compose(
+              data,
+              storeMedia,
+              "../images/7240C21C-E2E7-47E1-9F48-6ECC3468406D.png",
+            );
 
             renderJob(data, media);
             setupImagePreview();

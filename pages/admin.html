@@ -1806,15 +1806,27 @@
       document.getElementById("copySalesSummary").addEventListener("click",async()=>navigator.clipboard.writeText(document.getElementById("salesSummaryText").textContent));
       document.getElementById("dashboardPeriods").addEventListener("click",event=>{const button=event.target.closest("[data-period]");if(!button)return;document.querySelectorAll("[data-period]").forEach(item=>item.setAttribute("aria-pressed",String(item===button)));loadDashboard(button.dataset.period)});
 
+      const directJobListingSource = document.getElementById("directJobListingSource");
+      const directJobOwnerId = document.getElementById("directJobOwnerId");
+      function syncDirectJobSourceFields() {
+        const isPublicInfo = directJobListingSource.value === "public_info";
+        directJobOwnerId.disabled = isPublicInfo;
+        directJobOwnerId.required = !isPublicInfo;
+        if (isPublicInfo) directJobOwnerId.value = "";
+      }
+      directJobListingSource.addEventListener("change", syncDirectJobSourceFields);
+      syncDirectJobSourceFields();
+
       createDirectJobButton.addEventListener("click", async () => {
         const listingSource = document.getElementById("directJobListingSource").value;
         const storeName = document
           .getElementById("directJobStoreName")
           .value.trim();
 
-        const ownerId = document
+        const enteredOwnerId = document
           .getElementById("directJobOwnerId")
           .value.trim();
+        const ownerId = listingSource === "official" ? enteredOwnerId : "";
 
         const title = document.getElementById("directJobTitle").value.trim();
 

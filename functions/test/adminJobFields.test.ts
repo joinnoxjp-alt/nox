@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import test from "node:test";
 import { canonicalJobCompatibilityChanges } from "../src/domain/jobFields";
+import { adminJobSourceFields } from "../src/domain/adminJobSource";
 
 interface JobFieldsApi { normalize(data: Record<string, unknown>): Record<string, unknown>; featureLabel(value: unknown, enabled?: string): string; applyTypeLabel(value: string): string; listingSourceLabel(value?: string): string; }
 const fields = require(path.resolve(__dirname, "../../../pages/job-fields.js")) as JobFieldsApi;
@@ -90,6 +91,33 @@ test("listing source defaults legacy jobs to official and labels both sources", 
   assert.equal(fields.normalize({ listingSource: "public_info" }).listingSource, "public_info");
   assert.equal(fields.listingSourceLabel(), "NOX掲載店舗");
   assert.equal(fields.listingSourceLabel("public_info"), "公開情報確認済");
+});
+
+test("public-info creation is never linked to an owner or store", () => {
+  assert.deepEqual(adminJobSourceFields("public_info", "stale-owner", "stale-store"), {
+    listingSource: "public_info",
+    source: "admin_public_info",
+    ownerId: "",
+    storeId: "",
+    storeDocumentId: "",
+  });
+});
+
+test("official creation preserves the resolved owner and store", () => {
+  assert.deepEqual(adminJobSourceFields("official", "owner-1", "store-1"), {
+    listingSource: "official",
+    source: "admin_direct",
+    ownerId: "owner-1",
+    storeId: "store-1",
+    storeDocumentId: "store-1",
+  });
+});
+
+test("direct admin creation sends public_info and clears its owner ID", () => {
+  const admin = readFileSync(path.resolve(__dirname, "../../../pages/admin.html"), "utf8");
+  assert.match(admin, /<option value="public_info">公開情報確認済<\/option>/);
+  assert.match(admin, /listingSource === "official" \? enteredOwnerId : ""/);
+  assert.match(admin, /listingSource, sourceUrl, sourceCheckedAt, adminSourceMemo/);
 });
 
 test("admin source metadata is handled only by trusted job functions", () => {
