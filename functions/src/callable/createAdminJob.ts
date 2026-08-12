@@ -12,112 +12,13 @@ import { assertActiveAdmin } from "../security/adminAuthorization";
 import { cachedStoreCoverUrl } from "../domain/storeCoverCache";
 import { canonicalJobCompatibilityChanges } from "../domain/jobFields";
 import { adminJobSourceFields } from "../domain/adminJobSource";
-
-type CreateAdminJobInput = {
-  listingSource: "official" | "public_info";
-  storeName: string;
-  ownerId: string;
-  title: string;
-  businessType: string;
-  area: string;
-  salary: string;
-  description: string;
-  closedDay: string;
-  applyType: "instagram" | "line" | "x" | "tiktok" | "other";
-  applyUrl: string;
-  sourceUrl: string;
-  sourceCheckedAt: string;
-  adminSourceMemo: string;
-};
-const APPLY_TYPES = new Set(["instagram", "line", "x", "tiktok", "other"]);
-const LISTING_SOURCES = new Set(["official", "public_info"]);
+import { parseAdminJobInput } from "../domain/adminJobInput";
 
 function publicError(
   code: "invalid-argument" | "not-found" | "failed-precondition" | "internal",
   message: string,
 ): HttpsError {
   return new HttpsError(code, message);
-}
-
-function requiredString(value: unknown, maximumLength: number): string {
-  if (typeof value !== "string") {
-    throw publicError("invalid-argument", "Job input is invalid.");
-  }
-
-  const result = value.trim();
-
-  if (result.length === 0 || result.length > maximumLength) {
-    throw publicError("invalid-argument", "Job input is invalid.");
-  }
-
-  return result;
-}
-
-function optionalString(value: unknown, maximumLength: number): string {
-  if (value === undefined || value === null) {
-    return "";
-  }
-
-  if (typeof value !== "string") {
-    throw publicError("invalid-argument", "Job input is invalid.");
-  }
-
-  const result = value.trim();
-
-  if (result.length > maximumLength) {
-    throw publicError("invalid-argument", "Job input is invalid.");
-  }
-
-  return result;
-}
-
-function safeOptionalUrl(value: unknown): string {
-  const result = optionalString(value, 2000);
-  if (!result) return "";
-  try {
-    const parsed = new URL(result);
-    if (parsed.protocol !== "https:" && parsed.protocol !== "http:") throw new Error("protocol");
-    return parsed.href;
-  } catch {
-    throw publicError("invalid-argument", "Application URL is invalid.");
-  }
-}
-
-function parseInput(value: unknown): CreateAdminJobInput {
-  if (value === null || typeof value !== "object" || Array.isArray(value)) {
-    throw publicError("invalid-argument", "Job input is invalid.");
-  }
-
-  const input = value as Record<string, unknown>;
-  const applyType = input.applyType ?? "other";
-  if (typeof applyType !== "string" || !APPLY_TYPES.has(applyType)) {
-    throw publicError("invalid-argument", "Application type is invalid.");
-  }
-  const listingSource = input.listingSource ?? "official";
-  if (typeof listingSource !== "string" || !LISTING_SOURCES.has(listingSource)) {
-    throw publicError("invalid-argument", "Listing source is invalid.");
-  }
-  const sourceCheckedAt = optionalString(input.sourceCheckedAt, 10);
-  if (sourceCheckedAt && !/^\d{4}-\d{2}-\d{2}$/.test(sourceCheckedAt)) {
-    throw publicError("invalid-argument", "Source check date is invalid.");
-  }
-
-  return {
-    listingSource: listingSource as CreateAdminJobInput["listingSource"],
-    storeName: requiredString(input.storeName, 120),
-    ownerId: listingSource === "official" ? requiredString(input.ownerId, 128) : "",
-    title: requiredString(input.title, 160),
-    businessType: requiredString(input.businessType, 120),
-    area: optionalString(input.area, 120),
-    salary: optionalString(input.salary, 500),
-    description: optionalString(input.description, 5000),
-    closedDay: optionalString(input.closedDay, 200),
-    applyType: applyType as CreateAdminJobInput["applyType"],
-    applyUrl: safeOptionalUrl(input.applyUrl),
-    sourceUrl: safeOptionalUrl(input.sourceUrl),
-    sourceCheckedAt,
-    adminSourceMemo: optionalString(input.adminSourceMemo, 2000),
-  };
 }
 
 function isTimestamp(value: unknown): value is Timestamp {
@@ -143,7 +44,7 @@ function contractIsActive(
 export const createAdminJob = onCall(adminCallableOptions, async (request) => {
   const admin = await assertActiveAdmin(request.auth);
 
-  const input = parseInput(request.data);
+  const input = parseAdminJobInput(request.data);
 
   try {
     const storeQuerySnapshot = input.listingSource === "official" ? await firestore

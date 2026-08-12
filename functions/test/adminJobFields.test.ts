@@ -4,6 +4,7 @@ import path from "node:path";
 import test from "node:test";
 import { canonicalJobCompatibilityChanges } from "../src/domain/jobFields";
 import { adminJobSourceFields } from "../src/domain/adminJobSource";
+import { parseAdminJobInput } from "../src/domain/adminJobInput";
 
 interface JobFieldsApi { normalize(data: Record<string, unknown>): Record<string, unknown>; featureLabel(value: unknown, enabled?: string): string; applyTypeLabel(value: string): string; listingSourceLabel(value?: string): string; }
 const fields = require(path.resolve(__dirname, "../../../pages/job-fields.js")) as JobFieldsApi;
@@ -82,7 +83,7 @@ test("direct admin creation validates and sends the canonical closed day", () =>
   assert.match(admin, /id="directJobClosedDay"/);
   assert.match(admin, /const closedDay = document\.getElementById\("directJobClosedDay"\)/);
   assert.match(admin, /createAdminJobCallable\(\{[\s\S]*closedDay,/);
-  assert.match(source, /closedDay: optionalString\(input\.closedDay, 200\)/);
+  assert.match(source, /parseAdminJobInput\(request\.data\)/);
   assert.match(source, /closedDay: input\.closedDay/);
 });
 
@@ -120,6 +121,41 @@ test("direct admin creation sends public_info and clears its owner ID", () => {
   assert.match(admin, /listingSource, sourceUrl, sourceCheckedAt, adminSourceMemo/);
 });
 
+test("the reported public-info payload is accepted without owner or source URL", () => {
+  const input = parseAdminJobInput({
+    listingSource: "public_info", storeName: "レオ", ownerId: "",
+    title: "【中洲】キャバクラ「レオ」キャスト募集｜平均時給6,000円・ノルマなし",
+    businessType: "キャバクラ", area: "中洲", salary: "平均時給6,000円",
+    description: "", closedDay: "日曜日", applyType: "line",
+    applyUrl: "https://lin.ee/S7nF03G", sourceUrl: "",
+    sourceCheckedAt: "2026/08/12",
+    adminSourceMemo: "BIG関連求人。\n公開情報確認済として掲載。",
+  });
+  assert.equal(input.ownerId, "");
+  assert.equal(input.sourceUrl, "");
+  assert.equal(input.sourceCheckedAt, "2026-08-12");
+  assert.equal(input.applyType, "line");
+  assert.equal(input.applyUrl, "https://lin.ee/S7nF03G");
+  assert.deepEqual(adminJobSourceFields(input.listingSource, input.ownerId, "unexpected-store"), {
+    listingSource: "public_info", source: "admin_public_info", ownerId: "", storeId: "", storeDocumentId: "",
+  });
+});
+
+test("official input still requires an owner ID", () => {
+  assert.throws(() => parseAdminJobInput({
+    listingSource: "official", storeName: "Official", ownerId: "", title: "Title",
+    businessType: "Bar", applyType: "line", applyUrl: "https://lin.ee/test",
+  }), /ownerIdを入力してください/);
+});
+
+test("private source metadata is not rendered by public job pages", () => {
+  for (const file of ["index.html", "script.js", "pages/jobs.html", "pages/girls.html", "pages/men.html", "pages/job-detail.html"]) {
+    const source = readFileSync(path.resolve(__dirname, `../../../${file}`), "utf8");
+    assert.doesNotMatch(source, /adminSourceMemo/);
+    assert.doesNotMatch(source, /BIG関連|BIGから情報提供|BIGとの関係/);
+  }
+});
+
 test("admin source metadata is handled only by trusted job functions", () => {
   const admin = readFileSync(path.resolve(__dirname, "../../../pages/job-admin.html"), "utf8");
   const directCreate = readFileSync(path.resolve(__dirname, "../../../pages/admin.html"), "utf8");
@@ -132,4 +168,9 @@ test("admin source metadata is handled only by trusted job functions", () => {
   assert.match(directCreate, /id="directJobListingSource"/);
   assert.match(admin, /id="editListingSource-/);
   assert.match(admin, /情報確認日を今日に更新/);
+});
+
+test("Functions deployment always builds TypeScript before upload", () => {
+  const firebaseConfig = JSON.parse(readFileSync(path.resolve(__dirname, "../../../firebase.json"), "utf8"));
+  assert.deepEqual(firebaseConfig.functions.predeploy, ['npm --prefix "$RESOURCE_DIR" run build']);
 });

@@ -1888,7 +1888,10 @@
           await Promise.all([loadPublicJobs(), loadRegisteredStores()]);
         } catch (error) {
           console.error("求人の直接登録に失敗しました。", error);
-          directJobStatus.textContent = "求人を登録できませんでした。";
+          const safeCallableMessage = typeof error?.message === "string"
+            ? error.message.replace(/^Firebase:\s*/i, "").replace(/\s*\(functions\/[^)]+\)\.?$/, "").trim()
+            : "";
+          directJobStatus.textContent = safeCallableMessage || "求人を登録できませんでした。入力内容をご確認ください。";
         } finally {
           createDirectJobButton.disabled = false;
         }
