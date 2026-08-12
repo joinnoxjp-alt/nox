@@ -949,6 +949,7 @@
             );
           }
         );
+        openRequestedJobEditor();
 
       }catch(error){
 
@@ -1654,6 +1655,13 @@
         behavior:"smooth",
         block:"start"
       });
+    }
+
+    function openRequestedJobEditor(){
+      const jobId = new URLSearchParams(window.location.search).get("jobId");
+      if(!jobId) return;
+      const form = document.getElementById(`editForm-${jobId}`);
+      if(form){ openEditForm(jobId); form.scrollIntoView({ behavior:"smooth", block:"start" }); }
     }
 
     function closeEditForm(jobId){

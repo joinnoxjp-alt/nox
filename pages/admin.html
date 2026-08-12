@@ -1099,6 +1099,7 @@
                     <button type="button" id="clearEasyJobButton" class="admin-button danger">入力内容をクリア</button>
                   </div>
                   <p id="easyJobParseResult" class="save-status" aria-live="polite"></p>
+                  <div id="easyJobDuplicateWarning" class="admin-message" hidden aria-live="assertive"></div>
                 </div>
                 <div class="ad-form-group full">
                   <label for="directJobListingSource">掲載区分</label>
@@ -1682,6 +1683,7 @@
     <script src="./admin-date.js"></script>
     <script src="./admin-store-media.js"></script>
     <script src="./easy-job-parser.js"></script>
+    <script src="./job-duplicate.js"></script>
     <script type="module">
       import { auth } from "../firebase.js";
 
@@ -1784,6 +1786,7 @@
       const AD_SLOT_COUNT = 6;
 
       let currentAdminUser = null;
+      let allAdminJobs = [];
       let castMainPreviewUrl = "";
       let castGalleryPreviewUrls = [];
 
@@ -1839,7 +1842,22 @@
 
       const easyJobSourceText = document.getElementById("easyJobSourceText");
       const easyJobParseResult = document.getElementById("easyJobParseResult");
+      const easyJobDuplicateWarning = document.getElementById("easyJobDuplicateWarning");
       const setDirectJobValue = (id, value) => { document.getElementById(id).value = value ?? ""; };
+      function showDuplicateWarning(match) {
+        if (!match) { easyJobDuplicateWarning.hidden = true; easyJobDuplicateWarning.replaceChildren(); return; }
+        const job = match.job;
+        const heading = document.createElement("strong");
+        heading.textContent = match.level === "past" ? "⚠ 過去に同店舗の求人があります" : "⚠ 既存求人の可能性があります";
+        const details = document.createElement("p");
+        details.textContent = `${job.storeName || "-"} / ${job.area || "-"} / ${job.title || "-"} / 求人ID: ${job.id} / 状態: ${job.status || "不明"}`;
+        const link = document.createElement("a");
+        link.className = "admin-button";
+        link.href = `./job-admin.html?jobId=${encodeURIComponent(job.id)}`;
+        link.textContent = "既存求人を編集";
+        easyJobDuplicateWarning.replaceChildren(heading, details, link);
+        easyJobDuplicateWarning.hidden = false;
+      }
       document.getElementById("parseEasyJobButton").addEventListener("click", () => {
         const parsed = window.NoxEasyJobParser.parse(easyJobSourceText.value);
         directJobListingSource.value = "public_info";
@@ -1865,10 +1883,12 @@
         setDirectJobValue("directJobSourceCheckedAt", new Date().toISOString().slice(0, 10));
         setDirectJobValue("directJobSourceMemo", "公開情報確認済求人。\nNOX正式掲載店舗・契約店舗ではないため、店舗・契約データは作成しない。\n提供された求人情報をもとに掲載。\n求人に関する問い合わせはNOX公式LINEで受付。");
         easyJobParseResult.textContent = `店舗名：${parsed.storeName || "未検出"} / 業種：${parsed.businessType || "未検出"} / エリア：${parsed.area || "未検出"} / 給与：${parsed.salary || "未検出"} / 住所：${parsed.address ? "検出済み" : "未検出"} / 各種バック：${parsed.backs ? "検出済み" : "未検出"}`;
+        showDuplicateWarning(window.NoxJobDuplicate.find(parsed, allAdminJobs));
       });
       document.getElementById("clearEasyJobButton").addEventListener("click", () => {
         easyJobSourceText.value = "";
         easyJobParseResult.textContent = "";
+        showDuplicateWarning(null);
       });
 
       createDirectJobButton.addEventListener("click", async () => {
@@ -1914,6 +1934,8 @@
         const dailyPayValue = document.getElementById("directJobDailyPay").value;
         const dailyPay = dailyPayValue === "" ? "" : dailyPayValue === "true";
         const beginner = listingSource === "public_info" ? window.NoxEasyJobParser.parse(easyJobSourceText.value).beginner : "";
+        const duplicate = window.NoxJobDuplicate.find({ storeName, area, address, station, businessType, salary, back }, allAdminJobs);
+        if (duplicate) { showDuplicateWarning(duplicate); return; }
         if (!storeName || !title || (listingSource === "official" && !ownerId)) {
           directJobStatus.textContent =
             "店舗名・ownerId・求人タイトルを入力してください。";
@@ -2486,6 +2508,7 @@
       async function loadPublicJobs() {
         try {
           const snapshot = await getDocs(collection(db, "jobs"));
+          allAdminJobs = snapshot.docs.map((jobDocument) => ({ id: jobDocument.id, ...jobDocument.data() }));
           const jobs = snapshot.docs
             .map((jobDocument) => ({
               id: jobDocument.id,
