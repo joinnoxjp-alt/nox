@@ -1809,7 +1809,7 @@
           const label = collapseLabelFromTitle(title);
           const content = document.createElement("div");
           content.className = "admin-section-collapse-content";
-          content.id = `adminSectionContent${index}`;
+          content.id = "adminSectionContent" + index;
           content.hidden = true;
           [...section.children].filter((child) => child !== title).forEach((child) => content.appendChild(child));
           const toggle = document.createElement("button");
@@ -1817,12 +1817,12 @@
           toggle.className = "admin-collapse-toggle";
           toggle.setAttribute("aria-expanded", "false");
           toggle.setAttribute("aria-controls", content.id);
-          toggle.textContent = `▼ ${label}を表示`;
+          toggle.textContent = "▼ " + label + "を表示";
           toggle.addEventListener("click", () => {
             const expanded = toggle.getAttribute("aria-expanded") !== "true";
             toggle.setAttribute("aria-expanded", String(expanded));
             content.hidden = !expanded;
-            toggle.textContent = `${expanded ? "▲" : "▼"} ${label}を${expanded ? "閉じる" : "表示"}`;
+            toggle.textContent = (expanded ? "▲ " : "▼ ") + label + "を" + (expanded ? "閉じる" : "表示");
           });
           section.append(toggle, content);
         });
