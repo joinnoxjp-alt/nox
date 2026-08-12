@@ -1136,7 +1136,7 @@
           </h4>
 
           <div class="edit-form-grid">
-            <div class="edit-form-group full"><label>掲載区分</label><select id="editListingSource-${escapeHtml(job.id)}"><option value="official" ${job.listingSource !== "public_info" ? "selected" : ""}>NOX掲載店舗</option><option value="public_info" ${job.listingSource === "public_info" ? "selected" : ""}>公開情報確認済</option></select></div>
+            <div class="edit-form-group full"><label>掲載元（作成後は変更できません）</label><input type="text" value="${job.listingSource === "public_info" ? "公開情報確認済" : "NOX掲載店舗"}" readonly aria-readonly="true"></div>
 
             <div class="edit-form-group full">
               <label>
@@ -1746,7 +1746,6 @@
       const shift = document.getElementById(`editShift-${jobId}`).value.trim();
       const targetGender = document.getElementById(`editTargetGender-${jobId}`).value;
       const businessScope = document.getElementById(`editBusinessScope-${jobId}`).value;
-      const listingSource = document.getElementById(`editListingSource-${jobId}`).value;
       const sourceUrl = document.getElementById(`editSourceUrl-${jobId}`).value.trim();
       const sourceCheckedAt = document.getElementById(`editSourceCheckedAt-${jobId}`).value;
       const adminSourceMemo = document.getElementById(`editAdminSourceMemo-${jobId}`).value.trim();
@@ -1925,7 +1924,6 @@
             shift,
             targetGender,
             businessScope,
-            listingSource,
             sourceUrl,
             sourceCheckedAt,
             adminSourceMemo,
@@ -1969,9 +1967,12 @@
         statusElement.className =
           "edit-save-status error";
 
+        const safeCallableMessage = typeof error?.message === "string"
+          ? error.message.replace(/^Firebase:\s*/i, "").replace(/\s*\(functions\/[^)]+\)\.?$/, "").trim()
+          : "";
         statusElement.textContent =
-          error.message ||
-          "保存に失敗しました";
+          safeCallableMessage ||
+          "求人情報を更新できませんでした";
 
         button.disabled = false;
         button.textContent =

@@ -64,6 +64,44 @@ test("manage function allowlists expanded fields and builds compatibility fields
   assert.match(source, /Application URL must use HTTP or HTTPS/);
 });
 
+test("job editing never sends or permits immutable source linkage fields", () => {
+  const admin = readFileSync(path.resolve(__dirname, "../../../pages/job-admin.html"), "utf8");
+  const source = readFileSync(path.resolve(__dirname, "../../src/callable/manageAdminJob.ts"), "utf8");
+  assert.doesNotMatch(admin, /const listingSource = document\.getElementById\(`editListingSource-/);
+  assert.doesNotMatch(admin, /businessScope,\s*listingSource,/);
+  assert.match(admin, /掲載元（作成後は変更できません）/);
+  assert.match(source, /IMMUTABLE_SOURCE_FIELDS/);
+  for (const field of ["listingSource", "source", "ownerId", "storeId", "storeDocumentId"]) {
+    assert.match(source, new RegExp(`"${field}"`));
+  }
+  assert.doesNotMatch(source, /changes\.listingSource/);
+});
+
+test("all job edit form payload fields are accepted by manageAdminJob", () => {
+  const admin = readFileSync(path.resolve(__dirname, "../../../pages/job-admin.html"), "utf8");
+  const source = readFileSync(path.resolve(__dirname, "../../src/callable/manageAdminJob.ts"), "utf8");
+  const fields = [
+    "storeName", "shopName", "name", "businessType", "jobType", "category", "position",
+    "area", "location", "salary", "salaryText", "address", "workLocation", "station", "nearestStation",
+    "title", "jobTitle", "description", "jobDescription", "storeDescription", "selfPr",
+    "workHours", "workingHours", "closedDay", "requirements", "qualification", "benefits", "treatment",
+    "back", "dailyPay", "trial", "beginner", "age", "shift", "targetGender", "businessScope",
+    "sourceUrl", "sourceCheckedAt", "adminSourceMemo", "applyType", "applyUrl", "topOrder", "status",
+    "mainImage", "imageUrl", "image", "images",
+  ];
+  for (const field of fields) {
+    assert.match(admin, new RegExp(`(?:\\b${field}\\b|${field}:)`), `${field} must be sent by the form`);
+    assert.match(source, new RegExp(`"${field}"`), `${field} must be editable`);
+  }
+});
+
+test("job edit displays safe callable errors and retains image upload fields", () => {
+  const admin = readFileSync(path.resolve(__dirname, "../../../pages/job-admin.html"), "utf8");
+  assert.match(admin, /safeCallableMessage/);
+  assert.match(admin, /uploadBytes\([\s\S]*mainImage\s*=\s*await getDownloadURL/);
+  for (const field of ["mainImage", "imageUrl", "image", "images"]) assert.match(admin, new RegExp(`${field}(?::|,)`));
+});
+
 test("application destination normalizes canonical and legacy URL fields", () => {
   assert.deepEqual(
     Object.fromEntries(Object.entries(fields.normalize({ applyType: "instagram", applyUrl: "https://instagram.com/store" })).filter(([key]) => ["applyType", "applyUrl"].includes(key))),
@@ -163,10 +201,10 @@ test("admin source metadata is handled only by trusted job functions", () => {
   const manageSource = readFileSync(path.resolve(__dirname, "../../src/callable/manageAdminJob.ts"), "utf8");
   for (const field of ["listingSource", "sourceUrl", "sourceCheckedAt", "adminSourceMemo"]) {
     assert.match(createSource, new RegExp(field));
-    assert.match(manageSource, new RegExp(field));
   }
+  for (const field of ["sourceUrl", "sourceCheckedAt", "adminSourceMemo"]) assert.match(manageSource, new RegExp(field));
   assert.match(directCreate, /id="directJobListingSource"/);
-  assert.match(admin, /id="editListingSource-/);
+  assert.doesNotMatch(admin, /id="editListingSource-/);
   assert.match(admin, /情報確認日を今日に更新/);
 });
 

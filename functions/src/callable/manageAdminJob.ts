@@ -19,7 +19,10 @@ const EDITABLE_FIELDS = new Set([
   "welcomeBeginners", "age", "hiringAge", "shift", "shiftDetails",
   "targetGender", "businessScope", "pr", "applyType", "instagramUrl",
   "xUrl", "twitterUrl", "tiktokUrl", "closedDay",
-  "listingSource", "sourceUrl", "sourceCheckedAt", "adminSourceMemo",
+  "sourceUrl", "sourceCheckedAt", "adminSourceMemo",
+]);
+const IMMUTABLE_SOURCE_FIELDS = new Set([
+  "listingSource", "source", "ownerId", "storeId", "storeDocumentId",
 ]);
 const JOB_STATUSES = new Set([
   "draft", "pending", "approved", "paused", "reapproval_pending",
@@ -45,7 +48,6 @@ const BOOLEAN_FIELDS = new Set(["dailyPay", "trial", "trialEntry", "beginner", "
 const TARGET_GENDERS = new Set(["female", "male", "all"]);
 const BUSINESS_SCOPES = new Set(["night", "general", "both"]);
 const APPLY_TYPES = new Set(["instagram", "line", "x", "tiktok", "other"]);
-const LISTING_SOURCES = new Set(["official", "public_info"]);
 
 function isSafeExternalUrl(value: string): boolean {
   if (!value) return true;
@@ -111,6 +113,9 @@ export const manageAdminJob = onCall(adminCallableOptions, async (request) => {
     if (action === "update") {
       const requested = record(input.changes);
       for (const [key, value] of Object.entries(requested)) {
+        if (IMMUTABLE_SOURCE_FIELDS.has(key)) {
+          throw new HttpsError("invalid-argument", `変更できない掲載元項目が含まれています: ${key}`);
+        }
         if (!EDITABLE_FIELDS.has(key)) {
           throw new HttpsError("invalid-argument", `変更できない項目が含まれています: ${key}`);
         }
@@ -138,9 +143,6 @@ export const manageAdminJob = onCall(adminCallableOptions, async (request) => {
         if (key === "applyType" && (typeof value !== "string" || !APPLY_TYPES.has(value))) {
           throw new HttpsError("invalid-argument", "applyType is invalid.");
         }
-        if (key === "listingSource" && (typeof value !== "string" || !LISTING_SOURCES.has(value))) {
-          throw new HttpsError("invalid-argument", "listingSource is invalid.");
-        }
         if (key === "sourceCheckedAt" && value !== "" && (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value))) {
           throw new HttpsError("invalid-argument", "sourceCheckedAt is invalid.");
         }
@@ -158,7 +160,7 @@ export const manageAdminJob = onCall(adminCallableOptions, async (request) => {
         throw new HttpsError("invalid-argument", "求人タイトルを入力してください。");
       }
       changes = { ...changes, ...canonicalJobCompatibilityChanges({ ...before, ...changes }) };
-      changes.isPublic = changes.status === "approved" && (changes.listingSource === "public_info" || before.listingSource === "public_info" || before.contractListingStatus === "active");
+      changes.isPublic = changes.status === "approved" && (before.listingSource === "public_info" || before.contractListingStatus === "active");
     } else if (action === "pause") {
       changes = { status: "paused", isPublic: false, pausedAt: FieldValue.serverTimestamp(), pausedBy: admin.uid };
     } else if (action === "resume") {
