@@ -135,6 +135,9 @@
         transform: none;
       }
 
+      .admin-collapse-toggle { width:100%; min-height:48px; margin:10px 0 14px; border:1px solid rgba(212,175,55,.65); border-radius:12px; background:rgba(212,175,55,.08); color:#f5d36b; font:inherit; font-weight:800; cursor:pointer; }
+      .admin-collapse-toggle:hover, .admin-collapse-toggle:focus-visible { background:rgba(212,175,55,.16); outline:2px solid rgba(245,211,107,.35); }
+
       .store-media-manager {
         margin-top: 18px;
         border-top: 1px solid rgba(212, 175, 55, 0.25);
@@ -1223,26 +1226,28 @@
           </section>
           <!-- 求人掲載申請 -->
           <section class="admin-section">
-            <h2 class="admin-section-title">📝 求人掲載申請一覧</h2>
+            <h2 class="admin-section-title">📝 求人掲載申請一覧（<span id="jobApplicationHeadingCount">0</span>件）</h2>
 
             <p class="admin-section-description">
               登録済み店舗から届いた求人掲載申請を確認できます。
             </p>
 
-            <div id="jobApplicationList">
+            <button type="button" id="jobApplicationToggle" class="admin-collapse-toggle" aria-expanded="false" aria-controls="jobApplicationList">▼ 求人掲載申請を表示（0件）</button>
+            <div id="jobApplicationList" hidden>
               <p class="admin-message">求人掲載申請を読み込み中...</p>
             </div>
           </section>
 
           <!-- 公開求人 -->
           <section class="admin-section">
-            <h2 class="admin-section-title">📢 公開中求人一覧</h2>
+            <h2 class="admin-section-title">📢 公開中求人一覧（<span id="publicJobHeadingCount">0</span>件）</h2>
 
             <p class="admin-section-description">
-              公開中の求人をownerId基準で確認します。
+              公開中の求人を確認・編集できます。
             </p>
 
-            <div id="publicJobList">
+            <button type="button" id="publicJobToggle" class="admin-collapse-toggle" aria-expanded="false" aria-controls="publicJobList">▼ 公開中求人を表示（0件）</button>
+            <div id="publicJobList" hidden>
               <p class="admin-message">公開中求人を読み込み中...</p>
             </div>
           </section>
@@ -1751,6 +1756,8 @@
       const userList = document.getElementById("userList");
 
       const jobApplicationList = document.getElementById("jobApplicationList");
+      const jobApplicationToggle = document.getElementById("jobApplicationToggle");
+      const jobApplicationHeadingCount = document.getElementById("jobApplicationHeadingCount");
 
       const storeApplicationList = document.getElementById(
         "storeApplicationList",
@@ -1767,6 +1774,27 @@
       const storeContractList = document.getElementById("storeContractList");
 
       const publicJobList = document.getElementById("publicJobList");
+      const publicJobToggle = document.getElementById("publicJobToggle");
+      const publicJobHeadingCount = document.getElementById("publicJobHeadingCount");
+
+      function configureCollapsible(toggle, content, label) {
+        const update = (count = Number(toggle.dataset.count || 0)) => {
+          toggle.dataset.count = String(count);
+          const expanded = toggle.getAttribute("aria-expanded") === "true";
+          content.hidden = !expanded;
+          toggle.textContent = `${expanded ? "▲" : "▼"} ${label}を${expanded ? "閉じる" : "表示"}（${count}件）`;
+        };
+        toggle.addEventListener("click", () => {
+          toggle.setAttribute("aria-expanded", String(toggle.getAttribute("aria-expanded") !== "true"));
+          update();
+        });
+        update(0);
+        return update;
+      }
+      const updateJobApplicationToggle = configureCollapsible(jobApplicationToggle, jobApplicationList, "求人掲載申請");
+      const updatePublicJobToggle = configureCollapsible(publicJobToggle, publicJobList, "公開中求人");
+      const updateJobApplicationCollapse = (count) => { jobApplicationHeadingCount.textContent = String(count); updateJobApplicationToggle(count); };
+      const updatePublicJobCollapse = (count) => { publicJobHeadingCount.textContent = String(count); updatePublicJobToggle(count); };
 
       const storeInviteResult = document.getElementById("storeInviteResult");
 
@@ -2520,6 +2548,7 @@
                 job.isPublic === true &&
                 job.contractListingStatus === "active",
             );
+          updatePublicJobCollapse(jobs.length);
 
           publicJobList.replaceChildren();
           if (jobs.length === 0) {
@@ -4149,6 +4178,7 @@ ${data.sns || "-"}
           const pendingApplications = applications.filter(
             (item) => !item.approvalComplete,
           );
+          updateJobApplicationCollapse(pendingApplications.length);
 
           pendingApplications.forEach((item) => {
             const { id, application: data, job } = item;
