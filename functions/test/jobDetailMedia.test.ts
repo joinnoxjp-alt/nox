@@ -61,6 +61,18 @@ test("preserves the existing no-image display when store media is empty", () => 
   });
 });
 
+test("uses the admin-managed main image before stale compatible image arrays", () => {
+  const result = media.compose(
+    {
+      mainImage: "https://example.test/new-main.jpg",
+      imageUrls: ["https://example.test/old-image.jpg"],
+      images: ["https://example.test/old-compatible.jpg"],
+    },
+    { coverImageUrl: "https://example.test/store.jpg", galleryImages: [] },
+  );
+  assert.equal(result.heroUrl, "https://example.test/new-main.jpg");
+});
+
 test("uses the shared placeholder for a storeless public-info job", () => {
   assert.deepEqual(
     media.compose(
@@ -70,6 +82,14 @@ test("uses the shared placeholder for a storeless public-info job", () => {
     ),
     { heroUrl: "placeholder.png", galleryUrls: [] },
   );
+});
+
+test("public-info detail never uses store media as its hero fallback", () => {
+  assert.equal(media.compose(
+    { listingSource: "public_info" },
+    { coverImageUrl: "https://example.test/unexpected-store.jpg", galleryImages: [] },
+    "placeholder.png",
+  ).heroUrl, "placeholder.png");
 });
 
 test("public detail removes the independent store logo and legacy profile image", () => {

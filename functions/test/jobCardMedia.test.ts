@@ -11,14 +11,14 @@ const media = require(
   path.resolve(__dirname, "../../../pages/job-card-media.js"),
 ) as JobCardMediaModule;
 
-test("prefers the first job image URL over legacy and store cover images", () => {
+test("prefers the canonical job main image over compatible and store images", () => {
   assert.equal(
     media.select({
       imageUrls: ["", "https://example.test/job.jpg"],
       mainImage: "https://example.test/legacy.jpg",
       storeCoverImageUrl: "https://example.test/cover.jpg",
     }, "placeholder.png"),
-    "https://example.test/job.jpg",
+    "https://example.test/legacy.jpg",
   );
 });
 
@@ -46,6 +46,13 @@ test("uses the store cover only when the job has no own image", () => {
 
 test("uses the placeholder when neither job nor store images exist", () => {
   assert.equal(media.select({ imageUrls: [] }, "placeholder.png"), "placeholder.png");
+});
+
+test("public-info jobs never depend on a cached store cover", () => {
+  assert.equal(media.select({
+    listingSource: "public_info",
+    storeCoverImageUrl: "https://example.test/cover.jpg",
+  }, "placeholder.png"), "placeholder.png");
 });
 
 test("TOP and all public lists use the shared card image selector", () => {

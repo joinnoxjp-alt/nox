@@ -8,14 +8,17 @@
   }
 
   function select(job, placeholderUrl) {
+    const storeFallback = job.listingSource === "public_info"
+      ? ""
+      : (typeof job.storeCoverImageUrl === "string"
+          ? job.storeCoverImageUrl.trim()
+          : "");
     return (
-      firstUrl(job.imageUrls) ||
       [job.mainImage, job.imageUrl, job.image]
         .find((value) => typeof value === "string" && value.trim())?.trim() ||
+      firstUrl(job.imageUrls) ||
       firstUrl(job.images) ||
-      (typeof job.storeCoverImageUrl === "string"
-        ? job.storeCoverImageUrl.trim()
-        : "") ||
+      storeFallback ||
       placeholderUrl
     );
   }

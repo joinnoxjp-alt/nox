@@ -4,9 +4,13 @@
   }
 
   function jobImages(data) {
-    if (Array.isArray(data.imageUrls)) return uniqueUrls(data.imageUrls);
-    if (Array.isArray(data.images)) return uniqueUrls(data.images);
-    return uniqueUrls([data.imageUrl]);
+    return uniqueUrls([
+      data.mainImage,
+      data.imageUrl,
+      data.image,
+      ...(Array.isArray(data.imageUrls) ? data.imageUrls : []),
+      ...(Array.isArray(data.images) ? data.images : []),
+    ]);
   }
 
   function compose(data, storeMedia, placeholderUrl = "") {
@@ -15,7 +19,9 @@
       ? storeMedia.galleryImages
       : [];
     return {
-      heroUrl: ownImages[0] || storeMedia.coverImageUrl || placeholderUrl,
+      heroUrl: ownImages[0] ||
+        (data.listingSource === "public_info" ? "" : storeMedia.coverImageUrl) ||
+        placeholderUrl,
       galleryUrls: uniqueUrls(galleryImages),
     };
   }
