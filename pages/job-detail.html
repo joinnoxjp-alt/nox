@@ -282,6 +282,8 @@
         line-height: 1.8;
         text-align: left;
       }
+      .listing-source-badge{display:inline-flex;padding:5px 10px;border:1px solid rgba(212,175,55,.45);border-radius:999px;color:#e8cf76;background:rgba(212,175,55,.08);font-size:12px;font-weight:700}
+      .public-info-notice{margin:16px 0;padding:16px;border:1px solid rgba(212,175,55,.32);border-radius:14px;background:#0b0b0b;color:#ddd;line-height:1.8}
 
       .apply-modal {
         width: min(92vw, 620px);
@@ -556,6 +558,7 @@
         }
 
         function renderJob(data, media) {
+          const isPublicInfo = data.listingSource === "public_info";
           const job = window.NoxJobFields.normalize(data);
           const featureLabel = window.NoxJobFields.featureLabel;
           const gallery = media.galleryUrls
@@ -727,8 +730,10 @@
 
             <section class="apply-box">
               <h2>応募</h2>
-              <p class="apply-note">応募内容をコピーした後、店舗指定の${window.NoxJobFields.applyTypeLabel(job.applyType)}へ移動します。NOXに氏名・電話番号は保存されません。</p>
-              <button id="applyBtn" type="button" class="line-btn">応募する</button>
+              <p><span class="listing-source-badge">${window.NoxJobFields.listingSourceLabel(job.listingSource)}</span></p>
+              ${isPublicInfo ? `<aside class="public-info-notice"><strong>公開情報確認済</strong><br>本ページは公開されている情報をもとにNOX運営が作成しています。店舗によるNOXへの掲載内容の確認・承認・提携を示すものではありません。募集状況や最新の条件については、お問い合わせ時にご確認ください。</aside>` : `<aside class="public-info-notice"><strong>NOX掲載店舗</strong><br>店舗様から直接提供・確認いただいた情報を掲載しています。</aside>`}
+              <p class="apply-note">${isPublicInfo ? "この求人についてNOXへ相談できます。NOXが店舗から正式に指定された連絡先への応募ではありません。" : `応募内容をコピーした後、店舗指定の${window.NoxJobFields.applyTypeLabel(job.applyType)}へ移動します。NOXに氏名・電話番号は保存されません。`}</p>
+              <button id="applyBtn" type="button" class="line-btn">${isPublicInfo ? "この求人について相談する" : "応募する"}</button>
             </section>
 
             <dialog id="applyDialog" class="apply-modal">

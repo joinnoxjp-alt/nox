@@ -19,6 +19,7 @@ const EDITABLE_FIELDS = new Set([
   "welcomeBeginners", "age", "hiringAge", "shift", "shiftDetails",
   "targetGender", "businessScope", "pr", "applyType", "instagramUrl",
   "xUrl", "twitterUrl", "tiktokUrl", "closedDay",
+  "listingSource", "sourceUrl", "sourceCheckedAt", "adminSourceMemo",
 ]);
 const JOB_STATUSES = new Set([
   "draft", "pending", "approved", "paused", "reapproval_pending",
@@ -38,11 +39,13 @@ const STRING_LIMITS: Record<string, number> = {
   workLocation: 500, station: 200, nearestStation: 200, back: 1000,
   backs: 1000, age: 200, hiringAge: 200, shift: 1000,
   shiftDetails: 1000, pr: 5000, closedDay: 200,
+  sourceUrl: 2000, sourceCheckedAt: 10, adminSourceMemo: 2000,
 };
 const BOOLEAN_FIELDS = new Set(["dailyPay", "trial", "trialEntry", "beginner", "welcomeBeginners"]);
 const TARGET_GENDERS = new Set(["female", "male", "all"]);
 const BUSINESS_SCOPES = new Set(["night", "general", "both"]);
 const APPLY_TYPES = new Set(["instagram", "line", "x", "tiktok", "other"]);
+const LISTING_SOURCES = new Set(["official", "public_info"]);
 
 function isSafeExternalUrl(value: string): boolean {
   if (!value) return true;
@@ -76,6 +79,7 @@ function safeSummary(data: FirebaseFirestore.DocumentData | undefined) {
     status: data.status ?? null,
     isPublic: data.isPublic ?? null,
     topFeatured: data.topFeatured ?? null,
+    listingSource: data.listingSource ?? "official",
   };
 }
 
@@ -134,7 +138,13 @@ export const manageAdminJob = onCall(adminCallableOptions, async (request) => {
         if (key === "applyType" && (typeof value !== "string" || !APPLY_TYPES.has(value))) {
           throw new HttpsError("invalid-argument", "applyType is invalid.");
         }
-        if (["applyUrl", "lineUrl", "contactUrl", "instagramUrl", "xUrl", "twitterUrl", "tiktokUrl"].includes(key) &&
+        if (key === "listingSource" && (typeof value !== "string" || !LISTING_SOURCES.has(value))) {
+          throw new HttpsError("invalid-argument", "listingSource is invalid.");
+        }
+        if (key === "sourceCheckedAt" && value !== "" && (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value))) {
+          throw new HttpsError("invalid-argument", "sourceCheckedAt is invalid.");
+        }
+        if (["applyUrl", "lineUrl", "contactUrl", "instagramUrl", "xUrl", "twitterUrl", "tiktokUrl", "sourceUrl"].includes(key) &&
             typeof value === "string" && !isSafeExternalUrl(value.trim())) {
           throw new HttpsError("invalid-argument", "Application URL must use HTTP or HTTPS.");
         }
@@ -148,11 +158,11 @@ export const manageAdminJob = onCall(adminCallableOptions, async (request) => {
         throw new HttpsError("invalid-argument", "求人タイトルを入力してください。");
       }
       changes = { ...changes, ...canonicalJobCompatibilityChanges({ ...before, ...changes }) };
-      changes.isPublic = changes.status === "approved" && before.contractListingStatus === "active";
+      changes.isPublic = changes.status === "approved" && (changes.listingSource === "public_info" || before.listingSource === "public_info" || before.contractListingStatus === "active");
     } else if (action === "pause") {
       changes = { status: "paused", isPublic: false, pausedAt: FieldValue.serverTimestamp(), pausedBy: admin.uid };
     } else if (action === "resume") {
-      if (before.contractListingStatus !== "active") {
+      if (before.listingSource !== "public_info" && before.contractListingStatus !== "active") {
         throw new HttpsError("failed-precondition", "店舗契約が掲載中ではないため再開できません。");
       }
       changes = { status: "approved", isPublic: true, pausedAt: null, pausedBy: null };

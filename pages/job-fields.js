@@ -55,6 +55,7 @@
       applyUrl: first(data, ["applyUrl", "lineUrl", "instagramUrl", "Instagram", "xUrl", "twitterUrl", "tiktokUrl", "contactUrl"]),
       targetGender: first(data, ["targetGender"], "female"),
       businessScope: first(data, ["businessScope"], "night"),
+      listingSource: data.listingSource === "public_info" ? "public_info" : "official",
     };
   }
 
@@ -70,7 +71,11 @@
     return ({ instagram: "Instagram", line: "LINE", x: "X", tiktok: "TikTok", other: "その他" })[value] || "その他";
   }
 
-  const api = Object.freeze({ first, featureLabel, normalize, targetGenderLabel, businessScopeLabel, applyTypeLabel });
+  function listingSourceLabel(value) {
+    return value === "public_info" ? "公開情報確認済" : "NOX掲載店舗";
+  }
+
+  const api = Object.freeze({ first, featureLabel, normalize, targetGenderLabel, businessScopeLabel, applyTypeLabel, listingSourceLabel });
   globalObject.NoxJobFields = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;
 })(typeof window !== "undefined" ? window : globalThis);

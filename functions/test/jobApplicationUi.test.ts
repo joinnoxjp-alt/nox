@@ -54,3 +54,9 @@ test("admin direct creation validates and saves canonical application fields", (
   assert.match(createFunction, /applyType: input\.applyType/);
   assert.match(createFunction, /applyUrl: input\.applyUrl/);
 });
+
+test("public information jobs have distinct, non-endorsement UI", () => {
+  assert.match(detail, /公開情報確認済/);
+  assert.match(detail, /店舗によるNOXへの掲載内容の確認・承認・提携を示すものではありません/);
+  assert.match(detail, /この求人について相談する/);
+});

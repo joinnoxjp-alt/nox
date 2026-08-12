@@ -860,6 +860,7 @@ function renderTopJobs() {
               <h3>
                 ${escapeHtml(storeName)}
               </h3>
+              <span class="top-listing-source-badge">${job.listingSource === "public_info" ? "公開情報確認済" : "NOX掲載店舗"}</span>
 
               <p>
                 📍 ${escapeHtml(area)}

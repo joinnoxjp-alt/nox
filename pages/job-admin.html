@@ -1136,6 +1136,7 @@
           </h4>
 
           <div class="edit-form-grid">
+            <div class="edit-form-group full"><label>掲載区分</label><select id="editListingSource-${escapeHtml(job.id)}"><option value="official" ${job.listingSource !== "public_info" ? "selected" : ""}>NOX掲載店舗</option><option value="public_info" ${job.listingSource === "public_info" ? "selected" : ""}>公開情報確認済</option></select></div>
 
             <div class="edit-form-group full">
               <label>
@@ -1342,6 +1343,10 @@
                 <option value="general" ${job.businessScope === "general" ? "selected" : ""}>一般求人</option>
                 <option value="both" ${job.businessScope === "both" ? "selected" : ""}>両方</option>
               </select></div>
+
+            <div class="edit-form-group full"><label>情報元URL（管理用・非公開）</label><input type="url" id="editSourceUrl-${escapeHtml(job.id)}" value="${escapeHtml(job.sourceUrl || "")}"></div>
+            <div class="edit-form-group"><label>情報確認日</label><input type="date" id="editSourceCheckedAt-${escapeHtml(job.id)}" value="${escapeHtml(job.sourceCheckedAt || "")}"><button type="button" class="btn ghost" onclick="document.getElementById('editSourceCheckedAt-${escapeHtml(job.id)}').value=new Date().toISOString().slice(0,10)">情報確認日を今日に更新</button></div>
+            <div class="edit-form-group full"><label>管理メモ（非公開）</label><textarea id="editAdminSourceMemo-${escapeHtml(job.id)}" maxlength="2000">${escapeHtml(job.adminSourceMemo || "")}</textarea></div>
 
             <div class="edit-form-group">
               <label>応募先SNS</label>
@@ -1741,6 +1746,10 @@
       const shift = document.getElementById(`editShift-${jobId}`).value.trim();
       const targetGender = document.getElementById(`editTargetGender-${jobId}`).value;
       const businessScope = document.getElementById(`editBusinessScope-${jobId}`).value;
+      const listingSource = document.getElementById(`editListingSource-${jobId}`).value;
+      const sourceUrl = document.getElementById(`editSourceUrl-${jobId}`).value.trim();
+      const sourceCheckedAt = document.getElementById(`editSourceCheckedAt-${jobId}`).value;
+      const adminSourceMemo = document.getElementById(`editAdminSourceMemo-${jobId}`).value.trim();
 
       const applyUrl =
         document.getElementById(
@@ -1786,6 +1795,7 @@
         );
         return;
       }
+      if(sourceUrl && !validateUrl(sourceUrl)){ alert("情報元URLを確認してください。"); return; }
 
       button.disabled = true;
       button.textContent = "保存中...";
@@ -1915,6 +1925,10 @@
             shift,
             targetGender,
             businessScope,
+            listingSource,
+            sourceUrl,
+            sourceCheckedAt,
+            adminSourceMemo,
 
             applyType,
             applyUrl,

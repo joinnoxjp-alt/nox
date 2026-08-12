@@ -1092,6 +1092,10 @@
             <div class="admin-item-card">
               <div class="ad-form">
                 <div class="ad-form-group full">
+                  <label for="directJobListingSource">掲載区分</label>
+                  <select id="directJobListingSource"><option value="official">NOX掲載店舗</option><option value="public_info">公開情報確認済</option></select>
+                </div>
+                <div class="ad-form-group full">
                   <label for="directJobStoreName">店舗名</label>
                   <input
                     type="text"
@@ -1178,6 +1182,10 @@
                   <label for="directJobApplyUrl">応募先URL</label>
                   <input type="url" id="directJobApplyUrl" placeholder="https://www.instagram.com/xxxxx/" />
                 </div>
+
+                <div class="ad-form-group full"><label for="directJobSourceUrl">情報元URL（管理用）</label><input type="url" id="directJobSourceUrl" placeholder="https://example.com/recruit" /></div>
+                <div class="ad-form-group"><label for="directJobSourceCheckedAt">情報確認日</label><input type="date" id="directJobSourceCheckedAt" /></div>
+                <div class="ad-form-group full"><label for="directJobSourceMemo">管理メモ（非公開）</label><textarea id="directJobSourceMemo" maxlength="2000"></textarea></div>
 
                 <div class="ad-card-actions">
                   <button
@@ -1799,6 +1807,7 @@
       document.getElementById("dashboardPeriods").addEventListener("click",event=>{const button=event.target.closest("[data-period]");if(!button)return;document.querySelectorAll("[data-period]").forEach(item=>item.setAttribute("aria-pressed",String(item===button)));loadDashboard(button.dataset.period)});
 
       createDirectJobButton.addEventListener("click", async () => {
+        const listingSource = document.getElementById("directJobListingSource").value;
         const storeName = document
           .getElementById("directJobStoreName")
           .value.trim();
@@ -1825,7 +1834,10 @@
         const applyType = document.getElementById("directJobApplyType").value;
         const applyUrl = document.getElementById("directJobApplyUrl").value.trim();
 
-        if (!storeName || !ownerId || !title) {
+        const sourceUrl = document.getElementById("directJobSourceUrl").value.trim();
+        const sourceCheckedAt = document.getElementById("directJobSourceCheckedAt").value;
+        const adminSourceMemo = document.getElementById("directJobSourceMemo").value.trim();
+        if (!storeName || !title || (listingSource === "official" && !ownerId)) {
           directJobStatus.textContent =
             "店舗名・ownerId・求人タイトルを入力してください。";
           return;
@@ -1834,6 +1846,7 @@
           directJobStatus.textContent = "応募先URLはhttp://またはhttps://で入力してください。";
           return;
         }
+        if (sourceUrl && !isValidHttpUrl(sourceUrl)) { directJobStatus.textContent = "情報元URLを確認してください。"; return; }
 
         createDirectJobButton.disabled = true;
         directJobStatus.textContent = "求人を登録しています...";
@@ -1855,6 +1868,7 @@
             description,
             applyType,
             applyUrl,
+            listingSource, sourceUrl, sourceCheckedAt, adminSourceMemo,
           });
 
           directJobStatus.textContent = "求人を登録・公開しました。";

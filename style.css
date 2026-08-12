@@ -1390,6 +1390,7 @@ footer a:hover{
   height:180px;
   object-fit:cover;
 }
+.top-listing-source-badge{display:inline-flex;width:max-content;margin:0 0 10px;padding:4px 9px;border:1px solid rgba(212,175,55,.45);border-radius:999px;color:#e8cf76;background:rgba(212,175,55,.08);font-size:12px;font-weight:700}
 
 .top-featured-label{
   position:absolute;

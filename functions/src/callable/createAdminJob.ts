@@ -13,6 +13,7 @@ import { cachedStoreCoverUrl } from "../domain/storeCoverCache";
 import { canonicalJobCompatibilityChanges } from "../domain/jobFields";
 
 type CreateAdminJobInput = {
+  listingSource: "official" | "public_info";
   storeName: string;
   ownerId: string;
   title: string;
@@ -23,8 +24,12 @@ type CreateAdminJobInput = {
   closedDay: string;
   applyType: "instagram" | "line" | "x" | "tiktok" | "other";
   applyUrl: string;
+  sourceUrl: string;
+  sourceCheckedAt: string;
+  adminSourceMemo: string;
 };
 const APPLY_TYPES = new Set(["instagram", "line", "x", "tiktok", "other"]);
+const LISTING_SOURCES = new Set(["official", "public_info"]);
 
 function publicError(
   code: "invalid-argument" | "not-found" | "failed-precondition" | "internal",
@@ -87,10 +92,19 @@ function parseInput(value: unknown): CreateAdminJobInput {
   if (typeof applyType !== "string" || !APPLY_TYPES.has(applyType)) {
     throw publicError("invalid-argument", "Application type is invalid.");
   }
+  const listingSource = input.listingSource ?? "official";
+  if (typeof listingSource !== "string" || !LISTING_SOURCES.has(listingSource)) {
+    throw publicError("invalid-argument", "Listing source is invalid.");
+  }
+  const sourceCheckedAt = optionalString(input.sourceCheckedAt, 10);
+  if (sourceCheckedAt && !/^\d{4}-\d{2}-\d{2}$/.test(sourceCheckedAt)) {
+    throw publicError("invalid-argument", "Source check date is invalid.");
+  }
 
   return {
+    listingSource: listingSource as CreateAdminJobInput["listingSource"],
     storeName: requiredString(input.storeName, 120),
-    ownerId: requiredString(input.ownerId, 128),
+    ownerId: listingSource === "official" ? requiredString(input.ownerId, 128) : optionalString(input.ownerId, 128),
     title: requiredString(input.title, 160),
     businessType: requiredString(input.businessType, 120),
     area: optionalString(input.area, 120),
@@ -99,6 +113,9 @@ function parseInput(value: unknown): CreateAdminJobInput {
     closedDay: optionalString(input.closedDay, 200),
     applyType: applyType as CreateAdminJobInput["applyType"],
     applyUrl: safeOptionalUrl(input.applyUrl),
+    sourceUrl: safeOptionalUrl(input.sourceUrl),
+    sourceCheckedAt,
+    adminSourceMemo: optionalString(input.adminSourceMemo, 2000),
   };
 }
 
@@ -128,53 +145,52 @@ export const createAdminJob = onCall(adminCallableOptions, async (request) => {
   const input = parseInput(request.data);
 
   try {
-    const storeQuerySnapshot = await firestore
+    const storeQuerySnapshot = input.listingSource === "official" ? await firestore
       .collection("stores")
       .where("ownerId", "==", input.ownerId)
       .limit(2)
-      .get();
+      .get() : null;
 
-    if (storeQuerySnapshot.empty) {
+    if (storeQuerySnapshot?.empty) {
       throw publicError("not-found", "Store was not found.");
     }
 
-    if (storeQuerySnapshot.size > 1) {
+    if (storeQuerySnapshot && storeQuerySnapshot.size > 1) {
       throw publicError(
         "failed-precondition",
         "Multiple stores use this owner ID.",
       );
     }
 
-    const storeSnapshot = storeQuerySnapshot.docs[0];
+    const storeSnapshot = storeQuerySnapshot?.docs[0];
 
-    const store = storeSnapshot.data();
+    const store = storeSnapshot?.data() ?? {};
 
-    if (store.storeName !== input.storeName) {
+    if (input.listingSource === "official" && store.storeName !== input.storeName) {
       throw publicError(
         "failed-precondition",
         "Store information does not match.",
       );
     }
 
-    const contractByStoreId = await firestore
-      .doc(`storeContracts/${storeSnapshot.id}`)
-      .get();
+    const contractByStoreId = storeSnapshot ? await firestore
+      .doc(`storeContracts/${storeSnapshot.id}`).get() : null;
 
-    const contractByOwnerId = contractByStoreId.exists
+    const contractByOwnerId = !contractByStoreId || contractByStoreId.exists
       ? null
       : await firestore.doc(`storeContracts/${input.ownerId}`).get();
 
-    const contractSnapshot = contractByStoreId.exists
+    const contractSnapshot = contractByStoreId?.exists
       ? contractByStoreId
       : contractByOwnerId;
 
-    if (!contractSnapshot || !contractSnapshot.exists) {
+    if (input.listingSource === "official" && (!contractSnapshot || !contractSnapshot.exists)) {
       throw publicError("failed-precondition", "Store contract was not found.");
     }
 
     const now = Timestamp.now();
 
-    if (!contractIsActive(contractSnapshot.data() ?? {}, input.ownerId, now)) {
+    if (input.listingSource === "official" && !contractIsActive(contractSnapshot?.data() ?? {}, input.ownerId, now)) {
       throw publicError("failed-precondition", "Store contract is not active.");
     }
 
@@ -199,9 +215,13 @@ export const createAdminJob = onCall(adminCallableOptions, async (request) => {
 
     batch.create(jobReference, {
       schemaVersion: 1,
+      listingSource: input.listingSource,
+      sourceUrl: input.sourceUrl,
+      sourceCheckedAt: input.sourceCheckedAt || null,
+      adminSourceMemo: input.adminSourceMemo,
 
       ownerId: input.ownerId,
-      storeId: storeSnapshot.id,
+      storeId: storeSnapshot?.id ?? "",
       storeName: input.storeName,
       ...compatibleJobFields,
 
@@ -250,8 +270,8 @@ export const createAdminJob = onCall(adminCallableOptions, async (request) => {
       archivedBy: null,
       sourceApplicationId: null,
 
-      source: "admin_direct",
-      storeDocumentId: storeSnapshot.id,
+      source: input.listingSource === "public_info" ? "admin_public_info" : "admin_direct",
+      storeDocumentId: storeSnapshot?.id ?? "",
     });
 
     batch.create(auditReference, {
@@ -262,6 +282,7 @@ export const createAdminJob = onCall(adminCallableOptions, async (request) => {
         jobId: jobReference.id,
         ownerId: input.ownerId,
         storeName: input.storeName,
+        listingSource: input.listingSource,
         status: "approved",
         isPublic: true,
         contractListingStatus: "active",

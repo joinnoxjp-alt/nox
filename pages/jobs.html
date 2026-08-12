@@ -318,6 +318,7 @@
       position: relative;
       z-index: 1;
     }
+    .listing-source-badge{display:inline-flex;width:max-content;margin:8px 0 2px;padding:4px 9px;border:1px solid rgba(212,175,55,.45);border-radius:999px;color:#e8cf76;background:rgba(212,175,55,.08);font-size:12px;font-weight:700}
 
     .job-card-image {
       width: calc(100% + 48px);
@@ -943,6 +944,7 @@ if (job.contractListingStatus !== "active") {
             <h2>
               ${escapeHtml(storeName)}
             </h2>
+            <span class="listing-source-badge">${escapeHtml(window.NoxJobFields.listingSourceLabel(job.listingSource))}</span>
 
             <div class="info">
               📍 ${escapeHtml(area)}<br>

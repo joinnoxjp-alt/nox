@@ -4,7 +4,7 @@ import path from "node:path";
 import test from "node:test";
 import { canonicalJobCompatibilityChanges } from "../src/domain/jobFields";
 
-interface JobFieldsApi { normalize(data: Record<string, unknown>): Record<string, unknown>; featureLabel(value: unknown, enabled?: string): string; applyTypeLabel(value: string): string; }
+interface JobFieldsApi { normalize(data: Record<string, unknown>): Record<string, unknown>; featureLabel(value: unknown, enabled?: string): string; applyTypeLabel(value: string): string; listingSourceLabel(value?: string): string; }
 const fields = require(path.resolve(__dirname, "../../../pages/job-fields.js")) as JobFieldsApi;
 
 test("canonical fields stay aligned without mixing area and business", () => {
@@ -83,4 +83,25 @@ test("direct admin creation validates and sends the canonical closed day", () =>
   assert.match(admin, /createAdminJobCallable\(\{[\s\S]*closedDay,/);
   assert.match(source, /closedDay: optionalString\(input\.closedDay, 200\)/);
   assert.match(source, /closedDay: input\.closedDay/);
+});
+
+test("listing source defaults legacy jobs to official and labels both sources", () => {
+  assert.equal(fields.normalize({}).listingSource, "official");
+  assert.equal(fields.normalize({ listingSource: "public_info" }).listingSource, "public_info");
+  assert.equal(fields.listingSourceLabel(), "NOX掲載店舗");
+  assert.equal(fields.listingSourceLabel("public_info"), "公開情報確認済");
+});
+
+test("admin source metadata is handled only by trusted job functions", () => {
+  const admin = readFileSync(path.resolve(__dirname, "../../../pages/job-admin.html"), "utf8");
+  const directCreate = readFileSync(path.resolve(__dirname, "../../../pages/admin.html"), "utf8");
+  const createSource = readFileSync(path.resolve(__dirname, "../../src/callable/createAdminJob.ts"), "utf8");
+  const manageSource = readFileSync(path.resolve(__dirname, "../../src/callable/manageAdminJob.ts"), "utf8");
+  for (const field of ["listingSource", "sourceUrl", "sourceCheckedAt", "adminSourceMemo"]) {
+    assert.match(createSource, new RegExp(field));
+    assert.match(manageSource, new RegExp(field));
+  }
+  assert.match(directCreate, /id="directJobListingSource"/);
+  assert.match(admin, /id="editListingSource-/);
+  assert.match(admin, /情報確認日を今日に更新/);
 });
