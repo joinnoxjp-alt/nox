@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import test from "node:test";
+import { parseAdminJobInput } from "../src/domain/adminJobInput";
 
 const detail = readFileSync(path.resolve(__dirname, "../../../pages/job-detail.html"), "utf8");
 const admin = readFileSync(path.resolve(__dirname, "../../../pages/job-admin.html"), "utf8");
@@ -50,7 +51,10 @@ test("admin direct creation validates and saves canonical application fields", (
   assert.match(adminDashboard, /id="directJobApplyType"/);
   assert.match(adminDashboard, /id="directJobApplyUrl"/);
   assert.match(adminDashboard, /isValidHttpUrl\(applyUrl\)/);
-  assert.match(createFunction, /safeOptionalUrl/);
+  assert.throws(() => parseAdminJobInput({
+    listingSource: "public_info", storeName: "Store", title: "Title",
+    businessType: "Bar", applyType: "line", applyUrl: "javascript:alert(1)",
+  }), /応募先URL/);
   assert.match(createFunction, /applyType: input\.applyType/);
   assert.match(createFunction, /applyUrl: input\.applyUrl/);
 });

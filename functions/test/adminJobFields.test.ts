@@ -125,6 +125,46 @@ test("direct admin creation validates and sends the canonical closed day", () =>
   assert.match(source, /closedDay: input\.closedDay/);
 });
 
+test("direct admin creation covers complete job details and separated image roles", () => {
+  const admin = readFileSync(path.resolve(__dirname, "../../../pages/admin.html"), "utf8");
+  const createSource = readFileSync(path.resolve(__dirname, "../../src/callable/createAdminJob.ts"), "utf8");
+  for (const id of ["directJobTrial", "directJobBeginner", "directJobAge", "directJobShift", "directJobPosition", "directJobTopOrder", "directJobMainImage", "directJobDetailImages"]) {
+    assert.match(admin, new RegExp(`id="${id}"`));
+  }
+  for (const field of ["trial", "beginner", "age", "shift", "position", "topOrder", "mainImage", "mainImageStoragePath", "imageUrls", "imageStoragePaths"]) {
+    assert.match(createSource, new RegExp(`input\\.${field}`));
+  }
+  assert.match(admin, /job-images\/\$\{uploadGroup\}\/main-/);
+  assert.match(admin, /job-images\/\$\{uploadGroup\}\/detail-/);
+});
+
+test("published job administration provides a non-destructive duplicate flow", () => {
+  const admin = readFileSync(path.resolve(__dirname, "../../../pages/job-admin.html"), "utf8");
+  const directCreate = readFileSync(path.resolve(__dirname, "../../../pages/admin.html"), "utf8");
+  assert.match(admin, /duplicate-job-button/);
+  assert.match(admin, /nox_admin_job_duplicate/);
+  assert.match(admin, /delete duplicateSeed\[field\]/);
+  for (const id of ["directJobStoreName", "directJobOwnerId", "directJobArea", "directJobAddress", "directJobStation", "directJobApplyType", "directJobApplyUrl", "directJobSourceMemo"]) {
+    assert.match(directCreate, new RegExp(`${id}:`), `${id} must be populated into an editable creation field`);
+  }
+  assert.match(directCreate, /await createAdminJobCallable\(/);
+  assert.doesNotMatch(directCreate, /manageAdminJobCallable[\s\S]*duplicateJobSeed/);
+});
+
+test("main and PR images remain separate during creation and main-image editing", () => {
+  const direct = readFileSync(path.resolve(__dirname, "../../../pages/admin.html"), "utf8");
+  const edit = readFileSync(path.resolve(__dirname, "../../../pages/job-admin.html"), "utf8");
+  const create = readFileSync(path.resolve(__dirname, "../../src/callable/createAdminJob.ts"), "utf8");
+  assert.match(create, /mainImage: input\.mainImage,[\s\S]*imageUrl: input\.mainImage,[\s\S]*image: input\.mainImage/);
+  assert.match(create, /imageUrls: input\.imageUrls,[\s\S]*images: input\.imageUrls/);
+  assert.match(create, /mainImageStoragePath: input\.mainImageStoragePath,[\s\S]*imageStoragePaths: input\.imageStoragePaths/);
+  assert.match(direct, /const newJobId = doc\(collection\(db, "jobs"\)\)\.id/);
+  assert.match(direct, /jobId: newJobId/);
+  assert.match(edit, /const updatedImages = Array\.isArray\(oldData\.imageUrls\)/);
+  assert.match(edit, /imageUrls:updatedImages/);
+  assert.doesNotMatch(edit, /const updatedImages =\s*mainImage\s*\? \[mainImage\]/);
+});
+
 test("listing source defaults legacy jobs to official and labels both sources", () => {
   assert.equal(fields.normalize({}).listingSource, "official");
   assert.equal(fields.normalize({ listingSource: "public_info" }).listingSource, "public_info");

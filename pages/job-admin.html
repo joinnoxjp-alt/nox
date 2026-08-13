@@ -473,6 +473,7 @@
       document.getElementById("registeredStoreList");
 
     let currentAdminUser = null;
+    const publishedJobsById = new Map();
 
     document.body.style.visibility =
       "hidden";
@@ -885,6 +886,7 @@
           );
 
         const jobs = [];
+        publishedJobsById.clear();
 
         snapshot.forEach(
           (jobDocument) => {
@@ -901,6 +903,7 @@
                 id:jobDocument.id,
                 ...data
               });
+              publishedJobsById.set(jobDocument.id, { id:jobDocument.id, ...data });
             }
           }
         );
@@ -1062,6 +1065,10 @@
             data-job-id="${escapeHtml(job.id)}"
           >
             ✏️ 店舗情報を編集
+          </button>
+
+          <button type="button" class="admin-action-button edit-button duplicate-job-button" data-job-id="${escapeHtml(job.id)}">
+            求人を複製
           </button>
 
           ${
@@ -1512,6 +1519,23 @@
 
         if(
           target.classList.contains(
+            "duplicate-job-button"
+          )
+        ){
+          const sourceJob = publishedJobsById.get(target.dataset.jobId);
+          if (!sourceJob) {
+            alert("複製元の求人を読み込めませんでした。");
+            return;
+          }
+          const duplicateSeed = { ...sourceJob };
+          for (const field of ["id", "createdAt", "createdBy", "updatedAt", "updatedBy", "approvedAt", "approvedBy", "pausedAt", "pausedBy", "archivedAt", "archivedBy", "sourceApplicationId"]) delete duplicateSeed[field];
+          localStorage.setItem("nox_admin_job_duplicate", JSON.stringify(duplicateSeed));
+          window.location.href = "./admin.html?duplicateJob=1#direct-job-create";
+          return;
+        }
+
+        if(
+          target.classList.contains(
             "edit-job-button"
           )
         ){
@@ -1877,10 +1901,11 @@
             );
         }
 
-      const updatedImages =
-  mainImage
-    ? [mainImage]
-    : [];
+      // Main imagery and detail PR imagery are intentionally independent.
+      // Preserve legacy/detail images when an administrator replaces only the main banner.
+      const updatedImages = Array.isArray(oldData.imageUrls)
+        ? oldData.imageUrls.filter((url) => typeof url === "string" && url && url !== getJobImage(oldData))
+        : [];
 
         await manageAdminJobCallable({
           action:"update",
@@ -1946,6 +1971,7 @@
             imageUrl:mainImage,
             image:mainImage,
             images:updatedImages,
+            imageUrls:updatedImages,
 
           }
         });

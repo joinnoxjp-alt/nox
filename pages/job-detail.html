@@ -564,6 +564,9 @@
           const galleryUrls = Array.isArray(media?.galleryUrls)
             ? media.galleryUrls
             : [];
+          const prImageUrls = Array.isArray(media?.prImageUrls)
+            ? media.prImageUrls
+            : [];
           const heroUrl = typeof media?.heroUrl === "string" ? media.heroUrl : "";
           const gallery = galleryUrls
             .map(
@@ -573,6 +576,13 @@
                 </button>
               `,
             )
+            .join("");
+          const prGallery = prImageUrls
+            .map((img) => `
+              <button type="button" class="gallery-image-button" data-full-image="${escapeHtml(img)}" aria-label="求人PR画像を拡大表示">
+                <img src="${escapeHtml(img)}" loading="lazy" alt="${value(job.storeName)} 求人PR画像">
+              </button>
+            `)
             .join("");
 
           const heroImage = heroUrl
@@ -625,6 +635,12 @@
                 </button>
               </div>
             </section>
+
+            ${
+              prImageUrls.length
+                ? `<section class="section"><h2>求人PR画像</h2><div class="gallery">${prGallery}</div></section>`
+                : ""
+            }
 
             ${
               galleryUrls.length

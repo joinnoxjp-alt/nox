@@ -98,6 +98,8 @@ export const createAdminJob = onCall(adminCallableOptions, async (request) => {
       throw publicError("failed-precondition", "Store contract is not active.");
     }
 
+    const resolvedAddress = input.address || (typeof store.address === "string" ? store.address : "");
+    const resolvedBeginner = input.beginner === "" ? input.listingSource === "official" : input.beginner;
     const compatibleJobFields = canonicalJobCompatibilityChanges({
       storeName: input.storeName,
       title: input.title,
@@ -106,14 +108,17 @@ export const createAdminJob = onCall(adminCallableOptions, async (request) => {
       salary: input.salary,
       description: input.description,
       closedDay: input.closedDay,
-      address: input.address, station: input.station, workHours: input.workHours,
+      address: resolvedAddress, station: input.station, workHours: input.workHours,
       requirements: input.requirements, benefits: input.benefits, back: input.back,
-      position: "キャスト",
+      position: input.position, age: input.age, shift: input.shift,
+      dailyPay: input.dailyPay, trial: input.trial, beginner: resolvedBeginner,
       applyType: input.applyType,
       applyUrl: input.applyUrl,
     });
 
-    const jobReference = firestore.collection("jobs").doc();
+    const jobReference = input.jobId
+      ? firestore.collection("jobs").doc(input.jobId)
+      : firestore.collection("jobs").doc();
     const auditReference = firestore.collection("adminAuditLogs").doc();
     const lockIds = duplicateLockIds(input.storeName, input.area);
     await firestore.runTransaction(async (transaction) => {
@@ -152,26 +157,34 @@ export const createAdminJob = onCall(adminCallableOptions, async (request) => {
       title: input.title,
       category: input.businessType,
       targetGender: input.targetGender,
-      position: "キャスト",
+      position: input.position,
 
       area: input.area,
-      address: input.address || (typeof store.address === "string" ? store.address : ""),
+      address: resolvedAddress,
       station: input.station,
       businessHours: "",
 
       salary: input.salary,
-      trial: "",
+      trial: input.trial,
       dailyPay: input.dailyPay,
-      beginner: input.beginner === "" ? input.listingSource === "official" : input.beginner,
+      beginner: resolvedBeginner,
 
       description: input.description,
       requirements: input.requirements,
       benefits: input.benefits,
       back: input.back,
       workHours: input.workHours,
+      age: input.age,
+      shift: input.shift,
 
-      imageStoragePaths: [],
-      imageUrls: [],
+      mainImage: input.mainImage,
+      imageUrl: input.mainImage,
+      image: input.mainImage,
+      mainImageStoragePath: input.mainImageStoragePath,
+      imageStoragePaths: input.imageStoragePaths,
+      imageUrls: input.imageUrls,
+      images: input.imageUrls,
+      topOrder: input.topOrder,
       storeCoverImageUrl: cachedStoreCoverUrl(store.coverImageUrl),
 
       status: "approved",

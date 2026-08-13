@@ -20,6 +20,7 @@ const EDITABLE_FIELDS = new Set([
   "targetGender", "businessScope", "pr", "applyType", "instagramUrl",
   "xUrl", "twitterUrl", "tiktokUrl", "closedDay",
   "sourceUrl", "sourceCheckedAt", "adminSourceMemo",
+  "mainImageStoragePath", "imageStoragePaths",
 ]);
 const IMMUTABLE_SOURCE_FIELDS = new Set([
   "listingSource", "source", "ownerId", "storeId", "storeDocumentId",
@@ -43,6 +44,7 @@ const STRING_LIMITS: Record<string, number> = {
   backs: 1000, age: 200, hiringAge: 200, shift: 1000,
   shiftDetails: 1000, pr: 5000, closedDay: 200,
   sourceUrl: 2000, sourceCheckedAt: 10, adminSourceMemo: 2000,
+  mainImageStoragePath: 1000,
 };
 const BOOLEAN_FIELDS = new Set(["dailyPay", "trial", "trialEntry", "beginner", "welcomeBeginners"]);
 const TARGET_GENDERS = new Set(["female", "male", "all"]);
@@ -150,7 +152,7 @@ export const manageAdminJob = onCall(adminCallableOptions, async (request) => {
             typeof value === "string" && !isSafeExternalUrl(value.trim())) {
           throw new HttpsError("invalid-argument", "Application URL must use HTTP or HTTPS.");
         }
-        if ((key === "images" || key === "imageUrls") &&
+        if ((key === "images" || key === "imageUrls" || key === "imageStoragePaths") &&
             (!Array.isArray(value) || value.length > 10 || value.some((item) => typeof item !== "string" || item.length > 2000))) {
           throw new HttpsError("invalid-argument", "求人画像が正しくありません。");
         }

@@ -5,7 +5,7 @@
     profile: Object.freeze({ label: "プロフィール画像", maxBytes: 2 * 1024 * 1024 }),
     gallery: Object.freeze({ label: "店舗画像", maxBytes: 5 * 1024 * 1024 }),
   });
-  const ADMIN_VISIBLE_MEDIA_KINDS = Object.freeze(["cover", "gallery"]);
+  const ADMIN_VISIBLE_MEDIA_KINDS = Object.freeze(["profile", "cover", "gallery"]);
   const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 
   function validateFile(file, kind) {

@@ -6,6 +6,7 @@ import test from "node:test";
 interface JobDetailMediaModule {
   compose(data: Record<string, unknown>, storeMedia: Record<string, unknown>, placeholderUrl?: string): {
     heroUrl: string;
+    prImageUrls: string[];
     galleryUrls: string[];
   };
 }
@@ -41,6 +42,7 @@ test("keeps the first job-specific image as the main visual", () => {
     },
   );
   assert.equal(result.heroUrl, "https://example.test/job-1.jpg");
+  assert.deepEqual(result.prImageUrls, ["https://example.test/job-2.jpg"]);
   assert.deepEqual(result.galleryUrls, [
     "https://example.test/gallery.jpg",
   ]);
@@ -57,6 +59,7 @@ test("uses the store cover only when the job has no image", () => {
 test("preserves the existing no-image display when store media is empty", () => {
   assert.deepEqual(media.compose({}, { galleryImages: [] }), {
     heroUrl: "",
+    prImageUrls: [],
     galleryUrls: [],
   });
 });
@@ -80,7 +83,7 @@ test("uses the shared placeholder for a storeless public-info job", () => {
       { galleryImages: [] },
       "placeholder.png",
     ),
-    { heroUrl: "placeholder.png", galleryUrls: [] },
+    { heroUrl: "placeholder.png", prImageUrls: [], galleryUrls: [] },
   );
 });
 

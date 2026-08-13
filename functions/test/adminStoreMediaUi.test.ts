@@ -63,13 +63,20 @@ test("builds deletion requests without client-controlled paths", () => {
   );
 });
 
-test("admin UI exposes only the representative profile and gallery controls", () => {
-  assert.deepEqual(mediaUi.ADMIN_VISIBLE_MEDIA_KINDS, ["cover", "gallery"]);
+test("admin UI exposes profile, representative cover and gallery controls", () => {
+  assert.deepEqual(mediaUi.ADMIN_VISIBLE_MEDIA_KINDS, ["profile", "cover", "gallery"]);
   const adminSource = readFileSync(
     path.resolve(__dirname, "../../../pages/admin.html"), "utf8",
   );
   assert.match(adminSource, /createStoreMediaItem\(store, "cover"/);
   assert.match(adminSource, /createStoreMediaItem\(store, "gallery"/);
   assert.doesNotMatch(adminSource, /createStoreMediaItem\(store, "logo"/);
-  assert.doesNotMatch(adminSource, /createStoreMediaItem\(store, "profile"/);
+  assert.match(adminSource, /createStoreMediaItem\(store, "profile"/);
+  for (const id of ["directStoreProfileImage", "directStoreCoverImage", "directStoreGalleryImages"]) {
+    assert.match(adminSource, new RegExp(`id="${id}"`));
+  }
+  assert.match(adminSource, /kind: "profile"/);
+  assert.match(adminSource, /kind: "cover"/);
+  assert.match(adminSource, /kind: "gallery"/);
+  assert.match(adminSource, /manageAdminStoreMediaCallable/);
 });
