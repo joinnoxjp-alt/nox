@@ -14,6 +14,7 @@ export type AdminJobInput = {
   applyUrl: string; sourceUrl: string; sourceCheckedAt: string; adminSourceMemo: string;
   mainImage: string; mainImageStoragePath: string; imageUrls: string[]; imageStoragePaths: string[];
   topOrder: number;
+  approveDuplicate: boolean;
 };
 const APPLY_TYPES = new Set(["instagram", "line", "x", "tiktok", "other"]);
 const LISTING_SOURCES = new Set(["official", "public_info"]);
@@ -77,6 +78,7 @@ export function parseAdminJobInput(value: unknown): AdminJobInput {
   if (typeof topOrder !== "number" || !Number.isInteger(topOrder) || topOrder < 1 || topOrder > 999999) throw invalid("表示順が正しくありません。");
   const jobId = optional(input.jobId, 20, "求人ID");
   if (jobId && !/^[A-Za-z0-9]{20}$/.test(jobId)) throw invalid("求人IDが正しくありません。");
+  if (input.approveDuplicate !== undefined && typeof input.approveDuplicate !== "boolean") throw invalid("重複承認指定が正しくありません。");
   return {
     jobId,
     listingSource: listingSource as AdminJobListingSource,
@@ -100,5 +102,6 @@ export function parseAdminJobInput(value: unknown): AdminJobInput {
     imageUrls: stringList(input.imageUrls, 10, "求人詳細画像").map((url) => optionalUrl(url, "求人詳細画像")),
     imageStoragePaths: stringList(input.imageStoragePaths, 10, "求人詳細画像保存先"),
     topOrder,
+    approveDuplicate: input.approveDuplicate === true,
   };
 }

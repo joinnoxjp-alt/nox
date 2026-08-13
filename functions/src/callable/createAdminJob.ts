@@ -13,7 +13,7 @@ import { cachedStoreCoverUrl } from "../domain/storeCoverCache";
 import { canonicalJobCompatibilityChanges } from "../domain/jobFields";
 import { adminJobSourceFields } from "../domain/adminJobSource";
 import { parseAdminJobInput } from "../domain/adminJobInput";
-import { duplicateLockIds, findDuplicateJob } from "../domain/jobDuplicate";
+import { duplicateLockIds, duplicateRequiresBlock, findDuplicateJob } from "../domain/jobDuplicate";
 
 function publicError(
   code: "invalid-argument" | "not-found" | "failed-precondition" | "internal",
@@ -126,12 +126,13 @@ export const createAdminJob = onCall(adminCallableOptions, async (request) => {
       const duplicate = findDuplicateJob({
         id: jobReference.id, storeName: input.storeName, area: input.area, address: input.address,
         station: input.station, businessType: input.businessType, salary: input.salary, back: input.back,
+        ownerId: sourceFields.ownerId, storeId: sourceFields.storeId,
       }, existingSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
-      if (duplicate) {
+      if (duplicate && duplicateRequiresBlock(duplicate, input.approveDuplicate)) {
         const prefix = duplicate.level === "past" ? "過去に同店舗の求人があります。" : duplicate.level === "confirmed" ? "同じ店舗の求人がすでに登録されています。" : "同じ店舗と思われる求人が存在します。既存求人の条件が更新されている可能性があります。";
         throw new HttpsError("already-exists", `${prefix} 求人ID: ${duplicate.job.id}`);
       }
-      const lockRefs = lockIds.map((lockId) => firestore.doc(`jobDuplicateLocks/${lockId}`));
+      const lockRefs = input.approveDuplicate ? [] : lockIds.map((lockId) => firestore.doc(`jobDuplicateLocks/${lockId}`));
       const lockSnapshots = await Promise.all(lockRefs.map((lockRef) => transaction.get(lockRef)));
       const lockedJobIds = [...new Set(lockSnapshots.filter((lock) => lock.exists).map((lock) => String(lock.data()?.jobId || "")).filter(Boolean))];
       const lockedJobs = await Promise.all(lockedJobIds.map((jobId) => transaction.get(firestore.doc(`jobs/${jobId}`))));
@@ -215,7 +216,7 @@ export const createAdminJob = onCall(adminCallableOptions, async (request) => {
       });
 
       transaction.create(auditReference, {
-      actionType: "create_admin_job",
+      actionType: input.approveDuplicate ? "create_admin_job_duplicate_override" : "create_admin_job",
       targetType: "job",
       targetHash: jobReference.id,
       after: {
@@ -223,6 +224,8 @@ export const createAdminJob = onCall(adminCallableOptions, async (request) => {
         ownerId: input.ownerId,
         storeName: input.storeName,
         listingSource: input.listingSource,
+        duplicateOverrideApproved: input.approveDuplicate,
+        duplicateOverrideSourceJobId: input.approveDuplicate ? duplicate?.job.id ?? null : null,
         status: "approved",
         isPublic: true,
         contractListingStatus: "active",

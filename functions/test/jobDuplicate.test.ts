@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import path from "node:path";
 import test from "node:test";
-import { duplicateLockIds, findDuplicateJob, normalizeComparable } from "../src/domain/jobDuplicate";
+import { duplicateLockIds, duplicateRequiresBlock, findDuplicateJob, normalizeComparable } from "../src/domain/jobDuplicate";
 import { readFileSync } from "node:fs";
 
 const browserDuplicate = require(path.resolve(__dirname, "../../../pages/job-duplicate.js"));
@@ -26,6 +26,27 @@ test("allows same brand in different areas and distinct numbered branches", () =
 test("raises confidence for address and reports past jobs", () => {
   assert.equal(findDuplicateJob({ ...job("new", "IRIS", "赤坂"), address: "東京都港区1-2" }, [{ ...job("old", "IRIS", "赤坂"), address: "東京都港区1-2" }])?.level, "confirmed");
   assert.equal(findDuplicateJob(job("new", "IRIS", "赤坂"), [job("old", "IRIS", "赤坂", { status: "paused" })])?.level, "past");
+});
+
+test("same store identity remains a duplicate candidate", () => {
+  const candidate = { ...job("new", "五十路マダム 横浜店", "横浜"), ownerId: "owner-1", storeId: "store-1", address: "横浜市中区" };
+  const existing = { ...job("old", "五十路マダム 横浜店", "横浜"), ownerId: "owner-1", storeId: "store-1", address: "横浜市中区" };
+  assert.equal(findDuplicateJob(candidate, [existing])?.job.id, "old");
+  assert.equal(browserDuplicate.find(candidate, [existing])?.job.id, "old");
+});
+
+test("different owner, store and store name can share job content and address", () => {
+  const candidate = { ...job("new", "五十路マダム Express横浜店", "横浜"), ownerId: "owner-express", storeId: "store-express", address: "神奈川県横浜市", title: "スタッフ募集", salary: "日給3万円" };
+  const existing = { ...job("old", "五十路マダム セレブリティ横浜店", "横浜"), ownerId: "owner-celebrity", storeId: "store-celebrity", address: "神奈川県横浜市", title: "スタッフ募集", salary: "日給3万円" };
+  assert.equal(findDuplicateJob(candidate, [existing]), null);
+  assert.equal(browserDuplicate.find(candidate, [existing]), null);
+});
+
+test("an explicit administrator override permits a matched candidate without mutating it", () => {
+  const match = findDuplicateJob(job("new", "IRIS", "赤坂"), [job("old", "IRIS", "赤坂")]);
+  assert.equal(duplicateRequiresBlock(match, false), true);
+  assert.equal(duplicateRequiresBlock(match, true), false);
+  assert.equal(match?.job.id, "old");
 });
 
 test("lock IDs are deterministic for double-submit prevention", () => {

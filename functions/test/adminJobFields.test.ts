@@ -165,6 +165,23 @@ test("main and PR images remain separate during creation and main-image editing"
   assert.doesNotMatch(edit, /const updatedImages =\s*mainImage\s*\? \[mainImage\]/);
 });
 
+test("duplicate warning offers an administrator-only confirmed override", () => {
+  const admin = readFileSync(path.resolve(__dirname, "../../../pages/admin.html"), "utf8");
+  const create = readFileSync(path.resolve(__dirname, "../../src/callable/createAdminJob.ts"), "utf8");
+  const input = readFileSync(path.resolve(__dirname, "../../src/domain/adminJobInput.ts"), "utf8");
+  assert.match(admin, /link\.textContent = "既存求人を編集"/);
+  assert.match(admin, /approveButton\.textContent = "掲載を承認する"/);
+  assert.match(admin, /重複候補がありますが、この内容を別求人として新規登録・公開します/);
+  assert.match(admin, /approveButton\.disabled = true/);
+  assert.match(admin, /approveDuplicate,/);
+  assert.match(input, /approveDuplicate: input\.approveDuplicate === true/);
+  assert.match(create, /assertActiveAdmin\(request\.auth\)/);
+  assert.match(create, /duplicate && duplicateRequiresBlock\(duplicate, input\.approveDuplicate\)/);
+  assert.match(create, /input\.approveDuplicate \? \[\] : lockIds/);
+  assert.match(create, /transaction\.create\(jobReference/);
+  assert.match(create, /create_admin_job_duplicate_override/);
+});
+
 test("listing source defaults legacy jobs to official and labels both sources", () => {
   assert.equal(fields.normalize({}).listingSource, "official");
   assert.equal(fields.normalize({ listingSource: "public_info" }).listingSource, "public_info");

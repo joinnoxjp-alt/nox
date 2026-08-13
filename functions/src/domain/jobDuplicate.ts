@@ -1,8 +1,13 @@
 export type DuplicateJob = {
   id: string; storeName?: unknown; area?: unknown; address?: unknown; station?: unknown;
   businessType?: unknown; salary?: unknown; back?: unknown; phone?: unknown; status?: unknown; title?: unknown;
+  ownerId?: unknown; storeId?: unknown;
 };
 export type DuplicateMatch = { level: "confirmed" | "possible" | "past"; job: DuplicateJob; reasons: string[] };
+
+export function duplicateRequiresBlock(match: DuplicateMatch | null, approveDuplicate: boolean): boolean {
+  return Boolean(match && !approveDuplicate);
+}
 
 export function normalizeComparable(value: unknown): string {
   return String(value ?? "").normalize("NFKC").toLowerCase()
@@ -29,6 +34,10 @@ function namesOverlap(a: unknown, b: unknown): boolean {
 export function findDuplicateJob(candidate: DuplicateJob, jobs: DuplicateJob[]): DuplicateMatch | null {
   let addressCandidate: DuplicateMatch | null = null;
   for (const job of jobs) {
+    const distinctOwner = Boolean(normalizeComparable(candidate.ownerId) && normalizeComparable(job.ownerId) && !same(candidate.ownerId, job.ownerId));
+    const distinctStore = Boolean(normalizeComparable(candidate.storeId) && normalizeComparable(job.storeId) && !same(candidate.storeId, job.storeId));
+    const distinctName = Boolean(normalizeComparable(candidate.storeName) && normalizeComparable(job.storeName) && !namesOverlap(candidate.storeName, job.storeName));
+    if (distinctOwner && distinctStore && distinctName) continue;
     const nameArea = namesOverlap(candidate.storeName, job.storeName) && same(candidate.area, job.area);
     const address = same(candidate.address, job.address);
     if (!nameArea && !address) continue;

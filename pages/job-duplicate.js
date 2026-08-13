@@ -6,6 +6,10 @@
   function find(candidate, jobs) {
     let addressCandidate = null;
     for (const job of jobs || []) {
+      const distinctOwner = Boolean(normalize(candidate.ownerId) && normalize(job.ownerId) && !same(candidate.ownerId, job.ownerId));
+      const distinctStore = Boolean(normalize(candidate.storeId) && normalize(job.storeId) && !same(candidate.storeId, job.storeId));
+      const distinctName = Boolean(normalize(candidate.storeName) && normalize(job.storeName) && !namesOverlap(candidate.storeName, job.storeName));
+      if (distinctOwner && distinctStore && distinctName) continue;
       const nameArea = namesOverlap(candidate.storeName, job.storeName) && same(candidate.area, job.area);
       const address = same(candidate.address, job.address);
       if (!nameArea && !address) continue;

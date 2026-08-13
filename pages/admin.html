@@ -1955,6 +1955,7 @@
       const easyJobSourceText = document.getElementById("easyJobSourceText");
       const easyJobParseResult = document.getElementById("easyJobParseResult");
       const easyJobDuplicateWarning = document.getElementById("easyJobDuplicateWarning");
+      let approveDuplicateOnce = false;
       const setDirectJobValue = (id, value) => { document.getElementById(id).value = value ?? ""; };
       function showDuplicateWarning(match) {
         if (!match) { easyJobDuplicateWarning.hidden = true; easyJobDuplicateWarning.replaceChildren(); return; }
@@ -1967,7 +1968,17 @@
         link.className = "admin-button";
         link.href = `./job-admin.html?jobId=${encodeURIComponent(job.id)}`;
         link.textContent = "既存求人を編集";
-        easyJobDuplicateWarning.replaceChildren(heading, details, link);
+        const approveButton = document.createElement("button");
+        approveButton.type = "button";
+        approveButton.className = "admin-button";
+        approveButton.textContent = "掲載を承認する";
+        approveButton.addEventListener("click", () => {
+          if (!confirm("重複候補がありますが、この内容を別求人として新規登録・公開します。よろしいですか？")) return;
+          approveButton.disabled = true;
+          approveDuplicateOnce = true;
+          createDirectJobButton.click();
+        });
+        easyJobDuplicateWarning.replaceChildren(heading, details, link, approveButton);
         easyJobDuplicateWarning.hidden = false;
       }
       document.getElementById("parseEasyJobButton").addEventListener("click", () => {
@@ -2059,8 +2070,10 @@
         const topOrder = Number(document.getElementById("directJobTopOrder").value);
         const mainImageFile = document.getElementById("directJobMainImage").files?.[0] || null;
         const detailImageFiles = Array.from(document.getElementById("directJobDetailImages").files || []);
-        const duplicate = window.NoxJobDuplicate.find({ storeName, area, address, station, businessType, salary, back }, allAdminJobs);
-        if (duplicate) { showDuplicateWarning(duplicate); return; }
+        const approveDuplicate = approveDuplicateOnce;
+        approveDuplicateOnce = false;
+        const duplicate = window.NoxJobDuplicate.find({ storeName, ownerId, storeId: ownerId, area, address, station, businessType, salary, back }, allAdminJobs);
+        if (duplicate && !approveDuplicate) { showDuplicateWarning(duplicate); return; }
         if (!storeName || !title || (listingSource === "official" && !ownerId)) {
           directJobStatus.textContent =
             "店舗名・ownerId・求人タイトルを入力してください。";
@@ -2122,6 +2135,7 @@
             targetGender, businessScope, dailyPay, trial, beginner, age, shift, position,
             topOrder,
             mainImage, mainImageStoragePath, imageUrls, imageStoragePaths,
+            approveDuplicate,
           });
 
           directJobStatus.textContent = "求人を登録・公開しました。";
