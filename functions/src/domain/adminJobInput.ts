@@ -1,6 +1,7 @@
 import { HttpsError } from "firebase-functions/v2/https";
 
 import { AdminJobListingSource } from "./adminJobSource";
+import { normalizeContactEmail, normalizeContactPhone } from "./jobContact";
 
 export type AdminJobInput = {
   jobId: string;
@@ -12,6 +13,7 @@ export type AdminJobInput = {
   trial: boolean | ""; beginner: boolean | ""; age: string; shift: string; position: string;
   applyType: "instagram" | "line" | "x" | "tiktok" | "other";
   applyUrl: string; sourceUrl: string; sourceCheckedAt: string; adminSourceMemo: string;
+  contactPhone: string; contactEmail: string;
   mainImage: string; mainImageStoragePath: string; imageUrls: string[]; imageStoragePaths: string[];
   topOrder: number;
   approveDuplicate: boolean;
@@ -79,6 +81,14 @@ export function parseAdminJobInput(value: unknown): AdminJobInput {
   const jobId = optional(input.jobId, 20, "求人ID");
   if (jobId && !/^[A-Za-z0-9]{20}$/.test(jobId)) throw invalid("求人IDが正しくありません。");
   if (input.approveDuplicate !== undefined && typeof input.approveDuplicate !== "boolean") throw invalid("重複承認指定が正しくありません。");
+  let contactPhone = "";
+  let contactEmail = "";
+  try {
+    contactPhone = normalizeContactPhone(input.contactPhone);
+    contactEmail = normalizeContactEmail(input.contactEmail);
+  } catch {
+    throw invalid("問い合わせ先の電話番号またはメールアドレスが正しくありません。");
+  }
   return {
     jobId,
     listingSource: listingSource as AdminJobListingSource,
@@ -97,6 +107,7 @@ export function parseAdminJobInput(value: unknown): AdminJobInput {
     applyType: applyType as AdminJobInput["applyType"],
     applyUrl: optionalUrl(input.applyUrl, "応募先URL"), sourceUrl: optionalUrl(input.sourceUrl, "情報元URL"),
     sourceCheckedAt, adminSourceMemo: optional(input.adminSourceMemo, 2000, "管理メモ"),
+    contactPhone, contactEmail,
     mainImage: optionalUrl(input.mainImage, "求人メイン画像"),
     mainImageStoragePath: optional(input.mainImageStoragePath, 1000, "求人メイン画像保存先"),
     imageUrls: stringList(input.imageUrls, 10, "求人詳細画像").map((url) => optionalUrl(url, "求人詳細画像")),

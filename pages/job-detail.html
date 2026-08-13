@@ -334,6 +334,11 @@
         margin-bottom: 18px;
       }
 
+      .fallback-contact { margin-top: 20px; padding-top: 18px; border-top: 1px solid rgba(255,255,255,.18); }
+      .fallback-contact h3 { margin: 0 0 12px; color: #fff; font-size: 17px; }
+      .fallback-contact-links { display: flex; flex-wrap: wrap; gap: 10px; }
+      .fallback-contact-links a { color: #ffd700; overflow-wrap: anywhere; }
+
       .apply-box input,
       .apply-box textarea,
       .apply-modal input {
@@ -482,6 +487,19 @@
           }
         }
 
+        function safeContactEmail(value) {
+          const email = typeof value === "string" ? value.trim().toLowerCase() : "";
+          return /^[A-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?(?:\.[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?)+$/i.test(email) ? email : "";
+        }
+
+        function contactPhoneNumbers(value) {
+          if (typeof value !== "string") return [];
+          return value.normalize("NFKC").split(/\s*(?:\/|・|,|，|、)\s*/).map((number) => number.trim()).filter((number) => {
+            const digits = number.replace(/\D/g, "");
+            return /^[+0-9()\-\s.]+$/.test(number) && digits.length >= 7 && digits.length <= 15;
+          });
+        }
+
         function getJapanDateKey() {
           const parts = new Intl.DateTimeFormat("ja-JP", {
             timeZone: "Asia/Tokyo",
@@ -561,6 +579,16 @@
           const isPublicInfo = data.listingSource === "public_info";
           const job = window.NoxJobFields.normalize(data);
           const featureLabel = window.NoxJobFields.featureLabel;
+          const contactPhones = contactPhoneNumbers(job.contactPhone);
+          const contactEmail = safeContactEmail(job.contactEmail);
+          const fallbackContact = contactPhones.length || contactEmail ? `
+            <div class="fallback-contact">
+              <h3>SNSが開けない場合のお問い合わせ先</h3>
+              <div class="fallback-contact-links">
+                ${contactPhones.map((phone) => `<a href="tel:${escapeHtml(phone.replace(/[^+0-9]/g, ""))}">${escapeHtml(phone)}</a>`).join("")}
+                ${contactEmail ? `<a href="mailto:${escapeHtml(contactEmail)}">${escapeHtml(contactEmail)}</a>` : ""}
+              </div>
+            </div>` : "";
           const galleryUrls = Array.isArray(media?.galleryUrls)
             ? media.galleryUrls
             : [];
@@ -754,6 +782,7 @@
               ${isPublicInfo ? `<aside class="public-info-notice"><strong>公開情報確認済</strong><br>本ページは公開されている情報をもとにNOX運営が作成しています。店舗によるNOXへの掲載内容の確認・承認・提携を示すものではありません。募集状況や最新の条件については、お問い合わせ時にご確認ください。</aside>` : `<aside class="public-info-notice"><strong>NOX掲載店舗</strong><br>店舗様から直接提供・確認いただいた情報を掲載しています。</aside>`}
               <p class="apply-note">${isPublicInfo ? "この求人についてNOXへ相談できます。NOXが店舗から正式に指定された連絡先への応募ではありません。" : `応募内容をコピーした後、店舗指定の${window.NoxJobFields.applyTypeLabel(job.applyType)}へ移動します。NOXに氏名・電話番号は保存されません。`}</p>
               <button id="applyBtn" type="button" class="line-btn">${isPublicInfo ? "この求人について相談する" : "応募する"}</button>
+              ${fallbackContact}
             </section>
 
             <dialog id="applyDialog" class="apply-modal">

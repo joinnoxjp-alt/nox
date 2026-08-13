@@ -1211,6 +1211,9 @@
                   <input type="url" id="directJobApplyUrl" placeholder="https://www.instagram.com/xxxxx/" />
                 </div>
 
+                <div class="ad-form-group full"><label for="directJobContactPhone">SNSが開けない場合の店舗電話番号</label><input type="text" id="directJobContactPhone" maxlength="300" placeholder="086-238-4830 / 080-2880-1359" /></div>
+                <div class="ad-form-group full"><label for="directJobContactEmail">問い合わせ用メールアドレス</label><input type="email" id="directJobContactEmail" maxlength="254" placeholder="recruit@example.com" /></div>
+
                 <div class="ad-form-group full"><label for="directJobSourceUrl">情報元URL（管理用）</label><input type="url" id="directJobSourceUrl" placeholder="https://example.com/recruit" /></div>
                 <div class="ad-form-group"><label for="directJobSourceCheckedAt">情報確認日</label><input type="date" id="directJobSourceCheckedAt" /></div>
                 <div class="ad-form-group full"><label for="directJobSourceMemo">管理メモ（非公開）</label><textarea id="directJobSourceMemo" maxlength="2000"></textarea></div>
@@ -1888,6 +1891,7 @@
             directJobPosition: normalized.position || "キャスト", directJobApplyType: normalized.applyType,
             directJobTopOrder: duplicateJobSeed.topOrder || 999,
             directJobApplyUrl: normalized.applyUrl, directJobSourceUrl: duplicateJobSeed.sourceUrl,
+            directJobContactPhone: duplicateJobSeed.contactPhone, directJobContactEmail: duplicateJobSeed.contactEmail,
             directJobSourceCheckedAt: duplicateJobSeed.sourceCheckedAt, directJobSourceMemo: duplicateJobSeed.adminSourceMemo,
             directJobTargetGender: duplicateJobSeed.targetGender, directJobBusinessScope: duplicateJobSeed.businessScope,
           };
@@ -2042,6 +2046,8 @@
           .value.trim();
         const applyType = document.getElementById("directJobApplyType").value;
         const applyUrl = document.getElementById("directJobApplyUrl").value.trim();
+        const contactPhone = document.getElementById("directJobContactPhone").value.trim();
+        const contactEmail = document.getElementById("directJobContactEmail").value.trim();
 
         const sourceUrl = document.getElementById("directJobSourceUrl").value.trim();
         const sourceCheckedAt = document.getElementById("directJobSourceCheckedAt").value;
@@ -2130,6 +2136,8 @@
             description,
             applyType,
             applyUrl,
+            contactPhone,
+            contactEmail,
             listingSource, sourceUrl, sourceCheckedAt, adminSourceMemo,
             address, station, workHours, back, benefits, requirements,
             targetGender, businessScope, dailyPay, trial, beginner, age, shift, position,

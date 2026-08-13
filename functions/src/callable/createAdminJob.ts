@@ -149,6 +149,8 @@ export const createAdminJob = onCall(adminCallableOptions, async (request) => {
       sourceUrl: input.sourceUrl,
       sourceCheckedAt: input.sourceCheckedAt || null,
       adminSourceMemo: input.adminSourceMemo,
+      contactPhone: input.contactPhone,
+      contactEmail: input.contactEmail,
 
       ownerId: sourceFields.ownerId,
       storeId: sourceFields.storeId,

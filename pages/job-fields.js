@@ -53,6 +53,8 @@
       shift: first(data, ["shift", "shiftDetails"]),
       applyType: explicitApplyType || inferredApplyType,
       applyUrl: first(data, ["applyUrl", "lineUrl", "instagramUrl", "Instagram", "xUrl", "twitterUrl", "tiktokUrl", "contactUrl"]),
+      contactPhone: first(data, ["contactPhone"]),
+      contactEmail: first(data, ["contactEmail"]),
       targetGender: first(data, ["targetGender"], "female"),
       businessScope: first(data, ["businessScope"], "night"),
       listingSource: data.listingSource === "public_info" ? "public_info" : "official",

@@ -1383,6 +1383,9 @@
                 : ""}
             </div>
 
+            <div class="edit-form-group full"><label>SNSが開けない場合の店舗電話番号</label><input type="text" id="editContactPhone-${escapeHtml(job.id)}" maxlength="300" value="${escapeHtml(job.contactPhone || "")}" placeholder="086-238-4830 / 080-2880-1359"></div>
+            <div class="edit-form-group full"><label>問い合わせ用メールアドレス</label><input type="email" id="editContactEmail-${escapeHtml(job.id)}" maxlength="254" value="${escapeHtml(job.contactEmail || "")}" placeholder="recruit@example.com"></div>
+
             <div class="edit-form-group">
               <label>
                 トップ掲載順
@@ -1781,6 +1784,8 @@
       const sourceUrl = document.getElementById(`editSourceUrl-${jobId}`).value.trim();
       const sourceCheckedAt = document.getElementById(`editSourceCheckedAt-${jobId}`).value;
       const adminSourceMemo = document.getElementById(`editAdminSourceMemo-${jobId}`).value.trim();
+      const contactPhone = document.getElementById(`editContactPhone-${jobId}`).value.trim();
+      const contactEmail = document.getElementById(`editContactEmail-${jobId}`).value.trim();
 
       const applyUrl =
         document.getElementById(
@@ -1960,6 +1965,8 @@
             sourceUrl,
             sourceCheckedAt,
             adminSourceMemo,
+            contactPhone,
+            contactEmail,
 
             applyType,
             applyUrl,

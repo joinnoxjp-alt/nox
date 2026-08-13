@@ -6,6 +6,7 @@ import { adminCallableOptions } from "../config";
 import { firestore } from "../firebaseAdmin";
 import { assertActiveAdmin } from "../security/adminAuthorization";
 import { canonicalJobCompatibilityChanges } from "../domain/jobFields";
+import { normalizeContactEmail, normalizeContactPhone } from "../domain/jobContact";
 
 const EDITABLE_FIELDS = new Set([
   "storeName", "shopName", "name", "businessType", "jobType", "area",
@@ -20,6 +21,7 @@ const EDITABLE_FIELDS = new Set([
   "targetGender", "businessScope", "pr", "applyType", "instagramUrl",
   "xUrl", "twitterUrl", "tiktokUrl", "closedDay",
   "sourceUrl", "sourceCheckedAt", "adminSourceMemo",
+  "contactPhone", "contactEmail",
   "mainImageStoragePath", "imageStoragePaths",
 ]);
 const IMMUTABLE_SOURCE_FIELDS = new Set([
@@ -44,6 +46,7 @@ const STRING_LIMITS: Record<string, number> = {
   backs: 1000, age: 200, hiringAge: 200, shift: 1000,
   shiftDetails: 1000, pr: 5000, closedDay: 200,
   sourceUrl: 2000, sourceCheckedAt: 10, adminSourceMemo: 2000,
+  contactPhone: 300, contactEmail: 254,
   mainImageStoragePath: 1000,
 };
 const BOOLEAN_FIELDS = new Set(["dailyPay", "trial", "trialEntry", "beginner", "welcomeBeginners"]);
@@ -155,6 +158,14 @@ export const manageAdminJob = onCall(adminCallableOptions, async (request) => {
         if ((key === "images" || key === "imageUrls" || key === "imageStoragePaths") &&
             (!Array.isArray(value) || value.length > 10 || value.some((item) => typeof item !== "string" || item.length > 2000))) {
           throw new HttpsError("invalid-argument", "求人画像が正しくありません。");
+        }
+        if (key === "contactPhone") {
+          try { changes[key] = normalizeContactPhone(value); } catch { throw new HttpsError("invalid-argument", "contactPhone is invalid."); }
+          continue;
+        }
+        if (key === "contactEmail") {
+          try { changes[key] = normalizeContactEmail(value); } catch { throw new HttpsError("invalid-argument", "contactEmail is invalid."); }
+          continue;
         }
         changes[key] = value;
       }

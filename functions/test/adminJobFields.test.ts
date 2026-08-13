@@ -53,6 +53,10 @@ test("admin editing covers public detail fields and saves through manageAdminJob
   assert.match(admin, /await loadPublishedJobs\(\)/);
   assert.match(detail, /NoxJobFields\.normalize/);
   assert.match(detail, /NoxJobFields\.featureLabel/);
+  for (const field of ["contactPhone", "contactEmail"]) {
+    assert.match(admin, new RegExp(field));
+    assert.match(directCreate, new RegExp(field));
+  }
 });
 
 test("manage function allowlists expanded fields and builds compatibility fields", () => {
