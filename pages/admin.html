@@ -1118,8 +1118,11 @@
                   <input
                     type="text"
                     id="directJobStoreName"
+                    list="directJobStoreOptions"
                     placeholder="例：フリージア"
                   />
+                  <datalist id="directJobStoreOptions"></datalist>
+                  <small>登録済み店舗を選ぶと、ownerIdと掲載区分を初期設定します（求人単位で変更可能です）。</small>
                 </div>
 
                 <div class="ad-form-group full">
@@ -1947,6 +1950,31 @@
 
       const directJobListingSource = document.getElementById("directJobListingSource");
       const directJobOwnerId = document.getElementById("directJobOwnerId");
+      const directJobStoreName = document.getElementById("directJobStoreName");
+      const directJobStoreOptions = document.getElementById("directJobStoreOptions");
+      let registeredStoreDirectory = [];
+
+      function applyRegisteredStoreDefaults(store) {
+        if (!store) return;
+        directJobStoreName.value = store.storeName || "";
+        directJobOwnerId.value = store.ownerId || store.id || "";
+        document.getElementById("directJobBusinessScope").value =
+          window.NoxJobFields.normalizeBusinessScope(store.businessScope);
+      }
+
+      directJobStoreName.addEventListener("change", () => {
+        const matches = registeredStoreDirectory.filter((store) =>
+          String(store.storeName || "") === directJobStoreName.value.trim(),
+        );
+        if (matches.length === 1) applyRegisteredStoreDefaults(matches[0]);
+      });
+      directJobOwnerId.addEventListener("change", () => {
+        const ownerId = directJobOwnerId.value.trim();
+        const store = registeredStoreDirectory.find((candidate) =>
+          String(candidate.ownerId || candidate.id || "") === ownerId,
+        );
+        if (store) applyRegisteredStoreDefaults(store);
+      });
       function syncDirectJobSourceFields() {
         const isPublicInfo = directJobListingSource.value === "public_info";
         directJobOwnerId.disabled = isPublicInfo;
@@ -3201,6 +3229,13 @@
           const stores = storeSnapshot.docs.map((storeDoc) => ({
             id: storeDoc.id,
             ...storeDoc.data(),
+          }));
+          registeredStoreDirectory = stores;
+          directJobStoreOptions.replaceChildren(...stores.map((store) => {
+            const option = document.createElement("option");
+            option.value = String(store.storeName || "");
+            option.label = `${store.ownerId || store.id} / ${window.NoxJobFields.businessScopeLabel(window.NoxJobFields.normalizeBusinessScope(store.businessScope))}`;
+            return option;
           }));
           const jobSnapshot = await getDocs(collection(db, "jobs"));
           const jobCounts = new Map();

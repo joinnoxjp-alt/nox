@@ -239,6 +239,18 @@
         background: #050505;
       }
 
+      .general-job-badge {
+        display: inline-flex;
+        margin: 0 0 14px;
+        padding: 7px 13px;
+        border: 1px solid #72d6ff;
+        border-radius: 999px;
+        background: rgba(25, 137, 180, .18);
+        color: #bcecff;
+        font-weight: 800;
+        letter-spacing: .04em;
+      }
+
       .gallery-image-button {
         display: flex;
         align-items: center;
@@ -578,6 +590,7 @@
         function renderJob(data, media) {
           const isPublicInfo = data.listingSource === "public_info";
           const job = window.NoxJobFields.normalize(data);
+          const isGeneralOnly = window.NoxJobFields.normalizeBusinessScope(job.businessScope) === "general";
           const featureLabel = window.NoxJobFields.featureLabel;
           const contactPhones = contactPhoneNumbers(job.contactPhone);
           const contactEmail = safeContactEmail(job.contactEmail);
@@ -628,6 +641,8 @@
               ${heroImage}
 
               <p class="kicker">NOX JOB DETAIL</p>
+
+              ${isGeneralOnly ? '<p class="general-job-badge">一般・その他求人</p>' : ""}
 
               <div class="store-title-row">
                 <h1>${value(job.storeName)}</h1>
@@ -725,20 +740,20 @@
               <h2>求人情報</h2>
 
               <div class="grid">
-                <div class="info-card">
+                ${isGeneralOnly ? "" : `<div class="info-card">
                   <span>各種バック</span>
                   <strong>${value(job.back)}</strong>
-                </div>
+                </div>`}
 
                 <div class="info-card">
                   <span>日払い</span>
                   <strong>${featureLabel(job.dailyPay)}</strong>
                 </div>
 
-                <div class="info-card">
+                ${isGeneralOnly ? "" : `<div class="info-card">
                   <span>体験入店</span>
                   <strong>${featureLabel(job.trial, "体験入店あり")}</strong>
-                </div>
+                </div>`}
 
                 <div class="info-card">
                   <span>未経験歓迎</span>
@@ -758,7 +773,7 @@
             </section>
 
             <section class="section">
-              <h2>店舗PR</h2>
+              <h2>${isGeneralOnly ? "仕事内容・PR" : "店舗PR"}</h2>
               <div class="pr">
                 ${value(job.description)}
               </div>

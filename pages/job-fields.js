@@ -69,6 +69,20 @@
     return ({ night: "夜職", general: "一般求人", both: "両方" })[value] || "未設定";
   }
 
+  function normalizeBusinessScope(value) {
+    return value === "general" || value === "both" ? value : "night";
+  }
+
+  function isNightScope(value) {
+    const scope = normalizeBusinessScope(value);
+    return scope === "night" || scope === "both";
+  }
+
+  function isGeneralScope(value) {
+    const scope = normalizeBusinessScope(value);
+    return scope === "general" || scope === "both";
+  }
+
   function applyTypeLabel(value) {
     return ({ instagram: "Instagram", line: "LINE", x: "X", tiktok: "TikTok", other: "その他" })[value] || "その他";
   }
@@ -77,7 +91,11 @@
     return value === "public_info" ? "公開情報確認済" : "NOX掲載店舗";
   }
 
-  const api = Object.freeze({ first, featureLabel, normalize, targetGenderLabel, businessScopeLabel, applyTypeLabel, listingSourceLabel });
+  const api = Object.freeze({
+    first, featureLabel, normalize, targetGenderLabel, businessScopeLabel,
+    normalizeBusinessScope, isNightScope, isGeneralScope,
+    applyTypeLabel, listingSourceLabel,
+  });
   globalObject.NoxJobFields = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;
 })(typeof window !== "undefined" ? window : globalThis);

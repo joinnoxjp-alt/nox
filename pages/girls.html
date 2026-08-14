@@ -738,6 +738,10 @@
               return;
             }
 
+            if (!window.NoxJobFields.isNightScope(job.businessScope)) {
+              return;
+            }
+
             jobs.push({
               ...job,
               resolvedCategory: getJobCategory(job),

@@ -318,6 +318,30 @@
       position: relative;
       z-index: 1;
     }
+
+    .scope-tabs {
+      display: flex;
+      gap: 12px;
+      margin: 24px 0 16px;
+      flex-wrap: wrap;
+    }
+
+    .scope-tab {
+      border: 1px solid rgba(255, 215, 0, .45);
+      border-radius: 999px;
+      padding: 11px 20px;
+      background: #111;
+      color: #fff;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .scope-tab[aria-pressed="true"] {
+      background: #d4af37;
+      color: #050505;
+    }
+
+    .scope-note { margin: 0 0 18px; color: #ddd; }
     .listing-source-badge{display:inline-flex;width:max-content;margin:8px 0 2px;padding:4px 9px;border:1px solid rgba(212,175,55,.45);border-radius:999px;color:#e8cf76;background:rgba(212,175,55,.08);font-size:12px;font-weight:700}
 
     .job-card-image {
@@ -514,6 +538,12 @@
 
     </section>
 
+    <div class="scope-tabs" aria-label="求人の掲載区分">
+      <button type="button" class="scope-tab" data-job-scope="night" aria-pressed="true">夜職求人</button>
+      <button type="button" class="scope-tab" data-job-scope="general" aria-pressed="false">一般・その他求人</button>
+    </div>
+    <p id="scopeNote" class="scope-note">夜職求人を表示しています。</p>
+
     <div class="filter-box">
 
       <input
@@ -590,7 +620,30 @@
       const sortSelect =
         document.getElementById("sortSelect");
 
+      const scopeNote = document.getElementById("scopeNote");
+      const scopeButtons = [...document.querySelectorAll("[data-job-scope]")];
+      let selectedScope = new URLSearchParams(location.search).get("scope") === "general"
+        ? "general"
+        : "night";
+
       let jobs = [];
+
+      function jobsForSelectedScope() {
+        const matcher = selectedScope === "general"
+          ? window.NoxJobFields.isGeneralScope
+          : window.NoxJobFields.isNightScope;
+        return jobs.filter((job) => matcher(job.businessScope));
+      }
+
+      function updateScopeUi() {
+        scopeButtons.forEach((button) => button.setAttribute(
+          "aria-pressed",
+          String(button.dataset.jobScope === selectedScope),
+        ));
+        scopeNote.textContent = selectedScope === "general"
+          ? "一般・その他求人を表示しています。夜職求人とは分けて掲載しています。"
+          : "夜職求人を表示しています。";
+      }
 
       async function loadJobs() {
 
@@ -679,9 +732,10 @@ if (job.contractListingStatus !== "active") {
         const currentType =
           typeSelect.value;
 
+        const scopeJobs = jobsForSelectedScope();
         const areas = [
           ...new Set(
-            jobs
+            scopeJobs
               .map((job) => job.area)
               .filter(Boolean)
           )
@@ -689,7 +743,7 @@ if (job.contractListingStatus !== "active") {
 
         const types = [
           ...new Set(
-            jobs
+            scopeJobs
               .map(
                 (job) =>
                   job.genre ||
@@ -805,7 +859,7 @@ if (job.contractListingStatus !== "active") {
           sortSelect.value;
 
         let filteredJobs =
-          jobs.filter((job) => {
+          jobsForSelectedScope().filter((job) => {
 
             const storeName =
               job.storeName ||
@@ -961,6 +1015,7 @@ if (job.contractListingStatus !== "active") {
             <h2>
               ${escapeHtml(storeName)}
             </h2>
+            ${selectedScope === "general" ? '<span class="listing-source-badge">一般・その他求人</span>' : ""}
             <span class="listing-source-badge">${escapeHtml(window.NoxJobFields.listingSourceLabel(job.listingSource))}</span>
 
             <div class="info">
@@ -1024,6 +1079,19 @@ if (job.contractListingStatus !== "active") {
         "change",
         renderJobs
       );
+
+      scopeButtons.forEach((button) => button.addEventListener("click", () => {
+        selectedScope = button.dataset.jobScope === "general" ? "general" : "night";
+        updateScopeUi();
+        createFilterOptions();
+        renderJobs();
+        const url = new URL(location.href);
+        if (selectedScope === "general") url.searchParams.set("scope", "general");
+        else url.searchParams.delete("scope");
+        history.replaceState(null, "", url);
+      }));
+
+      updateScopeUi();
 
       loadJobs();
 

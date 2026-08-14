@@ -706,6 +706,12 @@ async function loadTopJobs() {
       if (job.topFeatured !== true) {
         return;
       }
+
+      // The current TOP areas are night-work PICK UP slots. General-only jobs
+      // are kept out until a dedicated general-work slot is introduced.
+      if (!window.NoxJobFields?.isNightScope(job.businessScope)) {
+        return;
+      }
       const searchText = [
         job.storeName,
         job.name,
