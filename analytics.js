@@ -12,7 +12,7 @@ if (!visitorId) { visitorId = randomId(); local.setItem("nox_analytics_visitor",
 
 function pageType(pathname = location.pathname) {
   if (/\/(index\.html)?$/.test(pathname) || /\/day\/?(index\.html)?$/.test(pathname)) return "top";
-  if (/\/(girls|men)\.html$/.test(pathname)) return "job_list";
+  if (/\/(jobs|girls|men)\.html$/.test(pathname)) return "job_list";
   if (/\/job-detail\.html$/.test(pathname)) return "job_detail";
   if (/\/store-detail\.html$/.test(pathname)) return "store_detail";
   return "other";

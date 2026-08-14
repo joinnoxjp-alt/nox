@@ -90,14 +90,22 @@ export async function recordAnalyticsEvent(input: {
   });
 }
 
-export async function recordConversion(field: "memberRegistrations" | "jobApplications" | "storeApplications" | "reviewSubmissions", sourcePath: string) {
+const CV_COMPATIBILITY_FIELDS = {
+  memberRegistrations: "signupCv",
+  jobApplications: "jobApplyCv",
+  storeApplications: "storeApplicationCv",
+  reviewSubmissions: "reviewSubmissionCv"
+} as const;
+
+export async function recordConversion(field: keyof typeof CV_COMPATIBILITY_FIELDS, sourcePath: string) {
   const dateKey = japanDateKey();
   const dedupeRef = firestore.doc(`analyticsConversionDedupe/${safeId(`${field}:${sourcePath}`)}`);
   await firestore.runTransaction(async (transaction) => {
     if ((await transaction.get(dedupeRef)).exists) return;
     transaction.create(dedupeRef, { dateKey, field, createdAt: FieldValue.serverTimestamp() });
     transaction.set(firestore.doc(`analyticsDaily/${dateKey}`), {
-      dateKey, conversions: FieldValue.increment(1), [field]: FieldValue.increment(1),
+      dateKey, conversions: FieldValue.increment(1), cv: FieldValue.increment(1),
+      [field]: FieldValue.increment(1), [CV_COMPATIBILITY_FIELDS[field]]: FieldValue.increment(1),
       updatedAt: FieldValue.serverTimestamp()
     }, { merge: true });
   });
