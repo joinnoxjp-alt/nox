@@ -1,0 +1,28 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NOX WORK 管理</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,sans-serif;background:#0b0b0d;color:#f5f5f5}body{margin:0}header{padding:18px 5%;background:#151519;display:flex;justify-content:space-between;align-items:center}main{max-width:1200px;margin:auto;padding:24px}.card{background:#17171c;border:1px solid #303038;border-radius:16px;padding:20px;margin-bottom:22px}h1,h2{margin-top:0;color:#ffd54a}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.full{grid-column:1/-1}label{display:grid;gap:6px;font-weight:700}input,textarea,select,button{font:inherit;padding:11px;border-radius:8px;border:1px solid #484852;background:#0e0e12;color:#fff}textarea{min-height:100px;resize:vertical}button{cursor:pointer;background:#d6a900;color:#111;font-weight:800}.danger{background:#842b35;color:#fff}.secondary{background:#333;color:#fff}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:15px}.item{border-top:1px solid #333;padding:14px 0}.status{min-height:24px;margin-top:12px}.badge{padding:3px 8px;border-radius:20px;background:#333;font-size:.85rem}@media(max-width:700px){.grid{grid-template-columns:1fr}.full{grid-column:auto}}
+</style></head><body><header><strong>NOX WORK 管理</strong><nav><a href="./index.html">公開TOP</a> · <a href="../pages/admin.html">NOX管理</a></nav></header><main>
+<section class="card"><h1>企業／店舗情報</h1><form id="companyForm"><input type="hidden" id="companyId"><div class="grid">
+<label>企業名／店舗名<input id="companyName" maxlength="160" required></label><label>電話<input id="companyPhone" maxlength="300"></label>
+<label>メール<input id="companyEmail" type="email" maxlength="254"></label><label>住所<input id="companyAddress" maxlength="500"></label>
+<label class="full">企業説明<textarea id="companyDescription" maxlength="5000"></textarea></label>
+<label>Webサイト<input id="companyWebsiteUrl" type="url"></label><label>公式LINE<input id="companyLineUrl" type="url"></label>
+<label>Instagram<input id="companyInstagramUrl" type="url"></label><label>X<input id="companyXUrl" type="url"></label><label>TikTok<input id="companyTiktokUrl" type="url"></label>
+<label>ロゴ<input id="companyLogoFile" type="file" accept="image/jpeg,image/png,image/webp"></label><label>企業メイン画像<input id="companyMainFile" type="file" accept="image/jpeg,image/png,image/webp"></label>
+</div><div class="actions"><button>企業情報を保存</button><button type="button" class="secondary" id="clearCompany">新規入力</button></div></form><div id="companyStatus" class="status"></div><div id="companyList"></div></section>
+<section class="card"><h2>求人作成・編集</h2><form id="jobForm"><input type="hidden" id="jobId"><div class="grid">
+<label>企業／店舗<select id="jobCompanyId" required></select></label><label>求人タイトル<input id="jobTitle" maxlength="200" required></label>
+<label>業種<input id="jobIndustry" maxlength="120" required></label><label>職種<input id="jobOccupation" maxlength="120" required></label>
+<label>雇用形態<input id="jobEmploymentType" maxlength="80" placeholder="正社員・業務委託・アルバイト" required></label><label>給与<input id="jobSalary" maxlength="500" required></label>
+<label>勤務地<input id="jobLocation" maxlength="500" required></label><label>最寄り駅<input id="jobStation" maxlength="200"></label>
+<label>勤務時間<input id="jobWorkHours" maxlength="1000"></label><label>休日<input id="jobHolidays" maxlength="1000"></label>
+<label class="full">仕事内容<textarea id="jobDescription" maxlength="10000" required></textarea></label><label class="full">応募資格<textarea id="jobRequirements" maxlength="5000"></textarea></label>
+<label class="full">待遇／福利厚生<textarea id="jobBenefits" maxlength="5000"></textarea></label><label>未経験可<select id="jobBeginnerWelcome"><option value="true">可</option><option value="false">不可</option></select></label><label>年齢条件<input id="jobAgeRequirement" maxlength="300"></label>
+<label>求人メイン画像<input id="jobMainFile" type="file" accept="image/jpeg,image/png,image/webp"></label><label>ロゴ<input id="jobLogoFile" type="file" accept="image/jpeg,image/png,image/webp"></label><label class="full">求人詳細画像（最大10枚）<input id="jobImageFiles" type="file" multiple accept="image/jpeg,image/png,image/webp"></label>
+<label>応募先種別<select id="jobApplyType"><option value="line">公式LINE</option><option value="web">Web応募</option><option value="instagram">Instagram</option><option value="email">メール</option><option value="phone">電話</option><option value="other">その他URL</option></select></label><label>応募先<input id="jobApplyValue" maxlength="2000" required></label>
+<label>公式LINE<input id="jobLineUrl" type="url"></label><label>Instagram<input id="jobInstagramUrl" type="url"></label><label>X<input id="jobXUrl" type="url"></label><label>TikTok<input id="jobTiktokUrl" type="url"></label><label>Webサイト<input id="jobWebsiteUrl" type="url"></label>
+<label>公開状態<select id="jobStatus"><option value="draft">下書き</option><option value="published">公開</option><option value="paused">停止</option><option value="archived">終了</option></select></label><label>表示順<input id="jobDisplayOrder" type="number" min="1" value="999"></label>
+<label>掲載開始日<input id="jobPublishStartDate" type="date"></label><label>掲載終了日<input id="jobPublishEndDate" type="date"></label><label class="full">管理メモ（非公開）<textarea id="jobAdminMemo" maxlength="3000"></textarea></label>
+</div><div class="actions"><button>求人を保存</button><button type="button" class="secondary" id="clearJob">新規入力</button></div></form><div id="jobStatusMessage" class="status"></div></section>
+<section class="card"><h2>求人一覧</h2><div id="jobList"></div></section>
+</main><script type="module" src="./work-admin.js"></script></body></html>

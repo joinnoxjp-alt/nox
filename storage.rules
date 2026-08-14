@@ -25,6 +25,14 @@ service firebase.storage {
         && currentUser().status == "active";
     }
 
+    function isFixedActiveAdmin() {
+      return isActiveAdmin()
+        && request.auth.uid == "MkIUfZ4JFEhRTUzEKPPNxKo0gut1"
+        && request.auth.token.email is string
+        && request.auth.token.email.lower() == "watabaseball00@gmail.com"
+        && request.auth.token.email_verified == true;
+    }
+
     function isActiveStore() {
       return hasUserDocument()
         && currentUser().role == "store"
@@ -106,6 +114,21 @@ service firebase.storage {
       allow create, update: if isActiveAdmin()
         && validImage(5 * 1024 * 1024);
       allow delete: if isActiveAdmin();
+    }
+
+    /* NOX WORK media is isolated from NOX job and store media. */
+    match /work-images/{jobId}/{fileName} {
+      allow read: if true;
+      allow create, update: if isFixedActiveAdmin()
+        && validRasterImage(5 * 1024 * 1024);
+      allow delete: if isFixedActiveAdmin();
+    }
+
+    match /work-companies/{companyId}/{fileName} {
+      allow read: if true;
+      allow create, update: if isFixedActiveAdmin()
+        && validRasterImage(5 * 1024 * 1024);
+      allow delete: if isFixedActiveAdmin();
     }
 
     /*

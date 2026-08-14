@@ -8,6 +8,7 @@
     "node": "22"
   },
   "scripts": {
+    "test:work-admin": "npm run build:test && node --test lib-test/test/workAdmin.test.js",
     "test:job-contact": "npm run build:test && node --test lib-test/test/jobContact.test.js",
     "build": "tsc",
     "build:test": "tsc --project tsconfig.test.json",
