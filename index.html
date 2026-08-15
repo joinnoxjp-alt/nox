@@ -489,34 +489,30 @@
           <h2>求人を探す</h2>
 
           <p style="margin-top: 10px; color: #bbb">
-            女性向け・男性向けから選択できます。
+            夜職求人と一般・その他求人を分けて掲載しています。
           </p>
         </div>
 
         <div class="job-grid" id="homeJobs">
-          <div
-            style="
-              text-align: center;
-              padding: 40px;
-              color: #ccc;
-              grid-column: 1 / -1;
-            "
-          >
-            <p style="font-size: 18px; margin-bottom: 20px">
-              最新の掲載求人は求人一覧ページからご覧いただけます。
-            </p>
+          <div class="job-category-shell">
+            <div class="job-category-grid" aria-label="求人カテゴリ">
+              <a href="pages/jobs.html?scope=night" class="job-category-card">
+                <span class="job-category-label">NIGHT WORK</span>
+                <h3>夜職求人を探す</h3>
+                <p>キャバクラ・ガールズバー・ラウンジ・コンカフェ・風俗・メンズエステなど</p>
+                <strong>夜職求人を見る <span aria-hidden="true">→</span></strong>
+              </a>
 
-            <div
-              style="
-                display: flex;
-                justify-content: center;
-                flex-wrap: wrap;
-                gap: 16px;
-                margin-top: 10px;
-              "
-            >
+              <a href="pages/jobs.html?scope=general" class="job-category-card">
+                <span class="job-category-label">GENERAL WORK</span>
+                <h3>一般・その他求人を探す</h3>
+                <p>TikTok配信・ライバー・SNS関連・在宅ワーク・その他一般求人など</p>
+                <strong>一般・その他求人を見る <span aria-hidden="true">→</span></strong>
+              </a>
+            </div>
+
+            <div class="job-gender-links" aria-label="夜職求人の対象別リンク">
               <a href="pages/girls.html" class="btn gold"> 👠 女性向け求人 </a>
-
               <a href="pages/men.html" class="btn"> 👑 男性向け求人 </a>
             </div>
           </div>
