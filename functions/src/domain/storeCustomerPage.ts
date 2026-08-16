@@ -23,8 +23,12 @@ export interface StoreCustomerPageInput {
   externalReservationUrl: string;
   reservationFormEnabled: boolean;
   lineReservationEnabled: boolean;
+  instagramReservationEnabled: boolean;
+  xReservationEnabled: boolean;
+  tiktokReservationEnabled: boolean;
   phoneReservationEnabled: boolean;
   externalReservationEnabled: boolean;
+  externalReservationLabel: string;
   prices: CustomerPrice[];
   benefitEnabled: boolean;
   benefitTitle: string;
@@ -75,7 +79,9 @@ export function parseStoreCustomerPage(value: unknown): StoreCustomerPageInput {
     lineUrl: url(data.lineUrl), instagramUrl: url(data.instagramUrl), xUrl: url(data.xUrl), tiktokUrl: url(data.tiktokUrl),
     websiteUrl: url(data.websiteUrl), externalReservationUrl: url(data.externalReservationUrl),
     reservationFormEnabled: bool(data.reservationFormEnabled), lineReservationEnabled: bool(data.lineReservationEnabled),
-    phoneReservationEnabled: bool(data.phoneReservationEnabled), externalReservationEnabled: bool(data.externalReservationEnabled),
+    instagramReservationEnabled: bool(data.instagramReservationEnabled), xReservationEnabled: bool(data.xReservationEnabled),
+    tiktokReservationEnabled: bool(data.tiktokReservationEnabled), phoneReservationEnabled: bool(data.phoneReservationEnabled),
+    externalReservationEnabled: bool(data.externalReservationEnabled), externalReservationLabel: text(data.externalReservationLabel, 80),
     prices, benefitEnabled: bool(data.benefitEnabled), benefitTitle: text(data.benefitTitle, 160),
     benefitContent: text(data.benefitContent, 3000), benefitNotes: text(data.benefitNotes, 1000),
     benefitConditions: text(data.benefitConditions, 1000), benefitExpiresAt: text(data.benefitExpiresAt, 10),
@@ -101,8 +107,10 @@ export function composePublicCustomerPage(storeId: string, store: Record<string,
     lineUrl: string(page.lineUrl, store.lineUrl, store.officialLine), instagramUrl: string(page.instagramUrl, store.instagramUrl),
     xUrl: string(page.xUrl, store.xUrl, store.twitterUrl), tiktokUrl: string(page.tiktokUrl, store.tiktokUrl), websiteUrl: string(page.websiteUrl, store.websiteUrl),
     externalReservationUrl: string(page.externalReservationUrl), reservationFormEnabled: page.reservationFormEnabled === true,
-    lineReservationEnabled: page.lineReservationEnabled === true, phoneReservationEnabled: page.phoneReservationEnabled === true,
-    externalReservationEnabled: page.externalReservationEnabled === true, prices: Array.isArray(page.prices) ? page.prices : [],
+    lineReservationEnabled: page.lineReservationEnabled === true, instagramReservationEnabled: page.instagramReservationEnabled === true,
+    xReservationEnabled: page.xReservationEnabled === true, tiktokReservationEnabled: page.tiktokReservationEnabled === true,
+    phoneReservationEnabled: page.phoneReservationEnabled === true, externalReservationEnabled: page.externalReservationEnabled === true,
+    externalReservationLabel: string(page.externalReservationLabel) || "予約サイトへ", prices: Array.isArray(page.prices) ? page.prices : [],
     benefitEnabled: page.benefitEnabled === true, benefitTitle: string(page.benefitTitle), benefitContent: string(page.benefitContent),
     benefitNotes: string(page.benefitNotes), benefitConditions: string(page.benefitConditions), benefitExpiresAt: string(page.benefitExpiresAt),
     mainImageUrl: main?.url || string(store.profileImageUrl, store.logoUrl), coverImageUrl: cover?.url || string(store.coverImageUrl, store.mainImageUrl),

@@ -29,7 +29,7 @@ test("reservation hash is handled after the asynchronous form render", () => {
 
 test("admin reservation list shows NOX source, benefit, job and Japanese status", () => {
   const admin = readFileSync(resolve(__dirname, "../../../pages/admin-store-customer.js"), "utf8");
-  assert.match(admin, /new:'確認待ち'/);
+  assert.match(admin, /new:\s*'確認待ち'/);
   assert.match(admin, /「NOXを見た」でのご予約/);
   assert.match(admin, /benefitEligible/);
   assert.match(admin, /jobId/);
@@ -39,4 +39,34 @@ test("ordinary jobs keep the existing application CTA and handler", () => {
   assert.match(detail, /id="applyBtn"/);
   assert.match(detail, /applyBtn\.addEventListener\("click"/);
   assert.doesNotMatch(detail, /if \(!noRecruiting[^\n]*applyButton\.hidden/);
+});
+
+test("admin embeds the customer page editor as a lazy closed accordion", () => {
+  const admin = readFileSync(resolve(__dirname, "../../../pages/admin.html"), "utf8");
+  assert.match(admin, /id="storeCustomerPageAdminSection"/);
+  assert.match(admin, />店舗予約・遊びに行く情報管理</);
+  assert.match(admin, /data-src="\.\/admin-store-customer\.html\?embedded=1"/);
+  assert.match(admin, /frame\.src = frame\.dataset\.src/);
+});
+
+test("customer editor exposes requested fields without adding a cover upload", () => {
+  const editor = readFileSync(resolve(__dirname, "../../../pages/admin-store-customer.html"), "utf8");
+  const editorScript = readFileSync(resolve(__dirname, "../../../pages/admin-store-customer.js"), "utf8");
+  for (const name of ["instagramReservationEnabled", "xReservationEnabled", "tiktokReservationEnabled", "externalReservationLabel", "pricesText", "benefitExpiresAt"]) {
+    assert.match(editor, new RegExp(`name="${name}"`));
+  }
+  assert.match(editor, /id="mainFile"/);
+  assert.match(editor, /id="galleryFiles"[^>]*multiple/);
+  assert.doesNotMatch(editor, /id="coverFile"/);
+  assert.match(editorScript, /この店舗の遊び・予約情報を更新します。よろしいですか？/);
+  assert.match(editorScript, /店舗情報を更新しました/);
+});
+
+test("public customer page renders enabled social reservation channels and profile image", () => {
+  const storeDetail = readFileSync(resolve(__dirname, "../../../pages/store-detail.js"), "utf8");
+  assert.match(storeDetail, /page\.instagramReservationEnabled&&safe\(page\.instagramUrl\)/);
+  assert.match(storeDetail, /page\.xReservationEnabled&&safe\(page\.xUrl\)/);
+  assert.match(storeDetail, /page\.tiktokReservationEnabled&&safe\(page\.tiktokUrl\)/);
+  assert.match(storeDetail, /page\.externalReservationLabel\|\|'予約サイトへ'/);
+  assert.match(storeDetail, /class="store-profile-image"/);
 });

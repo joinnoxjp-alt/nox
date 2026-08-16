@@ -25,8 +25,26 @@ test("only enabled and published pages are public", () => {
 });
 
 test("input parser keeps prices and customer media separate", () => {
-  const parsed = parseStoreCustomerPage({ storeId: "store_1", status: "published", enabled: true, prices: [{ label: "60分", price: "10,000円" }], mainImage: { url: "https://example.com/main.jpg", storagePath: "customer-pages/store_1/main/a.jpg" }, galleryImages: [{ url: "https://example.com/pr.jpg", storagePath: "customer-pages/store_1/gallery/b.jpg" }] });
+  const parsed = parseStoreCustomerPage({ storeId: "store_1", status: "published", enabled: true, prices: [{ label: "60分", price: "10,000円" }], mainImage: { url: "https://example.com/main.jpg", storagePath: "customer-pages/store_1/main/a.jpg" }, galleryImages: [{ url: "https://example.com/pr.jpg", storagePath: "customer-pages/store_1/gallery/b.jpg" }], instagramReservationEnabled: true, xReservationEnabled: true, tiktokReservationEnabled: true, externalReservationLabel: "Web予約" });
   assert.equal(parsed.prices.length, 1);
   assert.match(parsed.mainImage?.storagePath ?? "", /^customer-pages\/store_1\/main\//);
   assert.match(parsed.galleryImages[0].storagePath, /^customer-pages\/store_1\/gallery\//);
+  assert.equal(parsed.instagramReservationEnabled, true);
+  assert.equal(parsed.xReservationEnabled, true);
+  assert.equal(parsed.tiktokReservationEnabled, true);
+  assert.equal(parsed.externalReservationLabel, "Web予約");
+});
+
+test("public composition exposes reservation channels and a compatible external label", () => {
+  const page = composePublicCustomerPage("store_1", {}, {
+    instagramUrl: "https://instagram.com/example",
+    instagramReservationEnabled: true,
+    xReservationEnabled: true,
+    tiktokReservationEnabled: true,
+    externalReservationEnabled: true,
+  }, []);
+  assert.equal(page.instagramReservationEnabled, true);
+  assert.equal(page.xReservationEnabled, true);
+  assert.equal(page.tiktokReservationEnabled, true);
+  assert.equal(page.externalReservationLabel, "予約サイトへ");
 });

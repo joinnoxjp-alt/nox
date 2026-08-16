@@ -140,10 +140,12 @@
       .admin-section-collapse-content[hidden] { display:none !important; }
       .admin-section-collapse-content { min-width:0; }
       .admin-load-error { color:#ffd0d0; }
+      .admin-customer-frame { width:100%; height:min(980px,82vh); min-height:640px; border:1px solid rgba(212,175,55,.35); border-radius:14px; background:#eee; }
 
       @media (max-width:700px) {
         .admin-collapse-toggle { min-height:52px; padding:12px 14px; text-align:left; line-height:1.45; }
         .admin-section-collapse-content { overflow-x:hidden; }
+        .admin-customer-frame { height:78vh; min-height:560px; border-radius:10px; }
       }
 
       .store-media-manager {
@@ -905,10 +907,10 @@
             <p id="dashboardMeasurementNote" class="dashboard-note"></p>
           </section>
 
-          <section class="admin-section">
-            <h2 class="admin-section-title">店舗来店・予約管理</h2>
-            <p class="admin-section-description">お客様向け店舗ページ、料金、限定特典、予約方法、予約状況を管理します。求人・店舗の既存情報は変更しません。</p>
-            <a class="admin-button" href="./admin-store-customer.html">予約機能編集を開く</a>
+          <section class="admin-section" id="storeCustomerPageAdminSection">
+            <h2 class="admin-section-title">店舗予約・遊びに行く情報管理</h2>
+            <p class="admin-section-description">「この店舗に遊びに行く」公開ページの店舗情報、予約方法、料金、NOX限定特典、画像を編集します。</p>
+            <iframe class="admin-customer-frame" title="店舗予約・遊びに行く情報編集" data-src="./admin-store-customer.html?embedded=1"></iframe>
           </section>
 
           <!-- 広告管理 -->
@@ -1872,8 +1874,20 @@
             toggle.textContent = (nextExpanded ? "▲ " : "▼ ") + label + "を" + (nextExpanded ? "閉じる" : "表示");
             savedStates[sectionKey] = nextExpanded;
             try { localStorage.setItem(storageKey, JSON.stringify(savedStates)); } catch {}
+            if (nextExpanded) {
+              content.querySelectorAll("iframe[data-src]").forEach((frame) => {
+                frame.src = frame.dataset.src;
+                frame.removeAttribute("data-src");
+              });
+            }
           });
           section.append(toggle, content);
+          if (expanded) {
+            content.querySelectorAll("iframe[data-src]").forEach((frame) => {
+              frame.src = frame.dataset.src;
+              frame.removeAttribute("data-src");
+            });
+          }
         });
       }
       initializeAdminSectionCollapses();
