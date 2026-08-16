@@ -506,6 +506,16 @@
           return /^[A-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?(?:\.[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?)+$/i.test(email) ? email : "";
         }
 
+        function isCurrentlyNotRecruiting(job) {
+          const fields = [job.title, job.jobTitle, job.position, job.description];
+          return fields.some((field) => {
+            if (typeof field !== "string") return false;
+            const normalized = field.normalize("NFKC").replace(/\s/g, "");
+            return normalized.includes("現在求人募集なし") ||
+              /現在.{0,120}求人募集(?:を)?(?:行っておりません|しておりません|停止中|なし)/.test(normalized);
+          });
+        }
+
         function contactPhoneNumbers(value) {
           if (typeof value !== "string") return [];
           return value.normalize("NFKC").split(/\s*(?:\/|・|,|，|、)\s*/).map((number) => number.trim()).filter((number) => {
@@ -1020,9 +1030,18 @@
           const container = document.getElementById("customerStoreLink");
           if (!storeId || !container) return;
           try {
-            await getPublicStoreCustomerPage({ storeId });
+            const response = await getPublicStoreCustomerPage({ storeId });
+            const customerPage = response.data?.page;
+            if (customerPage?.reservationFormEnabled !== true) {
+              container.hidden = true;
+              return;
+            }
+            const noRecruiting = isCurrentlyNotRecruiting(data);
+            const applyButton = document.getElementById("applyBtn");
+            if (noRecruiting && applyButton) applyButton.hidden = true;
             container.hidden = false;
-            container.innerHTML = `<h2>このお店に遊びに行く</h2><p>店舗情報・料金・予約はこちら</p><a id="customerStoreButton" class="line-btn" href="./store-detail.html?id=${encodeURIComponent(storeId)}">お客様向け店舗ページを見る</a>`;
+            container.classList.toggle("apply-box", noRecruiting);
+            container.innerHTML = `<h2>${noRecruiting ? "お店を予約する" : "このお店に遊びに行く"}</h2><p>店舗情報・料金を確認して、NOX予約フォームから予約できます。</p><a id="customerStoreButton" class="line-btn" href="./store-detail.html?id=${encodeURIComponent(storeId)}#reservationForm">お店を予約する</a>`;
             document.getElementById("customerStoreButton")?.addEventListener("click", () => {
               trackStoreCustomerEvent({ storeId, eventType: "job_to_store", eventId: crypto.randomUUID?.() || `${Date.now()}_${Math.random()}` }).catch(() => {});
             });
