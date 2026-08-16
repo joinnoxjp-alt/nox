@@ -15,6 +15,18 @@ const PAGE_FIELDS: Record<string, string> = {
   store_detail: "storeDetailPv", other: "otherPv"
 };
 
+const PRIVATE_ANALYTICS_PATHS = [
+  /^\/pages\/admin(?:-[^/]*)?\.html$/,
+  /^\/pages\/(?:job-admin|job-create|job-edit|store-dashboard)\.html$/,
+  /^\/day\/admin\.html$/
+];
+
+export function isExcludedPublicAnalyticsPath(value: unknown): boolean {
+  if (typeof value !== "string") return false;
+  const path = value.split(/[?#]/, 1)[0].replace(/\/{2,}/g, "/");
+  return PRIVATE_ANALYTICS_PATHS.some(pattern => pattern.test(path));
+}
+
 export function japanDateKey(date = new Date()): string {
   return new Intl.DateTimeFormat("en-CA", {
     timeZone: "Asia/Tokyo", year: "numeric", month: "2-digit", day: "2-digit"

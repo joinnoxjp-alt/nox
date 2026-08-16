@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import test from "node:test";
 import { comparisonRate, dashboardCvr, dashboardDateKey, dashboardPeriodStart, dashboardRange } from "../src/callable/getAdminDashboard";
+import { isExcludedPublicAnalyticsPath } from "../src/analytics/recordAnalyticsEvent";
 
 const root = path.resolve(__dirname, "../../..");
 const callable = readFileSync(path.resolve(root, "functions/src/callable/getAdminDashboard.ts"), "utf8");
@@ -59,6 +60,28 @@ test("dashboard aggregates expanded CV, reservations and rankings from source do
 
 test("analytics stores durable anonymous period/page visitors and sanitized attribution", () => {
   for (const value of ["analyticsVisitorDays", "analyticsPageVisitorDays", "analyticsTrafficDaily", "analyticsTrafficVisitorDays", "utm_source", "utm_medium", "utm_campaign", "referrerDomain", "landingPath"]) assert.match(`${conversions}\n${analytics}`, new RegExp(value));
+});
+
+test("administrator and operator pages are excluded from public analytics on both layers", () => {
+  const privatePaths = [
+    "/pages/admin.html", "/pages/admin-links.html", "/pages/admin-store-customer.html",
+    "/pages/job-admin.html", "/pages/job-create.html", "/pages/job-edit.html",
+    "/pages/store-dashboard.html", "/day/admin.html"
+  ];
+  for (const path of privatePaths) {
+    assert.equal(isExcludedPublicAnalyticsPath(path), true, path);
+    assert.equal(isExcludedPublicAnalyticsPath(`${path}?repeat=1`), true, path);
+  }
+  for (const path of ["/", "/pages/jobs.html", "/pages/job-detail.html", "/pages/store-detail.html", "/day/jobs.html"]) assert.equal(isExcludedPublicAnalyticsPath(path), false, path);
+  const trackingHandler = readFileSync(path.resolve(root, "functions/src/callable/trackAnalyticsEvent.ts"), "utf8");
+  assert.ok(trackingHandler.indexOf("isExcludedPublicAnalyticsPath") < trackingHandler.indexOf("recordAnalyticsEvent({"));
+  assert.match(analytics, /isPrivateAnalyticsPath\(\)/);
+});
+
+test("deleted ranking entries use a historical label instead of a Firestore id as the title", () => {
+  assert.match(callable, /掲載終了・削除済み求人（過去PV/);
+  assert.match(callable, /isDeleted: deleted/);
+  assert.doesNotMatch(callable, /get\("jobTitle"\) \|\| id/);
 });
 
 test("dashboard marks pre-measurement traffic and shows source CV components", () => {

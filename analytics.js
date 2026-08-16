@@ -24,6 +24,12 @@ function pageType(pathname = location.pathname) {
   return "other";
 }
 
+function isPrivateAnalyticsPath(pathname = location.pathname) {
+  return /^\/pages\/admin(?:-[^/]*)?\.html$/.test(pathname)
+    || /^\/pages\/(job-admin|job-create|job-edit|store-dashboard)\.html$/.test(pathname)
+    || /^\/day\/admin\.html$/.test(pathname);
+}
+
 async function send(type, details = {}, onceKey) {
   const key = onceKey && `nox_analytics_${onceKey}`;
   if (key && session.getItem(key)) return "duplicate-client";
@@ -40,6 +46,7 @@ async function send(type, details = {}, onceKey) {
 }
 
 function trackPageView() {
+  if (isPrivateAnalyticsPath()) return Promise.resolve("excluded-client");
   const key = `pv_${location.pathname}_${location.search}`;
   return send("page_view", { pageType: pageType(), ...attribution() }, key);
 }
