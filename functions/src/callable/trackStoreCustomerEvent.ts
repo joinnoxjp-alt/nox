@@ -4,7 +4,7 @@ import { HttpsError, onCall } from "firebase-functions/v2/https";
 import { publicCallableOptions } from "../config";
 import { firestore } from "../firebaseAdmin";
 import { isCustomerPagePublic } from "../domain/storeCustomerPage";
-const EVENTS = new Set(["page_view", "job_to_store", "reservation_click", "line_click", "phone_click", "external_click"]);
+const EVENTS = new Set(["page_view", "job_to_store", "reservation_form_view", "reservation_click", "line_click", "phone_click", "external_click"]);
 function day() { return new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Tokyo" }).format(new Date()); }
 export const trackStoreCustomerEvent = onCall(publicCallableOptions, async (request) => {
   const storeId = typeof request.data?.storeId === "string" ? request.data.storeId.trim() : "", eventType = typeof request.data?.eventType === "string" ? request.data.eventType : "";

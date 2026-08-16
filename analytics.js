@@ -9,6 +9,12 @@ const session = storage("sessionStorage");
 function randomId() { return crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2)}`; }
 let visitorId = local.getItem("nox_analytics_visitor");
 if (!visitorId) { visitorId = randomId(); local.setItem("nox_analytics_visitor", visitorId); }
+function attribution() {
+  const params = new URLSearchParams(location.search), explicit = params.get("utm_source");
+  let domain = ""; try { domain = document.referrer ? new URL(document.referrer).hostname.toLowerCase() : ""; } catch {}
+  const source = explicit || (domain.includes("google.") ? "google" : domain.includes("instagram.") ? "instagram" : domain.includes("tiktok.") ? "tiktok" : domain === "t.co" || domain.includes("x.com") ? "x" : domain.includes("line.me") ? "line" : domain ? "other" : "direct");
+  return { source, medium: params.get("utm_medium") || "", campaign: params.get("utm_campaign") || "", referrerDomain: domain, landingPath: location.pathname.slice(0, 240) };
+}
 
 function pageType(pathname = location.pathname) {
   if (/\/(index\.html)?$/.test(pathname) || /\/day\/?(index\.html)?$/.test(pathname)) return "top";
@@ -35,7 +41,7 @@ async function send(type, details = {}, onceKey) {
 
 function trackPageView() {
   const key = `pv_${location.pathname}_${location.search}`;
-  return send("page_view", { pageType: pageType() }, key);
+  return send("page_view", { pageType: pageType(), ...attribution() }, key);
 }
 
 function trackAdImpression(adId, element) {

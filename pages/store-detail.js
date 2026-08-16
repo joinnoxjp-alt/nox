@@ -6,6 +6,7 @@ const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&
 const safe=v=>{try{const u=new URL(String(v||""));return ["https:","http:"].includes(u.protocol)?u.href:""}catch{return""}};
 const eventId=()=>crypto.randomUUID?.()||`${Date.now()}_${Math.random()}`;const visitorId=localStorage.getItem('nox_store_visitor')||(()=>{const id=eventId();localStorage.setItem('nox_store_visitor',id);return id})();
 async function fire(type){try{await track({storeId,eventType:type,eventId:eventId(),visitorId})}catch{}}
+const reservationFormObserver=new MutationObserver(()=>{if(document.getElementById("reservationForm")){reservationFormObserver.disconnect();fire("reservation_form_view")}});reservationFormObserver.observe(el,{childList:true,subtree:true});
 function info(label,value){return value?`<div class="store-info"><small>${esc(label)}</small><div>${esc(value)}</div></div>`:""}
 function render(page,jobs){const cover=safe(page.coverImageUrl),phone=String(page.phone||"").replace(/[^+0-9]/g,"");el.innerHTML=`
 <header class="store-hero" style="${cover?`background-image:url('${esc(cover)}')`:""}"><div class="store-hero-copy"><span class="store-badge">お客様向け店舗情報</span><h1>${esc(page.storeName)}</h1><p>${esc(page.category)}</p></div></header>

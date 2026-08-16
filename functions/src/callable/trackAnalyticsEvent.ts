@@ -14,7 +14,12 @@ export const trackAnalyticsEvent = onCall(publicCallableOptions, async (request)
   const result = await recordAnalyticsEvent({
     type, eventId: limited(request.data?.eventId, 128), visitorId: limited(request.data?.visitorId, 128),
     pageType: typeof request.data?.pageType === "string" ? request.data.pageType : undefined,
-    adId: typeof request.data?.adId === "string" ? request.data.adId : undefined
+    adId: typeof request.data?.adId === "string" ? request.data.adId : undefined,
+    source: typeof request.data?.source === "string" ? request.data.source : undefined,
+    medium: typeof request.data?.medium === "string" ? request.data.medium : undefined,
+    campaign: typeof request.data?.campaign === "string" ? request.data.campaign : undefined,
+    referrerDomain: typeof request.data?.referrerDomain === "string" ? request.data.referrerDomain : undefined,
+    landingPath: typeof request.data?.landingPath === "string" ? request.data.landingPath : undefined
   });
   return { status: result };
 });
