@@ -138,6 +138,13 @@
       .admin-collapse-toggle { width:100%; min-height:48px; margin:10px 0 14px; border:1px solid rgba(212,175,55,.65); border-radius:12px; background:rgba(212,175,55,.08); color:#f5d36b; font:inherit; font-weight:800; cursor:pointer; }
       .admin-collapse-toggle:hover, .admin-collapse-toggle:focus-visible { background:rgba(212,175,55,.16); outline:2px solid rgba(245,211,107,.35); }
       .admin-section-collapse-content[hidden] { display:none !important; }
+      .admin-section-collapse-content { min-width:0; }
+      .admin-load-error { color:#ffd0d0; }
+
+      @media (max-width:700px) {
+        .admin-collapse-toggle { min-height:52px; padding:12px 14px; text-align:left; line-height:1.45; }
+        .admin-section-collapse-content { overflow-x:hidden; }
+      }
 
       .store-media-manager {
         margin-top: 18px;
@@ -1833,32 +1840,87 @@
       }
 
       function initializeAdminSectionCollapses() {
+        const storageKey = "nox_admin_section_states_v1";
+        let savedStates = {};
+        try { savedStates = JSON.parse(localStorage.getItem(storageKey) || "{}"); } catch { savedStates = {}; }
+        const hashTarget = location.hash ? document.querySelector(location.hash) : null;
         document.querySelectorAll(".admin-section").forEach((section, index) => {
-          if (section.querySelector(":scope > .admin-collapse-toggle")) return;
+          if (section.dataset.adminCollapsible === "ready") return;
           const title = section.querySelector(":scope > .admin-section-title");
           if (!title) return;
+          section.dataset.adminCollapsible = "ready";
           const label = collapseLabelFromTitle(title);
           const content = document.createElement("div");
           content.className = "admin-section-collapse-content";
-          content.id = "adminSectionContent" + index;
-          content.hidden = true;
+          const sectionKey = section.id || title.id || `section-${index}`;
+          content.id = `adminSectionContent-${sectionKey}`;
+          const containsHashTarget = Boolean(hashTarget && section.contains(hashTarget));
+          const defaultExpanded = index === 0;
+          const expanded = containsHashTarget || (Object.hasOwn(savedStates, sectionKey) ? savedStates[sectionKey] === true : defaultExpanded);
+          content.hidden = !expanded;
           [...section.children].filter((child) => child !== title).forEach((child) => content.appendChild(child));
           const toggle = document.createElement("button");
           toggle.type = "button";
           toggle.className = "admin-collapse-toggle";
-          toggle.setAttribute("aria-expanded", "false");
+          toggle.setAttribute("aria-expanded", String(expanded));
           toggle.setAttribute("aria-controls", content.id);
-          toggle.textContent = "▼ " + label + "を表示";
+          toggle.textContent = (expanded ? "▲ " : "▼ ") + label + "を" + (expanded ? "閉じる" : "表示");
           toggle.addEventListener("click", () => {
-            const expanded = toggle.getAttribute("aria-expanded") !== "true";
-            toggle.setAttribute("aria-expanded", String(expanded));
-            content.hidden = !expanded;
-            toggle.textContent = (expanded ? "▲ " : "▼ ") + label + "を" + (expanded ? "閉じる" : "表示");
+            const nextExpanded = toggle.getAttribute("aria-expanded") !== "true";
+            toggle.setAttribute("aria-expanded", String(nextExpanded));
+            content.hidden = !nextExpanded;
+            toggle.textContent = (nextExpanded ? "▲ " : "▼ ") + label + "を" + (nextExpanded ? "閉じる" : "表示");
+            savedStates[sectionKey] = nextExpanded;
+            try { localStorage.setItem(storageKey, JSON.stringify(savedStates)); } catch {}
           });
           section.append(toggle, content);
         });
       }
       initializeAdminSectionCollapses();
+
+      function adminTargetIsStillLoading(target) {
+        return target && /読み込み中/.test(target.textContent || "");
+      }
+
+      function adminTargetHasLoadError(target) {
+        return target && /(?:読み込み|取得)に失敗|読み込めません/.test(target.textContent || "");
+      }
+
+      function renderAdminLoadError(task, error) {
+        console.error(`${task.name} load failed`, error);
+        task.targets.forEach((id) => {
+          const target = document.getElementById(id);
+          if (!target || (!adminTargetIsStillLoading(target) && !adminTargetHasLoadError(target) && target.children.length > 0)) return;
+          target.hidden = false;
+          target.replaceChildren();
+          const message = document.createElement("p");
+          message.className = "admin-message admin-load-error";
+          message.textContent = `${task.name}の読み込みに失敗しました。`;
+          const retry = document.createElement("button");
+          retry.type = "button";
+          retry.className = "admin-button sub";
+          retry.textContent = "再読み込み";
+          retry.addEventListener("click", async () => {
+            retry.disabled = true;
+            message.textContent = `${task.name}を読み込み中...`;
+            await runAdminSectionLoad(task);
+          });
+          target.append(message, retry);
+        });
+      }
+
+      async function runAdminSectionLoad(task) {
+        try {
+          await task.load();
+          const incomplete = task.targets.some((id) => adminTargetIsStillLoading(document.getElementById(id)));
+          const failed = task.targets.some((id) => adminTargetHasLoadError(document.getElementById(id)));
+          if (incomplete || failed) throw new Error(`${task.name} did not finish rendering.`);
+          return { status: "fulfilled", name: task.name };
+        } catch (error) {
+          renderAdminLoadError(task, error);
+          return { status: "rejected", name: task.name, error };
+        }
+      }
 
       const storeInviteResult = document.getElementById("storeInviteResult");
 
@@ -1936,43 +1998,29 @@
         document.body.style.visibility = "visible";
         applyDuplicateJobSeed();
 
-        await Promise.all([
-          loadDashboard("30d"),
-          loadAds(),
-          loadUsers(),
-          loadStoreApplications(),
-          loadStoreApplicationHistory(),
-          loadRegisteredStores(),
-          loadJobApplications(),
-          loadPublicJobs(),
-          loadCasts(),
-          initializeStoreReviewAdmin(db, user),
-        ]);
+        const adminLoadTasks = [
+          { name: "NOX運営ダッシュボード", load: () => loadDashboard("30d"), targets: ["dashboardStatus"] },
+          { name: "広告掲載管理", load: loadAds, targets: ["adManagementGrid"] },
+          { name: "会員登録ユーザー一覧", load: loadUsers, targets: ["userList"] },
+          { name: "店舗掲載申請一覧", load: loadStoreApplications, targets: ["storeApplicationList"] },
+          { name: "承認済み・登録完了履歴", load: loadStoreApplicationHistory, targets: ["storeApplicationHistoryList"] },
+          { name: "登録済み店舗・契約管理", load: loadRegisteredStores, targets: ["registeredStoreList", "storeContractList"] },
+          { name: "求人掲載申請一覧", load: loadJobApplications, targets: ["jobApplicationList"] },
+          { name: "公開中求人一覧", load: loadPublicJobs, targets: ["publicJobList"] },
+          { name: "キャスト管理", load: loadCasts, targets: ["castList"] },
+          { name: "掲載店舗様の声・口コミ管理", load: () => initializeStoreReviewAdmin(db, user), targets: ["storeReviewAdminList"] },
+        ];
+        await Promise.allSettled(adminLoadTasks.map(runAdminSectionLoad));
       }
 
-      initializeAdminPage();
+      initializeAdminPage().catch((error) => {
+        console.error("Admin page initialization failed", error);
+        document.body.style.visibility = "visible";
+      });
 
       const number=value=>Number(value||0).toLocaleString("ja-JP");
       const card=(label,value,note="")=>`<article class="dashboard-card"><span>${label}</span><strong>${value}</strong>${note?`<small>${escapeHTML(note)}</small>`:""}</article>`;
       const rate=value=>value===null||value===undefined?"算出不可":`${Number(value).toFixed(2)}%`;
-      function renderDashboardDaily(rows){
-        document.getElementById("dashboardDaily").innerHTML=`<h3 style="margin-top:24px">日別推移（${rows.length}日）</h3><div style="overflow:auto"><table class="dashboard-table"><thead><tr><th>日付</th><th>PV</th><th>UU</th><th>求人閲覧</th><th>会員</th><th>求人応募</th><th>店舗依頼</th><th>IMP</th><th>広告クリック</th></tr></thead><tbody>${rows.map(row=>`<tr><td>${escapeHTML(row.dateKey)}</td><td>${row.analyticsMeasured?number(row.pv):"計測前"}</td><td>${row.analyticsMeasured?number(row.uu):"計測前"}</td><td>${number(row.jobViews)}</td><td>${number(row.memberRegistrations)}</td><td>${number(row.jobApplications)}</td><td>${number(row.storeApplications)}</td><td>${row.analyticsMeasured?number(row.impressions):"計測前"}</td><td>${row.analyticsMeasured?number(row.clicks):"計測前"}</td></tr>`).join("")}</tbody></table></div>`;
-      }
-      async function loadDashboard(period){
-        const status=document.getElementById("dashboardStatus"),grid=document.getElementById("dashboardGrid"),kpis=document.getElementById("dashboardKpis");
-        status.hidden=false;status.textContent="指標を読み込み中...";grid.hidden=true;kpis.hidden=true;
-        try{
-          const{data}=await getAdminDashboardCallable({period});const k=data.kpis,m=data.metrics;
-          const coverageNote=`計測開始 ${data.measurementStartDate.replaceAll("-","/")}〜`;
-          kpis.innerHTML=[card("PV",number(k.pv),coverageNote),card("UU",number(k.uu),coverageNote),card("求人閲覧",number(k.jobViews)),card("店舗関連閲覧",number(k.storeViews),"求人詳細閲覧時に加算"),card("広告IMP",number(k.impressions),data.advertising.isConfirmedMinimum?"確認可能な最低値":""),card("広告クリック",number(k.clicks)),card("CTR",rate(k.ctr)),card("CV合計",number(k.conversions)),card("CVR（CV ÷ UU）",k.cvrEligible?rate(k.cvr):"計測期間不足")].join("");
-          grid.innerHTML=[card("新規一般会員",number(k.memberRegistrations)),card("求人応募",number(k.jobApplications)),card("店舗掲載依頼",number(k.storeApplications)),card("現在の一般会員",number(m.generalUsers)),card("全users",number(m.totalUsers)),card("総求人",number(m.totalJobs)),card("公開求人",number(m.publicJobs)),card("登録店舗",number(m.totalStores)),card("公開店舗",number(m.publicStores)),card("現在広告",number(m.totalAds)),card("掲載中広告",number(m.enabledAds)),card("口コミ",number(m.totalReviews)),card("承認待ち口コミ",number(m.pendingReviews)),card("TOPページPV",number(m.topPv),coverageNote),card("求人一覧PV",number(m.jobListPv),coverageNote),card("求人詳細PV",number(m.jobDetailPv),coverageNote)].join("");
-          document.getElementById("dashboardAds").innerHTML=`<h3 style="margin-top:24px">広告実績</h3><p>全体：IMP ${number(data.advertising.total.impressions)} / クリック ${number(data.advertising.total.clicks)} / CTR ${rate(data.advertising.total.ctr)}${data.advertising.isConfirmedMinimum?"（削除済み広告の日次履歴を含む確認可能な最低値）":""}</p><p>現在広告counter：IMP ${number(data.advertising.currentCounter.impressions)} / クリック ${number(data.advertising.currentCounter.clicks)}</p><table class="dashboard-table"><thead><tr><th>枠</th><th>広告</th><th>IMP</th><th>クリック</th><th>CTR</th><th>状態</th></tr></thead><tbody>${data.ads.map(ad=>`<tr><td>${escapeHTML(String(ad.slot))}</td><td>${escapeHTML(String(ad.name))}</td><td>${number(ad.impressions)}</td><td>${number(ad.clicks)}</td><td>${rate(ad.ctr)}</td><td>${ad.enabled?"掲載中":"停止"}</td></tr>`).join("")}</tbody></table>`;
-          renderDashboardDaily(data.daily);
-          document.getElementById("dashboardMeasurementNote").textContent=`PV・UU・日別広告は${coverageNote}。計測前を0として補完していません。CVはusers / applications・jobEntries / storeApplicationsの実データから集計し、CVRは同一期間のUUが揃う場合だけ表示します。`;
-          status.hidden=true;grid.hidden=false;kpis.hidden=false;
-          if(period==="30d"){const text=`NOX 直近30日\nPV：${number(k.pv)}（${coverageNote}）\nUU：${number(k.uu)}（${coverageNote}）\n求人閲覧：${number(k.jobViews)}\n店舗関連閲覧：${number(k.storeViews)}\n広告IMP：${number(k.impressions)}\n広告クリック：${number(k.clicks)}\nCTR：${rate(k.ctr)}\n新規会員：${number(k.memberRegistrations)}\n求人応募：${number(k.jobApplications)}\n店舗掲載依頼：${number(k.storeApplications)}\nCV合計：${number(k.conversions)}\nCVR（CV ÷ UU）：${k.cvrEligible?rate(k.cvr):"計測期間不足"}`;document.getElementById("salesSummaryText").textContent=text;document.getElementById("salesSummary").hidden=false}else document.getElementById("salesSummary").hidden=true;
-        }catch(error){console.error("Dashboard load failed",error);status.textContent="ダッシュボードを読み込めませんでした。"}
-      }
       document.getElementById("copySalesSummary").addEventListener("click",async()=>navigator.clipboard.writeText(document.getElementById("salesSummaryText").textContent));
       document.getElementById("dashboardPeriods").addEventListener("click",event=>{const button=event.target.closest("[data-period]");if(!button)return;document.querySelectorAll("[data-period]").forEach(item=>item.setAttribute("aria-pressed",String(item===button)));loadDashboard(button.dataset.period)});
 

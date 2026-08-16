@@ -84,8 +84,27 @@ test("deleted ranking entries use a historical label instead of a Firestore id a
   assert.doesNotMatch(callable, /get\("jobTitle"\) \|\| id/);
 });
 
+test("admin initialization has one KPI loader and isolates section failures", () => {
+  assert.equal((admin.match(/async function loadDashboard\s*\(/g) || []).length, 1);
+  assert.match(admin, /Promise\.allSettled\(adminLoadTasks\.map\(runAdminSectionLoad\)\)/);
+  assert.match(admin, /adminTargetIsStillLoading/);
+  assert.match(admin, /adminTargetHasLoadError/);
+  assert.match(admin, /再読み込み/);
+});
+
+test("major admin sections are collapsed without changing their internal controls", () => {
+  assert.match(admin, /nox_admin_section_states_v1/);
+  assert.match(admin, /aria-expanded/);
+  assert.match(admin, /aria-controls/);
+  assert.match(admin, /const defaultExpanded = index === 0/);
+  assert.match(admin, /containsHashTarget/);
+  assert.match(admin, /section\.append\(toggle, content\)/);
+  assert.match(admin, /configureCollapsible\(jobApplicationToggle/);
+  assert.match(admin, /configureCollapsible\(publicJobToggle/);
+});
+
 test("dashboard marks pre-measurement traffic and shows source CV components", () => {
-  for (const label of ["計測前", "計測期間不足", "新規一般会員", "求人応募", "店舗掲載依頼", "店舗関連閲覧", "dashboardDaily"]) assert.match(admin, new RegExp(label));
+  for (const label of ["計測前", "計測期間不足", "無料会員登録", "求人応募", "店舗掲載依頼", "店舗関連閲覧", "dashboardDaily"]) assert.match(admin, new RegExp(label));
 });
 
 test("jobs.html is a formal job-list page view", () => { assert.match(analytics, /\(jobs\|girls\|men\)/); });

@@ -33,5 +33,6 @@ test("dashboard exposes sales KPIs and documented rate formulas", () => {
   assert.match(dashboard, /直近30日 営業用サマリー/);
   assert.match(dashboard, /k\.clicks\s*\/\s*k\.impressions|k\.ctr/);
   assert.match(dashboard, /CVR（CV ÷ UU）/);
-  assert.match(dashboard, /measurementStartDate/);
+  assert.match(dashboard, /dataQuality/);
+  assert.match(dashboard, /dashboardQuality/);
 });
