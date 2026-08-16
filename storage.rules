@@ -131,6 +131,15 @@ service firebase.storage {
       allow delete: if isFixedActiveAdmin();
     }
 
+    /* Customer-facing store media is isolated from store branding and jobs. */
+    match /customer-pages/{storeId}/{kind}/{fileName} {
+      allow read: if true;
+      allow create, update: if isFixedActiveAdmin()
+        && kind in ["main", "cover", "gallery"]
+        && validRasterImage(5 * 1024 * 1024);
+      allow delete: if isFixedActiveAdmin();
+    }
+
     /*
      * Cast media is image-only and administrator-managed.
      * The existing cast video upload path is deliberately denied.

@@ -35,3 +35,8 @@ export { manageAdminWorkCompany } from "./callable/manageAdminWorkCompany";
 export { manageAdminWorkJob } from "./callable/manageAdminWorkJob";
 export { getPublicWorkJobs, getPublicWorkJob } from "./callable/getPublicWorkJobs";
 export { getAdminWorkData } from "./callable/getAdminWorkData";
+export { getPublicStoreCustomerPage, getPublicCustomerStores } from "./callable/getPublicStoreCustomerPage";
+export { manageAdminStoreCustomerPage } from "./callable/manageAdminStoreCustomerPage";
+export { getAdminStoreCustomerData } from "./callable/getAdminStoreCustomerData";
+export { submitStoreReservation } from "./callable/submitStoreReservation";
+export { trackStoreCustomerEvent } from "./callable/trackStoreCustomerEvent";

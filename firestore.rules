@@ -1081,6 +1081,24 @@ allow create: if request.auth != null
       allow read, write: if false;
     }
 
+    /* Customer-facing store pages, reservations, and visit analytics are
+     * accessed only through validated callable functions. */
+    match /storeCustomerPages/{document=**} {
+      allow read, write: if false;
+    }
+    match /storeReservations/{document=**} {
+      allow read, write: if false;
+    }
+    match /storeReservationDedupe/{document=**} {
+      allow read, write: if false;
+    }
+    match /storeCustomerDaily/{document=**} {
+      allow read, write: if false;
+    }
+    match /storeCustomerEventDedupe/{document=**} {
+      allow read, write: if false;
+    }
+
     /*
      * NOX CHANCE phone identities and player safeguards are trusted backend
      * state. Even the owner and browser administrator must use a callable.

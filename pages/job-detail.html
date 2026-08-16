@@ -474,6 +474,8 @@
           functions,
           "getPublicJobStoreMedia",
         );
+        const getPublicStoreCustomerPage = httpsCallable(functions, "getPublicStoreCustomerPage");
+        const trackStoreCustomerEvent = httpsCallable(functions, "trackStoreCustomerEvent");
 
         function escapeHtml(v) {
           return String(v).replace(/[&<>"']/g, (character) => ({
@@ -799,6 +801,7 @@
               <button id="applyBtn" type="button" class="line-btn">${isPublicInfo ? "この求人について相談する" : "応募する"}</button>
               ${fallbackContact}
             </section>
+            <section id="customerStoreLink" class="section" hidden></section>
 
             <dialog id="applyDialog" class="apply-modal">
               <div class="apply-modal-inner">
@@ -1012,6 +1015,20 @@
           });
         }
 
+        async function setupCustomerStoreLink(data) {
+          const storeId = data.storeId || data.ownerId || "";
+          const container = document.getElementById("customerStoreLink");
+          if (!storeId || !container) return;
+          try {
+            await getPublicStoreCustomerPage({ storeId });
+            container.hidden = false;
+            container.innerHTML = `<h2>このお店に遊びに行く</h2><p>店舗情報・料金・予約はこちら</p><a id="customerStoreButton" class="line-btn" href="./store-detail.html?id=${encodeURIComponent(storeId)}">お客様向け店舗ページを見る</a>`;
+            document.getElementById("customerStoreButton")?.addEventListener("click", () => {
+              trackStoreCustomerEvent({ storeId, eventType: "job_to_store", eventId: crypto.randomUUID?.() || `${Date.now()}_${Math.random()}` }).catch(() => {});
+            });
+          } catch { container.hidden = true; }
+        }
+
         async function loadJob() {
           if (!id) {
             jobDetail.innerHTML = `
@@ -1064,6 +1081,7 @@
             renderJob(data, media);
             setupImagePreview();
             setupApplication(data);
+            await setupCustomerStoreLink(data);
             await setupSaveButton();
           } catch (error) {
             console.error("求人読み込みエラー:", error);
