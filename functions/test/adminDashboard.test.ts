@@ -51,6 +51,7 @@ test("dashboard aggregates expanded CV, reservations and rankings from source do
   assert.match(callable, /jobRanking/);
   assert.match(callable, /storeRanking/);
   assert.match(admin, /人気求人ランキング/);
+  assert.match(admin, /応募率/);
   assert.match(admin, /店舗・予約ランキング/);
   assert.match(admin, /カスタム期間/);
   assert.match(admin, /計測開始前/);
