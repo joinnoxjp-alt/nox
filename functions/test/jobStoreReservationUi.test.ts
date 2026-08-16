@@ -70,3 +70,25 @@ test("public customer page renders enabled social reservation channels and profi
   assert.match(storeDetail, /page\.externalReservationLabel\|\|'予約サイトへ'/);
   assert.match(storeDetail, /class="store-profile-image"/);
 });
+
+test("successful admin save clears only pending local image selections", () => {
+  const editorScript = readFileSync(resolve(__dirname, "../../../pages/admin-store-customer.js"), "utf8");
+  assert.match(editorScript, /await save\(\{ action: 'save', page \}\);\s*document\.getElementById\('mainFile'\)\.value = '';\s*document\.getElementById\('galleryFiles'\)\.value = '';/);
+  assert.match(editorScript, /await reload\(\)/);
+  assert.doesNotMatch(editorScript, /images\.galleryImages\s*=\s*\[\]\s*;/);
+});
+
+test("public store gallery has an accessible full-screen viewer", () => {
+  const storeDetail = readFileSync(resolve(__dirname, "../../../pages/store-detail.js"), "utf8");
+  const styles = readFileSync(resolve(__dirname, "../../../pages/store-customer.css"), "utf8");
+  assert.match(storeDetail, /data-gallery-index/);
+  assert.match(storeDetail, /role="dialog" aria-modal="true"/);
+  assert.match(storeDetail, /event\.key==="Escape"/);
+  assert.match(storeDetail, /event\.key==="ArrowLeft"/);
+  assert.match(storeDetail, /event\.key==="ArrowRight"/);
+  assert.match(storeDetail, /event\.target===viewer\|\|event\.target\.classList\.contains\("store-image-viewer-stage"\)/);
+  assert.match(styles, /body\.store-image-viewer-open \{ overflow:hidden; \}/);
+  assert.match(styles, /\.store-image-viewer-nav\[hidden\] \{ display:none; \}/);
+  assert.match(styles, /touch-action:pan-x pan-y pinch-zoom/);
+  assert.match(styles, /100dvh/);
+});

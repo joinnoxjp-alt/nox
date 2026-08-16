@@ -118,6 +118,8 @@ editor.onsubmit = async (event) => {
       benefitEnabled: checked(editor, 'benefitEnabled'), benefitTitle: val(editor, 'benefitTitle'), benefitContent: val(editor, 'benefitContent'), benefitConditions: val(editor, 'benefitConditions'), benefitNotes: val(editor, 'benefitNotes'), benefitExpiresAt: val(editor, 'benefitExpiresAt'), ...images,
     };
     await save({ action: 'save', page });
+    document.getElementById('mainFile').value = '';
+    document.getElementById('galleryFiles').value = '';
     for (const path of pendingDeletes) { try { await deleteObject(ref(storage, path)); } catch {} }
     pendingDeletes = [];
     status.textContent = '店舗情報を更新しました';
