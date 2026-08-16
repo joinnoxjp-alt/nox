@@ -206,3 +206,35 @@ export function buildStoreApplicationCreatedMessage(
     `管理画面：${ADMIN_URL}`
   ].join("\n"));
 }
+
+export function buildStoreReservationCreatedMessage(
+  reservationId: string,
+  data: Record<string, unknown>,
+  eventTime: string
+): DiscordMessage {
+  const benefit = data.benefitEligible === true
+    ? ["★NOX限定特典利用対象", `特典：${safeText(data.benefitTitle)}`]
+    : ["NOX限定特典：対象外"];
+  return message([
+    "【NOX予約リクエスト】",
+    "",
+    `店舗：${safeText(data.storeName)}`,
+    `storeId：${safeText(data.storeId)}`,
+    `予約ID：${safeText(reservationId)}`,
+    "",
+    "予約経路：NOX",
+    "★「NOXを見た」でのご予約です。",
+    ...benefit,
+    "",
+    `お名前：${safeText(data.name)}`,
+    `電話番号：${safeText(data.phone)}`,
+    `希望日：${safeText(data.desiredDate)}`,
+    `希望時間：${safeText(data.desiredTime)}`,
+    `人数：${safeText(String(data.people ?? ""))}名`,
+    `求人ID：${safeText(data.jobId, "なし")}`,
+    `ご希望内容：${safeText(data.content, "なし")}`,
+    `備考：${safeText(data.notes, "なし")}`,
+    `送信日時：${formatJapanTime(data.createdAt, eventTime)}`,
+    "ステータス：確認待ち"
+  ].join("\n"));
+}

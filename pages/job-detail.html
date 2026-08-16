@@ -1041,7 +1041,7 @@
             if (noRecruiting && applyButton) applyButton.hidden = true;
             container.hidden = false;
             container.classList.toggle("apply-box", noRecruiting);
-            container.innerHTML = `<h2>${noRecruiting ? "お店を予約する" : "このお店に遊びに行く"}</h2><p>店舗情報・料金を確認して、NOX予約フォームから予約できます。</p><a id="customerStoreButton" class="line-btn" href="./store-detail.html?id=${encodeURIComponent(storeId)}#reservationForm">お店を予約する</a>`;
+            container.innerHTML = `<h2>${noRecruiting ? "お店を予約する" : "このお店に遊びに行く"}</h2><p>店舗情報・料金を確認して、NOX予約フォームから予約できます。</p><a id="customerStoreButton" class="line-btn" href="./store-detail.html?id=${encodeURIComponent(storeId)}&jobId=${encodeURIComponent(id)}#reservationForm">お店を予約する</a>`;
             document.getElementById("customerStoreButton")?.addEventListener("click", () => {
               trackStoreCustomerEvent({ storeId, eventType: "job_to_store", eventId: crypto.randomUUID?.() || `${Date.now()}_${Math.random()}` }).catch(() => {});
             });

@@ -40,3 +40,4 @@ export { manageAdminStoreCustomerPage } from "./callable/manageAdminStoreCustome
 export { getAdminStoreCustomerData } from "./callable/getAdminStoreCustomerData";
 export { submitStoreReservation } from "./callable/submitStoreReservation";
 export { trackStoreCustomerEvent } from "./callable/trackStoreCustomerEvent";
+export { notifyDiscordOnStoreReservationCreated } from "./triggers/notifyDiscordOnStoreReservationCreated";

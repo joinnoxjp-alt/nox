@@ -7,6 +7,7 @@ import {
   buildJobApplicationCreatedMessage,
   buildStoreApplicationCreatedMessage,
   buildStoreReviewCreatedMessage,
+  buildStoreReservationCreatedMessage,
   buildUserCreatedMessage
 } from "../src/notifications/discordMessages";
 
@@ -51,6 +52,20 @@ test(
     );
   }
 );
+
+test("reservation message identifies NOX traffic and benefit eligibility", () => {
+  const result = buildStoreReservationCreatedMessage("reservation-1", {
+    storeName: "Bar 8 ～Eight～", storeId: "aCtKyqRJmPskKwxAEDTv",
+    name: "テスト", phone: "00000000000", desiredDate: "2026-08-17",
+    desiredTime: "21:20", people: 1, content: "席予約", notes: "",
+    benefitEligible: true, benefitTitle: "NOX限定！3時間飲み放題3,000円",
+    status: "new"
+  }, EVENT_TIME);
+  assert.match(result.content, /NOX予約リクエスト/);
+  assert.match(result.content, /「NOXを見た」でのご予約です/);
+  assert.match(result.content, /NOX限定特典利用対象/);
+  assert.match(result.content, /ステータス：確認待ち/);
+});
 
 test(
   "job application message contains the approved operational fields",

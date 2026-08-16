@@ -7,7 +7,7 @@ const detail = readFileSync(resolve(__dirname, "../../../pages/job-detail.html")
 
 test("job detail shows the reservation CTA only for a published NOX form page", () => {
   assert.match(detail, /customerPage\?\.reservationFormEnabled !== true/);
-  assert.match(detail, /store-detail\.html\?id=\$\{encodeURIComponent\(storeId\)\}#reservationForm/);
+  assert.match(detail, /store-detail\.html\?id=\$\{encodeURIComponent\(storeId\)\}&jobId=\$\{encodeURIComponent\(id\)\}#reservationForm/);
   assert.match(detail, />お店を予約する<\/a>/);
 });
 
@@ -22,6 +22,17 @@ test("reservation hash is handled after the asynchronous form render", () => {
   const storeDetail = readFileSync(resolve(__dirname, "../../../pages/store-detail.js"), "utf8");
   assert.match(storeDetail, /location\.hash==="#reservationForm"/);
   assert.match(storeDetail, /form\.scrollIntoView\(\{behavior:"smooth",block:"start"\}\)/);
+  assert.match(storeDetail, /await submit\(\{\.\.\.data,storeId,jobId,people:/);
+  assert.match(storeDetail, /予約リクエストを送信しました。店舗またはNOX運営からの確認連絡をお待ちください。/);
+  assert.match(storeDetail, /code\.includes\("invalid-argument"\)/);
+});
+
+test("admin reservation list shows NOX source, benefit, job and Japanese status", () => {
+  const admin = readFileSync(resolve(__dirname, "../../../pages/admin-store-customer.js"), "utf8");
+  assert.match(admin, /new:'確認待ち'/);
+  assert.match(admin, /「NOXを見た」でのご予約/);
+  assert.match(admin, /benefitEligible/);
+  assert.match(admin, /jobId/);
 });
 
 test("ordinary jobs keep the existing application CTA and handler", () => {

@@ -3,7 +3,8 @@ export type DiscordNotificationType =
   | "job_application_created"
   | "store_application_created"
   | "store_review_created"
-  | "applicant_created";
+  | "applicant_created"
+  | "store_reservation_created";
 
 export type DiscordNotificationStatus =
   | "processing"
@@ -24,7 +25,8 @@ export interface NotificationProcessInput {
     | "jobApplications"
     | "storeApplications"
     | "storeReviews"
-    | "applications";
+    | "applications"
+    | "storeReservations";
   sourceDocumentPath: string;
   message: DiscordMessage;
 }
