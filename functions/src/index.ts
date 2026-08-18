@@ -41,3 +41,4 @@ export { getAdminStoreCustomerData } from "./callable/getAdminStoreCustomerData"
 export { submitStoreReservation } from "./callable/submitStoreReservation";
 export { trackStoreCustomerEvent } from "./callable/trackStoreCustomerEvent";
 export { notifyDiscordOnStoreReservationCreated } from "./triggers/notifyDiscordOnStoreReservationCreated";
+export { shareJob, shareStore, shareWorkJob } from "./http/sharePages";

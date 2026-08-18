@@ -805,6 +805,8 @@
 
             <section class="apply-box">
               <h2>応募</h2>
+              <button id="shareJobBtn" type="button" class="btn">この求人を共有</button>
+              <p id="shareJobStatus" class="apply-status" role="status"></p>
               <p><span class="listing-source-badge">${window.NoxJobFields.listingSourceLabel(job.listingSource)}</span></p>
               ${isPublicInfo ? `<aside class="public-info-notice"><strong>公開情報確認済</strong><br>本ページは公開されている情報をもとにNOX運営が作成しています。店舗によるNOXへの掲載内容の確認・承認・提携を示すものではありません。募集状況や最新の条件については、お問い合わせ時にご確認ください。</aside>` : `<aside class="public-info-notice"><strong>NOX掲載店舗</strong><br>店舗様から直接提供・確認いただいた情報を掲載しています。</aside>`}
               <p class="apply-note">${isPublicInfo ? "この求人についてNOXへ相談できます。NOXが店舗から正式に指定された連絡先への応募ではありません。" : `応募内容をコピーした後、店舗指定の${window.NoxJobFields.applyTypeLabel(job.applyType)}へ移動します。NOXに氏名・電話番号は保存されません。`}</p>
@@ -862,6 +864,25 @@
             statusElement.textContent = "コピーできませんでした。文章を選択してコピーしてください。";
             return false;
           }
+        }
+
+        function setupJobShare(data) {
+          const button = document.getElementById("shareJobBtn");
+          const status = document.getElementById("shareJobStatus");
+          if (!button || !status || !id) return;
+          const shareUrl = `https://asia-northeast1-noxapp-29171.cloudfunctions.net/shareJob?id=${encodeURIComponent(id)}`;
+          button.addEventListener("click", async () => {
+            try {
+              if (navigator.share) {
+                await navigator.share({ title: `${data.storeName || "NOX掲載店舗"}｜${data.title || data.jobTitle || "求人情報"}`, url: shareUrl });
+                status.textContent = "共有しました";
+              } else {
+                await copyText(shareUrl, status);
+              }
+            } catch (error) {
+              if (error?.name !== "AbortError") status.textContent = "共有できませんでした。";
+            }
+          });
         }
 
         function setupImagePreview() {
@@ -1099,6 +1120,7 @@
 
             renderJob(data, media);
             setupImagePreview();
+            setupJobShare(data);
             setupApplication(data);
             await setupCustomerStoreLink(data);
             await setupSaveButton();
