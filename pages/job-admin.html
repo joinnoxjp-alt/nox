@@ -283,6 +283,12 @@
       display:block;
     }
 
+    .registered-stores-toggle{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:52px;padding:13px 16px;color:#f5d36b;background:rgba(212,175,55,.08);border:1px solid rgba(212,175,55,.55);border-radius:13px;cursor:pointer;font:inherit;font-weight:800;text-align:left}
+    .registered-stores-toggle:hover,.registered-stores-toggle:focus-visible{background:rgba(212,175,55,.16);outline:2px solid rgba(245,211,107,.3)}
+    .registered-store-content[hidden]{display:none}
+    .edit-media-heading{margin:6px 0 0;color:#f5d36b;font-size:14px}.edit-media-help{margin:0;color:#aaa;font-size:12px;line-height:1.6}
+    .edit-pr-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.edit-pr-item{margin:0;padding:8px;background:#080808;border:1px solid rgba(212,175,55,.3);border-radius:12px}.edit-pr-item img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:8px}.edit-pr-item figcaption{margin:7px 0;color:#bbb;font-size:12px}.edit-pr-remove{width:100%;min-height:42px;color:#fff;background:#8d2020;border:0;border-radius:9px;cursor:pointer;font-weight:bold}.edit-pr-empty{grid-column:1/-1;margin:0;padding:14px;color:#aaa;text-align:center;border:1px dashed #444;border-radius:10px}
+
     .edit-save-status{
       min-height:22px;
       margin-top:12px;
@@ -317,6 +323,7 @@
       .job-admin-card{
         padding:17px;
       }
+      .edit-pr-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
     }
   </style>
 </head>
@@ -357,18 +364,10 @@
         <!-- 登録済み店舗 -->
         <section class="admin-section">
 
-          <h3 class="admin-section-title">
-            登録済み店舗一覧
-          </h3>
-
-          <p class="admin-section-text">
-            店舗UIDとownerIdを基準に登録済み店舗を表示します。求人が0件でも表示されます。
-          </p>
-
-          <div id="registeredStoreList">
-            <p class="loading-message">
-              読み込み中...
-            </p>
+          <button type="button" id="registeredStoresToggle" class="registered-stores-toggle" aria-expanded="false" aria-controls="registeredStoresContent"><span id="registeredStoresToggleLabel">▶ 登録店舗一覧（0件）</span></button>
+          <div id="registeredStoresContent" class="registered-store-content" hidden>
+            <p class="admin-section-text">店舗UIDとownerIdを基準に登録済み店舗を表示します。求人が0件でも表示されます。</p>
+            <div id="registeredStoreList"><p class="loading-message">読み込み中...</p></div>
           </div>
 
         </section>
@@ -443,7 +442,8 @@
       getStorage,
       ref,
       uploadBytes,
-      getDownloadURL
+      getDownloadURL,
+      deleteObject
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
     const db = getFirestore();
@@ -471,9 +471,16 @@
 
     const registeredStoreList =
       document.getElementById("registeredStoreList");
+    const registeredStoresToggle = document.getElementById("registeredStoresToggle");
+    const registeredStoresToggleLabel = document.getElementById("registeredStoresToggleLabel");
+    const registeredStoresContent = document.getElementById("registeredStoresContent");
 
     let currentAdminUser = null;
     const publishedJobsById = new Map();
+    const editMediaByJobId = new Map();
+
+    function updateRegisteredStoresToggle(count){const expanded=registeredStoresToggle.getAttribute("aria-expanded")==="true";registeredStoresToggleLabel.textContent=`${expanded?"▼":"▶"} 登録店舗一覧（${count}件）`;registeredStoresContent.hidden=!expanded;registeredStoresToggle.dataset.count=String(count)}
+    registeredStoresToggle.addEventListener("click",()=>{registeredStoresToggle.setAttribute("aria-expanded",String(registeredStoresToggle.getAttribute("aria-expanded")!=="true"));updateRegisteredStoresToggle(Number(registeredStoresToggle.dataset.count||0))});
 
     document.body.style.visibility =
       "hidden";
@@ -618,6 +625,7 @@
             ...storeDocument.data()
           })
         );
+        updateRegisteredStoresToggle(stores.length);
 
         if(stores.length === 0){
           registeredStoreList.innerHTML = `
@@ -655,6 +663,7 @@
           });
       }catch(error){
         console.error("登録済み店舗取得エラー",error);
+        updateRegisteredStoresToggle(0);
         registeredStoreList.innerHTML = `
           <p class="empty-message">登録済み店舗を読み込めませんでした。</p>
         `;
@@ -988,6 +997,15 @@
 
       const imageUrl =
         getJobImage(job);
+
+      const canonicalImageUrls = Array.isArray(job.imageUrls) ? job.imageUrls : [];
+      const legacyImageUrls = Array.isArray(job.images) ? job.images : [];
+      const imageUrls = [...new Set([...canonicalImageUrls,...legacyImageUrls].filter((url) => typeof url === "string" && url))];
+      const imagePaths = Array.isArray(job.imageStoragePaths) ? job.imageStoragePaths : [];
+      const prImages = imageUrls.map((url) => ({url,path:imagePaths[canonicalImageUrls.indexOf(url)] || ""}))
+        .filter((item) => typeof item.url === "string" && item.url && item.url !== imageUrl).slice(0,10);
+      const legacyMainIndex = canonicalImageUrls.indexOf(imageUrl);
+      editMediaByJobId.set(job.id,{mainUrl:imageUrl || "",mainPath:job.mainImageStoragePath || (legacyMainIndex >= 0 ? imagePaths[legacyMainIndex] || "" : ""),prImages,removedPaths:[]});
 
       const description =
         getJobDescription(job);
@@ -1438,7 +1456,7 @@
 
             <div class="edit-form-group full">
               <label>
-                メイン画像を変更
+                求人メイン画像（現在の画像）
               </label>
 
               <input
@@ -1455,6 +1473,15 @@
                 }"
                 alt="画像プレビュー"
               >
+              <p class="edit-media-help">新しい画像を選択した場合のみ差し替えます。</p>
+            </div>
+
+            <div class="edit-form-group full">
+              <p class="edit-media-heading">求人詳細PR画像（最大10枚）</p>
+              <div id="editPrImages-${escapeHtml(job.id)}" class="edit-pr-grid"></div>
+              <label for="editPrFiles-${escapeHtml(job.id)}">PR画像を追加</label>
+              <input type="file" id="editPrFiles-${escapeHtml(job.id)}" multiple accept="image/jpeg,image/png,image/webp">
+              <p id="editPrCount-${escapeHtml(job.id)}" class="edit-media-help"></p>
             </div>
 
           </div>
@@ -1487,7 +1514,22 @@
         </div>
       `;
 
+      requestAnimationFrame(() => renderEditPrImages(job.id));
+
       return card;
+    }
+
+    function renderEditPrImages(jobId){
+      const state=editMediaByJobId.get(jobId),grid=document.getElementById(`editPrImages-${jobId}`),count=document.getElementById(`editPrCount-${jobId}`);
+      if(!state||!grid||!count)return;
+      grid.innerHTML=state.prImages.length?state.prImages.map((item,index)=>`<figure class="edit-pr-item"><img src="${escapeHtml(item.url)}" alt="求人詳細PR画像 ${index+1}" loading="lazy"><figcaption>既存画像 ${index+1}</figcaption><button type="button" class="edit-pr-remove" data-job-id="${escapeHtml(jobId)}" data-pr-index="${index}">削除</button></figure>`).join(""):'<p class="edit-pr-empty">登録済みのPR画像はありません。</p>';
+      count.textContent=`現在 ${state.prImages.length}枚（あと${10-state.prImages.length}枚追加できます）`;
+    }
+
+    function isSafeJobImagePath(path,jobId){
+      if(typeof path!=="string")return false;
+      const parts=path.split("/");
+      return path.startsWith(`job-images/${jobId}/`) || (parts[0]==="jobs"&&parts[2]===jobId&&parts.length===4);
     }
 
     /* =========================
@@ -1499,6 +1541,12 @@
       async (event) => {
 
         const target = event.target;
+
+        if(target.classList.contains("edit-pr-remove")){
+          const state=editMediaByJobId.get(target.dataset.jobId),index=Number(target.dataset.prIndex);
+          if(state&&Number.isInteger(index)&&state.prImages[index]){const [removed]=state.prImages.splice(index,1);if(removed.path)state.removedPaths.push(removed.path);renderEditPrImages(target.dataset.jobId)}
+          return;
+        }
 
         if(
           target.classList.contains(
@@ -1814,6 +1862,8 @@
         document.getElementById(
           `editImage-${jobId}`
         );
+      const prImageInput = document.getElementById(`editPrFiles-${jobId}`);
+      const mediaState = editMediaByJobId.get(jobId);
 
       if(!storeName){
         alert(
@@ -1842,6 +1892,8 @@
       statusElement.textContent =
         "変更内容を保存しています...";
 
+      const newlyUploadedPaths=[];
+      let firestoreSaved=false;
       try{
         const jobReference =
           doc(db,"jobs",jobId);
@@ -1858,20 +1910,26 @@
         const oldData =
           jobSnapshot.data();
 
+        if(!mediaState){throw new Error("画像情報を読み込めませんでした")}
+        const newPrFiles=Array.from(prImageInput.files||[]);
+        if(mediaState.prImages.length+newPrFiles.length>10){throw new Error("求人詳細PR画像は既存画像と合わせて10枚以内にしてください")}
+        if(newPrFiles.some((file)=>!["image/jpeg","image/png","image/webp"].includes(file.type)||file.size>5*1024*1024)){throw new Error("PR画像はJPEG・PNG・WebP、5MB以下にしてください")}
+
         let mainImage =
           getJobImage(oldData);
 
         const selectedFile =
           imageInput.files?.[0];
+        let newMainPath="";
 
         if(selectedFile){
 
           if(
             selectedFile.size >
-            8 * 1024 * 1024
+            5 * 1024 * 1024
           ){
             throw new Error(
-              "画像サイズは8MB以下にしてください"
+              "画像サイズは5MB以下にしてください"
             );
           }
 
@@ -1885,10 +1943,11 @@
                 ""
               ) || "jpg";
 
+          newMainPath=`job-images/${jobId}/main-${crypto.randomUUID()}.${extension}`;
           const imageReference =
             ref(
               storage,
-              `job-images/${jobId}/${Date.now()}.${extension}`
+              newMainPath
             );
 
           await uploadBytes(
@@ -1904,15 +1963,22 @@
             await getDownloadURL(
               imageReference
             );
+          newlyUploadedPaths.push(newMainPath);
         }
 
-      // Main imagery and detail PR imagery are intentionally independent.
-      // Preserve legacy/detail images when an administrator replaces only the main banner.
-      const updatedImages = Array.isArray(oldData.imageUrls)
-        ? oldData.imageUrls.filter((url) => typeof url === "string" && url && url !== getJobImage(oldData))
-        : [];
+        const addedPrImages=[];
+        for(const file of newPrFiles){
+          const extension=file.name.split(".").pop()?.toLowerCase().replace(/[^a-z0-9]/g,"")||"jpg",path=`job-images/${jobId}/detail-${crypto.randomUUID()}.${extension}`,imageReference=ref(storage,path);
+          await uploadBytes(imageReference,file,{contentType:file.type});newlyUploadedPaths.push(path);addedPrImages.push({path,url:await getDownloadURL(imageReference)});
+        }
+        const finalPrImages=[...mediaState.prImages,...addedPrImages];
+        // Keep both canonical imageUrls jobs and legacy images-only jobs on the same output format.
+        const updatedImages = Array.isArray(oldData.imageUrls)
+          ? finalPrImages.map((item)=>item.url)
+          : finalPrImages.map((item)=>item.url);
+        const updatedImagePaths=finalPrImages.map((item)=>item.path||"");
 
-        await manageAdminJobCallable({
+        try{await manageAdminJobCallable({
           action:"update",
           jobId,
           changes:{
@@ -1975,13 +2041,20 @@
             status,
 
             mainImage,
+            mainImageStoragePath:selectedFile?newMainPath:(oldData.mainImageStoragePath||mediaState.mainPath||""),
             imageUrl:mainImage,
             image:mainImage,
             images:updatedImages,
             imageUrls:updatedImages,
+            imageStoragePaths:updatedImagePaths,
 
           }
-        });
+        })}catch(error){await Promise.allSettled(newlyUploadedPaths.map((path)=>deleteObject(ref(storage,path))));throw error}
+        firestoreSaved=true;
+
+        const obsoletePaths=[...mediaState.removedPaths];
+        if(selectedFile&&mediaState.mainPath&&mediaState.mainPath!==newMainPath)obsoletePaths.push(mediaState.mainPath);
+        await Promise.allSettled([...new Set(obsoletePaths.filter((path)=>isSafeJobImagePath(path,jobId)))].map((path)=>deleteObject(ref(storage,path))));
 
         statusElement.className =
           "edit-save-status success";
@@ -1990,6 +2063,7 @@
           "求人情報を更新しました";
 
         imageInput.value = "";
+        prImageInput.value = "";
 
         window.setTimeout(
           async () => {
@@ -1999,6 +2073,8 @@
         );
 
       }catch(error){
+
+        if(!firestoreSaved&&newlyUploadedPaths.length){await Promise.allSettled(newlyUploadedPaths.map((path)=>deleteObject(ref(storage,path))))}
 
         console.error(
           "店舗編集保存エラー:",

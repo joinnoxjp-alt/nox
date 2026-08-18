@@ -86,7 +86,7 @@ service firebase.storage {
           /databases/(default)/documents/jobs/$(jobId)
         ).data.storeId == request.auth.uid
         && validRasterImage(5 * 1024 * 1024);
-      allow delete: if ownsStore(storeId)
+      allow delete: if isActiveAdmin() || (ownsStore(storeId)
         && firestore.exists(
           /databases/(default)/documents/jobs/$(jobId)
         )
@@ -95,7 +95,7 @@ service firebase.storage {
         ).data.ownerId == request.auth.uid
         && firestore.get(
           /databases/(default)/documents/jobs/$(jobId)
-        ).data.storeId == request.auth.uid;
+        ).data.storeId == request.auth.uid);
     }
 
     /*

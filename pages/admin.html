@@ -1086,14 +1086,18 @@
           </section>
           <!-- 登録済み店舗 -->
           <section class="admin-section">
-            <h2 class="admin-section-title">✅ 登録済み店舗</h2>
+            <h2 class="admin-section-title">✅ 店舗管理</h2>
 
-            <p class="admin-section-description">
-              店舗登録が完了した店舗を、店舗UIDとownerIdを基準に表示します。
-            </p>
+            <button type="button" id="registeredStoreToggle" class="admin-collapse-toggle" aria-expanded="false" aria-controls="registeredStoreCollapse">▶ 登録店舗一覧（0件）</button>
 
-            <div id="registeredStoreList">
-              <p class="admin-message">登録済み店舗を読み込み中...</p>
+            <div id="registeredStoreCollapse" class="admin-section-collapse-content" hidden>
+              <p class="admin-section-description">
+                店舗登録が完了した店舗を、店舗UIDとownerIdを基準に表示します。
+              </p>
+
+              <div id="registeredStoreList">
+                <p class="admin-message">登録済み店舗を読み込み中...</p>
+              </div>
             </div>
           </section>
 
@@ -1811,6 +1815,8 @@
       const registeredStoreList = document.getElementById(
         "registeredStoreList",
       );
+      const registeredStoreToggle = document.getElementById("registeredStoreToggle");
+      const registeredStoreCollapse = document.getElementById("registeredStoreCollapse");
 
       const storeContractList = document.getElementById("storeContractList");
 
@@ -1818,12 +1824,14 @@
       const publicJobToggle = document.getElementById("publicJobToggle");
       const publicJobHeadingCount = document.getElementById("publicJobHeadingCount");
 
-      function configureCollapsible(toggle, content, label) {
+      function configureCollapsible(toggle, content, label, titleStyle = false) {
         const update = (count = Number(toggle.dataset.count || 0)) => {
           toggle.dataset.count = String(count);
           const expanded = toggle.getAttribute("aria-expanded") === "true";
           content.hidden = !expanded;
-          toggle.textContent = `${expanded ? "▲" : "▼"} ${label}を${expanded ? "閉じる" : "表示"}（${count}件）`;
+          toggle.textContent = titleStyle
+            ? `${expanded ? "▼" : "▶"} ${label}（${count}件）`
+            : `${expanded ? "▲" : "▼"} ${label}を${expanded ? "閉じる" : "表示"}（${count}件）`;
         };
         toggle.addEventListener("click", () => {
           toggle.setAttribute("aria-expanded", String(toggle.getAttribute("aria-expanded") !== "true"));
@@ -1834,6 +1842,7 @@
       }
       const updateJobApplicationToggle = configureCollapsible(jobApplicationToggle, jobApplicationList, "求人掲載申請");
       const updatePublicJobToggle = configureCollapsible(publicJobToggle, publicJobList, "公開中求人");
+      const updateRegisteredStoreToggle = configureCollapsible(registeredStoreToggle, registeredStoreCollapse, "登録店舗一覧", true);
       const updateJobApplicationCollapse = (count) => { jobApplicationHeadingCount.textContent = String(count); updateJobApplicationToggle(count); };
       const updatePublicJobCollapse = (count) => { publicJobHeadingCount.textContent = String(count); updatePublicJobToggle(count); };
 
@@ -3349,6 +3358,7 @@
             id: storeDoc.id,
             ...storeDoc.data(),
           }));
+          updateRegisteredStoreToggle(stores.length);
           registeredStoreDirectory = stores;
           directJobStoreOptions.replaceChildren(...stores.map((store) => {
             const option = document.createElement("option");
@@ -3404,6 +3414,7 @@
               storeContractList.append(createContractCard(store, contract));
             });
         } catch {
+          updateRegisteredStoreToggle(0);
           registeredStoreList.innerHTML =
             '<p class="admin-message">登録済み店舗を読み込めませんでした。</p>';
           storeContractList.innerHTML =
