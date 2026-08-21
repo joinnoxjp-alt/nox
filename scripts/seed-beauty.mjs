@@ -77,6 +77,65 @@ if (!commit) {
   process.exit(0);
 }
 
+function restValue(value) {
+  if (value === null) return { nullValue: null };
+  if (value instanceof Date) return { timestampValue: value.toISOString() };
+  if (typeof value === "string") return { stringValue: value };
+  if (typeof value === "boolean") return { booleanValue: value };
+  if (typeof value === "number") return Number.isInteger(value)
+    ? { integerValue: String(value) }
+    : { doubleValue: value };
+  if (Array.isArray(value)) return { arrayValue: { values: value.map(restValue) } };
+  return { mapValue: { fields: restFields(value) } };
+}
+
+function restFields(value) {
+  return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, restValue(item)]));
+}
+
+if (accessToken && !isDemo) {
+  const base = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents`;
+  const headers = { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" };
+  const catalog = [
+    { path: "beautyBrands/mireio", data: brand },
+    ...products.map(({ id, ...product }) => ({
+      path: `beautyProducts/${id}`,
+      data: { ...product, brandId: "mireio", isPublic: false, mainImage: null, detailImages: [], videos: [], ingredientImage: null }
+    }))
+  ];
+  const existing = [];
+  for (const item of catalog) {
+    const response = await fetch(`${base}/${item.path}`, { headers });
+    if (response.ok) existing.push(item.path);
+    else if (response.status !== 404) throw new Error(`Firestore preflight failed for ${item.path}: HTTP ${response.status}`);
+  }
+  if (existing.length && !updateExisting) throw new Error(`Existing documents found; nothing written: ${existing.join(", ")}`);
+  const timestamp = new Date();
+  const writes = catalog.map((item) => ({
+    update: { name: `${base}/${item.path}`, fields: restFields({ ...item.data, createdAt: timestamp, updatedAt: timestamp }) },
+    ...(!updateExisting ? { currentDocument: { exists: false } } : {})
+  }));
+  writes.push({
+    update: { name: `${base}/beautySettings/commerce`, fields: restFields({ salesEnabled: false, updatedAt: timestamp }) },
+    updateMask: { fieldPaths: ["salesEnabled", "updatedAt"] }
+  });
+  const commitResponse = await fetch(
+    `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents:commit`,
+    { method: "POST", headers, body: JSON.stringify({ writes }) }
+  );
+  if (!commitResponse.ok) throw new Error(`Firestore commit failed: HTTP ${commitResponse.status} ${await commitResponse.text()}`);
+  for (const item of catalog) {
+    const response = await fetch(`${base}/${item.path}`, { headers });
+    const document = await response.json();
+    if (!response.ok || document.fields?.isPublic?.booleanValue !== false) throw new Error(`Verification failed for ${item.path}`);
+  }
+  const commerceResponse = await fetch(`${base}/beautySettings/commerce`, { headers });
+  const commerce = await commerceResponse.json();
+  if (!commerceResponse.ok || commerce.fields?.salesEnabled?.booleanValue !== false) throw new Error("Verification failed: salesEnabled must remain false");
+  console.log("Seed completed and verified: five documents all private; salesEnabled is false.");
+  process.exit(0);
+}
+
 const app = initializeApp({
   projectId,
   ...(isDemo ? {} : {
