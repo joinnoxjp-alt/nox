@@ -9,6 +9,7 @@ export const initialProducts=[
 ];
 export const initialBrand={brandName:"MIRÈIO",brandNameJa:"ミルアジュ",partnerLabel:"NOX公式パートナーブランド",catchCopy:"魅せる肌を目指す方 必見。",subCopy:"韓国発プレミアムスキンケアブランド",description:"NOXでは、美容意識の高いユーザーの皆様へ新しい選択肢を届けるため、韓国発スキンケアブランドMIRÈIOと公式パートナー提携しました。",story:"MIRÈIOは韓国発のプレミアムスキンケアブランド。毎日続けやすい3STEPで、肌にうるおいを与え、すこやかに整えるケアを提案します。",trustText:"販売事業者から提供された商品情報・資料を確認のうえ掲載しています。",isPublic:false};
 export async function getBrand(){try{const s=await getDoc(doc(db,"beautyBrands",BRAND_ID));return s.exists()?{id:s.id,...s.data()}:{...initialBrand,isPublic:false}}catch{return{...initialBrand,isPublic:false}}}
+export async function getBrands(){try{const s=await getDocs(query(collection(db,"beautyBrands"),where("isPublic","==",true)));return s.docs.map(d=>({id:d.id,...d.data()}))}catch{return[]}}
 export async function getProducts(){try{const s=await getDocs(query(collection(db,"beautyProducts"),where("brandId","==",BRAND_ID),where("isPublic","==",true),orderBy("displayOrder")));return s.docs.map(d=>({id:d.id,...d.data()}))}catch{return[]}}
 export async function getProduct(id){try{const s=await getDoc(doc(db,"beautyProducts",id));if(s.exists()&&s.data().isPublic===true)return{id:s.id,...s.data()}}catch{}return null}
 export function yen(v){return `${Number(v||0).toLocaleString("ja-JP")}円（税込）`}

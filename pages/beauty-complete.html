@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>ご注文受付完了｜NOX BEAUTY</title>
   <meta name="robots" content="noindex">
-  <link rel="stylesheet" href="beauty.css">
+  <link rel="stylesheet" href="beauty.css"><link rel="stylesheet" href="beauty-polish.css">
 </head>
 <body>
   <header class="beauty-header">
@@ -13,8 +13,8 @@
   </header>
   <main class="order-shell">
     <span class="eyebrow">THANK YOU</span>
-    <h1 class="beauty-heading">ご注文を受け付けました</h1>
-    <p>ご注文ありがとうございます。注文番号とご注文金額をご確認ください。</p>
+    <h1 class="beauty-heading completion-title">ご注文ありがとうございます。</h1>
+    <p>ご注文を受け付けました。注文番号とご注文金額をご確認ください。</p>
     <div class="order-summary" data-result>注文番号を確認しています…</div>
     <section class="order-summary" data-payment hidden>
       <h2>お振込先（NOX運営者口座）</h2>
@@ -25,6 +25,7 @@
       <p>こちらはMIRÈIOへの直接振込ではありません。</p>
       <p>ご入金確認後、MIRÈIO販売事業者へ発送手続きを依頼いたします。<br>お振込名義がご注文者様のお名前と異なる場合は、NOXまでご連絡ください。</p>
     </section>
+    <section aria-labelledby="orderFlowTitle"><h2 id="orderFlowTitle">お届けまでの流れ</h2><div class="fulfillment-flow"><div><b>1</b>銀行振込</div><div><b>2</b>NOXで入金確認</div><div><b>3</b>MIRÈIO販売事業者へ発送依頼</div><div><b>4</b>商品発送</div></div></section>
     <p class="notice">送料・最終合計のご案内前に送金しないでください。PayPay個人送金は使用していません。</p>
     <a class="beauty-button" href="beauty-mireio.html">MIRÈIOへ戻る</a>
   </main>
@@ -36,7 +37,7 @@
       const fallback = new URLSearchParams(location.search).get("order") || "受付済み";
       const hasFinalTotal = result && result.shippingFee !== null && result.total !== null && Number.isFinite(Number(result.shippingFee)) && Number.isFinite(Number(result.total));
       document.querySelector("[data-result]").innerHTML = result
-        ? `<b>注文番号：${escapeText(result.orderId)}</b><br>${escapeText(result.productName)} × ${Number(result.quantity || 1)}<br>商品代：${Number(result.subtotal || 0).toLocaleString("ja-JP")}円<br>送料：${hasFinalTotal ? `${Number(result.shippingFee).toLocaleString("ja-JP")}円` : "別途（確認後に確定）"}<br><b>合計金額：${hasFinalTotal ? `${Number(result.total).toLocaleString("ja-JP")}円` : "確認後に確定"}</b>`
+        ? `<span class="order-number">注文番号：${escapeText(result.orderId)}</span>${escapeText(result.productName)} × ${Number(result.quantity || 1)}<br>商品代：${Number(result.subtotal || 0).toLocaleString("ja-JP")}円<br>送料：${hasFinalTotal ? `${Number(result.shippingFee).toLocaleString("ja-JP")}円` : "別途（確認後に確定）"}<br><b>合計金額：${hasFinalTotal ? `${Number(result.total).toLocaleString("ja-JP")}円` : "確認後に確定"}</b>`
         : `注文番号：${escapeText(fallback)}`;
       const payment = result?.paymentInstructions;
       if (payment?.bankName && payment?.branchName && payment?.accountType && payment?.accountNumber && payment?.accountHolder) {

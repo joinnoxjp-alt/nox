@@ -1,5 +1,5 @@
 import { app } from "./firebase-db.js";
-import { getProducts, yen } from "./beauty-data.js";
+import { getProducts, yen, mediaMarkup } from "./beauty-data.js";
 import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-functions.js";
 const form=document.querySelector("[data-order-form]"),select=form.productId,qty=form.quantity,summary=document.querySelector("[data-summary]"),status=document.querySelector("[data-status]"),confirmButton=document.querySelector("[data-confirm]"),submitButton=document.querySelector("[data-submit]"),editButton=document.querySelector("[data-edit]");
 const products=await getProducts(),requested=new URLSearchParams(location.search).get("product");let confirmedData=null;
@@ -9,7 +9,7 @@ if (!products.length) {
 }
 select.innerHTML=products.map(p=>`<option value="${p.id}" ${p.id===requested?"selected":""}>${p.name}（${yen(p.price)}）</option>`).join("");
 function selected(){return products.find(p=>p.id===select.value)}
-function render(){const p=selected(),n=Math.max(1,Number(qty.value)||1);summary.innerHTML=`<b>${p?.name||""}</b><br>商品小計：${yen((p?.price||0)*n)}<br>送料：注文受付後に確定<br><small>※最終合計と振込先は受付後のご案内をご確認ください。</small>`}
+function render(){const p=selected(),n=Math.max(1,Number(qty.value)||1);summary.innerHTML=`<div class="order-product-summary">${mediaMarkup(p?.mainImage,p?.name)||'<div class="product-placeholder"></div>'}<div><b>${p?.name||""}</b><br>数量：${n}<br>商品小計：${yen((p?.price||0)*n)}<br>送料：注文受付後に確定<br><small>※最終合計と振込先は受付後のご案内をご確認ください。</small></div></div>`}
 select.addEventListener("change",render);qty.addEventListener("input",render);render();
 function lock(v){form.querySelectorAll("input,textarea").forEach(x=>{if(x.type!=="checkbox")x.readOnly=v});select.disabled=v;confirmButton.hidden=v;submitButton.hidden=!v;editButton.hidden=!v}
 confirmButton.addEventListener("click",()=>{if(!form.reportValidity())return;confirmedData=Object.fromEntries(new FormData(form));confirmedData.productId=select.value;confirmedData.quantity=Number(qty.value);lock(true);status.textContent="内容をご確認のうえ「注文を確定」を押してください。"});

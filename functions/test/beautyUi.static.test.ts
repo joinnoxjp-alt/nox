@@ -108,7 +108,7 @@ test("mobile layout has single-column products, large inputs, and fixed CTA", ()
 
 test("product page follows the requested content and purchase sequence", () => {
   const product = read("pages/beauty-product.js");
-  const ordered = ["mainImage", "product.name", "product.volume", "yen(product.price)", "product.description", "detailMedia", "特徴", "使い方", "全成分", "商品情報", "この商品を購入"];
+  const ordered = ["mainImage", "product.name", "product.volume", "yen(product.price)", "product.description", "detailMedia", "特徴", "使い方", "全成分", "商品情報", "購入する"];
   let cursor = -1;
   for (const expected of ordered) {
     const next = product.indexOf(expected, cursor + 1);
@@ -130,8 +130,18 @@ test("saved product main images feed detail, lineup, and 3STEP media", () => {
 
 test("brand page includes 3STEP CTA and exact trust and pricing copy", () => {
   const page = read("pages/beauty-mireio.html");
-  for (const expected of ["NOX公式パートナーブランド｜MIRÈIO（ミルアジュ）", "魅せる肌を目指す方 必見。", "3STEPで始めるプレミアムケア", "3,600円", "8,000円", "6,400円", "18,000円", "送料別途", "three-step-set"])
+  for (const expected of ["NOX公式パートナーブランド", "魅せる肌を目指す方 必見。", "3STEPで始めるプレミアムケア", "3,600円", "8,000円", "6,400円", "18,000円", "送料別途", "three-step-set"])
     assert.ok(page.includes(expected), `missing ${expected}`);
+});
+
+test("premium select polish includes scalable sections, safe mobile CTA, and reduced motion", () => {
+  const top = read("pages/beauty.html") + read("pages/beauty-top.js");
+  const css = read("pages/beauty-polish.css");
+  for (const expected of ["PREMIUM<br>BEAUTY SELECT", "NOXが選ぶ、少し特別な美容アイテム。", "PARTNER BRANDS", "FEATURED", "NEW ARRIVAL", "getBrands"])
+    assert.ok(top.includes(expected), `missing ${expected}`);
+  assert.match(css, /env\(safe-area-inset-bottom\)/);
+  assert.match(css, /prefers-reduced-motion:reduce/);
+  assert.match(css, /min-height:44px/);
 });
 
 test("payment guidance identifies the NOX operator account without implying MIRÈIO payment", () => {

@@ -26,11 +26,18 @@ async function init() {
   document.querySelector("[data-trust]").textContent = brand.trustText || "";
   const hero = mediaMarkup(brand.heroMedia, "MIRÈIO");
   if (hero) document.querySelector("[data-hero-media]").innerHTML = hero;
-  [["storyMedia", "story"], ["stepMedia", "step"], ["trustMedia", "trust"], ["purchaseMedia", "purchase"]].forEach(([key, target]) => {
+  if (brand.heroMedia?.url) document.querySelector('meta[property="og:image"]')?.setAttribute("content", brand.heroMedia.url);
+  [["storyMedia", "story"], ["stepMedia", "step"], ["purchaseMedia", "purchase"]].forEach(([key, target]) => {
     const html = mediaMarkup(brand[key], "MIRÈIO");
     const element = document.querySelector(`[data-media="${target}"]`);
     if (html && element) { element.innerHTML = html; element.hidden = false; }
   });
+  const trustDocument = mediaMarkup(brand.trustMedia, "MIRÈIO 製造・品質情報");
+  const trustTarget = document.querySelector('[data-media="trust"]');
+  if (trustDocument && trustTarget) {
+    trustTarget.innerHTML = `<b>製造・品質情報</b><p>MIRÈIOについて提供された製造関連資料を確認できます。</p><details><summary>資料を見る</summary>${trustDocument}</details>`;
+    trustTarget.hidden = false;
+  }
   document.querySelector("[data-products]").innerHTML = products.map(productCard).join("");
   renderStepImages(products);
   document.querySelectorAll("[data-product-select]").forEach((element) => {
