@@ -99,6 +99,8 @@ after(async () => {
 test("published catalog is public, private product is denied, writes are admin-only", async () => {
   assert.equal((await firestoreRequest("beautyProducts/mist", "GET")).status, 200);
   assert.equal((await firestoreRequest("beautyProducts/private-product", "GET")).status, 403);
+  assert.equal((await firestoreRequest("beautyProducts/private-product", "GET", adminToken)).status, 200);
+  assert.equal((await firestoreRequest("beautySettings/commerce", "GET", adminToken)).status, 200);
   const body = { fields: { brandId: { stringValue: "mireio" }, name: { stringValue: "HACK" }, price: { integerValue: "1" }, isPublic: { booleanValue: true }, displayOrder: { integerValue: "1" } } };
   assert.equal((await firestoreRequest("beautyProducts/mist", "PATCH", userToken, body)).status, 403);
   assert.equal((await firestoreRequest("beautyProducts/mist", "PATCH", adminToken, body)).status, 200);

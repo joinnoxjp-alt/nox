@@ -122,3 +122,9 @@ test("payment guidance identifies the NOX operator account without implying MIR�
   for (const expected of ["振込先種別：NOX運営者本人名義", "salesEnabled", "本番テスト完了まではOFF"])
     assert.ok(admin.includes(expected), `missing ${expected}`);
 });
+
+test("the active NOX administrator page links to NOX BEAUTY management", () => {
+  const admin = read("pages/admin.html");
+  assert.match(admin, />NOX BEAUTY管理</);
+  assert.match(admin, /href="\/pages\/beauty-admin\.html"/);
+});

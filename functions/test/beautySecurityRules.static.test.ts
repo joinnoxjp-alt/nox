@@ -21,7 +21,7 @@ test("beauty brands and products are public-read/published and admin-write only"
     ["match /beautyProducts/{productId}", "match /beautyOrders/{orderId}"]
   ]) {
     const rules = block(firestoreRules, start, next);
-    assert.match(rules, /allow get, list: if resource\.data\.isPublic == true;/);
+    assert.match(rules, /allow get, list: if isActiveAdmin\(\) \|\| resource\.data\.isPublic == true;/);
     assert.match(rules, /allow create, update, delete: if isActiveAdmin\(\);/);
     assert.doesNotMatch(rules, /allow (?:create|update|delete)[^;]*if true/);
   }
@@ -37,15 +37,15 @@ test("beauty orders cannot be created, changed, or deleted by public clients", (
   assert.match(rules, /allow create, delete: if false;/);
 });
 
-test("beauty media writes require the fixed active administrator", () => {
+test("beauty media writes use the existing active administrator role", () => {
   const rules = block(
     storageRules,
     "match /beauty/{brandId}/{kind}/{fileName}",
     "match /casts/{castId}/video/{fileName}"
   );
   assert.match(rules, /allow read: if true;/);
-  assert.match(rules, /allow create, update: if isFixedActiveAdmin\(\)/);
-  assert.match(rules, /allow delete: if isFixedActiveAdmin\(\);/);
+  assert.match(rules, /allow create, update: if isActiveAdmin\(\)/);
+  assert.match(rules, /allow delete: if isActiveAdmin\(\);/);
   assert.match(rules, /request\.resource\.contentType == "video\/mp4"/);
   assert.match(rules, /request\.resource\.size <= 30 \* 1024 \* 1024/);
 });

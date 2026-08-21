@@ -992,12 +992,12 @@ allow create: if request.auth != null
 
     /* NOX BEAUTY catalog is publicly readable only while published. */
     match /beautyBrands/{brandId} {
-      allow get, list: if resource.data.isPublic == true;
+      allow get, list: if isActiveAdmin() || resource.data.isPublic == true;
       allow create, update, delete: if isActiveAdmin();
     }
 
     match /beautyProducts/{productId} {
-      allow get, list: if resource.data.isPublic == true;
+      allow get, list: if isActiveAdmin() || resource.data.isPublic == true;
       allow create, update, delete: if isActiveAdmin();
     }
 
