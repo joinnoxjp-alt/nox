@@ -26,6 +26,21 @@ const esc = (value) => String(value ?? "").replace(
 );
 const yen = (value) => `${Number(value || 0).toLocaleString("ja-JP")}円`;
 
+const mediaUiStyles = document.createElement("style");
+mediaUiStyles.textContent = `
+  .media-grid{gap:12px}.media-card{padding:14px}.media-card img,.media-card video{height:240px;max-height:none;object-fit:contain}
+  .media-purpose{color:#d9bd78!important;font-weight:700;margin-top:6px}.media-recommendation{margin:5px 0;color:#d5dae3}
+  .media-status{display:inline-block;margin:10px 0 4px;padding:5px 9px;border-radius:999px;background:#7b3039;color:#fff;font-weight:700}
+  .media-status.registered{background:#286a4d}.visibility-switch{display:flex!important;align-items:center;gap:8px;margin:10px 0;font-weight:600!important}
+  .visibility-switch input{appearance:none;width:42px!important;min-height:24px!important;height:24px;margin:0!important;padding:0!important;border-radius:999px;background:#536079;position:relative;cursor:pointer}
+  .visibility-switch input:before{content:"";position:absolute;width:18px;height:18px;left:3px;top:3px;border-radius:50%;background:#fff;transition:.2s}
+  .visibility-switch input:checked{background:#b99a50}.visibility-switch input:checked:before{transform:translateX(18px)}
+  .media-details{margin-top:18px;border:1px solid #40506b;background:#091323}.media-details summary{padding:14px;cursor:pointer;color:#d9bd78;font-weight:700}
+  .media-details>.media-grid{padding:0 12px 12px}.current-media-intro{margin-bottom:12px;color:#d5dae3}.media-shortcut{text-align:left;color:#fff;cursor:pointer;min-height:130px!important}.media-shortcut:hover,.media-shortcut:focus{border-color:#d9bd78}.media-shortcut small,.media-shortcut span{display:block;margin-top:7px;color:#d5dae3}.media-shortcut b{color:#d9bd78}
+  @media(max-width:650px){.admin-section{margin:16px 0;padding:14px}.media-card{padding:12px}.media-card img,.media-card video{height:210px}.media-details>.media-grid{padding:0 8px 8px}}
+`;
+document.head.append(mediaUiStyles);
+
 function section(title, body) {
   const element = document.createElement("section");
   element.className = "admin-section beauty-admin-enhancement";
@@ -93,8 +108,13 @@ async function installCommerceSettings(root) {
 }
 
 async function installProductMedia(root) {
-  const target = section("商品別メディア管理", `
-    <p>② AMPOULE詳細｜アンプルの商品説明部分<br>③ MIST詳細｜ミストの商品説明部分<br>④ CREAM詳細｜クリームの商品説明部分<br>各商品のメイン画像・詳細画像最大10枚・MP4最大3本を管理します。</p>
+  const target = section("現在使用するメディア｜②〜④", `
+    <p>各商品のメイン画像・詳細画像最大10枚・MP4最大3本を管理します。</p>
+    <div class="media-grid current-product-media">
+      <button type="button" class="media-card media-shortcut" data-product-shortcut="ampoule"><b>② AMPOULE詳細</b><small>AMPOULEの商品説明部分に表示</small><span>推奨素材：アンプル単品画像</span></button>
+      <button type="button" class="media-card media-shortcut" data-product-shortcut="mist"><b>③ MIST詳細</b><small>MISTの商品説明部分に表示</small><span>推奨素材：ミスト単品画像</span></button>
+      <button type="button" class="media-card media-shortcut" data-product-shortcut="cream"><b>④ CREAM詳細</b><small>CREAMの商品説明部分に表示</small><span>推奨素材：クリーム単品画像</span></button>
+    </div>
     <div class="admin-grid">
       <label>商品<select data-media-product></select></label>
       <label>登録区分<select data-media-kind><option value="main">商品メイン画像（1枚）</option><option value="details">追加画像（最大10枚）</option><option value="videos">商品動画（最大3本）</option><option value="ingredient">成分・使い方画像（1枚）</option></select></label>
@@ -103,13 +123,15 @@ async function installProductMedia(root) {
     <button class="beauty-button" data-upload-product-media>アップロード</button>
     <p data-product-media-status role="status"></p>
     <div class="media-grid" data-product-media-preview></div>`);
-  root.append(target);
+  const brandSection = root.querySelector(".admin-section");
+  brandSection.insertAdjacentElement("afterend", target);
   const productSelect = target.querySelector("[data-media-product]");
   const snapshot = await getDocs(query(collection(db, "beautyProducts"), orderBy("displayOrder")));
   const products = snapshot.docs.map((item) => ({ id: item.id, ...item.data() }));
   productSelect.innerHTML = products.map((product) => {
     const number = product.id === "ampoule" ? "②" : product.id === "mist" ? "③" : product.id === "cream" ? "④" : "";
-    return `<option value="${product.id}">${number} ${esc(product.shortName)}｜${esc(product.name)}</option>`;
+    const purpose = product.id === "ampoule" ? "AMPOULEの商品説明部分に表示｜推奨：アンプル単品画像" : product.id === "mist" ? "MISTの商品説明部分に表示｜推奨：ミスト単品画像" : product.id === "cream" ? "CREAMの商品説明部分に表示｜推奨：クリーム単品画像" : "商品ページに表示";
+    return `<option value="${product.id}">${number} ${esc(product.shortName)}｜${esc(purpose)}</option>`;
   }).join("");
 
   async function preview() {
@@ -144,6 +166,11 @@ async function installProductMedia(root) {
     });
   }
   productSelect.addEventListener("change", preview);
+  target.querySelectorAll("[data-product-shortcut]").forEach((button) => button.addEventListener("click", async () => {
+    productSelect.value = button.dataset.productShortcut;
+    await preview();
+    productSelect.focus();
+  }));
   await preview();
 
   target.querySelector("[data-upload-product-media]").addEventListener("click", async () => {
@@ -249,6 +276,56 @@ async function enhanceAdditionalSlots() {
   });
 }
 
+function organizeBrandMedia() {
+  const originalGrid = document.querySelector("[data-brand-media]");
+  if (!originalGrid || !originalGrid.children.length) return;
+  const cards = [...originalGrid.querySelectorAll("[data-slot]")];
+  const hero = cards.find((card) => card.dataset.slot === "heroMedia");
+  const section = originalGrid.closest(".admin-section");
+  let wrapper = section.querySelector(".media-operations");
+  if (!wrapper) {
+    wrapper = document.createElement("div");
+    wrapper.className = "media-operations";
+    wrapper.innerHTML = `<h3>現在使用するメディア</h3><p class="current-media-intro">通常運用では、①と直下の②〜④の商品別メディアを確認してください。</p><div data-current-media></div><details class="media-details"><summary>追加メディア・拡張設定（⑤〜⑫）</summary><div class="media-grid" data-extra-media></div></details>`;
+    originalGrid.before(wrapper);
+    wrapper.querySelector("[data-current-media]").append(originalGrid);
+  }
+  cards.filter((card) => card !== hero).forEach((card) => wrapper.querySelector("[data-extra-media]").append(card));
+  const descriptions = {
+    heroMedia: ["① ファーストビュー", "ブランドページ最上部に表示", "推奨素材：総合広告画像"],
+    reasonMedia: ["ブランド紹介（補助枠）", "NOXがMIRÈIOを取り扱う理由の直後に表示", "推奨素材：ブランド紹介画像"],
+    storyMedia: ["⑤ ブランドストーリー", "MIRÈIOとは？の説明部分に表示", "推奨素材：ブランドストーリー画像"],
+    stepMedia: ["⑥ 3STEP紹介", "MIST → AMPOULE → CREAMの紹介部分に表示", "推奨素材：3STEP紹介画像"],
+    trustMedia: ["⑦ 信頼・製造情報", "商品情報・安心情報部分に表示", "推奨素材：製造・信頼情報画像"],
+    purchaseMedia: ["⑧ 購入直前PR", "ページ最下部の購入CTA直前に表示", "推奨素材：購入直前PR画像"],
+    extraMedia0: ["⑨ 追加PR", "指定した追加位置に表示", "推奨素材：追加PR画像・動画"],
+    extraMedia1: ["⑩ 追加PR", "指定した追加位置に表示", "推奨素材：追加PR画像・動画"],
+    extraMedia2: ["⑪ 追加PR", "指定した追加位置に表示", "推奨素材：追加PR画像・動画"],
+    extraMedia3: ["⑫ 追加PR", "指定した追加位置に表示", "推奨素材：追加PR画像・動画"]
+  };
+  cards.forEach((card) => {
+    if (card.dataset.mediaUiEnhanced === "true") return;
+    card.dataset.mediaUiEnhanced = "true";
+    const [title, purpose, recommendation] = descriptions[card.dataset.slot];
+    card.querySelector("b").textContent = title;
+    const help = card.querySelector("small");
+    help.className = "media-purpose";
+    help.textContent = purpose;
+    const recommendationElement = document.createElement("p");
+    recommendationElement.className = "media-recommendation";
+    recommendationElement.textContent = recommendation;
+    help.after(recommendationElement);
+    const registered = Boolean(card.querySelector("img,video"));
+    const status = document.createElement("span");
+    status.className = `media-status${registered ? " registered" : ""}`;
+    status.textContent = registered ? "保存済み" : "未登録";
+    recommendationElement.after(status);
+    const visibility = card.querySelector("[data-visible]")?.closest("label");
+    if (visibility) visibility.className = "visibility-switch";
+  });
+  section.querySelector(".flow")?.setAttribute("hidden", "");
+}
+
 function enhanceOrderCards() {
   document.querySelectorAll("[data-save-order]").forEach((button) => {
     if (button.dataset.financialEnhanced === "true") return;
@@ -308,8 +385,10 @@ async function install() {
       }
     });
     enhanceAdditionalSlots().catch(console.error);
+    organizeBrandMedia();
   });
   observer.observe(document.querySelector("[data-brand-media]"), { childList: true });
+  organizeBrandMedia();
   await enhanceAdditionalSlots();
   const orderObserver = new MutationObserver(enhanceOrderCards);
   orderObserver.observe(document.querySelector("[data-orders]"), { childList: true });

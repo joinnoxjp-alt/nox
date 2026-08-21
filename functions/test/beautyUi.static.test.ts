@@ -70,6 +70,25 @@ test("admin exposes numbered placement, media and commerce controls", () => {
   ]) assert.ok(adminSource.includes(expected), `missing ${expected}`);
 });
 
+test("admin prioritizes current media and collapses expansion slots", () => {
+  for (const expected of [
+    "現在使用するメディア",
+    "ブランドページ最上部に表示",
+    "推奨素材：総合広告画像",
+    "AMPOULEの商品説明部分に表示",
+    "推奨：アンプル単品画像",
+    "MISTの商品説明部分に表示",
+    "推奨：ミスト単品画像",
+    "CREAMの商品説明部分に表示",
+    "推奨：クリーム単品画像",
+    "追加メディア・拡張設定（⑤〜⑫）",
+    "media-status",
+    "visibility-switch"
+  ]) assert.ok(adminSource.includes(expected), `missing ${expected}`);
+  assert.match(adminSource, /<details class=\"media-details\">/);
+  assert.doesNotMatch(adminSource, /<details class=\"media-details\" open>/);
+});
+
 test("order UI includes selection, quantity, confirmation and completion", () => {
   const order = read("pages/beauty-order.html") + read("pages/beauty-order.js");
   const complete = read("pages/beauty-complete.html");
