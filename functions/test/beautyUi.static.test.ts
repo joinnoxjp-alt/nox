@@ -162,8 +162,9 @@ test("MIRÈIO mobile hero spacing is compact without changing image treatment or
 
 test("mobile secondary CTA keeps a readable navy, gold, and white treatment", () => {
   const css = read("pages/beauty-polish.css");
-  assert.match(css, /\.mobile-cta>\.beauty-button\.secondary\{background:#0b1b37;border-color:#b89442;color:#fff;opacity:1\}/);
-  assert.match(css, /\.mobile-cta>\.beauty-button\.secondary:hover,[^{]*:active,[^{]*:focus-visible\{background:#12294f;border-color:#d9bd78;color:#fff;opacity:1\}/);
+  assert.match(css, /\.mobile-cta>a\.beauty-button\.secondary,[^{]*:visited\{background:#0b1b37;border-color:#b89442;color:#fff!important;opacity:1\}/);
+  assert.match(css, /\.mobile-cta>a\.beauty-button\.secondary:hover,[^{]*:active,[^{]*:focus,[^{]*:focus-visible\{background:#12294f;border-color:#d9bd78;color:#fff!important;opacity:1\}/);
+  assert.doesNotMatch(css, /\.mobile-cta>a\.beauty-button\.secondary[^}]*disabled/);
 });
 
 test("payment guidance identifies the NOX operator account without implying MIRÈIO payment", () => {
