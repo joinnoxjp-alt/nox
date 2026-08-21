@@ -144,6 +144,12 @@ test("premium select polish includes scalable sections, safe mobile CTA, and red
   assert.match(css, /min-height:44px/);
 });
 
+test("MIRÈIO mobile hero is a full-bleed 4:3 cover without side gutters", () => {
+  const css = read("pages/beauty-polish.css");
+  assert.match(css, /@media\(max-width:600px\)[^{]*\{[^}]*[\s\S]*?\.mireio-hero \.beauty-hero-media\{width:100vw;max-width:none;margin-left:calc\(50% - 50vw\);margin-right:calc\(50% - 50vw\);padding:0;aspect-ratio:4\/3\}/);
+  assert.match(css, /\.mireio-hero \.beauty-hero-media img,[^{]*\{display:block;width:100%;height:100%;max-width:none;margin:0;padding:0;object-fit:cover;object-position:center center\}/);
+});
+
 test("payment guidance identifies the NOX operator account without implying MIRÈIO payment", () => {
   const complete = read("pages/beauty-complete.html");
   const admin = read("pages/beauty-admin-enhancements.js");
