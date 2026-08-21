@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ご注文受付完了｜NOX BEAUTY</title>
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="beauty.css">
+</head>
+<body>
+  <header class="beauty-header">
+    <a class="beauty-logo" href="beauty.html">NOX <small>BEAUTY</small></a>
+  </header>
+  <main class="order-shell">
+    <span class="eyebrow">THANK YOU</span>
+    <h1 class="beauty-heading">ご注文を受け付けました</h1>
+    <p>ご注文ありがとうございます。注文番号とご注文金額をご確認ください。</p>
+    <div class="order-summary" data-result>注文番号を確認しています…</div>
+    <section class="order-summary" data-payment hidden>
+      <h2>お振込先（NOX運営者口座）</h2>
+      <p>NOXは現在、個人事業として運営しているため、お振込先はNOX運営者本人名義の口座となります。<br>ご注文代金は下記口座へお振込みください。</p>
+      <div data-bank-details></div>
+      <p data-payment-deadline></p>
+      <p><b>口座名義「ワタナベアツシ」はNOX運営者本人の名義です。</b></p>
+      <p>こちらはMIRÈIOへの直接振込ではありません。</p>
+      <p>ご入金確認後、MIRÈIO販売事業者へ発送手続きを依頼いたします。<br>お振込名義がご注文者様のお名前と異なる場合は、NOXまでご連絡ください。</p>
+    </section>
+    <p class="notice">送料・最終合計のご案内前に送金しないでください。PayPay個人送金は使用していません。</p>
+    <a class="beauty-button" href="beauty-mireio.html">MIRÈIOへ戻る</a>
+  </main>
+  <footer class="beauty-footer">© NOX BEAUTY</footer>
+  <script>
+    const escapeText = (value) => String(value || "").replace(/[&<>\"]/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+    try {
+      const result = JSON.parse(sessionStorage.getItem("beautyOrderResult") || "null");
+      const fallback = new URLSearchParams(location.search).get("order") || "受付済み";
+      const hasFinalTotal = result && result.shippingFee !== null && result.total !== null && Number.isFinite(Number(result.shippingFee)) && Number.isFinite(Number(result.total));
+      document.querySelector("[data-result]").innerHTML = result
+        ? `<b>注文番号：${escapeText(result.orderId)}</b><br>${escapeText(result.productName)} × ${Number(result.quantity || 1)}<br>商品代：${Number(result.subtotal || 0).toLocaleString("ja-JP")}円<br>送料：${hasFinalTotal ? `${Number(result.shippingFee).toLocaleString("ja-JP")}円` : "別途（確認後に確定）"}<br><b>合計金額：${hasFinalTotal ? `${Number(result.total).toLocaleString("ja-JP")}円` : "確認後に確定"}</b>`
+        : `注文番号：${escapeText(fallback)}`;
+      const payment = result?.paymentInstructions;
+      if (payment?.bankName && payment?.branchName && payment?.accountType && payment?.accountNumber && payment?.accountHolder) {
+        document.querySelector("[data-payment]").hidden = false;
+        document.querySelector("[data-bank-details]").innerHTML = `銀行名：${escapeText(payment.bankName)}<br>支店名：${escapeText(payment.branchName)}<br>口座種別：${escapeText(payment.accountType)}<br>口座番号：${escapeText(payment.accountNumber)}<br>口座名義：${escapeText(payment.accountHolder)}`;
+        document.querySelector("[data-payment-deadline]").textContent = `振込期限：注文日から${Number(payment.paymentDueDays || 7)}日以内`;
+      }
+    } catch {
+      document.querySelector("[data-result]").textContent = "ご注文は受付済みです。";
+    }
+  </script>
+</body>
+</html>

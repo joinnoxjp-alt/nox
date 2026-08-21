@@ -212,6 +212,18 @@ service firebase.storage {
         && (request.auth.uid == uid || isActiveAdmin());
     }
 
+    /* NOX BEAUTY images and MP4 videos are public and fixed-admin managed. */
+    match /beauty/{brandId}/{kind}/{fileName} {
+      allow read: if true;
+      allow create, update: if isFixedActiveAdmin()
+        && request.resource != null
+        && request.resource.size > 0
+        && request.resource.size <= 30 * 1024 * 1024
+        && (request.resource.contentType.matches("image/(jpeg|png|webp)")
+          || request.resource.contentType == "video/mp4");
+      allow delete: if isFixedActiveAdmin();
+    }
+
     /*
      * Explicitly deny cast videos and every unknown or dangerous path.
      */

@@ -990,6 +990,37 @@ allow create: if request.auth != null
       allow delete: if isActiveAdmin();
     }
 
+    /* NOX BEAUTY catalog is publicly readable only while published. */
+    match /beautyBrands/{brandId} {
+      allow get, list: if resource.data.isPublic == true;
+      allow create, update, delete: if isActiveAdmin();
+    }
+
+    match /beautyProducts/{productId} {
+      allow get, list: if resource.data.isPublic == true;
+      allow create, update, delete: if isActiveAdmin();
+    }
+
+    /* Orders and settlement data contain personal and financial information. */
+    match /beautyOrders/{orderId} {
+      allow get, list, update: if isActiveAdmin();
+      allow create, delete: if false;
+    }
+
+    match /beautySettlements/{settlementId} {
+      allow get, list, create, update: if isActiveAdmin();
+      allow delete: if false;
+    }
+
+    match /beautySettings/{settingId} {
+      allow get, list, create, update: if isActiveAdmin();
+      allow delete: if false;
+    }
+
+    match /beautyOrderDedupe/{dedupeId} {
+      allow read, write: if false;
+    }
+
     /*
      * Advertisements
      *
