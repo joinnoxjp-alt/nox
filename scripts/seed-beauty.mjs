@@ -95,6 +95,7 @@ function restFields(value) {
 
 if (accessToken && !isDemo) {
   const base = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents`;
+  const documentRoot = `projects/${projectId}/databases/(default)/documents`;
   const headers = { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" };
   const catalog = [
     { path: "beautyBrands/mireio", data: brand },
@@ -112,11 +113,11 @@ if (accessToken && !isDemo) {
   if (existing.length && !updateExisting) throw new Error(`Existing documents found; nothing written: ${existing.join(", ")}`);
   const timestamp = new Date();
   const writes = catalog.map((item) => ({
-    update: { name: `${base}/${item.path}`, fields: restFields({ ...item.data, createdAt: timestamp, updatedAt: timestamp }) },
+    update: { name: `${documentRoot}/${item.path}`, fields: restFields({ ...item.data, createdAt: timestamp, updatedAt: timestamp }) },
     ...(!updateExisting ? { currentDocument: { exists: false } } : {})
   }));
   writes.push({
-    update: { name: `${base}/beautySettings/commerce`, fields: restFields({ salesEnabled: false, updatedAt: timestamp }) },
+    update: { name: `${documentRoot}/beautySettings/commerce`, fields: restFields({ salesEnabled: false, updatedAt: timestamp }) },
     updateMask: { fieldPaths: ["salesEnabled", "updatedAt"] }
   });
   const commitResponse = await fetch(
