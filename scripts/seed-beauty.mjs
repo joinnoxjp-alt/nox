@@ -13,6 +13,7 @@ const updateExisting = args.has("--update-existing");
 const allowProduction = args.has("--allow-production");
 const emulatorHost = process.env.FIRESTORE_EMULATOR_HOST || "";
 const isDemo = projectId.startsWith("demo-") && emulatorHost.length > 0;
+const accessToken = process.env.NOX_FIRESTORE_ACCESS_TOKEN || "";
 
 if (!projectId) {
   throw new Error("--project=<project-id> is required");
@@ -78,7 +79,11 @@ if (!commit) {
 
 const app = initializeApp({
   projectId,
-  ...(isDemo ? {} : { credential: applicationDefault() })
+  ...(isDemo ? {} : {
+    credential: accessToken
+      ? { getAccessToken: async () => ({ access_token: accessToken, expires_in: 3600 }) }
+      : applicationDefault()
+  })
 });
 const firestore = getFirestore(app);
 const references = [
