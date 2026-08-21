@@ -117,6 +117,17 @@ test("product page follows the requested content and purchase sequence", () => {
   }
 });
 
+test("saved product main images feed detail, lineup, and 3STEP media", () => {
+  const product = read("pages/beauty-product.js");
+  const brand = read("pages/beauty.js");
+  const brandHtml = read("pages/beauty-mireio.html");
+  assert.match(product, /product\.detailMedia \|\| product\.detailImages\?\.\[0\] \|\| product\.mainImage/);
+  assert.match(brand, /mediaMarkup\(product\.mainImage, product\.name\)/);
+  assert.match(brand, /renderStepImages\(products\)/);
+  for (const id of ["mist", "ampoule", "cream"])
+    assert.ok(brandHtml.includes(`data-step-product="${id}"`), `missing 3STEP media target for ${id}`);
+});
+
 test("brand page includes 3STEP CTA and exact trust and pricing copy", () => {
   const page = read("pages/beauty-mireio.html");
   for (const expected of ["NOX公式パートナーブランド｜MIRÈIO（ミルアジュ）", "魅せる肌を目指す方 必見。", "3STEPで始めるプレミアムケア", "3,600円", "8,000円", "6,400円", "18,000円", "送料別途", "three-step-set"])

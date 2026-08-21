@@ -11,7 +11,8 @@ if (!product) {
   document.querySelector('meta[name="description"]').content = product.description || product.name;
   document.querySelector('link[rel="canonical"]').href = `https://joinnox.jp/pages/beauty-product.html?id=${encodeURIComponent(product.id)}`;
   const mainImage = safeUrl(product.mainImage?.url) ? `<img src="${esc(product.mainImage.url)}" alt="${esc(product.name)}">` : '<div class="product-placeholder" aria-hidden="true"></div>';
-  const detailMedia = mediaMarkup(product.detailMedia || product.detailImages?.[0], `${product.name} 詳細`);
+  const primaryDetailMedia = product.detailMedia || product.detailImages?.[0] || product.mainImage;
+  const detailMedia = mediaMarkup(primaryDetailMedia, `${product.name} 詳細`);
   const remainingMedia = [...(product.detailImages || []).slice(product.detailMedia ? 0 : 1), ...(product.videos || []), product.ingredientImage].filter(Boolean);
   const orderUrl = `beauty-order.html?product=${encodeURIComponent(product.id)}`;
   document.querySelector("[data-product-detail]").innerHTML = `
