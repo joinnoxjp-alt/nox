@@ -150,6 +150,16 @@ test("MIRÈIO mobile hero is a full-bleed 4:3 cover without side gutters", () =>
   assert.match(css, /\.mireio-hero \.beauty-hero-media img,[^{]*\{display:block;width:100%;height:100%;max-width:none;margin:0;padding:0;object-fit:cover;object-position:center center\}/);
 });
 
+test("MIRÈIO mobile hero spacing is compact without changing image treatment or touch targets", () => {
+  const css = read("pages/beauty-polish.css");
+  assert.match(css, /\.beauty-header\{min-height:62px;padding-top:10px;padding-bottom:6px\}/);
+  assert.match(css, /\.mireio-hero\{padding-top:0\}/);
+  assert.match(css, /\.mireio-hero \.beauty-hero-copy\{padding:18px 20px 24px\}/);
+  assert.match(css, /\.mireio-hero \.partner-badge\{margin-bottom:6px\}/);
+  assert.match(css, /\.mireio-hero \.button-row\{margin-top:14px\}/);
+  assert.match(css, /\.mobile-cta \.beauty-button\{min-height:44px\}/);
+});
+
 test("payment guidance identifies the NOX operator account without implying MIRÈIO payment", () => {
   const complete = read("pages/beauty-complete.html");
   const admin = read("pages/beauty-admin-enhancements.js");
