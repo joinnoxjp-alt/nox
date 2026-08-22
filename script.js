@@ -18,7 +18,7 @@ import {
 =========================== */
 
 const AD_SLOT_COUNT = 6;
-const AD_CHANGE_TIME = 5000;
+const AD_CHANGE_TIME = 10000;
 const AD_CONTACT_URL = "https://lin.ee/waXmsqX";
 
 let noxAds = [];
