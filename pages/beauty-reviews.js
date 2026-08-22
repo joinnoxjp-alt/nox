@@ -1,4 +1,5 @@
 import { db } from "./firebase-db.js";
+import { formatReviewAuthor } from "./beauty-review-author.mjs";
 import { collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const esc = (value) => String(value ?? "").replace(/[&<>\"]/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[character]));
@@ -15,7 +16,7 @@ if (target) {
     .sort((a, b) => Number(a.displayOrder || 0) - Number(b.displayOrder || 0)).slice(0, 6);
   if (reviews.length) {
     target.hidden = false;
-    target.innerHTML = `<span class="eyebrow">REVIEWS</span><h2 class="beauty-heading">MIRÈIOのクチコミ</h2><p class="beauty-lead">実際に公開されているMIRÈIOに関するクチコミをご紹介します。</p><div class="external-review-grid">${reviews.map((review, index) => `<article class="external-review-card${index >= 3 ? " review-extra" : ""}"${index >= 3 ? " hidden" : ""}><blockquote>「${esc(review.summary || review.quote)}」</blockquote>${review.authorName ? `<p class="review-author">${esc(review.authorName)}</p>` : ""}${review.rating ? `<p class="review-rating" aria-label="元投稿の評価 ${Number(review.rating)}点">元投稿の評価：${Number(review.rating)} / 5</p>` : ""}<p class="review-source">${esc(review.sourcePlatform)}より${review.sourceDate ? `・${esc(review.sourceDate)}` : ""}</p><a href="${esc(safeSourceUrl(review.sourceUrl))}" target="_blank" rel="noopener noreferrer">投稿を見る<span aria-hidden="true"> →</span></a></article>`).join("")}</div>${reviews.length > 3 ? '<button class="beauty-button secondary review-more" type="button" aria-expanded="false">もっと見る</button>' : ""}`;
+    target.innerHTML = `<span class="eyebrow">REVIEWS</span><h2 class="beauty-heading">MIRÈIOのクチコミ</h2><p class="beauty-lead">実際に公開されているMIRÈIOに関するクチコミをご紹介します。</p><div class="external-review-grid">${reviews.map((review, index) => { const author = formatReviewAuthor(review); return `<article class="external-review-card${index >= 3 ? " review-extra" : ""}"${index >= 3 ? " hidden" : ""}>${review.rating ? `<p class="review-rating" aria-label="元投稿の評価 ${Number(review.rating)}点">${"★".repeat(Math.max(0, Math.min(5, Math.round(Number(review.rating)))))}</p>` : ""}<blockquote>「${esc(review.summary || review.quote)}」</blockquote>${author ? `<p class="review-author">${esc(author)}</p>` : ""}<p class="review-source">${esc(review.sourcePlatform)}より${review.sourceDate ? `・${esc(review.sourceDate)}` : ""}</p><a href="${esc(safeSourceUrl(review.sourceUrl))}" target="_blank" rel="noopener noreferrer">投稿を見る<span aria-hidden="true"> →</span></a></article>`; }).join("")}</div>${reviews.length > 3 ? '<button class="beauty-button secondary review-more" type="button" aria-expanded="false">もっと見る</button>' : ""}`;
     const more = target.querySelector(".review-more");
     more?.addEventListener("click", () => {
       const expanded = more.getAttribute("aria-expanded") === "true";

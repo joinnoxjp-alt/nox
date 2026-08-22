@@ -216,7 +216,10 @@ async function installExternalReviewManagement(root) {
       <div class="admin-grid">
         <label>ブランドID<input name="brandId" value="mireio" required></label>
         <label>商品ID（任意）<select name="productId"><option value="">ブランド全体</option><option value="mist">MIST</option><option value="ampoule">AMPOULE</option><option value="cream">CREAM</option><option value="three-step-set">3STEP SET</option></select></label>
-        <label>投稿者表示名<input name="authorName" placeholder="Instagramユーザー"></label>
+        <label>投稿者表示方法<select name="authorDisplayMode" data-author-display-mode><option value="name">表示名を公開</option><option value="initials">イニシャルで表示</option><option value="anonymous">匿名で表示</option><option value="age">年代のみ表示</option><option value="initials_age">イニシャル＋年代</option><option value="anonymous_age">匿名＋年代</option></select></label>
+        <label>投稿者表示名（管理用として保持）<input name="authorName" placeholder="元投稿者名・公開アカウント名"></label>
+        <label data-author-initials-field hidden>イニシャル<input name="authorInitials" maxlength="20" placeholder="A.K"></label>
+        <label data-author-age-field hidden>年代<select name="ageGroup"><option value="">未設定</option><option value="10s">10代</option><option value="20s">20代</option><option value="30s">30代</option><option value="40s">40代</option><option value="50s">50代</option><option value="60plus">60代以上</option></select></label>
         <label>評価（元投稿に存在する場合のみ）<input name="rating" type="number" min="1" max="5" step="0.1" placeholder="未入力可"></label>
         <label style="grid-column:1/-1">クチコミ本文・短い抜粋<textarea name="quote" maxlength="300" required></textarea></label>
         <label style="grid-column:1/-1">NOX側の要約文（任意）<textarea name="summary" maxlength="200"></textarea></label>
@@ -231,15 +234,18 @@ async function installExternalReviewManagement(root) {
   root.append(target);
   const form = target.querySelector("form");
   const list = target.querySelector("[data-external-review-list]");
-  const reset = () => { form.reset(); form.id.value = ""; form.brandId.value = "mireio"; form.displayOrder.value = "1"; };
+  const updateAuthorFields = () => { const mode = form.elements.authorDisplayMode.value; target.querySelector("[data-author-initials-field]").hidden = !["initials", "initials_age"].includes(mode); target.querySelector("[data-author-age-field]").hidden = !["age", "initials_age", "anonymous_age"].includes(mode); };
+  const reset = () => { form.reset(); form.id.value = ""; form.brandId.value = "mireio"; form.displayOrder.value = "1"; updateAuthorFields(); };
   async function render() {
     const snapshot = await getDocs(collection(db, "beautyExternalReviews"));
     const reviews = snapshot.docs.map((item) => ({ id: item.id, ...item.data() })).sort((a, b) => Number(a.displayOrder || 0) - Number(b.displayOrder || 0));
     list.innerHTML = reviews.length ? reviews.map((review) => `<article class="order-card"><b>${esc(review.sourcePlatform)}｜${esc(review.authorName || "投稿者名非表示")}</b><p>${esc(review.summary || review.quote)}</p><small>${esc(review.brandId)}${review.productId ? ` / ${esc(review.productId)}` : ""}｜${review.isPublic ? "公開" : "非公開"}</small><div class="button-row"><button class="beauty-button secondary" data-edit-review="${review.id}">編集</button><button class="beauty-button secondary" data-delete-review="${review.id}">削除</button><a class="beauty-button secondary" href="${esc(review.sourceUrl)}" target="_blank" rel="noopener noreferrer">出典を確認</a></div></article>`).join("") : "<p>登録済みの外部クチコミはありません。</p>";
     list.querySelectorAll("[data-edit-review]").forEach((button) => button.addEventListener("click", () => {
       const review = reviews.find((item) => item.id === button.dataset.editReview);
+      reset();
       for (const [key, value] of Object.entries(review)) if (form.elements[key]) form.elements[key].type === "checkbox" ? form.elements[key].checked = value === true : form.elements[key].value = value ?? "";
-      form.id.value = review.id; form.scrollIntoView({ behavior: "smooth", block: "start" });
+      if (!review.authorDisplayMode) form.elements.authorDisplayMode.value = "name";
+      form.id.value = review.id; updateAuthorFields(); form.scrollIntoView({ behavior: "smooth", block: "start" });
     }));
     list.querySelectorAll("[data-delete-review]").forEach((button) => button.addEventListener("click", async () => {
       if (!confirm("この外部クチコミを削除しますか？")) return;
@@ -253,10 +259,12 @@ async function installExternalReviewManagement(root) {
     try { sourceUrl = new URL(values.sourceUrl); } catch { throw new Error("有効な出典URLを入力してください。"); }
     if (sourceUrl.protocol !== "https:") throw new Error("出典URLはHTTPSのみ登録できます。");
     const reference = values.id ? doc(db, "beautyExternalReviews", values.id) : doc(collection(db, "beautyExternalReviews"));
-    await setDoc(reference, { brandId: values.brandId.trim(), productId: values.productId || "", authorName: values.authorName.trim(), rating: values.rating ? Number(values.rating) : null, quote: values.quote.trim(), summary: values.summary.trim(), sourcePlatform: values.sourcePlatform, sourceUrl: sourceUrl.href, sourceDate: values.sourceDate || "", displayOrder: Number(values.displayOrder), isPublic: form.elements.isPublic.checked, updatedAt: serverTimestamp(), ...(!values.id ? { createdAt: serverTimestamp() } : {}) }, { merge: true });
+    await setDoc(reference, { brandId: values.brandId.trim(), productId: values.productId || "", authorName: values.authorName.trim(), authorDisplayMode: values.authorDisplayMode, authorInitials: values.authorInitials?.trim() || "", ageGroup: values.ageGroup || "", rating: values.rating ? Number(values.rating) : null, quote: values.quote.trim(), summary: values.summary.trim(), sourcePlatform: values.sourcePlatform, sourceUrl: sourceUrl.href, sourceDate: values.sourceDate || "", displayOrder: Number(values.displayOrder), isPublic: form.elements.isPublic.checked, updatedAt: serverTimestamp(), ...(!values.id ? { createdAt: serverTimestamp() } : {}) }, { merge: true });
     target.querySelector("[data-review-status]").textContent = "保存しました。"; reset(); await render();
   });
   target.querySelector("[data-review-reset]").addEventListener("click", reset);
+  form.elements.authorDisplayMode.addEventListener("change", updateAuthorFields);
+  updateAuthorFields();
   await render();
 }
 

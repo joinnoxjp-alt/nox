@@ -204,5 +204,8 @@ test("external MIRÈIO reviews are source-linked, optional, and admin managed", 
   assert.match(product, /data-external-reviews[^>]*hidden/);
   for (const expected of ["外部クチコミ管理", "ブランドID", "商品ID（任意）", "投稿者表示名", "出典サービス", "出典URL", "投稿日", "掲載順", "公開する", "beautyExternalReviews"])
     assert.ok(admin.includes(expected), `missing admin field ${expected}`);
+  for (const expected of ["投稿者表示方法", "表示名を公開", "イニシャルで表示", "匿名で表示", "年代のみ表示", "イニシャル＋年代", "匿名＋年代", "authorDisplayMode", "authorInitials", "ageGroup", "data-author-initials-field", "data-author-age-field"])
+    assert.ok(admin.includes(expected), `missing author privacy control ${expected}`);
+  assert.match(publicReviews, /formatReviewAuthor\(review\)/);
   assert.doesNotMatch(publicReviews + brand + product, /NOX購入者の声|購入確認済み/);
 });
