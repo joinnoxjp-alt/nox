@@ -157,6 +157,12 @@ test("submitBeautyOrder reads server price, saves order, issues ID and returns b
   assert.equal(saved.noxReward, 720);
   assert.equal(saved.mireioSettlement, 2880);
   assert.equal(saved.orderStatus, "received");
+  assert.equal(saved.customerName, "テスト 花子");
+  assert.equal(saved.customerKana, "テスト ハナコ");
+  assert.equal(saved.postalCode, "100-0001");
+  assert.equal(saved.address, "東京都千代田区テスト1-1");
+  assert.equal(saved.phone, "09012345678");
+  assert.equal(saved.email, "beauty-order@example.test");
 });
 
 test("administrator can complete the full order status cycle", async () => {

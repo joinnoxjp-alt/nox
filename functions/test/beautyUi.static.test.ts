@@ -130,8 +130,22 @@ test("saved product main images feed detail, lineup, and 3STEP media", () => {
 
 test("brand page includes 3STEP CTA and exact trust and pricing copy", () => {
   const page = read("pages/beauty-mireio.html");
-  for (const expected of ["NOX公式パートナーブランド", "魅せる肌を目指す方 必見。", "3STEPで始めるプレミアムケア", "3,600円", "8,000円", "6,400円", "18,000円", "送料別途", "three-step-set"])
+  for (const expected of ["NOX公式パートナーブランド", "魅せる肌を目指す方 必見。", "3STEPで始めるプレミアムケア", "3,500円", "8,000円", "6,400円", "18,000円", "送料別途", "three-step-set"])
     assert.ok(page.includes(expected), `missing ${expected}`);
+  assert.doesNotMatch(page, /100mL｜3,600円/);
+});
+
+test("beauty order administration shows snapshots in collapsible mobile-safe cards", () => {
+  const callable = read("functions/src/callable/submitBeautyOrder.ts");
+  const css = read("pages/beauty.css");
+  for (const field of ["customerName", "customerKana", "postalCode", "address", "phone", "email"])
+    assert.match(callable, new RegExp(`\\b${field},`), `order snapshot missing ${field}`);
+  for (const expected of ["注文日時", "購入者氏名", "詳細を開く ▼", "詳細を閉じる ▲", "注文内容", "購入者情報", "配送管理", "注文情報をコピー", "未登録", "navigator.clipboard", "trackingNumber", "shippingFee"])
+    assert.ok(adminSource.includes(expected), `missing order admin feature ${expected}`);
+  assert.match(adminSource, /data-order-details[^>]*hidden/);
+  assert.match(css, /overflow-wrap:anywhere/);
+  assert.match(css, /word-break:break-word/);
+  assert.match(css, /@media\(max-width:650px\)[^{]*\{[^}]*\.order-summary-row,[^}]*grid-template-columns:1fr/);
 });
 
 test("premium select polish includes scalable sections, safe mobile CTA, and reduced motion", () => {

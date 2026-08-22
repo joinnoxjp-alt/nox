@@ -385,46 +385,6 @@ function organizeBrandMedia() {
   section.querySelector(".flow")?.setAttribute("hidden", "");
 }
 
-function enhanceOrderCards() {
-  document.querySelectorAll("[data-save-order]").forEach((button) => {
-    if (button.dataset.financialEnhanced === "true") return;
-    button.dataset.financialEnhanced = "true";
-    const orderId = button.dataset.saveOrder;
-    const label = document.createElement("label");
-    label.innerHTML = `送料（円・確定時に入力）<input data-shipping-fee="${esc(orderId)}" type="number" min="0" step="1" placeholder="未確定">`;
-    button.before(label);
-    getDoc(doc(db, "beautyOrders", orderId)).then((snapshot) => {
-      if (snapshot.exists() && snapshot.data().shippingStatus === "confirmed") {
-        label.querySelector("input").value = Number(snapshot.data().shippingFee || 0);
-      }
-    }).catch(console.error);
-    button.addEventListener("click", async () => {
-      await new Promise((resolve) => setTimeout(resolve, 350));
-      const orderReference = doc(db, "beautyOrders", orderId);
-      const snapshot = await getDoc(orderReference);
-      if (!snapshot.exists()) return;
-      const order = snapshot.data();
-      const orderStatus = document.querySelector(`[data-order-status="${CSS.escape(orderId)}"]`)?.value;
-      const rawShippingFee = label.querySelector("input").value;
-      const updates = {
-        paymentStatus: ["paid", "fulfillment_requested", "shipped", "completed"].includes(orderStatus)
-          ? "paid"
-          : orderStatus === "cancelled" ? "cancelled" : "unpaid",
-        updatedAt: serverTimestamp()
-      };
-      if (rawShippingFee !== "") {
-        const shippingFee = Number(rawShippingFee);
-        if (!Number.isInteger(shippingFee) || shippingFee < 0) throw new Error("送料は0以上の整数で入力してください。");
-        updates.shippingFee = shippingFee;
-        updates.shippingStatus = "confirmed";
-        updates.total = Number(order.subtotal || 0) + shippingFee;
-        updates.mireioSettlement = Number(order.subtotal || 0) - Number(order.noxReward || 0) + shippingFee;
-      }
-      await updateDoc(orderReference, updates);
-    });
-  });
-}
-
 async function install() {
   const user = await requireActiveAdmin({
     auth,
@@ -450,9 +410,6 @@ async function install() {
   observer.observe(document.querySelector("[data-brand-media]"), { childList: true });
   organizeBrandMedia();
   await enhanceAdditionalSlots();
-  const orderObserver = new MutationObserver(enhanceOrderCards);
-  orderObserver.observe(document.querySelector("[data-orders]"), { childList: true });
-  enhanceOrderCards();
 }
 
 install().catch((error) => {
