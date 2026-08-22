@@ -1017,6 +1017,12 @@ allow create: if request.auth != null
       allow delete: if false;
     }
 
+    /* Externally published reviews are manually verified and source-linked. */
+    match /beautyExternalReviews/{reviewId} {
+      allow get, list: if isActiveAdmin() || resource.data.isPublic == true;
+      allow create, update, delete: if isActiveAdmin();
+    }
+
     match /beautyOrderDedupe/{dedupeId} {
       allow read, write: if false;
     }

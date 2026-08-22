@@ -2,6 +2,7 @@ import { app, auth, db } from "./firebase-db.js";
 import { requireActiveAdmin } from "./admin-authorization.js";
 import {
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
@@ -208,6 +209,57 @@ async function installProductMedia(root) {
   });
 }
 
+async function installExternalReviewManagement(root) {
+  const target = section("外部クチコミ管理", `
+    <p>実際に確認できる公開クチコミのみ、短い抜粋または要約と出典URLを登録してください。長文転載や架空レビューは禁止です。</p>
+    <form data-external-review-form><input type="hidden" name="id">
+      <div class="admin-grid">
+        <label>ブランドID<input name="brandId" value="mireio" required></label>
+        <label>商品ID（任意）<select name="productId"><option value="">ブランド全体</option><option value="mist">MIST</option><option value="ampoule">AMPOULE</option><option value="cream">CREAM</option><option value="three-step-set">3STEP SET</option></select></label>
+        <label>投稿者表示名<input name="authorName" placeholder="Instagramユーザー"></label>
+        <label>評価（元投稿に存在する場合のみ）<input name="rating" type="number" min="1" max="5" step="0.1" placeholder="未入力可"></label>
+        <label style="grid-column:1/-1">クチコミ本文・短い抜粋<textarea name="quote" maxlength="300" required></textarea></label>
+        <label style="grid-column:1/-1">NOX側の要約文（任意）<textarea name="summary" maxlength="200"></textarea></label>
+        <label>出典サービス<select name="sourcePlatform" required><option>Instagram</option><option>TikTok</option><option>X</option><option>Google</option><option>公式販売ページ</option><option>その他</option></select></label>
+        <label>出典URL<input name="sourceUrl" type="url" inputmode="url" placeholder="https://" required></label>
+        <label>投稿日（確認できる場合）<input name="sourceDate" type="date"></label>
+        <label>掲載順<input name="displayOrder" type="number" min="1" value="1" required></label>
+        <label><input name="isPublic" type="checkbox"> 公開する</label>
+      </div>
+      <div class="button-row"><button class="beauty-button" type="submit">クチコミを保存</button><button class="beauty-button secondary" type="button" data-review-reset>新規入力に戻す</button></div><p data-review-status role="status"></p>
+    </form><div data-external-review-list></div>`);
+  root.append(target);
+  const form = target.querySelector("form");
+  const list = target.querySelector("[data-external-review-list]");
+  const reset = () => { form.reset(); form.id.value = ""; form.brandId.value = "mireio"; form.displayOrder.value = "1"; };
+  async function render() {
+    const snapshot = await getDocs(collection(db, "beautyExternalReviews"));
+    const reviews = snapshot.docs.map((item) => ({ id: item.id, ...item.data() })).sort((a, b) => Number(a.displayOrder || 0) - Number(b.displayOrder || 0));
+    list.innerHTML = reviews.length ? reviews.map((review) => `<article class="order-card"><b>${esc(review.sourcePlatform)}｜${esc(review.authorName || "投稿者名非表示")}</b><p>${esc(review.summary || review.quote)}</p><small>${esc(review.brandId)}${review.productId ? ` / ${esc(review.productId)}` : ""}｜${review.isPublic ? "公開" : "非公開"}</small><div class="button-row"><button class="beauty-button secondary" data-edit-review="${review.id}">編集</button><button class="beauty-button secondary" data-delete-review="${review.id}">削除</button><a class="beauty-button secondary" href="${esc(review.sourceUrl)}" target="_blank" rel="noopener noreferrer">出典を確認</a></div></article>`).join("") : "<p>登録済みの外部クチコミはありません。</p>";
+    list.querySelectorAll("[data-edit-review]").forEach((button) => button.addEventListener("click", () => {
+      const review = reviews.find((item) => item.id === button.dataset.editReview);
+      for (const [key, value] of Object.entries(review)) if (form.elements[key]) form.elements[key].type === "checkbox" ? form.elements[key].checked = value === true : form.elements[key].value = value ?? "";
+      form.id.value = review.id; form.scrollIntoView({ behavior: "smooth", block: "start" });
+    }));
+    list.querySelectorAll("[data-delete-review]").forEach((button) => button.addEventListener("click", async () => {
+      if (!confirm("この外部クチコミを削除しますか？")) return;
+      await deleteDoc(doc(db, "beautyExternalReviews", button.dataset.deleteReview)); await render();
+    }));
+  }
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const values = Object.fromEntries(new FormData(form));
+    let sourceUrl;
+    try { sourceUrl = new URL(values.sourceUrl); } catch { throw new Error("有効な出典URLを入力してください。"); }
+    if (sourceUrl.protocol !== "https:") throw new Error("出典URLはHTTPSのみ登録できます。");
+    const reference = values.id ? doc(db, "beautyExternalReviews", values.id) : doc(collection(db, "beautyExternalReviews"));
+    await setDoc(reference, { brandId: values.brandId.trim(), productId: values.productId || "", authorName: values.authorName.trim(), rating: values.rating ? Number(values.rating) : null, quote: values.quote.trim(), summary: values.summary.trim(), sourcePlatform: values.sourcePlatform, sourceUrl: sourceUrl.href, sourceDate: values.sourceDate || "", displayOrder: Number(values.displayOrder), isPublic: form.elements.isPublic.checked, updatedAt: serverTimestamp(), ...(!values.id ? { createdAt: serverTimestamp() } : {}) }, { merge: true });
+    target.querySelector("[data-review-status]").textContent = "保存しました。"; reset(); await render();
+  });
+  target.querySelector("[data-review-reset]").addEventListener("click", reset);
+  await render();
+}
+
 async function installSettlementAudit(root) {
   const target = section("精算内訳・対象理由", `
     <button class="beauty-button secondary" data-refresh-settlement>最新状態を表示</button>
@@ -376,6 +428,7 @@ async function install() {
   const root = document.querySelector("main.admin");
   await installCommerceSettings(root);
   await installProductMedia(root);
+  await installExternalReviewManagement(root);
   await installSettlementAudit(root);
   const observer = new MutationObserver(() => {
     document.querySelectorAll("[data-slot]").forEach((card) => {

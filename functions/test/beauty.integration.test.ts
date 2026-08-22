@@ -87,6 +87,8 @@ before(async () => {
     firestore.doc("beautyBrands/mireio").set({ brandName: "MIRÈIO", isPublic: true }),
     firestore.doc("beautyProducts/mist").set({ brandId: "mireio", name: "MIST", price: 3600, isPublic: true, displayOrder: 1 }),
     firestore.doc("beautyProducts/private-product").set({ brandId: "mireio", name: "PRIVATE", price: 1, isPublic: false, displayOrder: 99 }),
+    firestore.doc("beautyExternalReviews/public-review").set({ brandId: "mireio", quote: "public", sourcePlatform: "Instagram", sourceUrl: "https://example.com/public", displayOrder: 1, isPublic: true }),
+    firestore.doc("beautyExternalReviews/private-review").set({ brandId: "mireio", quote: "private", sourcePlatform: "X", sourceUrl: "https://example.com/private", displayOrder: 2, isPublic: false }),
     firestore.doc("beautySettings/commerce").set({ bankName: "TEST BANK", branchName: "TEST", accountType: "普通", accountNumber: "0000000", accountHolder: "TEST", paymentDueDays: 7, shippingLabel: "送料別途", salesEnabled: true })
   ]);
   [userToken, adminToken] = await Promise.all([signIn(USER_EMAIL), signIn(FIXED_ADMIN_EMAIL)]);
@@ -110,6 +112,15 @@ test("published catalog is public, private product is denied, writes are admin-o
 test("public clients cannot write beautyOrders directly", async () => {
   const body = { fields: { orderId: { stringValue: "forged" }, total: { integerValue: "1" } } };
   assert.equal((await firestoreRequest("beautyOrders/forged", "PATCH", userToken, body)).status, 403);
+});
+
+test("only published external reviews are public and only admins can manage them", async () => {
+  assert.equal((await firestoreRequest("beautyExternalReviews/public-review", "GET")).status, 200);
+  assert.equal((await firestoreRequest("beautyExternalReviews/private-review", "GET")).status, 403);
+  assert.equal((await firestoreRequest("beautyExternalReviews/private-review", "GET", adminToken)).status, 200);
+  const body = { fields: { brandId: { stringValue: "mireio" }, quote: { stringValue: "forged" }, sourcePlatform: { stringValue: "X" }, sourceUrl: { stringValue: "https://example.com" }, displayOrder: { integerValue: "1" }, isPublic: { booleanValue: true } } };
+  assert.equal((await firestoreRequest("beautyExternalReviews/forged", "PATCH", userToken, body)).status, 403);
+  assert.equal((await firestoreRequest("beautyExternalReviews/admin-review", "PATCH", adminToken, body)).status, 200);
 });
 
 test("fixed admin can upload/delete beauty image and MP4; general user cannot", async () => {

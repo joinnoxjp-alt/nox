@@ -37,6 +37,12 @@ test("beauty orders cannot be created, changed, or deleted by public clients", (
   assert.match(rules, /allow create, delete: if false;/);
 });
 
+test("external beauty reviews require publication for public reads and admin for writes", () => {
+  const rules = block(firestoreRules, "match /beautyExternalReviews/{reviewId}", "match /beautyOrderDedupe/{dedupeId}");
+  assert.match(rules, /allow get, list: if isActiveAdmin\(\) \|\| resource\.data\.isPublic == true;/);
+  assert.match(rules, /allow create, update, delete: if isActiveAdmin\(\);/);
+});
+
 test("beauty media writes use the existing active administrator role", () => {
   const rules = block(
     storageRules,

@@ -191,3 +191,18 @@ test("the active NOX administrator page links to NOX BEAUTY management", () => {
   assert.match(admin, />NOX BEAUTY管理</);
   assert.match(admin, /href="\/pages\/beauty-admin\.html"/);
 });
+
+test("external MIRÈIO reviews are source-linked, optional, and admin managed", () => {
+  const publicReviews = read("pages/beauty-reviews.js");
+  const brand = read("pages/beauty-mireio.html");
+  const product = read("pages/beauty-product.html");
+  const admin = read("pages/beauty-admin-enhancements.js");
+  for (const expected of ["REVIEWS", "MIRÈIOのクチコミ", "実際に公開されているMIRÈIOに関するクチコミをご紹介します。", 'target="_blank"', 'rel="noopener noreferrer"', "もっと見る", "isPublic"])
+    assert.ok(publicReviews.includes(expected), `missing ${expected}`);
+  assert.match(publicReviews, /if \(reviews\.length\)/);
+  assert.match(brand, /data-external-reviews[^>]*hidden/);
+  assert.match(product, /data-external-reviews[^>]*hidden/);
+  for (const expected of ["外部クチコミ管理", "ブランドID", "商品ID（任意）", "投稿者表示名", "出典サービス", "出典URL", "投稿日", "掲載順", "公開する", "beautyExternalReviews"])
+    assert.ok(admin.includes(expected), `missing admin field ${expected}`);
+  assert.doesNotMatch(publicReviews + brand + product, /NOX購入者の声|購入確認済み/);
+});
