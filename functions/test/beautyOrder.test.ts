@@ -20,13 +20,13 @@ test("MIST is split 20/80 and shipping is excluded from the NOX reward", () => {
   });
 });
 
-test("the three-product set is split using the 18,000 yen server price", () => {
-  assert.deepEqual(calculateBeautyAmounts(18000, 1), {
-    subtotal: 18000,
+test("the three-product set is split using the 17,900 yen server price", () => {
+  assert.deepEqual(calculateBeautyAmounts(17900, 1), {
+    subtotal: 17900,
     shippingFee: 0,
-    total: 18000,
-    noxReward: 3600,
-    mireioSettlement: 14400
+    total: 17900,
+    noxReward: 3580,
+    mireioSettlement: 14320
   });
 });
 

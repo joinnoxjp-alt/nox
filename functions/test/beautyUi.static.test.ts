@@ -37,7 +37,7 @@ test("MIRÈIO initial catalog values are exact", () => {
     "6400",
     "8800298230026",
     "three-step-set",
-    "18000",
+    "17900",
     "送料別途"
   ]) assert.ok(publicSource.includes(expected), `missing ${expected}`);
 });
@@ -130,9 +130,10 @@ test("saved product main images feed detail, lineup, and 3STEP media", () => {
 
 test("brand page includes 3STEP CTA and exact trust and pricing copy", () => {
   const page = read("pages/beauty-mireio.html");
-  for (const expected of ["NOX公式パートナーブランド", "魅せる肌を目指す方 必見。", "3STEPで始めるプレミアムケア", "3,500円", "8,000円", "6,400円", "18,000円", "送料別途", "three-step-set"])
+  for (const expected of ["NOX公式パートナーブランド", "魅せる肌を目指す方 必見。", "3STEPで始めるプレミアムケア", "3,500円", "8,000円", "6,400円", "17,900円", "送料別途", "three-step-set"])
     assert.ok(page.includes(expected), `missing ${expected}`);
   assert.doesNotMatch(page, /100mL｜3,600円/);
+  assert.doesNotMatch(page, /18,000円/);
 });
 
 test("beauty order administration shows snapshots in collapsible mobile-safe cards", () => {
