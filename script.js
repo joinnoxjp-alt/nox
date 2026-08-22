@@ -203,6 +203,11 @@ function createRecruitmentAd(slotNumber) {
   };
 }
 
+function getAdDisplayOrder(ad) {
+  const displayOrder = Number(ad?.displayOrder ?? ad?.slot ?? 999);
+  return Number.isFinite(displayOrder) ? displayOrder : 999;
+}
+
 /* ===========================
    表示回数
 =========================== */
@@ -495,11 +500,11 @@ async function loadNoxAdvertisements() {
 
     noxAds = completedSlots.sort((adA, adB) => {
       const orderDifference =
-        getPositiveDisplayOrder(adA.displayOrder) -
-        getPositiveDisplayOrder(adB.displayOrder);
-      return Number.isNaN(orderDifference)
-        ? adA.slot - adB.slot
-        : orderDifference || adA.slot - adB.slot;
+        getAdDisplayOrder(adA) - getAdDisplayOrder(adB);
+      return (
+        orderDifference ||
+        Number(adA.slot ?? 999) - Number(adB.slot ?? 999)
+      );
     });
 
     slider.innerHTML = "";

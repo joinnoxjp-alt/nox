@@ -3530,7 +3530,7 @@
           endDate: "",
           contractPrice: 0,
           paymentStatus: "unpaid",
-          displayOrder: null,
+          displayOrder: slotNumber,
           impressions: 0,
           clicks: 0,
         };
@@ -3639,6 +3639,12 @@
                 slot: slotNumber,
               };
             }
+
+            const savedDisplayOrder = Number(adData.displayOrder);
+            adData.displayOrder =
+              Number.isInteger(savedDisplayOrder) && savedDisplayOrder >= 1
+                ? savedDisplayOrder
+                : slotNumber;
 
             const remaining = getRemainingDays(adData.endDate);
 
@@ -3892,7 +3898,7 @@
             <input
               type="number"
               id="adDisplayOrder${slotNumber}"
-              value="${Number.isInteger(data.displayOrder) && data.displayOrder >= 1 ? data.displayOrder : ""}"
+              value="${data.displayOrder ?? slotNumber}"
               min="1"
               step="1"
               placeholder="例：1"
@@ -4074,9 +4080,9 @@
         let enabled = getCheckboxValue(`adEnabled${slotNumber}`);
 
         const displayOrderValue = getInputValue(`adDisplayOrder${slotNumber}`);
-        const displayOrder = displayOrderValue ? Number(displayOrderValue) : null;
+        const displayOrder = Number(displayOrderValue || slotNumber);
 
-        if (displayOrderValue && (!Number.isInteger(displayOrder) || displayOrder < 1)) {
+        if (!Number.isInteger(displayOrder) || displayOrder < 1) {
           alert("表示順は1以上の整数で入力してください");
           return;
         }
