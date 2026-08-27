@@ -8,8 +8,25 @@ import {
   buildStoreApplicationCreatedMessage,
   buildStoreReviewCreatedMessage,
   buildStoreReservationCreatedMessage,
+  buildAmbassadorInquiryCreatedMessage,
   buildUserCreatedMessage
 } from "../src/notifications/discordMessages";
+
+test("ambassador inquiry message contains casting and contact details", () => {
+  const result = buildAmbassadorInquiryCreatedMessage("inquiry-1", {
+    ambassador: "NOXにおまかせ", companyName: "テストブランド",
+    contactName: "担当者", email: "contact@example.test", phone: "09000000000",
+    productName: "テスト商品", productUrl: "https://example.test/product",
+    channels: ["Instagram", "撮影モデル"], preferredTiming: "2026年9月",
+    budget: "10万円", productProvided: "あり", details: "PR相談詳細"
+  }, EVENT_TIME);
+  assert.match(result.content, /新規アンバサダーPR相談/);
+  assert.match(result.content, /希望アンバサダー：NOXにおまかせ/);
+  assert.match(result.content, /希望SNS：Instagram/);
+  assert.match(result.content, /希望PR内容：Instagram \/ 撮影モデル/);
+  assert.match(result.content, /メールアドレス：contact@example\.test/);
+  assert.deepEqual(result.allowed_mentions.parse, []);
+});
 
 const EVENT_TIME =
   "2026-07-26T00:00:00.000Z";

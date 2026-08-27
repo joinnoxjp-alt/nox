@@ -238,3 +238,54 @@ export function buildStoreReservationCreatedMessage(
     "ステータス：確認待ち"
   ].join("\n"));
 }
+
+function optionalLine(
+  label: string,
+  value: unknown
+): string[] {
+  const normalized = safeText(value, "");
+  return normalized ? [`${label}：${normalized}`] : [];
+}
+
+function stringList(value: unknown): string {
+  if (!Array.isArray(value)) return "";
+  return value
+    .filter((item): item is string => typeof item === "string")
+    .map((item) => safeText(item, ""))
+    .filter(Boolean)
+    .join(" / ");
+}
+
+export function buildAmbassadorInquiryCreatedMessage(
+  inquiryId: string,
+  data: Record<string, unknown>,
+  eventTime: string
+): DiscordMessage {
+  const channels = stringList(data.channels);
+  const sns = Array.isArray(data.channels)
+    ? stringList(data.channels.filter((item) =>
+      typeof item === "string"
+      && ["TikTok", "Instagram", "ストーリー", "LIVE"].includes(item)
+    ))
+    : "";
+  return message([
+    "📣 新規アンバサダーPR相談",
+    "",
+    `希望アンバサダー：${safeText(data.ambassador, "NOXにおまかせ")}`,
+    `会社・店舗・ブランド：${safeText(data.companyName)}`,
+    `担当者名：${safeText(data.contactName)}`,
+    `メールアドレス：${safeText(data.email)}`,
+    ...optionalLine("電話番号", data.phone),
+    `商品・サービス：${safeText(data.productName)}`,
+    ...optionalLine("商品URL", data.productUrl),
+    ...optionalLine("希望SNS", sns),
+    ...optionalLine("希望PR内容", channels),
+    ...optionalLine("希望時期", data.preferredTiming),
+    ...optionalLine("予算", data.budget),
+    ...optionalLine("商品提供", data.productProvided),
+    `問い合わせ詳細：${safeText(data.details)}`,
+    ...optionalLine("その他要望", data.requests),
+    `受付日時：${formatJapanTime(data.createdAt, eventTime)}`,
+    `問い合わせID：${safeText(inquiryId)}`
+  ].join("\n"));
+}
