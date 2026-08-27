@@ -929,6 +929,40 @@ allow create: if request.auth != null
       allow delete: if isActiveAdmin();
     }
 
+    match /ambassadors/{ambassadorId} {
+      allow get, list: if isActiveAdmin() || resource.data.visible == true;
+      allow create, update, delete: if isActiveAdmin();
+    }
+
+    match /ambassadorInquiries/{inquiryId} {
+      allow read, update, delete: if isActiveAdmin();
+      allow create: if request.resource.data.keys().hasAll([
+          "companyName", "contactName", "email", "productName",
+          "ambassador", "details", "channels", "status", "createdAt"
+        ])
+        && request.resource.data.companyName is string
+        && request.resource.data.companyName.size() > 0
+        && request.resource.data.companyName.size() <= 120
+        && request.resource.data.contactName is string
+        && request.resource.data.contactName.size() > 0
+        && request.resource.data.contactName.size() <= 80
+        && request.resource.data.email is string
+        && request.resource.data.email.size() > 3
+        && request.resource.data.email.size() <= 254
+        && request.resource.data.productName is string
+        && request.resource.data.productName.size() > 0
+        && request.resource.data.productName.size() <= 150
+        && request.resource.data.ambassador is string
+        && request.resource.data.ambassador.size() <= 80
+        && request.resource.data.details is string
+        && request.resource.data.details.size() > 0
+        && request.resource.data.details.size() <= 3000
+        && request.resource.data.channels is list
+        && request.resource.data.channels.size() <= 6
+        && request.resource.data.status == "new"
+        && request.resource.data.createdAt == request.time;
+    }
+
     /* Store testimonials: public submissions are always pending and hidden. */
     match /storeReviews/{reviewId} {
       allow get, list: if isActiveAdmin()

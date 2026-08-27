@@ -158,6 +158,14 @@ service firebase.storage {
       allow delete: if isActiveAdmin();
     }
 
+    match /ambassadors/{ambassadorId}/{kind}/{fileName} {
+      allow read: if true;
+      allow create, update: if isActiveAdmin()
+        && kind in ["main", "gallery"]
+        && validRasterImage(5 * 1024 * 1024);
+      allow delete: if isActiveAdmin();
+    }
+
     /*
      * Advertisement images are public, but administrator-managed.
      */
