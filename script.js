@@ -50,6 +50,38 @@ window.addEventListener("load", () => {
 =========================== */
 
 const header = document.querySelector(".site-header");
+const menuToggle = document.querySelector(".menu-toggle");
+const mobileMenu = document.querySelector("#mobileMenu");
+
+function closeMobileMenu() {
+  if (!menuToggle || !mobileMenu) return;
+  menuToggle.setAttribute("aria-expanded", "false");
+  menuToggle.setAttribute("aria-label", "メニューを開く");
+  mobileMenu.hidden = true;
+}
+
+if (menuToggle && mobileMenu) {
+  menuToggle.addEventListener("click", () => {
+    const opening = menuToggle.getAttribute("aria-expanded") !== "true";
+    menuToggle.setAttribute("aria-expanded", String(opening));
+    menuToggle.setAttribute("aria-label", opening ? "メニューを閉じる" : "メニューを開く");
+    mobileMenu.hidden = !opening;
+  });
+
+  mobileMenu.addEventListener("click", event => {
+    if (event.target.closest("a")) closeMobileMenu();
+  });
+
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape") closeMobileMenu();
+  });
+
+  document.addEventListener("click", event => {
+    if (menuToggle.getAttribute("aria-expanded") === "true" && !header?.contains(event.target)) {
+      closeMobileMenu();
+    }
+  });
+}
 
 window.addEventListener("scroll", () => {
   if (header) {

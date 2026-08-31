@@ -138,11 +138,12 @@ a{
    Button
 ========================= */
 
-.beauty-select-spotlight{position:relative;display:grid;grid-template-columns:minmax(280px,.8fr) minmax(0,1.2fr);gap:clamp(30px,7vw,90px);align-items:center;overflow:hidden;padding:clamp(75px,10vw,130px) max(20px,calc((100vw - 1180px)/2));color:#2b2026;background:linear-gradient(135deg,#fff8f3 0%,#f5dfe2 50%,#e6c3c8 100%)}
-.beauty-select-glow{position:absolute;top:-35%;left:-10%;width:55vw;aspect-ratio:1;border-radius:50%;border:1px solid rgba(182,146,82,.22);box-shadow:0 0 90px rgba(255,255,255,.65),inset 0 0 80px rgba(255,255,255,.3)}
-.beauty-select-content{position:relative;z-index:2}.beauty-select-kicker{margin-bottom:14px;color:#9b7740;font:600 11px/1 sans-serif;letter-spacing:.25em}.beauty-select-content h2{margin:0;font:600 clamp(38px,5vw,64px)/1.2 "Cormorant Garamond","Noto Serif JP",serif}.beauty-select-content>p:not(.beauty-select-kicker){margin:20px 0;color:#75666e;font-size:14px;line-height:2}.beauty-select-link{display:inline-flex;gap:35px;align-items:center;margin-top:10px;padding:15px 24px;background:#5a3843;color:#fff;font:700 11px/1 sans-serif;letter-spacing:.13em;transition:.25s}.beauty-select-link:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(71,39,49,.2)}
-.beauty-select-preview{position:relative;z-index:2;display:grid;grid-template-columns:repeat(4,1fr);gap:10px;transform:rotate(-2deg)}.beauty-select-preview img{display:block;width:100%;aspect-ratio:3/4;object-fit:cover;border:5px solid rgba(255,255,255,.8);box-shadow:0 16px 34px rgba(78,42,54,.14);transition:.35s}.beauty-select-preview img:nth-child(even){transform:translateY(25px)}.beauty-select-preview:hover img{transform:translateY(-4px)}.beauty-select-preview:hover img:nth-child(even){transform:translateY(20px)}
-@media(max-width:720px){.beauty-select-spotlight{grid-template-columns:1fr;padding-left:18px;padding-right:18px;text-align:center}.beauty-select-preview{gap:5px;transform:none}.beauty-select-preview img{border-width:3px}}
+.beauty-select-spotlight{position:relative;display:grid;grid-template-columns:minmax(280px,.8fr) minmax(0,1.2fr);gap:clamp(30px,7vw,90px);align-items:center;overflow:hidden;padding:clamp(75px,10vw,130px) max(20px,calc((100vw - 1180px)/2));border-top:1px solid rgba(212,175,55,.25);border-bottom:1px solid rgba(212,175,55,.18);color:#fff8f3;background:radial-gradient(circle at 90% 20%,rgba(238,190,201,.18),transparent 34%),linear-gradient(135deg,#090708,#181015 56%,#23151c 100%)}
+.beauty-select-glow{position:absolute;top:-35%;left:-10%;width:55vw;aspect-ratio:1;border-radius:50%;border:1px solid rgba(212,175,55,.2);box-shadow:0 0 90px rgba(212,175,55,.08),inset 0 0 80px rgba(245,223,226,.05)}
+.beauty-select-content{position:relative;z-index:2}.beauty-select-kicker{margin-bottom:14px;color:#d4af37;font:600 11px/1 sans-serif;letter-spacing:.25em}.beauty-select-content h2{margin:0;font:600 clamp(38px,5vw,64px)/1.2 "Cormorant Garamond","Noto Serif JP",serif}.beauty-select-content>p:not(.beauty-select-kicker){margin:20px 0;color:#d8cbd0;font-size:14px;line-height:2}.beauty-select-link{display:inline-flex;gap:35px;align-items:center;margin-top:10px;padding:15px 24px;border:1px solid rgba(212,175,55,.55);background:#fff8f3;color:#392630;font:700 11px/1 sans-serif;letter-spacing:.13em;transition:.25s}.beauty-select-link:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(212,175,55,.14)}
+.beauty-select-preview{position:relative;z-index:2;display:grid;grid-template-columns:repeat(4,1fr);gap:10px;transform:rotate(-2deg)}.beauty-select-preview img{display:block;width:100%;aspect-ratio:3/4;object-fit:cover;border:4px solid rgba(255,248,243,.86);box-shadow:0 16px 34px rgba(0,0,0,.32);transition:.35s}.beauty-select-preview img:nth-child(even){transform:translateY(25px)}.beauty-select-preview:hover img{transform:translateY(-4px)}.beauty-select-preview:hover img:nth-child(even){transform:translateY(20px)}
+.menu-toggle,.mobile-menu{display:none}
+@media(max-width:720px){.beauty-select-spotlight{grid-template-columns:1fr;padding-left:18px;padding-right:0;text-align:left}.beauty-select-content{padding-right:18px}.beauty-select-preview{display:flex;gap:12px;overflow-x:auto;padding:8px 18px 30px 2px;transform:none;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}.beauty-select-preview::-webkit-scrollbar{display:none}.beauty-select-preview img,.beauty-select-preview img:nth-child(even){flex:0 0 68%;width:68%;transform:none;border-width:3px;scroll-snap-align:start}.beauty-select-preview:after{content:"";flex:0 0 1px}}
 
 .btn{
   border:none;
@@ -1618,6 +1619,15 @@ footer a:hover{
     display:block;
     text-align:center;
   }
+
+  .menu-toggle{position:absolute;top:18px;right:18px;display:grid;width:42px;height:42px;padding:10px;border:1px solid rgba(212,175,55,.45);border-radius:50%;background:#080808;place-content:center;gap:4px}
+  .menu-toggle span{display:block;width:18px;height:1px;background:#ffe08a;transition:.2s}
+  .menu-toggle[aria-expanded="true"] span:first-child{transform:translateY(5px) rotate(45deg)}
+  .menu-toggle[aria-expanded="true"] span:nth-child(2){opacity:0}
+  .menu-toggle[aria-expanded="true"] span:last-child{transform:translateY(-5px) rotate(-45deg)}
+  .mobile-menu{display:grid;grid-template-columns:1fr 1fr;gap:0;margin:18px -18px -18px;border-top:1px solid rgba(212,175,55,.2);background:#080808;text-align:left}
+  .mobile-menu[hidden]{display:none}
+  .mobile-menu a{padding:17px 18px;border-right:1px solid rgba(212,175,55,.12);border-bottom:1px solid rgba(212,175,55,.12);color:#eee;font-size:13px}
 
   .header-nav{
     display:none;
