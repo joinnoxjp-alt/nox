@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>NOX Beauty &amp; Select｜ネイル・美容・ファッションアイテム</title>
+  <meta name="description" content="可愛いを、もっと気軽に。NOX Beauty & Selectが選ぶ韓国風・リボン・大人可愛いネイルチップコレクション。">
+  <meta name="theme-color" content="#fffaf5">
+  <meta property="og:title" content="NOX Beauty & Select">
+  <meta property="og:description" content="可愛いを、もっと気軽に。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://joinnox.jp/pages/beauty-select.html">
+  <meta property="og:image" content="https://joinnox.jp/pages/assets/beauty-select/nail-01.png">
+  <link rel="canonical" href="https://joinnox.jp/pages/beauty-select.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="beauty-select.css">
+</head>
+<body>
+  <header class="select-header">
+    <a class="select-logo" href="../index.html" aria-label="NOXトップへ">NOX <span>BEAUTY &amp; SELECT</span></a>
+    <nav aria-label="メインナビゲーション">
+      <a href="#collection">COLLECTION</a>
+      <a href="beauty.html">NOX Beauty</a>
+      <a href="beauty-mireio.html">MIREIO</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="select-hero" aria-labelledby="hero-title">
+      <div class="hero-orb orb-one" aria-hidden="true"></div><div class="hero-orb orb-two" aria-hidden="true"></div>
+      <div class="hero-copy">
+        <p class="kicker">A LITTLE LUXURY, EVERY DAY</p>
+        <h1 id="hero-title"><span>NOX</span>BEAUTY &amp; SELECT</h1>
+        <p class="hero-catch">可愛いを、もっと気軽に。</p>
+        <p class="hero-sub">ネイル・美容・ファッションアイテムを<br>手に取りやすい価格で。</p>
+        <a class="primary-button" href="#collection">COLLECTIONを見る <span aria-hidden="true">↓</span></a>
+      </div>
+      <p class="hero-scroll" aria-hidden="true">SCROLL</p>
+    </section>
+
+    <section class="intro reveal" aria-labelledby="collection-title">
+      <p class="section-kicker">NOX SELECT NAIL</p>
+      <h2 id="collection-title">指先に、今日のときめきを。</h2>
+      <p>きれいめからガーリー、少しモードなデザインまで。<br>気分や装いで選べる14のネイルチップを集めました。</p>
+    </section>
+
+    <section class="pickup reveal" aria-labelledby="pickup-title">
+      <div class="section-heading">
+        <div><p class="section-kicker">CURATED FOR YOU</p><h2 id="pickup-title">NOX PICK UP</h2></div>
+        <div class="carousel-controls"><button type="button" data-pickup-prev aria-label="前の商品">←</button><button type="button" data-pickup-next aria-label="次の商品">→</button></div>
+      </div>
+      <div class="pickup-track" data-pickup-track aria-label="おすすめ商品"></div>
+    </section>
+
+    <section class="collection" id="collection" aria-labelledby="products-title">
+      <div class="section-heading reveal">
+        <div><p class="section-kicker">THE COLLECTION</p><h2 id="products-title">選ぶ時間まで、可愛く。</h2></div>
+        <p class="product-count" data-product-count></p>
+      </div>
+      <div class="filters reveal" data-filters aria-label="商品を絞り込む"></div>
+      <div class="product-grid" data-product-grid></div>
+    </section>
+
+    <section class="shop-guide reveal" aria-labelledby="shop-title">
+      <p class="section-kicker">MORE BEAUTY, MORE YOU</p><h2 id="shop-title">すべてのアイテムは<br>NOXのセレクトショップへ。</h2>
+      <p>決済・注文管理・配送はBASEで安全に行います。</p>
+      <a class="primary-button" href="https://joinnoxjp.base.shop" target="_blank" rel="noopener">すべての商品を見る <span aria-hidden="true">↗</span></a>
+      <nav class="brand-links" aria-label="NOX Beautyブランド"><a href="beauty.html">NOX Beauty</a><a href="beauty-mireio.html">MIREIO</a><a href="#collection">NOX Beauty &amp; Select</a></nav>
+    </section>
+  </main>
+
+  <footer><a class="select-logo" href="../index.html">NOX <span>BEAUTY &amp; SELECT</span></a><p>© 2026 NOX</p></footer>
+
+  <dialog class="product-modal" data-product-modal aria-labelledby="modal-title">
+    <button class="modal-close" type="button" data-modal-close aria-label="閉じる">×</button>
+    <div class="modal-layout">
+      <div class="modal-gallery"><div class="modal-image-wrap"><img data-modal-image alt=""><button type="button" class="gallery-arrow prev" data-gallery-prev aria-label="前の画像">‹</button><button type="button" class="gallery-arrow next" data-gallery-next aria-label="次の画像">›</button><span class="image-count" data-image-count></span></div></div>
+      <div class="modal-info"><p class="modal-brand">NOX SELECT NAIL</p><h2 id="modal-title" data-modal-title></h2><p class="modal-catch" data-modal-catch></p><div class="tag-list" data-modal-tags></div><p class="modal-description" data-modal-description></p><div class="modal-buy"><strong data-modal-price></strong><a data-modal-buy target="_blank" rel="noopener">購入する <span aria-hidden="true">↗</span></a></div></div>
+    </div>
+  </dialog>
+  <script src="beauty-select-data.js"></script>
+  <script src="beauty-select.js" defer></script>
+</body>
+</html>

@@ -138,6 +138,12 @@ a{
    Button
 ========================= */
 
+.beauty-select-spotlight{position:relative;display:grid;grid-template-columns:minmax(280px,.8fr) minmax(0,1.2fr);gap:clamp(30px,7vw,90px);align-items:center;overflow:hidden;padding:clamp(75px,10vw,130px) max(20px,calc((100vw - 1180px)/2));color:#2b2026;background:linear-gradient(135deg,#fff8f3 0%,#f5dfe2 50%,#e6c3c8 100%)}
+.beauty-select-glow{position:absolute;top:-35%;left:-10%;width:55vw;aspect-ratio:1;border-radius:50%;border:1px solid rgba(182,146,82,.22);box-shadow:0 0 90px rgba(255,255,255,.65),inset 0 0 80px rgba(255,255,255,.3)}
+.beauty-select-content{position:relative;z-index:2}.beauty-select-kicker{margin-bottom:14px;color:#9b7740;font:600 11px/1 sans-serif;letter-spacing:.25em}.beauty-select-content h2{margin:0;font:600 clamp(38px,5vw,64px)/1.2 "Cormorant Garamond","Noto Serif JP",serif}.beauty-select-content>p:not(.beauty-select-kicker){margin:20px 0;color:#75666e;font-size:14px;line-height:2}.beauty-select-link{display:inline-flex;gap:35px;align-items:center;margin-top:10px;padding:15px 24px;background:#5a3843;color:#fff;font:700 11px/1 sans-serif;letter-spacing:.13em;transition:.25s}.beauty-select-link:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(71,39,49,.2)}
+.beauty-select-preview{position:relative;z-index:2;display:grid;grid-template-columns:repeat(4,1fr);gap:10px;transform:rotate(-2deg)}.beauty-select-preview img{display:block;width:100%;aspect-ratio:3/4;object-fit:cover;border:5px solid rgba(255,255,255,.8);box-shadow:0 16px 34px rgba(78,42,54,.14);transition:.35s}.beauty-select-preview img:nth-child(even){transform:translateY(25px)}.beauty-select-preview:hover img{transform:translateY(-4px)}.beauty-select-preview:hover img:nth-child(even){transform:translateY(20px)}
+@media(max-width:720px){.beauty-select-spotlight{grid-template-columns:1fr;padding-left:18px;padding-right:18px;text-align:center}.beauty-select-preview{gap:5px;transform:none}.beauty-select-preview img{border-width:3px}}
+
 .btn{
   border:none;
   outline:none;
