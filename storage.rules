@@ -232,6 +232,24 @@ service firebase.storage {
       allow delete: if isActiveAdmin();
     }
 
+    match /market-products/{productId}/{fileName} {
+      allow read: if isFixedActiveAdmin()
+        || (firestore.exists(/databases/(default)/documents/marketProducts/$(productId))
+          && firestore.get(/databases/(default)/documents/marketProducts/$(productId)).data.isPublic == true);
+      allow create, update: if isFixedActiveAdmin()
+        && validRasterImage(8 * 1024 * 1024);
+      allow delete: if isFixedActiveAdmin();
+    }
+
+    match /market-donations/{donationId}/{fileName} {
+      allow read: if isFixedActiveAdmin();
+      allow create: if validRasterImage(5 * 1024 * 1024)
+        && donationId.matches('[A-Za-z0-9]{20}')
+        && fileName.matches('[0-4]-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\.(jpg|png|webp)');
+      allow update: if false;
+      allow delete: if isFixedActiveAdmin();
+    }
+
     /*
      * Explicitly deny cast videos and every unknown or dangerous path.
      */

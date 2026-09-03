@@ -90,6 +90,16 @@ service cloud.firestore {
       return value == null || value is timestamp;
     }
 
+    function isValidMarketDonationImage(image, donationId) {
+      return image is map
+        && image.keys().hasOnly(["path"])
+        && image.path is string
+        && image.path.matches(
+          "market-donations/" + donationId
+            + "/[0-4]-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\.(jpg|png|webp)"
+        );
+    }
+
     function hasValidJobFields(data) {
       return data.keys().hasAll([
           "schemaVersion",
@@ -1059,6 +1069,49 @@ allow create: if request.auth != null
 
     match /beautyOrderDedupe/{dedupeId} {
       allow read, write: if false;
+    }
+
+    /* NOX MARKET catalog and provider applications. */
+    match /marketProducts/{productId} {
+      allow get, list: if isActiveAdmin() || resource.data.isPublic == true;
+      allow create, update, delete: if isActiveAdmin();
+    }
+
+    match /marketDonations/{donationId} {
+      allow get, list, delete: if isActiveAdmin();
+      allow update: if isActiveAdmin()
+        && request.resource.data.status in ["申請受付", "発送待ち", "到着済み", "検品中", "販売準備中", "販売中", "販売済み", "受付不可"];
+      allow create: if request.resource.data.keys().hasOnly([
+          "name", "email", "phone", "category", "brand", "productName",
+          "condition", "description", "images", "shippingDate", "agreements",
+          "agreementVersion", "status", "createdAt", "updatedAt"
+        ])
+        && request.resource.data.name is string && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 80
+        && request.resource.data.email is string && request.resource.data.email.size() >= 5 && request.resource.data.email.size() <= 254
+        && request.resource.data.phone is string && request.resource.data.phone.size() >= 8 && request.resource.data.phone.size() <= 24
+        && request.resource.data.category in ["バッグ", "ドレス", "洋服", "アクセサリー", "シューズ", "ブランド品", "美容・コスメ", "その他"]
+        && request.resource.data.brand is string && request.resource.data.brand.size() <= 100
+        && request.resource.data.productName is string && request.resource.data.productName.size() > 0 && request.resource.data.productName.size() <= 120
+        && request.resource.data.condition in ["新品・未使用", "未使用に近い", "目立った傷や汚れなし", "やや傷や汚れあり", "傷や汚れあり"]
+        && request.resource.data.description is string && request.resource.data.description.size() > 0 && request.resource.data.description.size() <= 2000
+        && request.resource.data.images is list && request.resource.data.images.size() >= 1 && request.resource.data.images.size() <= 5
+        && isValidMarketDonationImage(request.resource.data.images[0], donationId)
+        && (request.resource.data.images.size() < 2 || isValidMarketDonationImage(request.resource.data.images[1], donationId))
+        && (request.resource.data.images.size() < 3 || isValidMarketDonationImage(request.resource.data.images[2], donationId))
+        && (request.resource.data.images.size() < 4 || isValidMarketDonationImage(request.resource.data.images[3], donationId))
+        && (request.resource.data.images.size() < 5 || isValidMarketDonationImage(request.resource.data.images[4], donationId))
+        && request.resource.data.shippingDate is string && request.resource.data.shippingDate.size() == 10
+        && request.resource.data.agreementVersion == 1
+        && request.resource.data.agreements == {"agreement1": true, "agreement2": true, "agreement3": true, "agreement4": true, "agreement5": true, "agreement6": true}
+        && request.resource.data.status == "申請受付"
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time;
+    }
+
+    /* Reserved for a future trusted checkout integration. */
+    match /marketOrders/{orderId} {
+      allow get, list: if isActiveAdmin();
+      allow create, update, delete: if false;
     }
 
     /*

@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>不要品をNOXに譲る | NOX MARKET</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Noto+Serif+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="market.css">
+</head>
+<body class="market-body">
+  <header class="market-header">
+    <a class="market-logo" href="market.html">NOX <span>MARKET</span></a>
+    <button class="market-menu" data-market-menu aria-expanded="false" aria-controls="marketNav">MENU</button>
+    <nav class="market-nav" data-market-nav id="marketNav">
+      <a href="market.html">商品を探す</a><a href="market-donate.html">不要品をNOXに譲る</a><a href="../index.html">NOX TOP</a>
+    </nav>
+  </header>
+  <main><section class="market-section">
+    <div class="market-heading"><div><p class="eyebrow">GIVE TO NOX</p><h1>不要品をNOXに譲る</h1><p>大切に使われた品を、NOXが次の持ち主へつなぎます。</p></div></div>
+    <div class="market-notice" style="margin-bottom:34px"><strong>お申し込み前の重要事項</strong><span data-notice></span></div>
+    <form class="market-form" data-donation-form>
+      <div class="form-grid">
+        <label class="market-field">お名前<input name="name" maxlength="80" autocomplete="name" required></label>
+        <label class="market-field">メールアドレス<input name="email" type="email" maxlength="254" autocomplete="email" required></label>
+        <label class="market-field">電話番号<input name="phone" type="tel" maxlength="24" autocomplete="tel" pattern="[0-9+() -]{8,24}" required></label>
+        <label class="market-field">商品カテゴリ<select name="category" required data-category><option value="">選択してください</option></select></label>
+        <label class="market-field">ブランド名<input name="brand" maxlength="100" placeholder="ノーブランドの場合は「なし」"></label>
+        <label class="market-field">商品名<input name="productName" maxlength="120" required></label>
+        <label class="market-field">商品の状態<select name="condition" required data-condition><option value="">選択してください</option></select></label>
+        <label class="market-field">発送予定日<input name="shippingDate" type="date" required></label>
+        <label class="market-field full">商品説明<textarea name="description" maxlength="2000" required></textarea></label>
+        <label class="market-field full">商品画像（最大5枚・各5MB）<input name="images" type="file" accept="image/jpeg,image/png,image/webp" multiple required><small>JPEG / PNG / WebPのみ。商品の状態がわかる写真を添付してください。</small></label>
+      </div>
+      <div class="agreement-box"><strong>譲渡条件への同意（すべて必須）</strong><div data-agreements></div></div>
+      <button class="market-button" type="submit" data-submit disabled>上記に同意して申請する</button>
+      <p class="form-message" data-message role="status" aria-live="polite"></p>
+    </form>
+    <section class="market-form market-notice hidden" data-success tabindex="-1" aria-live="polite">
+      <strong>ご提供ありがとうございます。</strong>
+      <p>内容を確認後、NOX運営より必要に応じてご連絡いたします。</p>
+      <a class="market-button secondary" href="market.html">NOX MARKETへ戻る</a>
+    </section>
+  </section></main>
+  <footer class="market-footer">© NOX MARKET</footer>
+  <script type="module" src="market-donate.js"></script>
+</body>
+</html>
