@@ -1276,6 +1276,21 @@ allow create: if request.auth != null
     }
 
     /*
+     * Public NØXIA audition click counter. Only the single dedicated document
+     * is exposed, and browser writes may only create 4 or increment by one.
+     */
+    match /noxiaStats/audition {
+      allow get: if true;
+      allow list, delete: if false;
+      allow create: if request.resource.data.keys().hasOnly(['applicationClickCount'])
+        && request.resource.data.applicationClickCount == 4;
+      allow update: if request.resource.data.keys().hasOnly(['applicationClickCount'])
+        && request.resource.data.applicationClickCount is int
+        && resource.data.applicationClickCount is int
+        && request.resource.data.applicationClickCount == resource.data.applicationClickCount + 1;
+    }
+
+    /*
      * Deny every undeclared collection and all subcollections by default.
      */
     match /{document=**} {
